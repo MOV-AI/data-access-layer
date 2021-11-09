@@ -1,8 +1,10 @@
-from os import stat
-from os.path import isdir, isfile, expanduser
+from os import stat, rmdir, symlink, unlink, remove
+from os.path import isdir, isfile, expanduser, islink
 from pathlib import Path
 from shutil import rmtree
 from types import SimpleNamespace
+
+from git.refs import remote
 
 
 class FileSystem:
@@ -34,7 +36,18 @@ class FileSystem:
 
     @staticmethod
     def create_folder_recursively(folder_path):
-        folder_path = folder_path.replace('~', expanduser('~'))
+        # somehow Path.mkdir does not work properly with ~
+        folder_path = folder_path.replace('~', FileSystem.get_home_folder())
         if not isdir(folder_path):
             Path(folder_path).mkdir(parents=True, exist_ok=True)
         return folder_path
+
+    @staticmethod
+    def get_home_folder():
+        return expanduser("~")
+
+    @staticmethod
+    def create_symbolic_link(src, dst):
+        if islink(dst):
+            unlink(dst)
+        symlink(src, dst)
