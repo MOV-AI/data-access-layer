@@ -1,10 +1,8 @@
-from os import stat, rmdir, symlink, unlink, remove
+from os import symlink, unlink
 from os.path import isdir, isfile, expanduser, islink
 from pathlib import Path
 from shutil import rmtree
 from types import SimpleNamespace
-
-from git.refs import remote
 
 
 class FileSystem:
@@ -35,7 +33,15 @@ class FileSystem:
         return False
 
     @staticmethod
-    def create_folder_recursively(folder_path):
+    def create_folder_recursively(folder_path) -> str:
+        """creates a folder recursively with parent if does not exist
+
+        Args:
+            folder_path (str): desired folder path
+
+        Returns:
+            str: the created folder path
+        """
         # somehow Path.mkdir does not work properly with ~
         folder_path = folder_path.replace('~', FileSystem.get_home_folder())
         if not isdir(folder_path):
@@ -43,11 +49,23 @@ class FileSystem:
         return folder_path
 
     @staticmethod
-    def get_home_folder():
+    def get_home_folder() -> str:
+        """returns the absolute path of the home folder.
+
+        Returns:
+            str: path
+        """
         return expanduser("~")
 
     @staticmethod
     def create_symbolic_link(src, dst):
+        """creates symbolic link dst->str
+           src folder had to exist, the dst is created as symlink
+
+        Args:
+            src (str): the target which we want the symbolic link point to
+            dst (str): the symbolic link we want to create
+        """
         if islink(dst):
             unlink(dst)
         symlink(src, dst)
