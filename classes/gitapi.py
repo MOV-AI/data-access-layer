@@ -4,13 +4,28 @@ from git import Repo, InvalidGitRepositoryError, GitError, GitCommandError
 from re import search
 from os.path import join as path_join
 
-default_local_base = path_join(FileSystem.get_home_folder(), ".movai")
+# TODO
+# need to be replaced, just for testing
+from authentication import AuthService
+
+MOVAI_FOLDER_NAME = ".movai"
+default_local_base = path_join(FileSystem.get_home_folder(), MOVAI_FOLDER_NAME)
+
+
+# TODO
+# should be replaced by authentication service ?
+# not sure how this should work
+def get_tokenized_repo(remote, username):
+    git_link = GitLink(remote)
+    token = AuthService.get_token(remote, username)
+    remote = git_link.get_https_link().split('https://')[1]
+    return f"https://{username}:{token}@{remote}"
 
 
 class GitRepo:
     """ class representing single repository"""
 
-    def __init__(self, remote: str, username: str, token: str,
+    def __init__(self, remote: str, username: str,
                  branch: str = None, commit: str = None):
         """initialze new repository.
            creates local folder and clone the repo with the path
@@ -19,7 +34,6 @@ class GitRepo:
         Args:
             remote (str): remote link of repository.
             username (str): username to be used.
-            token (str): token string to be used
             branch (str, optional): branch name desired, if None the default
                                     branch of the repo will be used
             commit (str, optional): commit hash id, if None the latest commit
@@ -28,7 +42,6 @@ class GitRepo:
         self._git_link = GitLink(remote)
         self._remote = self._git_link.get_https_link()
         self._username = username
-        self._token = token
         self._branch = branch
         self._commit = commit
         self._repo_object = None
@@ -67,17 +80,6 @@ class GitRepo:
                     "unknown revision or path not in the working tree"):
                 return False
         return True
-
-    @property
-    def repository(self) -> str:
-        """return the repository link with username and token.
-           used to pull/push to the reposiotry with permission.
-
-        Returns:
-            str: username:token@remote
-        """
-        remote = self._remote.split("https://")[1]
-        return f"https://{self._username}:{self._token}@{remote}"
 
     @property
     def local_path(self) -> str:
@@ -164,8 +166,8 @@ class GitRepo:
         try:
             repo = Repo(path)
         except InvalidGitRepositoryError:
-            repo = Repo.clone_from(self.repository, path,
-                                   no_checkout=True)
+            tokenized_repo = get_tokenized_repo(self._remote, self._username)
+            repo = Repo.clone_from(tokenized_repo, path, no_checkout=True)
         repo.git.fetch()
         return repo
 
@@ -195,7 +197,8 @@ class GitRepo:
             repo = Repo(self._local_path)
         except InvalidGitRepositoryError:
             # Repository does not exist, creating one.
-            repo = Repo.clone_from(self.repository, self._local_path,
+            tokenized_repo = get_tokenized_repo(self._remote, self._username)
+            repo = Repo.clone_from(tokenized_repo, self._local_path,
                                    branch=self._branch, no_checkout=True)
         except GitError as e:
             print(f"Error {e}")
@@ -204,20 +207,16 @@ class GitRepo:
 
 
 class GitManager:
-    _token = None
     _username = None
     _versions = {}
 
-    def __init__(self, username: str, token: str):
-        """initialize Object with username and token
+    def __init__(self, username: str):
+        """initialize Object with username
 
         Args:
             username (str): the username used to pull/push to the remote repo.
-            token (str): the token string used for permission for
-                         the remote repo.
         """
         self._username = username
-        self._token = token
 
     @staticmethod
     def get_version(branch: str, commit: str) -> str:
@@ -276,7 +275,7 @@ class GitManager:
             GitManager._versions[repo_name] = {}
         version = GitManager.get_version(branch, commit)
         if version not in GitManager._versions[repo_name]:
-            repo = GitRepo(remote, self._username, self._token, branch, commit)
+            repo = GitRepo(remote, self._username, branch, commit)
             _branch = branch or repo.branch
             _commit = commit or repo.commit_sha
             version = GitManager.get_version(_branch, _commit)
@@ -353,7 +352,7 @@ class GitManager:
 
         version = GitManager.get_version(branch, commit)
         if version not in GitManager._versions[default_repo.name]:
-            repo = GitRepo(remote, self._username, self._token, branch, commit)
+            repo = GitRepo(remote, self._username, branch, commit)
             GitManager._versions[default_repo.name][version] = repo
 
         if self.is_tag(remote, revision):
@@ -423,8 +422,7 @@ class GitLink:
         return repo_name
 
 
-manager = GitManager(username="Mograbi",
-                     token="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")
+manager = GitManager(username="Mograbi")
 
 manager.get_file("file1", "https://github.com/Mograbi/try.git")
 manager.get_file(file_name="file2",
