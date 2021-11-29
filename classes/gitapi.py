@@ -1,15 +1,13 @@
-from git.util import join_path
 from filesystem import FileSystem
 from git import Repo, InvalidGitRepositoryError, GitError, GitCommandError
+from git.refs import HEAD
 from re import search
 from os.path import join as path_join
 
+# -----------------------------------------------------------------------------
 # TODO
 # need to be replaced, just for testing
 from authentication import AuthService
-
-MOVAI_FOLDER_NAME = ".movai"
-default_local_base = path_join(FileSystem.get_home_folder(), MOVAI_FOLDER_NAME)
 
 
 # TODO
@@ -17,16 +15,25 @@ default_local_base = path_join(FileSystem.get_home_folder(), MOVAI_FOLDER_NAME)
 # not sure how this should work
 def get_tokenized_repo(remote, username):
     git_link = GitLink(remote)
+    git_user = AuthService.get_username(remote, username)
     token = AuthService.get_token(remote, username)
     remote = git_link.get_https_link().split('https://')[1]
-    return f"https://{username}:{token}@{remote}"
+    return f"https://{git_user}:{token}@{remote}"
+# -----------------------------------------------------------------------------
+
+
+SLAVE = "slave"
+MASTER = "master"
+MOVAI_FOLDER_NAME = ".movai"
+default_local_base = path_join(FileSystem.get_home_folder(), MOVAI_FOLDER_NAME)
 
 
 class GitRepo:
     """ class representing single repository"""
 
-    def __init__(self, remote: str, username: str,
-                 branch: str = None, commit: str = None):
+    def __init__(self, remote: str, username: str, mode,
+                 branch: str = None, commit: str = None,
+                 empty_repo: bool = False):
         """initialze new repository.
            creates local folder and clone the repo with the path
            /repo_name/branch/commit
@@ -44,24 +51,29 @@ class GitRepo:
         self._username = username
         self._branch = branch
         self._commit = commit
+        self._mode = mode
         self._repo_object = None
         self._default_branch = None
-        self._local_path = path_join(default_local_base,
-                                     self._git_link.get_repo_name())
-        self.REPO_LOCAL_PATH = path_join(default_local_base,
-                                         self._git_link.get_repo_name())
+        path_params = [default_local_base]
+        if mode == MASTER:
+            # if it's a MASTER mode, then we need to consider user folders.
+            path_params.append(username)
+        path_params.append(self._git_link.get_repo_name())
+        self._local_path = path_join(*path_params)
+        self.REPO_LOCAL_PATH = path_join(*path_params)
         FileSystem.create_folder_recursively(self._local_path)
-        if branch is None:
+        if empty_repo:
             # this should be default repository
             self._repo_object = self.get_or_create_empty_repo()
             self._default_branch = str(self._repo_object.active_branch)
             self._branch = self._default_branch
+            self._commit = self.get_latest_commit()
         else:
+            if commit is None or branch is None:
+                raise Exception("not a valid version")
             self._commit = commit
-            self._local_path = join_path(default_local_base,
-                                         self._git_link.get_repo_name(),
-                                         branch,
-                                         commit)
+            path_params.extend([branch, commit])
+            self._local_path = path_join(*path_params)
             self._repo_object = self._clone_no_checkout()
 
     def version_exist(self, revision: str) -> bool:
@@ -88,7 +100,7 @@ class GitRepo:
         Returns:
             str: local path of the repo.
         """
-        return join_path(self._local_path, self._branch, self._commit)
+        return path_join(self._local_path, self._branch, self._commit)
 
     @property
     def default_branch(self) -> str:
@@ -136,6 +148,10 @@ class GitRepo:
         """
         return self._repo_object.git
 
+    @property
+    def head(self) -> 'HEAD':
+        return self._repo_object.head
+
     def checkout_file(self, file_name: str) -> str:
         """will checkout file of the repository commit hash
            and returns it's local path
@@ -148,7 +164,7 @@ class GitRepo:
         """
         print(f"running: checkout {self.commit_sha} -- {file_name}")
         self._repo_object.git.checkout(self.commit_sha, "--", file_name)
-        file_path = join_path(self._local_path, file_name)
+        file_path = path_join(self._local_path, file_name)
         return file_path
 
     def get_or_create_empty_repo(self) -> Repo:
@@ -210,13 +226,14 @@ class GitManager:
     _username = None
     _versions = {}
 
-    def __init__(self, username: str):
+    def __init__(self, username: str, mode: str = SLAVE):
         """initialize Object with username
 
         Args:
             username (str): the username used to pull/push to the remote repo.
         """
         self._username = username
+        self._mode = mode
 
     @staticmethod
     def get_version(branch: str, commit: str) -> str:
@@ -256,7 +273,8 @@ class GitManager:
     def _get_or_add_version(self,
                             remote: str,
                             branch: str = None,
-                            commit: str = None) -> GitRepo:
+                            commit: str = None,
+                            empty_repo: bool = False) -> GitRepo:
         """will get the desired version repo if exists
            if not will create a new one and returns it.
 
@@ -275,10 +293,13 @@ class GitManager:
             GitManager._versions[repo_name] = {}
         version = GitManager.get_version(branch, commit)
         if version not in GitManager._versions[repo_name]:
-            repo = GitRepo(remote, self._username, branch, commit)
+            repo = GitRepo(remote, self._username, self._mode,
+                           branch, commit, empty_repo)
             _branch = branch or repo.branch
             _commit = commit or repo.commit_sha
             version = GitManager.get_version(_branch, _commit)
+            if empty_repo:
+                version = "default"
             GitManager._versions[repo_name][version] = repo
         return GitManager._versions[repo_name][version]
 
@@ -293,7 +314,9 @@ class GitManager:
             str: returns fuoll commit sha, 40 digits.
         """
         # get the empty default repo to extract info
-        repo = self._get_or_add_version(remote, branch=None, commit=None)
+        repo = self._get_or_add_version(remote, empty_repo=True)
+        if revision is None:
+            return repo.get_latest_commit()
         return repo.git_client.rev_parse(revision)
 
     def get_file(self,
@@ -338,9 +361,7 @@ class GitManager:
             GitRepo: GitRepo Object representing the requested version.
         """
         # get the empty default repo to extract info
-        default_repo = self._get_or_add_version(remote,
-                                                branch=None,
-                                                commit=None)
+        default_repo = self._get_or_add_version(remote, empty_repo=True)
         branch = branch or default_repo.default_branch
         if revision is None:
             commit = default_repo.get_latest_commit()
@@ -352,16 +373,31 @@ class GitManager:
 
         version = GitManager.get_version(branch, commit)
         if version not in GitManager._versions[default_repo.name]:
-            repo = GitRepo(remote, self._username, branch, commit)
+            repo = GitRepo(remote, self._username, self._mode, branch, commit)
             GitManager._versions[default_repo.name][version] = repo
 
         if self.is_tag(remote, revision):
             # in case this is a TAG create symlink to the commit folder
-            link_path = join_path(default_repo.REPO_LOCAL_PATH,
+            link_path = path_join(default_repo.REPO_LOCAL_PATH,
                                   branch, revision)
             FileSystem.create_symbolic_link(src="./" + commit,
                                             dst=link_path)
         return GitManager._versions[default_repo.name][version]
+
+    def diff_file(self,
+                  remote: str,
+                  filename: str,
+                  branch: str = None,
+                  revision: str = None) -> str:
+        # TODO
+        # get the empty default repo to extract info
+        default_repo = self._get_or_add_version(remote, empty_repo=True)
+        branch = branch or default_repo.default_branch
+        commit = revision or self.get_full_commit_sha(remote, revision)
+        repo = self._get_or_add_version(remote, branch, commit)
+        for diff in repo.head.commit.diff(None).iter_change_type('M'):
+            if diff.a_path.find(filename) != -1:
+                print("found")
 
 
 class GitLink:
@@ -422,14 +458,15 @@ class GitLink:
         return repo_name
 
 
-manager = GitManager(username="Mograbi")
+remote = "https://github.com/Mograbi/try.git"
+manager = GitManager(username="Mograbi", mode=MASTER)
 
-manager.get_file("file1", "https://github.com/Mograbi/try.git")
 manager.get_file(file_name="file2",
-                 remote="https://github.com/Mograbi/try.git",
+                 remote=remote,
                  branch="v2",
                  revision="v0.2")
 manager.get_file(file_name="file1",
-                 remote="https://github.com/Mograbi/try.git",
+                 remote=remote,
                  branch="v2",
                  revision="918bcd7fb25b")
+# manager.diff_file(remote, "file1", "main")
