@@ -1,6 +1,7 @@
 from filesystem import FileSystem
 from git import Repo, InvalidGitRepositoryError, GitError, GitCommandError
 from git.refs import HEAD
+from git.index import IndexFile
 from re import search
 from os.path import join as path_join
 
@@ -152,9 +153,14 @@ class GitRepo:
     def head(self) -> 'HEAD':
         return self._repo_object.head
 
+    @property
+    def index(self) -> 'IndexFile':
+        return self._repo_object.index
+
     def checkout_file(self, file_name: str) -> str:
         """will checkout file of the repository commit hash
-           and returns it's local path
+           and returns it's local path in case does not exist,
+           otherwise no checkout will be running
 
         Args:
             file_name (str): the desired file name
@@ -162,9 +168,12 @@ class GitRepo:
         Returns:
             str: local path of the requested file
         """
+        file_path = path_join(self._local_path, file_name)
+        if FileSystem.exist(file_path):
+            print(f"file {file_name} already exist in {file_path}")
+            return file_path
         print(f"running: checkout {self.commit_sha} -- {file_name}")
         self._repo_object.git.checkout(self.commit_sha, "--", file_name)
-        file_path = path_join(self._local_path, file_name)
         return file_path
 
     def get_or_create_empty_repo(self) -> Repo:
@@ -225,6 +234,7 @@ class GitRepo:
 class GitManager:
     _username = None
     _versions = {}
+    DEFAULT_REPO_ID = "default"
 
     def __init__(self, username: str, mode: str = SLAVE):
         """initialize Object with username
@@ -292,6 +302,8 @@ class GitManager:
         if repo_name not in GitManager._versions:
             GitManager._versions[repo_name] = {}
         version = GitManager.get_version(branch, commit)
+        if empty_repo:
+            version = self.DEFAULT_REPO_ID
         if version not in GitManager._versions[repo_name]:
             repo = GitRepo(remote, self._username, self._mode,
                            branch, commit, empty_repo)
@@ -299,7 +311,7 @@ class GitManager:
             _commit = commit or repo.commit_sha
             version = GitManager.get_version(_branch, _commit)
             if empty_repo:
-                version = "default"
+                version = self.DEFAULT_REPO_ID
             GitManager._versions[repo_name][version] = repo
         return GitManager._versions[repo_name][version]
 
@@ -311,7 +323,7 @@ class GitManager:
             revision (str): tag/commit/short commit id.
 
         Returns:
-            str: returns fuoll commit sha, 40 digits.
+            str: returns full commit sha, 40 digits.
         """
         # get the empty default repo to extract info
         repo = self._get_or_add_version(remote, empty_repo=True)
@@ -339,7 +351,8 @@ class GitManager:
         """
         if file_name.find('json') == -1:
             file_name = file_name + '.json'
-        repo = self._clone_no_checkout(remote, branch, revision)
+        commit = self.get_full_commit_sha(remote, revision)
+        repo = self._get_or_add_version(remote, branch, commit)
         file_path = repo.checkout_file(file_name)
 
         return file_path
@@ -383,6 +396,46 @@ class GitManager:
             FileSystem.create_symbolic_link(src="./" + commit,
                                             dst=link_path)
         return GitManager._versions[default_repo.name][version]
+
+    def _file_changed(self, remote: str, filename: str,
+                      branch: str, revision: str) -> bool:
+        commit = self.get_full_commit_sha(remote, revision)
+        repo = self._get_or_add_version(remote, branch, commit)
+        for diff in repo.index.diff(None):
+            if diff.a_path.find(filename) != -1:
+                return True
+        return False
+
+    def commit_file(self,
+                    remote: str,
+                    filename: str,
+                    current_branch: str,
+                    revision: str,
+                    new_branch: str = None,
+                    message: str = "") -> str:
+        """will commit the specified file locally.
+
+        Args:
+            remote (str): the remote link of the repo.
+            filename (str): the filename of the desired file.
+            new_branch (str, optional): if given will create the new commit in
+                                        a new branch with the name
+                                        "new_branch".
+                                        Defaults to None.
+
+        Returns:
+            str: the newly committed commit hash id.
+        """
+        if not self._file_changed(remote, filename, current_branch, revision):
+            raise Exception(f"no changes done to \
+                            file {current_branch}/{revision}/{filename}")
+        # we will create commit first
+        if new_branch:
+            # create new branch
+            # TODO
+            pass
+
+        pass
 
     def diff_file(self,
                   remote: str,
@@ -469,4 +522,5 @@ manager.get_file(file_name="file1",
                  remote=remote,
                  branch="v2",
                  revision="918bcd7fb25b")
+# print(manager._file_changed(remote=remote, filename="file2", branch="v2", revision="v0.2"))
 # manager.diff_file(remote, "file1", "main")
