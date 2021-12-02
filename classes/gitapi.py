@@ -32,9 +32,7 @@ default_local_base = path_join(FileSystem.get_home_folder(), MOVAI_FOLDER_NAME)
 class GitRepo:
     """ class representing single repository"""
 
-    def __init__(self, remote: str, username: str, mode,
-                 branch: str = None, commit: str = None,
-                 empty_repo: bool = False):
+    def __init__(self, remote: str, username: str, mode, version: str):
         """initialze new repository.
            creates local folder and clone the repo with the path
            /repo_name/branch/commit
@@ -42,16 +40,12 @@ class GitRepo:
         Args:
             remote (str): remote link of repository.
             username (str): username to be used.
-            branch (str, optional): branch name desired, if None the default
-                                    branch of the repo will be used
-            commit (str, optional): commit hash id, if None the latest commit
-                                    in branch will be used.
+            version (str, optional): branch/tag/commit id.
         """
         self._git_link = GitLink(remote)
         self._remote = self._git_link.get_https_link()
         self._username = username
-        self._branch = branch
-        self._commit = commit
+        self._version = version
         self._mode = mode
         self._repo_object = None
         self._default_branch = None
@@ -63,19 +57,7 @@ class GitRepo:
         self._local_path = path_join(*path_params)
         self.REPO_LOCAL_PATH = path_join(*path_params)
         FileSystem.create_folder_recursively(self._local_path)
-        if empty_repo:
-            # this should be default repository
-            self._repo_object = self.get_or_create_empty_repo()
-            self._default_branch = str(self._repo_object.active_branch)
-            self._branch = self._default_branch
-            self._commit = self.get_latest_commit()
-        else:
-            if commit is None or branch is None:
-                raise Exception("not a valid version")
-            self._commit = commit
-            path_params.extend([branch, commit])
-            self._local_path = path_join(*path_params)
-            self._repo_object = self._clone_no_checkout()
+        self._repo_object = self._clone_no_checkout()
 
     def version_exist(self, revision: str) -> bool:
         """check if version (commit / tag) exist in the repo
@@ -128,7 +110,9 @@ class GitRepo:
         Returns:
             str: branch name
         """
-        return self._branch
+        if self._repo_object.head.is_detached:
+            raise Exception("detached HEAD state, no branch")
+        return str(self._repo_object.active_branch)
 
     @property
     def commit_sha(self) -> str:
@@ -137,7 +121,7 @@ class GitRepo:
         Returns:
             str: commit sha1 id.
         """
-        return self._commit
+        return str(self._repo_object.commit())
 
     @property
     def git_client(self) -> Repo.git:
@@ -151,11 +135,52 @@ class GitRepo:
 
     @property
     def head(self) -> 'HEAD':
+        """will return HEAD object of the current repo
+
+        Returns:
+            HEAD: the HEAD object of the current repo tree
+        """
         return self._repo_object.head
 
     @property
     def index(self) -> 'IndexFile':
+        """will return IndexFile of the current working tree
+
+        Returns:
+            IndexFile: the IndexFile of the current working tree.
+        """
         return self._repo_object.index
+
+    def commit(self,
+               filename: str = None,
+               new_branch: str = None,
+               message: str = None) -> str:
+        """will commit file changes to current branch in case it's not
+           detached HEAD, or create new branch if specified
+
+        Args:
+            filename (str, optional): desired filename. Defaults to None.
+            new_branch (str, optional): the new branch name to be created.
+                                    Defaults to None.
+            message (str, optional): message for the commit. Defaults to None.
+
+        Raises:
+            Exception: in case it's detached HEAD and no branch specified
+
+        Returns:
+            str: the newly committed commit sha
+        """
+        if self._repo_object.head.is_detached \
+           and new_branch is None:
+            # TODO: maybe we should commit either way and warn the user
+            # that this commit might be lost because it's on a detached head
+            raise Exception("detached HEAD and no branch specified")
+        self._repo_object.git.add(filename)
+        if new_branch is not None:
+            self._repo_object.create_head(new_branch)
+            self.checkout(new_branch)
+        self._repo_object.git.commit(m=message)
+        return self.commit_sha
 
     def checkout_file(self, file_name: str) -> str:
         """will checkout file of the repository commit hash
@@ -169,35 +194,12 @@ class GitRepo:
             str: local path of the requested file
         """
         file_path = path_join(self._local_path, file_name)
-        if FileSystem.exist(file_path):
-            print(f"file {file_name} already exist in {file_path}")
-            return file_path
-        print(f"running: checkout {self.commit_sha} -- {file_name}")
-        self._repo_object.git.checkout(self.commit_sha, "--", file_name)
+        self._repo_object.git.checkout(file_name)
         return file_path
-
-    def get_or_create_empty_repo(self) -> Repo:
-        """create or get empty repository to extract info from it
-           instead of always cloning a new empty repo.
-           the purpose is to see information such as branches, commits, tags
-           a fetch will be called every time this function called.
-
-        Returns:
-            git.Repo: a git Repository object representing the empty repo for
-                      the remote provided in init function
-        """
-        path = path_join(self._local_path, '.empty_default_repo')
-        FileSystem.create_folder_recursively(path)
-        try:
-            repo = Repo(path)
-        except InvalidGitRepositoryError:
-            tokenized_repo = get_tokenized_repo(self._remote, self._username)
-            repo = Repo.clone_from(tokenized_repo, path, no_checkout=True)
-        repo.git.fetch()
-        return repo
 
     def get_latest_commit(self) -> str:
         """get the latest commit sha1 hash in repository
+           on current branch
 
         Returns:
             str: commit sha1 hash
@@ -208,6 +210,14 @@ class GitRepo:
                                     "--oneline")
         commit = commits_log.split('\n')[0].split(' ')[0]
         return self._repo_object.git.rev_parse(commit)
+
+    def checkout(self, version):
+        """will checkout and change version
+
+        Args:
+            version ([type]): the desired version
+        """
+        self._repo_object.git.checkout(version)
 
     def _clone_no_checkout(self) -> Repo:
         """clone given branch, commit, tag without really checking out files
@@ -224,7 +234,7 @@ class GitRepo:
             # Repository does not exist, creating one.
             tokenized_repo = get_tokenized_repo(self._remote, self._username)
             repo = Repo.clone_from(tokenized_repo, self._local_path,
-                                   branch=self._branch, no_checkout=True)
+                                   no_checkout=True)
         except GitError as e:
             print(f"Error {e}")
 
@@ -282,9 +292,7 @@ class GitManager:
 
     def _get_or_add_version(self,
                             remote: str,
-                            branch: str = None,
-                            commit: str = None,
-                            empty_repo: bool = False) -> GitRepo:
+                            version: str = None) -> GitRepo:
         """will get the desired version repo if exists
            if not will create a new one and returns it.
 
@@ -300,20 +308,10 @@ class GitManager:
         repo_name = git_link.get_repo_name()
         repo = None
         if repo_name not in GitManager._versions:
-            GitManager._versions[repo_name] = {}
-        version = GitManager.get_version(branch, commit)
-        if empty_repo:
-            version = self.DEFAULT_REPO_ID
-        if version not in GitManager._versions[repo_name]:
-            repo = GitRepo(remote, self._username, self._mode,
-                           branch, commit, empty_repo)
-            _branch = branch or repo.branch
-            _commit = commit or repo.commit_sha
-            version = GitManager.get_version(_branch, _commit)
-            if empty_repo:
-                version = self.DEFAULT_REPO_ID
-            GitManager._versions[repo_name][version] = repo
-        return GitManager._versions[repo_name][version]
+            repo = GitRepo(remote, self._username, self._mode, version)
+            GitManager._versions[repo_name] = repo
+        GitManager._versions[repo_name].checkout(version)
+        return GitManager._versions[repo_name]
 
     def get_full_commit_sha(self, remote: str, revision: str) -> str:
         """returns a full commit sha
@@ -334,16 +332,13 @@ class GitManager:
     def get_file(self,
                  file_name: str,
                  remote: str,
-                 branch: str = None,
-                 revision: str = None) -> str:
+                 version: str = None) -> str:
         """Get a File from repository with specific version
 
         Args:
             file_name (str): name of the file.
             remote (str): the remote repository link.
-            branch (str, optional): the branch name to be based on.
-                                    Defaults to None.
-            revision (str, optional): the commit/ tag id desired.
+            version (str, optional): the commit/ tag/branch id desired.
                                       Defaults to None.
 
         Returns:
@@ -351,66 +346,15 @@ class GitManager:
         """
         if file_name.find('json') == -1:
             file_name = file_name + '.json'
-        commit = self.get_full_commit_sha(remote, revision)
-        repo = self._get_or_add_version(remote, branch, commit)
+        repo = self._get_or_add_version(remote, version)
         file_path = repo.checkout_file(file_name)
 
         return file_path
 
-    def _clone_no_checkout(self,
-                           remote: str,
-                           branch: str = None,
-                           revision: str = None) -> GitRepo:
-        """clone given branch, commit, tag without really checking out files
-           similar to empty repository but with all the repo information.
-
-        Args:
-            remote (str): the remote link of the repository.
-            branch (str, optional): branch name. Defaults to None.
-            revision (str, optional): commit hash id or tag name.
-                                      Defaults to None.
-
-        Returns:
-            GitRepo: GitRepo Object representing the requested version.
-        """
-        # get the empty default repo to extract info
-        default_repo = self._get_or_add_version(remote, empty_repo=True)
-        branch = branch or default_repo.default_branch
-        if revision is None:
-            commit = default_repo.get_latest_commit()
-        else:
-            if not default_repo.version_exist(revision):
-                raise Exception(f"commit/tag <{revision}> does not \
-                                exist in {remote}")
-            commit = self.get_full_commit_sha(remote, revision)
-
-        version = GitManager.get_version(branch, commit)
-        if version not in GitManager._versions[default_repo.name]:
-            repo = GitRepo(remote, self._username, self._mode, branch, commit)
-            GitManager._versions[default_repo.name][version] = repo
-
-        if self.is_tag(remote, revision):
-            # in case this is a TAG create symlink to the commit folder
-            link_path = path_join(default_repo.REPO_LOCAL_PATH,
-                                  branch, revision)
-            FileSystem.create_symbolic_link(src="./" + commit,
-                                            dst=link_path)
-        return GitManager._versions[default_repo.name][version]
-
-    def _file_changed(self, remote: str, filename: str,
-                      branch: str, revision: str) -> bool:
-        commit = self.get_full_commit_sha(remote, revision)
-        repo = self._get_or_add_version(remote, branch, commit)
-        for diff in repo.index.diff(None):
-            if diff.a_path.find(filename) != -1:
-                return True
-        return False
-
     def commit_file(self,
                     remote: str,
+                    current_version: str,
                     filename: str,
-                    current_branch: str,
-                    revision: str,
                     new_branch: str = None,
                     message: str = "") -> str:
         """will commit the specified file locally.
@@ -426,16 +370,8 @@ class GitManager:
         Returns:
             str: the newly committed commit hash id.
         """
-        if not self._file_changed(remote, filename, current_branch, revision):
-            raise Exception(f"no changes done to \
-                            file {current_branch}/{revision}/{filename}")
-        # we will create commit first
-        if new_branch:
-            # create new branch
-            # TODO
-            pass
-
-        pass
+        repo = self._get_or_add_version(remote, current_version)
+        return repo.commit(filename, new_branch, message)
 
     def diff_file(self,
                   remote: str,
@@ -514,13 +450,22 @@ class GitLink:
 remote = "https://github.com/Mograbi/try.git"
 manager = GitManager(username="Mograbi", mode=MASTER)
 
-manager.get_file(file_name="file2",
+file_path = manager.get_file(file_name="file2",
                  remote=remote,
-                 branch="v2",
-                 revision="v0.2")
-manager.get_file(file_name="file1",
+                 version="v0.2")
+with open(file_path) as f:
+    print(f.read())
+print("-------------------")
+file_path = manager.get_file(file_name="file1",
                  remote=remote,
-                 branch="v2",
-                 revision="918bcd7fb25b")
+                 version="918bcd7fb25b")
+with open(file_path) as f:
+    print(f.read())
+print("-------------------")
+file_path = manager.get_file(file_name="file1",
+                 remote=remote,
+                 version="v0.1")
+with open(file_path) as f:
+    print(f.read())
 # print(manager._file_changed(remote=remote, filename="file2", branch="v2", revision="v0.2"))
 # manager.diff_file(remote, "file1", "main")
