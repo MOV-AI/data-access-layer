@@ -1,4 +1,5 @@
-from filesystem import FileSystem
+from git.refs.tag import TagReference
+from .filesystem import FileSystem
 from git import Repo, InvalidGitRepositoryError, GitError, GitCommandError
 from git.refs import HEAD
 from git.index import IndexFile
@@ -8,7 +9,7 @@ from os.path import join as path_join
 # -----------------------------------------------------------------------------
 # TODO
 # need to be replaced, just for testing
-from authentication import AuthService
+from .authentication import AuthService
 
 
 # TODO
@@ -151,6 +152,9 @@ class GitRepo:
         """
         return self._repo_object.index
 
+    def fetch(self):
+        self._repo_object.git.fetch()
+
     def commit(self,
                filename: str = None,
                new_branch: str = None,
@@ -181,6 +185,22 @@ class GitRepo:
             self.checkout(new_branch)
         self._repo_object.git.commit(m=message)
         return self.commit_sha
+
+    def tag(self, version, tag_name: str, msg: str = None) -> TagReference:
+        """will create a tag based on a version
+
+        Args:
+            version ([type]): [description]
+            tag_name (str): [description]
+            msg (str, optional): [description]. Defaults to None.
+
+        Returns:
+            TagReference: [description]
+        """
+        self.checkout(version)
+        new_tag = self._repo_object.create_tag(tag_name, message=msg)
+
+        return new_tag
 
     def checkout_file(self, file_name: str) -> str:
         """will checkout file of the repository commit hash
@@ -310,7 +330,13 @@ class GitManager:
         if repo_name not in GitManager._versions:
             repo = GitRepo(remote, self._username, self._mode, version)
             GitManager._versions[repo_name] = repo
-        GitManager._versions[repo_name].checkout(version)
+        try:
+            GitManager._versions[repo_name].checkout(version)
+        except GitCommandError:
+            # it could be that the current info does not include
+            # the wanted version, so try to fetch info first.
+            GitManager._versions[repo_name].fetch()
+            GitManager._versions[repo_name].checkout(version)
         return GitManager._versions[repo_name]
 
     def get_full_commit_sha(self, remote: str, revision: str) -> str:
@@ -445,27 +471,3 @@ class GitLink:
         if repo_name.find(".") != -1:
             repo_name = repo_name.split(".")[0]
         return repo_name
-
-
-remote = "https://github.com/Mograbi/try.git"
-manager = GitManager(username="Mograbi", mode=MASTER)
-
-file_path = manager.get_file(file_name="file2",
-                 remote=remote,
-                 version="v0.2")
-with open(file_path) as f:
-    print(f.read())
-print("-------------------")
-file_path = manager.get_file(file_name="file1",
-                 remote=remote,
-                 version="918bcd7fb25b")
-with open(file_path) as f:
-    print(f.read())
-print("-------------------")
-file_path = manager.get_file(file_name="file1",
-                 remote=remote,
-                 version="v0.1")
-with open(file_path) as f:
-    print(f.read())
-# print(manager._file_changed(remote=remote, filename="file2", branch="v2", revision="v0.2"))
-# manager.diff_file(remote, "file1", "main")

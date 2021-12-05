@@ -33,6 +33,13 @@ class FileSystem:
         return False
 
     @staticmethod
+    def read(path):
+        if not FileSystem.exist(path):
+            raise Exception(f"file does not exist {path}")
+        with open(path) as f:
+            return f.read()
+
+    @staticmethod
     def create_folder_recursively(folder_path) -> str:
         """creates a folder recursively with parent if does not exist
 
