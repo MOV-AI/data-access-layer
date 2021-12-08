@@ -5,6 +5,7 @@ from git.refs import HEAD
 from git.index import IndexFile
 from re import search
 from os.path import join as path_join
+from abc import ABC
 
 # -----------------------------------------------------------------------------
 # TODO
@@ -33,7 +34,8 @@ default_local_base = path_join(FileSystem.get_home_folder(), MOVAI_FOLDER_NAME)
 class GitRepo:
     """ class representing single repository"""
 
-    def __init__(self, remote: str, username: str, mode, version: str):
+    def __init__(self, remote: str, username: str,
+                 local_path: str, version: str):
         """initialze new repository.
            creates local folder and clone the repo with the path
            /repo_name/branch/commit
@@ -47,16 +49,9 @@ class GitRepo:
         self._remote = self._git_link.get_https_link()
         self._username = username
         self._version = version
-        self._mode = mode
         self._repo_object = None
         self._default_branch = None
-        path_params = [default_local_base]
-        if mode == MASTER:
-            # if it's a MASTER mode, then we need to consider user folders.
-            path_params.append(username)
-        path_params.append(self._git_link.get_repo_name())
-        self._local_path = path_join(*path_params)
-        self.REPO_LOCAL_PATH = path_join(*path_params)
+        self._local_path = local_path
         FileSystem.create_folder_recursively(self._local_path)
         self._repo_object = self._clone_no_checkout()
 
@@ -261,7 +256,7 @@ class GitRepo:
         return repo
 
 
-class GitManager:
+class GitManager(ABC):
     _username = None
     _repos = {}
     DEFAULT_REPO_ID = "default"
@@ -276,21 +271,6 @@ class GitManager:
         self._mode = mode
         if mode not in GitManager._repos:
             GitManager._repos[mode] = {}
-
-    @staticmethod
-    def get_version(branch: str, commit: str) -> str:
-        """returns a string representing a version for the branch and commit provided
-
-        Args:
-            branch (str): branch name
-            commit (str): commit hash sha1
-
-        Returns:
-            str: a string representing a version for branch and commit.
-        """
-        if branch is None or commit is None:
-            return None
-        return branch + "/" + commit
 
     def is_tag(self, remote: str, revision: str) -> bool:
         """check if the provided revision is a tag or not
@@ -344,7 +324,8 @@ class GitManager:
         repo_name = git_link.get_repo_name()
         repo = self._get_repo(repo_name)
         if repo is None:
-            repo = GitRepo(remote, self._username, self._mode, version)
+            repo = GitRepo(remote, self._username,
+                           self._get_local_path(remote), version)
             GitManager._repos[self._mode][repo_name] = repo
         if version is not None:
             try:
@@ -432,6 +413,68 @@ class GitManager:
         for diff in repo.head.commit.diff(None).iter_change_type('M'):
             if diff.a_path.find(filename) != -1:
                 print("found")
+
+    def create_tag(self,
+                   remote: str,
+                   base_commit: str,
+                   tag: str,
+                   message: str = "") -> bool:
+        """will create a tag based on the given commit.
+
+        Args:
+            remote (str): the remote repository we want.
+            base_commit (str): the base commit we want to be based on.
+            tag (str): the desired tag name.
+            message (str, optional): the message for the tag creation.
+                                     Defaults to "".
+
+        Returns:
+            bool: whether the creation of the tag succeeded or not.
+        """
+        repo = self._get_or_add_version(remote, base_commit)
+        tag_reference = None
+        try:
+            tag_reference = repo.tag(base_commit, tag, message)
+        except Exception:
+            pass
+        return tag_reference is not None
+
+    def _get_local_path(self, remote: str):
+        """return the local path of a given remote repository
+
+        Args:
+            remote (str): the remote repository link.
+        """
+        pass
+
+
+class SlaveGitManager(GitManager):
+    def __init__(self, username: str):
+        super().__init__(username, mode=SLAVE)
+
+    def commit_file(self, *args, **kwargs):
+        raise Exception("Slave Manager shall not commit changes")
+
+    def create_tag(self, *args, **kwargs):
+        raise Exception("Slave Manager shall not commit changes")
+
+    def _get_local_path(self, remote):
+        git_link = GitLink(remote)
+        path_params = [default_local_base]
+        path_params.append(git_link.get_repo_name())
+        return path_join(*path_params)
+
+
+class MasterGitManager(GitManager):
+    def __init__(self, username: str):
+        super().__init__(username, mode=MASTER)
+
+    def _get_local_path(self, remote):
+        git_link = GitLink(remote)
+        path_params = [default_local_base]
+        path_params.append(self._username)
+        path_params.append(git_link.get_repo_name())
+        return path_join(*path_params)
 
 
 class GitLink:

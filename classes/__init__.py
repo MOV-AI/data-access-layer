@@ -1,9 +1,8 @@
-from .gitapi import GitManager, MASTER, SLAVE
+from .gitapi import SlaveGitManager, MasterGitManager
 from .filesystem import FileSystem
 
 __all__ = [
-    "GitManager",
-    "FileSystem",
-    "MASTER",
-    "SLAVE"
+    "SlaveGitManager",
+    "MasterGitManager",
+    "FileSystem"
     ]

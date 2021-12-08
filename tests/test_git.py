@@ -1,12 +1,12 @@
 import unittest   # The test framework
-from classes import GitManager, FileSystem, MASTER, SLAVE
+from classes import MasterGitManager, SlaveGitManager, FileSystem
 from json import loads as json_loads
 USER = "Mograbi"
 
 
 class TestGit(unittest.TestCase):
-    slave_manager = GitManager(USER, SLAVE)
-    master_manager = GitManager(USER, MASTER)
+    slave_manager = SlaveGitManager(USER)
+    master_manager = MasterGitManager(USER)
     # this is a Public repository that will be used for testing
     remote = "https://github.com/Mograbi/test-git"
 
