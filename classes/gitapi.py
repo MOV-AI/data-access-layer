@@ -1,5 +1,11 @@
 from git.refs.tag import TagReference
-from .filesystem import FileSystem
+from classes.exceptions import \
+                        NoChangesToCommit,\
+                        SlaveManagerCannotChange,\
+                        TagAlreadyExist, \
+                        VersionDoesNotExist, \
+                        BranchAlreadyExist
+from classes.filesystem import FileSystem
 from git import Repo, InvalidGitRepositoryError, GitError, GitCommandError
 from git.refs import HEAD
 from git.index import IndexFile
@@ -176,8 +182,12 @@ class GitRepo:
             raise Exception("detached HEAD and no branch specified")
         self._repo_object.git.add(filename)
         if new_branch is not None:
-            self._repo_object.create_head(new_branch)
-            self.checkout(new_branch)
+            try:
+                self.checkout(new_branch)
+                raise BranchAlreadyExist(f"branch {new_branch} already exist")
+            except VersionDoesNotExist:
+                self._repo_object.create_head(new_branch)
+                self.checkout(new_branch)
         self._repo_object.git.commit(m=message)
         return self.commit_sha
 
@@ -226,13 +236,42 @@ class GitRepo:
         commit = commits_log.split('\n')[0].split(' ')[0]
         return self._repo_object.git.rev_parse(commit)
 
+    def branch_exist(self, branch: str, fetch: bool = False) -> bool:
+        if fetch:
+            self.fetch()
+        for ref in self._repo_object.references:
+            if branch == ref.name:
+                return True
+        return False
+
+    def tag_exist(self, tag: str, fetch: bool = False) -> bool:
+        if fetch:
+            self.fetch()
+        for _tag in self._repo_object.tags:
+            if str(_tag) == tag:
+                return True
+        return False
+
     def checkout(self, version):
         """will checkout and change version
 
         Args:
             version ([type]): the desired version
+
+        Raises:
+            VersionDoesNotExist: in case the branch does exist in repo.
         """
-        self._repo_object.git.checkout(version)
+
+        try:
+            self._repo_object.git.checkout(version)
+        except GitCommandError as e:
+            if e.stderr.find("Your local changes to the following files \
+                              would be overwritten by checkout") != -1:
+                self._repo_object.git.stash()
+                self._repo_object.git.checkout(version)
+                self._repo_object.git.pop()
+            elif e.stderr.find("did not match any file") != -1:
+                raise VersionDoesNotExist(f"version {version} does not exist")
 
     def _clone_no_checkout(self) -> Repo:
         """clone given branch, commit, tag without really checking out files
@@ -330,9 +369,7 @@ class GitManager(ABC):
         if version is not None:
             try:
                 repo.checkout(version)
-            except GitCommandError:
-                # it could be that the current info does not include
-                # the wanted version, so try to fetch info first.
+            except VersionDoesNotExist:
                 repo.fetch()
                 repo.checkout(version)
         return repo
@@ -397,6 +434,13 @@ class GitManager(ABC):
             str: the newly committed commit hash id.
         """
         repo = self._get_or_add_version(remote, base_branch)
+        file_changed = False
+        for diff in repo.head.commit.diff(None).iter_change_type('M'):
+            if diff.a_path.find(filename) != -1:
+                file_changed = True
+                break
+        if not file_changed:
+            raise NoChangesToCommit()
         return repo.commit(filename, new_branch, message)
 
     def diff_file(self,
@@ -416,7 +460,7 @@ class GitManager(ABC):
 
     def create_tag(self,
                    remote: str,
-                   base_commit: str,
+                   base_version: str,
                    tag: str,
                    message: str = "") -> bool:
         """will create a tag based on the given commit.
@@ -431,12 +475,11 @@ class GitManager(ABC):
         Returns:
             bool: whether the creation of the tag succeeded or not.
         """
-        repo = self._get_or_add_version(remote, base_commit)
-        tag_reference = None
-        try:
-            tag_reference = repo.tag(base_commit, tag, message)
-        except Exception:
-            pass
+        repo = self._get_or_add_version(remote, base_version)
+        # in case the tag does not exist, try to fetch and check another time
+        if repo.tag_exist(tag) or repo.tag_exist(tag, fetch=True):
+            raise TagAlreadyExist(f"Tag {tag} already exist in Repository")
+        tag_reference = repo.tag(base_version, tag, message)
         return tag_reference is not None
 
     def _get_local_path(self, remote: str):
@@ -453,10 +496,10 @@ class SlaveGitManager(GitManager):
         super().__init__(username, mode=SLAVE)
 
     def commit_file(self, *args, **kwargs):
-        raise Exception("Slave Manager shall not commit changes")
+        raise SlaveManagerCannotChange()
 
     def create_tag(self, *args, **kwargs):
-        raise Exception("Slave Manager shall not commit changes")
+        raise SlaveManagerCannotChange()
 
     def _get_local_path(self, remote):
         git_link = GitLink(remote)

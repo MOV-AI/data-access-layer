@@ -1,6 +1,10 @@
-import unittest   # The test framework
+import unittest
+
+from git import exc   # The test framework
 from classes import MasterGitManager, SlaveGitManager, FileSystem
 from json import loads as json_loads
+
+from classes.exceptions import BranchAlreadyExist, GitException, SlaveManagerCannotChange, TagAlreadyExist, VersionDoesNotExist
 USER = "Mograbi"
 
 
@@ -16,6 +20,10 @@ class TestGit(unittest.TestCase):
         self.assertEqual(sorted(expect.items()), sorted(file_json.items()))
 
     def test_get(self):
+        self.assertRaises(VersionDoesNotExist,
+                          self._validate_file,
+                          self.slave_manager,
+                          "file1", "does-not-exist", json_loads("{}"))
         self._validate_file(self.slave_manager, "file1", "v0.1", json_loads("""
         {
             "filed1": 1,
@@ -63,7 +71,7 @@ class TestGit(unittest.TestCase):
                                                          "file1.json")
             self.assertTrue(False, "slave manager shouldn't be allowed\
                                     to commit to index")
-        except Exception:
+        except SlaveManagerCannotChange:
             # we should recieve an exception because slave manager are
             # not allowed to commit
             self.assertIsNone(commit_hash)
@@ -73,8 +81,18 @@ class TestGit(unittest.TestCase):
                                                       filename="file1.json",
                                                       new_branch="branch-b",
                                                       message="'added field4'")
-        FileSystem.write(path, new_content)
+        try:
+            self.master_manager.commit_file(self.remote,
+                                            filename="file1",
+                                            new_branch="branch-b")
+            self.assertFalse(True, "should through exception \
+                                    BranchAlreadyExist")
+        except GitException:
+            # we have 2 possible errors here, no changes to commit and
+            # branch already exist.
+            pass
 
+        FileSystem.write(path, new_content)
         path = self.master_manager.get_file("file1", self.remote, "master")
         FileSystem.write(path, new_content)
         commit_hash_2 = self.master_manager.commit_file(
@@ -92,7 +110,18 @@ class TestGit(unittest.TestCase):
                             "file1", commit_hash_2, new_content)
 
     def test_tag(self):
-        pass
+        self.assertTrue(
+            self.master_manager.create_tag(
+                                self.remote, base_version="s0.1",
+                                tag="d0.1", message="creating d0.1 tag"))
+        self.assertRaises(TagAlreadyExist,
+                          self.master_manager.create_tag,
+                          self.remote, "s0.1",
+                          "d0.1", "creating d0.1 tag")
+        self.assertTrue(
+            self.master_manager.create_tag(
+                                self.remote, base_version="master",
+                                tag="v0.2", message="creating v0.2 tag"))
 
 
 if __name__ == '__main__':
