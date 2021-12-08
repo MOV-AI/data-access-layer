@@ -263,7 +263,7 @@ class GitRepo:
 
 class GitManager:
     _username = None
-    _versions = {}
+    _repos = {}
     DEFAULT_REPO_ID = "default"
 
     def __init__(self, username: str, mode: str = SLAVE):
@@ -274,6 +274,8 @@ class GitManager:
         """
         self._username = username
         self._mode = mode
+        if mode not in GitManager._repos:
+            GitManager._repos[mode] = {}
 
     @staticmethod
     def get_version(branch: str, commit: str) -> str:
@@ -310,6 +312,21 @@ class GitManager:
             return True
         return False
 
+    def _get_repo(self, repo_name: str) -> GitRepo:
+        """return the GitRepo object for the given repo_name
+           taking into consideration the gitmanager type slave/master
+
+        Args:
+            repo_name (str): the repository name desired
+
+        Returns:
+            GitRepo: the matching GitRepo object foo the desired repo name.
+        """
+        repo = None
+        if repo_name in GitManager._repos[self._mode]:
+            repo = GitManager._repos[self._mode][repo_name]
+        return repo
+
     def _get_or_add_version(self,
                             remote: str,
                             version: str = None) -> GitRepo:
@@ -318,26 +335,26 @@ class GitManager:
 
         Args:
             remote (str): remote link for the repository.
-            branch (str, optional): desired branch name. Defaults to None.
-            commit (str, optional): desired commit hash id. Defaults to None.
+            version (str, optional): desired version. Defaults to None.
 
         Returns:
             GitRepo: GitRepo Object representing the requested version.
         """
         git_link = GitLink(remote)
         repo_name = git_link.get_repo_name()
-        repo = None
-        if repo_name not in GitManager._versions:
+        repo = self._get_repo(repo_name)
+        if repo is None:
             repo = GitRepo(remote, self._username, self._mode, version)
-            GitManager._versions[repo_name] = repo
-        try:
-            GitManager._versions[repo_name].checkout(version)
-        except GitCommandError:
-            # it could be that the current info does not include
-            # the wanted version, so try to fetch info first.
-            GitManager._versions[repo_name].fetch()
-            GitManager._versions[repo_name].checkout(version)
-        return GitManager._versions[repo_name]
+            GitManager._repos[self._mode][repo_name] = repo
+        if version is not None:
+            try:
+                repo.checkout(version)
+            except GitCommandError:
+                # it could be that the current info does not include
+                # the wanted version, so try to fetch info first.
+                repo.fetch()
+                repo.checkout(version)
+        return repo
 
     def get_full_commit_sha(self, remote: str, revision: str) -> str:
         """returns a full commit sha
@@ -349,8 +366,7 @@ class GitManager:
         Returns:
             str: returns full commit sha, 40 digits.
         """
-        # get the empty default repo to extract info
-        repo = self._get_or_add_version(remote, empty_repo=True)
+        repo = self._get_or_add_version(remote, revision)
         if revision is None:
             return repo.get_latest_commit()
         return repo.git_client.rev_parse(revision)
@@ -379,9 +395,9 @@ class GitManager:
 
     def commit_file(self,
                     remote: str,
-                    current_version: str,
                     filename: str,
                     new_branch: str = None,
+                    base_branch: str = None,
                     message: str = "") -> str:
         """will commit the specified file locally.
 
@@ -392,11 +408,14 @@ class GitManager:
                                         a new branch with the name
                                         "new_branch".
                                         Defaults to None.
+            base_branch (str, optional): on what branch we want to be based in
+                                         the new commit.
+            message (str, optional): the commit message. Defaults to "".
 
         Returns:
             str: the newly committed commit hash id.
         """
-        repo = self._get_or_add_version(remote, current_version)
+        repo = self._get_or_add_version(remote, base_branch)
         return repo.commit(filename, new_branch, message)
 
     def diff_file(self,

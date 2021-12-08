@@ -3,6 +3,7 @@ from os.path import isdir, isfile, expanduser, islink
 from pathlib import Path
 from shutil import rmtree
 from types import SimpleNamespace
+from json import dump as json_dump
 
 
 class FileSystem:
@@ -38,6 +39,14 @@ class FileSystem:
             raise Exception(f"file does not exist {path}")
         with open(path) as f:
             return f.read()
+
+    @staticmethod
+    def write(path, content, is_json=True):
+        with open(path, "w+") as f:
+            if is_json:
+                json_dump(content, f, indent=4)
+            else:
+                f.write(content)
 
     @staticmethod
     def create_folder_recursively(folder_path) -> str:
