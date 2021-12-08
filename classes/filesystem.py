@@ -24,8 +24,9 @@ class FileSystem:
 
     @staticmethod
     def remove_recursively(path: str):
-        mydir = Path(path)
-        rmtree(mydir)
+        if isdir(path):
+            mydir = Path(path)
+            rmtree(mydir)
 
     @staticmethod
     def exist(path):

@@ -1,10 +1,9 @@
 import unittest
-
-from git import exc   # The test framework
 from classes import MasterGitManager, SlaveGitManager, FileSystem
 from json import loads as json_loads
 
-from classes.exceptions import BranchAlreadyExist, GitException, SlaveManagerCannotChange, TagAlreadyExist, VersionDoesNotExist
+from classes.exceptions import NoChangesToCommit, SlaveManagerCannotChange,\
+                               TagAlreadyExist, VersionDoesNotExist
 USER = "Mograbi"
 
 
@@ -13,6 +12,14 @@ class TestGit(unittest.TestCase):
     master_manager = MasterGitManager(USER)
     # this is a Public repository that will be used for testing
     remote = "https://github.com/Mograbi/test-git"
+
+    def __init__(self, methodName: str = ...) -> None:
+        # remove previously existing testing environment
+        FileSystem.remove_recursively(
+            self.slave_manager._get_local_path(self.remote))
+        FileSystem.remove_recursively(
+            self.master_manager._get_local_path(self.remote))
+        super().__init__(methodName=methodName)
 
     def _validate_file(self, manager, filename, version, expect: dict):
         path = manager.get_file(filename, self.remote, version)
@@ -66,31 +73,28 @@ class TestGit(unittest.TestCase):
             }""")
         FileSystem.write(path, new_content)
         commit_hash = None
-        try:
-            commit_hash = self.slave_manager.commit_file(self.remote,
-                                                         "file1.json")
-            self.assertTrue(False, "slave manager shouldn't be allowed\
-                                    to commit to index")
-        except SlaveManagerCannotChange:
-            # we should recieve an exception because slave manager are
-            # not allowed to commit
-            self.assertIsNone(commit_hash)
+        self.assertRaises(SlaveManagerCannotChange,
+                          self.slave_manager.commit_file,
+                          self.remote,
+                          "file1.json")
         path = self.master_manager.get_file("file1", self.remote, "v0.1")
         FileSystem.write(path, new_content)
+        self.assertRaises(VersionDoesNotExist,
+                          self.master_manager.commit_file,
+                          self.remote,
+                          filename="file1",
+                          new_branch="branch-b",
+                          base_branch="does-not-exist")
         commit_hash = self.master_manager.commit_file(self.remote,
                                                       filename="file1.json",
                                                       new_branch="branch-b",
                                                       message="'added field4'")
-        try:
-            self.master_manager.commit_file(self.remote,
-                                            filename="file1",
-                                            new_branch="branch-b")
-            self.assertFalse(True, "should through exception \
-                                    BranchAlreadyExist")
-        except GitException:
-            # we have 2 possible errors here, no changes to commit and
-            # branch already exist.
-            pass
+        self.assertIsNotNone(commit_hash)
+        self.assertRaises(NoChangesToCommit,
+                          self.master_manager.commit_file,
+                          self.remote,
+                          filename="file1",
+                          new_branch="branch-b")
 
         FileSystem.write(path, new_content)
         path = self.master_manager.get_file("file1", self.remote, "master")
