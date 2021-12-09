@@ -2,47 +2,71 @@ from os import symlink, unlink
 from os.path import isdir, isfile, expanduser, islink, dirname
 from pathlib import Path
 from shutil import rmtree
-from types import SimpleNamespace
 from json import dump as json_dump
 
 
 class FileSystem:
-    """.
+    """FileSystem class that will handle all functions related to
+       creating/deleting/modifying files on the system locally.
     """
     def __init__(self):
         pass
 
-    @classmethod
-    def load(cls, file_path: str) -> SimpleNamespace:
-        pass
-
-    def save(self, file_path: str, file_type: str = "json") -> bool:
-        pass
-
-    def remove(self, path: str) -> bool:
-        pass
-
     @staticmethod
     def remove_recursively(path: str):
+        """remove given path recursively in case it included
+           another folders inside it
+
+        Args:
+            path (str): the path to folder/file
+        """
         if isdir(path):
             mydir = Path(path)
             rmtree(mydir)
 
     @staticmethod
-    def exist(path):
+    def is_exist(path: str) -> bool:
+        """check if the giver path file/folder do exist in filesystem
+
+        Args:
+            path (str): the path to check
+
+        Returns:
+            bool: whether the path exist locally or not.
+        """
         if isdir(path) or isfile(path):
             return True
         return False
 
     @staticmethod
-    def read(path):
-        if not FileSystem.exist(path):
+    def read(path: str) -> str:
+        """read the given file and returns it's content
+
+        Args:
+            path (str): the file path to read from
+
+        Raises:
+            Exception: in case file does not exist
+
+        Returns:
+            str: file content
+        """
+        if not FileSystem.is_exist(path):
             raise Exception(f"file does not exist {path}")
         with open(path) as f:
             return f.read()
 
     @staticmethod
     def write(path, content, is_json=True):
+        """write given content to the given path
+           in case path foes not exist it will be created.
+
+        Args:
+            path (str): the path to write to
+            content (str/json): the content to be written
+            is_json (bool, optional): specifying if it a json file or not.
+                                      Defaults to True.
+        """
         folder_path = dirname(path)
         FileSystem.create_folder_recursively(folder_path)
         with open(path, "w+") as f:

@@ -11,7 +11,7 @@ from git.refs import HEAD
 from git.index import IndexFile
 from re import search
 from os.path import join as path_join
-from abc import ABC
+from abc import ABC, abstractmethod
 
 # -----------------------------------------------------------------------------
 # TODO
@@ -31,8 +31,6 @@ def get_tokenized_repo(remote, username):
 # -----------------------------------------------------------------------------
 
 
-SLAVE = "slave"
-MASTER = "master"
 MOVAI_FOLDER_NAME = ".movai"
 default_local_base = path_join(FileSystem.get_home_folder(), MOVAI_FOLDER_NAME)
 
@@ -154,6 +152,8 @@ class GitRepo:
         return self._repo_object.index
 
     def fetch(self):
+        """run fetch on the local repository
+        """
         self._repo_object.git.fetch()
 
     def commit(self,
@@ -318,9 +318,12 @@ class GitRepo:
     def diff_file(self, filename: str) -> str:
         return self._repo_object.git.diff(filename)
 
+
 class GitManager(ABC):
     _username = None
     _repos = {}
+    SLAVE = "slave"
+    MASTER = "master"
     DEFAULT_REPO_ID = "default"
 
     def __init__(self, username: str, mode: str = SLAVE):
@@ -529,6 +532,7 @@ class GitManager(ABC):
         new_file_path = path_join(repo.local_path, relative_path)
         FileSystem.write(new_file_path, content, is_json)
 
+    @abstractmethod
     def _get_local_path(self, remote: str):
         """return the local path of a given remote repository
 
@@ -539,8 +543,12 @@ class GitManager(ABC):
 
 
 class SlaveGitManager(GitManager):
+    """a class to manage Slave Git Manager
+       basically this class will be used mainly to fetch and get information
+       without having the ability to change or create new content
+    """
     def __init__(self, username: str):
-        super().__init__(username, mode=SLAVE)
+        super().__init__(username, mode=GitManager.SLAVE)
 
     def commit_file(self, *args, **kwargs):
         raise SlaveManagerCannotChange()
@@ -559,8 +567,12 @@ class SlaveGitManager(GitManager):
 
 
 class MasterGitManager(GitManager):
+    """a class to manage Master Git Manager
+       different from Slave Git Manager, this class will be able to make
+       changes, pull/push/commit/tag ...
+    """
     def __init__(self, username: str):
-        super().__init__(username, mode=MASTER)
+        super().__init__(username, mode=GitManager.MASTER)
 
     def _get_local_path(self, remote):
         git_link = GitLink(remote)

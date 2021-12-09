@@ -8,6 +8,8 @@ USER = "Mograbi"
 
 
 class TestGit(unittest.TestCase):
+    """Main UnitTest for testing various git functionality
+    """
     slave_manager = SlaveGitManager(USER)
     master_manager = MasterGitManager(USER)
     # this is a Public repository that will be used for testing
@@ -57,9 +59,6 @@ class TestGit(unittest.TestCase):
             "field2": 2,
             "field3": [1, 2]
             }"""))
-
-    def test_versions(self):
-        pass
 
     def test_commit(self):
         # this would checkout file1 from v0.1
