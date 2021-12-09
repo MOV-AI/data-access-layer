@@ -1,5 +1,5 @@
 from os import symlink, unlink
-from os.path import isdir, isfile, expanduser, islink
+from os.path import isdir, isfile, expanduser, islink, dirname
 from pathlib import Path
 from shutil import rmtree
 from types import SimpleNamespace
@@ -43,6 +43,8 @@ class FileSystem:
 
     @staticmethod
     def write(path, content, is_json=True):
+        folder_path = dirname(path)
+        FileSystem.create_folder_recursively(folder_path)
         with open(path, "w+") as f:
             if is_json:
                 json_dump(content, f, indent=4)

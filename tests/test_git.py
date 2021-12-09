@@ -113,6 +113,36 @@ class TestGit(unittest.TestCase):
         self._validate_file(self.master_manager,
                             "file1", commit_hash_2, new_content)
 
+        self.assertRaises(SlaveManagerCannotChange,
+                          self.slave_manager.create_file,
+                          self.remote,
+                          "Node/node1.json",
+                          new_content,
+                          base_version=None)
+        self.master_manager.create_file(self.remote,
+                                        "Node/node1.json",
+                                        new_content,
+                                        base_version=None)
+        commit_hash_3 = self.master_manager.commit_file(
+                                                    self.remote,
+                                                    "Node/node1.json",
+                                                    new_branch=None,
+                                                    base_branch="master",
+                                                    message="added node1")
+        self.assertIsNotNone(commit_hash_3)
+
+        self.master_manager.create_file(self.remote,
+                                        "Node/node2.json",
+                                        new_content,
+                                        base_version=None)
+        commit_hash_4 = self.master_manager.commit_file(
+                                                    self.remote,
+                                                    "Node/node2.json",
+                                                    new_branch=None,
+                                                    base_branch="branch-b",
+                                                    message="added node2")
+        self.assertIsNotNone(commit_hash_4)
+
     def test_tag(self):
         self.assertTrue(
             self.master_manager.create_tag(

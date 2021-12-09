@@ -85,7 +85,7 @@ class GitRepo:
         Returns:
             str: local path of the repo.
         """
-        return path_join(self._local_path, self._branch, self._commit)
+        return self._local_path
 
     @property
     def default_branch(self) -> str:
@@ -162,6 +162,7 @@ class GitRepo:
                message: str = None) -> str:
         """will commit file changes to current branch in case it's not
            detached HEAD, or create new branch if specified
+           in case it's new file it will be added.
 
         Args:
             filename (str, optional): desired filename. Defaults to None.
@@ -294,6 +295,28 @@ class GitRepo:
 
         return repo
 
+    def get_modified_files(self) -> list:
+        """return a list containing modified file names.
+
+        Returns:
+            list: list of file names
+        """
+        file_names = []
+        for diff in self._repo_object.head.commit.diff(None).iter_change_type('M'):
+            file_names.append(diff.a_path)
+        return file_names
+
+    def get_untracked_files(self) -> list:
+        """return a list containing newly added file names.
+
+        Returns:
+            list: list of file names
+        """
+        # Gitpython 0.2 or above needed for the untracked_files to work
+        return self._repo_object.untracked_files
+
+    def diff_file(self, filename: str) -> str:
+        return self._repo_object.git.diff(filename)
 
 class GitManager(ABC):
     _username = None
@@ -434,29 +457,29 @@ class GitManager(ABC):
             str: the newly committed commit hash id.
         """
         repo = self._get_or_add_version(remote, base_branch)
-        file_changed = False
-        for diff in repo.head.commit.diff(None).iter_change_type('M'):
-            if diff.a_path.find(filename) != -1:
-                file_changed = True
-                break
-        if not file_changed:
+        if filename.find('.json') == -1:
+            filename += '.json'
+        if filename not in repo.get_modified_files() \
+           and filename not in repo.get_untracked_files():
             raise NoChangesToCommit()
         return repo.commit(filename, new_branch, message)
 
     def diff_file(self,
                   remote: str,
-                  filename: str,
-                  branch: str = None,
-                  revision: str = None) -> str:
-        # TODO
-        # get the empty default repo to extract info
-        default_repo = self._get_or_add_version(remote, empty_repo=True)
-        branch = branch or default_repo.default_branch
-        commit = revision or self.get_full_commit_sha(remote, revision)
-        repo = self._get_or_add_version(remote, branch, commit)
-        for diff in repo.head.commit.diff(None).iter_change_type('M'):
-            if diff.a_path.find(filename) != -1:
-                print("found")
+                  filename: str) -> str:
+        """return git diff string
+
+        Args:
+            remote (str): the remote repository
+            filename (str): filename
+
+        Returns:
+            str: the diff string
+        """
+        repo = self._get_or_add_version(remote)
+        if filename not in repo.get_modified_files():
+            return ""
+        return repo.diff_file(filename)
 
     def create_tag(self,
                    remote: str,
@@ -482,6 +505,30 @@ class GitManager(ABC):
         tag_reference = repo.tag(base_version, tag, message)
         return tag_reference is not None
 
+    def create_file(self,
+                    remote: str,
+                    relative_path: str,
+                    content: str,
+                    base_version: str = None,
+                    is_json: bool = True) -> None:
+        """will create new file in repository locally using the relative path
+           of the local repository path.
+           this function neede because external user is not fully aware of the
+           repo local path.
+
+        Args:
+            remote (str): the remote repository
+            relative_path (str): the relative path to the root of the repo
+            content (str): the file content to be added
+            base_version (str, optional): based on what version to add the file
+                                          Defaults to None.
+            is_json (bool, optional): indicates whether the new file is json or
+                                      not.
+        """
+        repo = self._get_or_add_version(remote, base_version)
+        new_file_path = path_join(repo.local_path, relative_path)
+        FileSystem.write(new_file_path, content, is_json)
+
     def _get_local_path(self, remote: str):
         """return the local path of a given remote repository
 
@@ -499,6 +546,9 @@ class SlaveGitManager(GitManager):
         raise SlaveManagerCannotChange()
 
     def create_tag(self, *args, **kwargs):
+        raise SlaveManagerCannotChange()
+
+    def create_file(self, *args, **kwargs) -> None:
         raise SlaveManagerCannotChange()
 
     def _get_local_path(self, remote):
