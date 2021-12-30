@@ -1,0 +1,219 @@
+{
+    "$id": "FlowSchema-0.1",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Flow Schema",
+    "definitions": {
+        "portfields": {
+            "Description": "define the port fields of in/out ports of the Node",
+            "type": "object",
+            "properties": {
+                "Message": {
+                    "type": "string"
+                },
+                "Callback": {
+                    "type": "string"
+                },
+                "Parameter": {
+                    "type": "object",
+                    "properties": {
+                        "Child": {
+                            "type": "string" 
+                        },
+                        "Parent": {
+                            "type": "string"
+                        }
+                    }
+                }
+            } 
+        },
+        "path": {
+            "type": "string",
+            "pattern": "^~?[a-zA-Z_0-9]+(/[a-zA-Z_0-9]+){0,}$"
+        },
+        "validName": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_]+$"
+        },
+        "visual": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "Visualization": {
+                            "type": "array",
+                            "items": {
+                                "type": "number"
+                            },
+                            "minItems": 2,
+                            "maxItems": 2
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "Visualization": {
+                            "type": "object",
+                            "properties": {
+                                "x": {
+                                    "type": "object",
+                                    "properties": {
+                                        "Value": {
+                                            "type": "number"
+                                        }
+                                    },
+                                    "required": ["Value"]
+                                },
+                                "y": {
+                                    "type": "object",
+                                    "properties": {
+                                        "Value": {
+                                            "type": "number"
+                                        }
+                                    },
+                                    "required": ["Value"]
+                                }
+                            },
+                            "required": ["x", "y"],
+                            "additionalProperties": false
+                        }
+                    }
+                }
+            ]
+        }
+    },
+
+    "type": "object",
+    "properties": {
+        "Flow": {
+            "type": "object",
+            "patternProperties": {
+                "^[a-zA-Z0-9_]+$": {
+                    "Description": "allOf here will validate instance inside Flow to every object in the array",
+                    "allOf": [
+                        {
+                            "$ref": "common/base.schema.json"
+                        },
+                        {
+                            "type": "object",
+                            "Description": "all of the other fields (optional fields)",
+                            "properties": {
+                                "Parameter": {
+                                    "$ref": "common/arg.schema.json"
+                                },
+                                "Container": {
+                                    "type": "object",
+                                    "patternProperties": {
+                                        "^[a-zA-Z_0-9]+$": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/visual"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "ContainerFlow": {
+                                                            "type": "string"
+                                                        },
+                                                        "ContainerLabel": {
+                                                            "type": "string"
+                                                        },
+                                                        "Parameter": {
+                                                            "$ref": "common/arg.schema.json"
+                                                        }
+                                                    }
+                                                }
+                                                
+                                            ]
+                                            
+                                        }
+                                    },
+                                    "minProperties": 1
+                                },
+                                "ExposedPorts": {
+                                    "patternProperties": {
+                                        "^(__)?[a-zA-Z0-9_]+$": {
+                                            "type": "object",
+                                            "patternProperties": {
+                                                "^[a-zA-Z_0-9]+$": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/definitions/path"
+                                                    },
+                                                    "minItems": 1
+                                                }
+                                            },
+                                            "minProperties": 1
+                                        }
+                                    }
+                                },
+                                "Layers": {
+                                    "type": "object",
+                                    "patternProperties": {
+                                        "^[0-9]+$": {
+                                            "type": "object",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "on": {
+                                                    "type": "boolean"
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "Links": {
+                                    "type": "object",
+                                    "patternProperties": {
+                                        "^[0-9a-z-]+$": {
+                                            "type": "object",
+                                            "properties": {
+                                                "From": {
+                                                    "$ref": "#/definitions/path"
+                                                },
+                                                "To": {
+                                                    "$ref": "#/definitions/path"
+                                                }
+                                            },
+                                            "required": ["From", "To"]
+                                        }
+                                    }
+                                },
+                                "NodeInst": {
+                                    "patternProperties": {
+                                        "^[a-zA-Z_]+$": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/visual"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "NodeLabel": {
+                                                            "$ref": "#/definitions/validName"
+                                                        },
+                                                        "Parameter": {
+                                                            "$ref": "common/arg.schema.json"
+                                                        },
+                                                        "Template": {
+                                                            "$ref": "#/definitions/validName"
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                            
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "required": ["Flow"],
+    "additionalProperties": false
+}

@@ -1,0 +1,61 @@
+{
+    "$id": "AnnotationSchema-0.1",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Annotation Schema",
+    "definitions": {
+    },
+
+    "type": "object",
+    "properties": {
+        "Annotation": {
+            "type": "object",
+            "patternProperties": {
+                "^[a-zA-Z0-9_]+$": {
+                    "Description": "allOf here will validate instance inside Document to every object in the array",
+                    "allOf": [
+                        {
+                            "$ref": "common/base.schema.json"
+                        },
+                        {
+                            "type": "object",
+                            "Description": "all of the other fields (optional fields)",
+                            "properties": {
+                                "Type": {
+                                    "type": "string"
+                                },
+                                "Policy": {
+                                    "type": "string"
+                                },
+                                "Parameter": {
+                                    "patternProperties": {
+                                        "^[0-9a-zA-Z_]+$": {
+                                            "type": ["string", "boolean"]
+                                        }
+                                    }
+                                },
+                                "Field": {
+                                    "patternProperties": {
+                                        "^[0-9a-zA-Z_]+$": {
+                                            "type": "object",
+                                            "properties": {
+                                                "Type": {
+                                                    "type": "string"
+                                                },
+                                                "Value": {
+                                                    "type": ["string", "boolean"]
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "required": ["Annotation"],
+    "additionalProperties": false
+}
