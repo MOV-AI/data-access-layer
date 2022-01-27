@@ -1,9 +1,8 @@
 import json
 import unittest
 from json import loads as json_loads
-from api.dal_api import SlaveDAL, MasterDAL
-from classes.filesystem import FileSystem
-from classes.exceptions import SchemaTypeNotKnown, ValidationError
+from dal import SlaveDAL, MasterDAL, FileSystem
+from dal.classes.exceptions import SchemaTypeNotKnown, ValidationError
 
 USER = "Mograbi"
 remote = "https://github.com/Mograbi/test-git"

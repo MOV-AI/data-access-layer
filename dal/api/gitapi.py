@@ -1,10 +1,10 @@
 from git.refs.tag import TagReference
-from classes.exceptions import (NoChangesToCommit,
+from dal.classes.exceptions import (NoChangesToCommit,
                                 SlaveManagerCannotChange,
                                 TagAlreadyExist,
                                 VersionDoesNotExist,
                                 BranchAlreadyExist)
-from classes.filesystem import FileSystem
+from dal import FileSystem
 from git import (Repo,
                  InvalidGitRepositoryError,
                  GitError,
@@ -19,7 +19,7 @@ from abc import ABC, abstractmethod
 # -----------------------------------------------------------------------------
 # TODO
 # need to be replaced, just for testing
-from classes.authentication import AuthService
+from dal.classes.authentication import AuthService
 
 
 # TODO

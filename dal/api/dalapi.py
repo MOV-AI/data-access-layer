@@ -1,7 +1,7 @@
 from .gitapi import SlaveGitManager, MasterGitManager
-from classes.exceptions import SchemaTypeNotKnown, ValidationError
+from dal.classes.exceptions import SchemaTypeNotKnown, ValidationError
 from abc import ABC, abstractmethod
-import validation
+import dal.validation as validation
 from json import load as load_json
 from os.path import realpath, dirname
 

@@ -1,10 +1,16 @@
 import unittest
-from api.gitapi import MasterGitManager, SlaveGitManager
-from classes.filesystem import FileSystem
+from dal import (
+    MasterGitManager,
+    SlaveGitManager,
+    FileSystem
+)
 from json import loads as json_loads
-
-from classes.exceptions import NoChangesToCommit, SlaveManagerCannotChange,\
-                               TagAlreadyExist, VersionDoesNotExist
+from dal.classes.exceptions import (
+    NoChangesToCommit,
+    SlaveManagerCannotChange,
+    TagAlreadyExist,
+    VersionDoesNotExist
+)
 USER = "Mograbi"
 
 
