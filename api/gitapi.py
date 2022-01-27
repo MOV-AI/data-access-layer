@@ -1,14 +1,17 @@
 from git.refs.tag import TagReference
-from classes.exceptions import \
-                        NoChangesToCommit,\
-                        SlaveManagerCannotChange,\
-                        TagAlreadyExist, \
-                        VersionDoesNotExist, \
-                        BranchAlreadyExist
+from classes.exceptions import (NoChangesToCommit,
+                                SlaveManagerCannotChange,
+                                TagAlreadyExist,
+                                VersionDoesNotExist,
+                                BranchAlreadyExist)
 from classes.filesystem import FileSystem
-from git import Repo, InvalidGitRepositoryError, GitError, GitCommandError
+from git import (Repo,
+                 InvalidGitRepositoryError,
+                 GitError,
+                 GitCommandError)
 from git.refs import HEAD
 from git.index import IndexFile
+from git.remote import PushInfo
 from re import search
 from os.path import join as path_join
 from abc import ABC, abstractmethod
@@ -16,7 +19,7 @@ from abc import ABC, abstractmethod
 # -----------------------------------------------------------------------------
 # TODO
 # need to be replaced, just for testing
-from .authentication import AuthService
+from classes.authentication import AuthService
 
 
 # TODO
@@ -50,7 +53,7 @@ class GitRepo:
             version (str, optional): branch/tag/commit id.
         """
         self._git_link = GitLink(remote)
-        self._remote = self._git_link.get_https_link()
+        self._remote_link = self._git_link.get_https_link()
         self._username = username
         self._version = version
         self._repo_object = None
@@ -287,7 +290,8 @@ class GitRepo:
             repo = Repo(self._local_path)
         except InvalidGitRepositoryError:
             # Repository does not exist, creating one.
-            tokenized_repo = get_tokenized_repo(self._remote, self._username)
+            tokenized_repo = get_tokenized_repo(self._remote_link,
+                                                self._username)
             repo = Repo.clone_from(tokenized_repo, self._local_path,
                                    no_checkout=True)
         except GitError as e:
@@ -317,6 +321,18 @@ class GitRepo:
 
     def diff_file(self, filename: str) -> str:
         return self._repo_object.git.diff(filename)
+
+    def push(self, remote_name: str, tag_name: str,
+             only_tag: bool) -> PushInfo:
+        remote = self._repo_object.remote(remote_name)
+        if only_tag:
+            return remote.push(tag_name)
+        remote.push(tag_name)
+        return remote.push()
+
+    def pull(self, remote_name: str):
+        remote = self._repo_object.remote(remote_name)
+        return remote.pull()
 
 
 class GitManager(ABC):
@@ -450,7 +466,7 @@ class GitManager(ABC):
             filename (str): the filename of the desired file.
             new_branch (str, optional): if given will create the new commit in
                                         a new branch with the name
-                                        "new_branch".
+                                        new_branch.
                                         Defaults to None.
             base_branch (str, optional): on what branch we want to be based in
                                          the new commit.
@@ -531,6 +547,34 @@ class GitManager(ABC):
         repo = self._get_or_add_version(remote, base_version)
         new_file_path = path_join(repo.local_path, relative_path)
         FileSystem.write(new_file_path, content, is_json)
+
+    def pull(self, remote: str, remote_name: str):
+        """will pull changes to local repository from remote_name repo
+
+        Args:
+            remote (str): the remote link of the repository.
+            remote_name (str): the remote name defined in local repo.
+
+        Returns:
+            FetchInfo: see fetch method in GitPython
+        """
+        repo = self._get_or_add_version(remote)
+        return repo.pull(remote_name)
+
+    def push(self, remote: str, remote_name: str, tag_name: str = None,
+             only_tag: bool = False) -> PushInfo:
+        """will push repository defined by remote to remote_name repository
+
+        Args:
+            remote (str): the remote link of the reposiotry
+            remote_name (str): remote name defined in local repository
+
+        Returns:
+            PushInfo: Carries information about the result of a push operation
+                      of a single head
+        """
+        repo = self._get_or_add_version(remote)
+        return repo.push(remote_name, tag_name, only_tag)
 
     @abstractmethod
     def _get_local_path(self, remote: str):

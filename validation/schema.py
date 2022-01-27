@@ -1,16 +1,17 @@
 from jsonschema import RefResolver
 from jsonschema import validate as json_validate
 from jsonschema.exceptions import ValidationError
-from json import load as load_json
+from json import loads as load_json
 from os.path import abspath, dirname
-from classes.exceptions import SchemaVersionError
 from classes.filesystem import FileSystem
+from classes.exceptions.exceptions import SchemaVersionError
 
 
 class Schema:
     def __init__(self, schema_path: str):
         self._path = schema_path
-        self._schema = load_json(FileSystem.read(schema_path))
+        content = FileSystem.read(schema_path)
+        self._schema = load_json(content)
         self._version = Schema._get_schema_version(self._schema)
         full_path = abspath(schema_path)
         self._resolver = RefResolver(

@@ -51,10 +51,12 @@ class FileSystem:
         Returns:
             str: file content
         """
+        content = ""
         if not FileSystem.is_exist(path):
             raise Exception(f"file does not exist {path}")
         with open(path) as f:
-            return f.read()
+            content = f.read()
+        return content
 
     @staticmethod
     def write(path, content, is_json=True):

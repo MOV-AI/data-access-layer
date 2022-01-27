@@ -1,5 +1,6 @@
 import unittest
-from classes import MasterGitManager, SlaveGitManager, FileSystem
+from api.gitapi import MasterGitManager, SlaveGitManager
+from classes.filesystem import FileSystem
 from json import loads as json_loads
 
 from classes.exceptions import NoChangesToCommit, SlaveManagerCannotChange,\

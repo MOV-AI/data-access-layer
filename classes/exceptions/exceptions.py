@@ -7,8 +7,14 @@ TAG_ALREADY_EXIST_ERR = BASE_GIT_ERR + 5
 
 BASE_SCHEMA_ERR = 200
 SCHEMA_VERSION_ERR = BASE_SCHEMA_ERR + 1
+SCHEMA_TYPE_NOT_KNOWN = BASE_SCHEMA_ERR + 2
+
+BASE_VALIDATION_ERR = 300
+VALIDATION_ERR = BASE_VALIDATION_ERR + 1
 
 
+# Git Errors
+# ----------------------------------------------------------------------------
 class GitException(Exception):
     def __init__(self, error, *args: object) -> None:
         self._error = error
@@ -44,6 +50,8 @@ class TagAlreadyExist(GitException):
         super().__init__(TAG_ALREADY_EXIST_ERR, *args)
 
 
+# Schema Errors
+# ----------------------------------------------------------------------------
 class SchemaException(Exception):
     def __init__(self, error, *args: object) -> None:
         self._error = error
@@ -55,5 +63,27 @@ class SchemaException(Exception):
 
 
 class SchemaVersionError(SchemaException):
+    def __init__(self, *args: object) -> None:
+        super().__init__(SCHEMA_VERSION_ERR, *args)
+
+
+class SchemaTypeNotKnown(SchemaException):
+    def __init__(self, *args: object) -> None:
+        super().__init__(SCHEMA_TYPE_NOT_KNOWN, *args)
+
+
+# Validation Errors
+# ----------------------------------------------------------------------------
+class ValidationException(Exception):
+    def __init__(self, error, *args: object) -> None:
+        self._error = error
+        super().__init__(*args)
+
+    @property
+    def value(self):
+        return self._error
+
+
+class ValidationError(ValidationException):
     def __init__(self, *args: object) -> None:
         super().__init__(SCHEMA_VERSION_ERR, *args)
