@@ -37,6 +37,10 @@ class Schema:
                                      must be schema-x.x.x')
         return float(id.split('-')[1])
 
+    @property
+    def version(self):
+        return self._version
+
     def validate(self, inst: dict) -> dict:
         """validate the schema class against given dictionary
 

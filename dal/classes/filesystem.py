@@ -104,7 +104,7 @@ class FileSystem:
 
     @staticmethod
     def create_symbolic_link(src, dst):
-        """creates symbolic link dst->str
+        """creates symbolic link dst->src
            src folder had to exist, the dst is created as symlink
 
         Args:

@@ -1,7 +1,7 @@
-from .gitapi import SlaveGitManager, MasterGitManager
+from .gitapi import GitManager, SlaveGitManager, MasterGitManager
 from dal.classes.exceptions import SchemaTypeNotKnown, ValidationError
 from abc import ABC, abstractmethod
-import dal.validation as validation
+from dal import validation
 from json import load as load_json
 from os.path import realpath, dirname
 
@@ -21,22 +21,11 @@ class DAL(ABC):
             schema_folder (str): the local path of schemas to be used
                                  to validate the configuration files
         """
-        self.manager = None
+        self.manager: GitManager = None
         self.schema_types = None
         self.user = user
         self.schema_folder = schema_folder
-        self._init_schemas()
-
-    def _init_schemas(self):
-        """will initialize schemas objects in the schema folder
-           for all of our configuration files
-        """
-        self.schema_types = ["node", "callback", "annotation", "layout",
-                             "flow", "graphicscene"]
-        for type in self.schema_types:
-            schema_file = f'{self.schema_folder}/{type}.schema.json'
-            schema_obj = validation.Schema(schema_file)
-            setattr(self, f'{type}_schema', schema_obj)
+        self.validator = validation.Validator()
 
     def validate(self, file_path: str) -> dict:
         """validate a local file path against it's matching schema
@@ -51,22 +40,9 @@ class DAL(ABC):
                         - message: error or success message
                         - path: the path of the error in case there is one
             """
-        content = None
-        with open(file_path) as f:
-            content = load_json(f)
-        type = (list(content.keys())[0]).lower()
-        if type not in self.schema_types:
-            raise SchemaTypeNotKnown(f"type: {type}")
-        schema_obj: validation.Schema = getattr(self, f'{type}_schema')
+        return self.validator.validate(file_path)
 
-        validation_res = schema_obj.validate(content)
-        if validation_res["status"] is False:
-            # validation Failed
-            raise ValidationError(f"message:{validation_res['message']},\
-                                path:{validation_res['path']}")
-        return schema_obj.validate(content)
-
-    def get(self, name: str, remote: str, version: str,
+    def get(self, filename: str, remote: str, version: str,
             should_validate: bool = True) -> str:
         """will get a file from remote with required version number
            will perform schema validation on the file according to it's type
@@ -80,15 +56,15 @@ class DAL(ABC):
         Returns:
             str: the local path of the requested file.
         """
-        path = self.manager.get_file(name, remote, version)
+        path = self.manager.get_file(filename, remote, version)
         if should_validate:
             self.validate(path)
 
         return path
 
     def commit(self,
-               remote: str,
                filename: str,
+               remote: str,
                new_branch: str = None,
                base_branch: str = None,
                message: str = "") -> str:
@@ -120,8 +96,8 @@ class DAL(ABC):
         return self.manager.commit_file(remote, filename, new_branch,
                                         base_branch, message)
 
-    def push(self, remote: str, remote_name: str = 'origin',
-             tag_name: str = None, only_tag: bool = False):
+    def push(self, repo_link: str, remote_alias: str = 'origin',
+             tag_to_push: str = None, only_tag: bool = False):
         """pushed local repository changes remotely to remote name
 
         Args:
@@ -137,9 +113,10 @@ class DAL(ABC):
             PushInfo: Carries information about the result of a push operation
                       of a single head
         """
-        return self.manager.push(remote, remote_name, tag_name, only_tag)
+        return self.manager.push(repo_link, remote_alias,
+                                 tag_to_push, only_tag)
 
-    def pull(self, remote: str, remote_name: str = 'origin'):
+    def pull(self, repo_link: str, remote_alias: str = 'origin'):
         """Pull changes from remote, being the same as a fetch followed
            by a merge of branch with your local branch.
 
@@ -151,7 +128,7 @@ class DAL(ABC):
         Returns:
             FetchInfo: see fetch method in GitPython
         """
-        return self.manager.pull(remote, remote_name)
+        return self.manager.pull(repo_link, remote_alias)
 
     def diff(self, remote: str, filename: str) -> str:
         """[summary]
@@ -172,6 +149,15 @@ class DAL(ABC):
             remote (str): the remote repository link.
         """
         return self.manager._get_local_path(remote)
+
+    def create_file(self,
+                    remote: str,
+                    relative_path: str,
+                    content: str,
+                    base_version: str = None,
+                    is_json: bool = True) -> None:
+        self.manager.create_file(remote, relative_path, content,
+                                 base_version, is_json)
 
 
 class SlaveDAL(DAL):
