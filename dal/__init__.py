@@ -5,13 +5,15 @@ from .api.gitapi import (
     MasterGitManager,
     GitManager
 )
+from .movaidb.database import MovaiDB
 
 __all__ = [
     # classes
     "SlaveDAL",
     "MasterDAL",
     "FileSystem",
-    'SlaveGitManager',
-    'MasterGitManager',
-    'GitManager'
+    "SlaveGitManager",
+    "MasterGitManager",
+    "GitManager",
+    "MovaiDB"
     ]

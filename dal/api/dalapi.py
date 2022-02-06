@@ -1,9 +1,8 @@
 from .gitapi import GitManager, SlaveGitManager, MasterGitManager
-from dal.classes.exceptions import SchemaTypeNotKnown, ValidationError
 from abc import ABC, abstractmethod
 from dal import validation
-from json import load as load_json
 from os.path import realpath, dirname
+from dal.movaidb.lock import Lock
 
 
 class DAL(ABC):
@@ -158,6 +157,23 @@ class DAL(ABC):
                     is_json: bool = True) -> None:
         self.manager.create_file(remote, relative_path, content,
                                  base_version, is_json)
+
+    def lock(self, name: str, scope: str = 'global', *, timeout: float = 0,
+             queue_level: int = None, blocking_timeout: float = 0,
+             alive_timeout: float = 5000, robot_name: str = None,
+             node_name: str = 'test_node', persistent: bool = False,
+             reacquire: bool = False):
+        Lock(name, scope, timeout, queue_level, blocking_timeout,
+                    alive_timeout, robot_name, node_name, persistent,
+                    reacquire)
+        # TODO
+        pass
+
+    def release(self):
+        pass
+
+    def var(self):
+        pass
 
 
 class SlaveDAL(DAL):

@@ -1,15 +1,16 @@
 import asyncio
-import os
-import re
+from os import getenv
+from re import split
 import redis
-import deepdiff
+from deepdiff import DeepDiff
 import pickle
 import aioredis
-from .singleton import Singleton
-# from .configuration import Configuration
 from redis.client import Pipeline
-# from deprecated.api.core.database import Validator
 from typing import Any, Tuple
+
+from dal.classes.common.singleton import Singleton
+# from .configuration import Configuration
+# from deprecated.api.core.database import Validator
 
 # LOGGER = StdoutLogger("spawner.mov.ai")
 
@@ -29,12 +30,12 @@ class MovaiDB:
         }
     }
 
-    REDIS_MASTER_HOST = os.getenv("REDIS_MASTER_HOST", "redis-master")
-    REDIS_MASTER_PORT = int(os.getenv("REDIS_MASTER_PORT", 6379))
-    REDIS_SLAVE_PORT = int(os.getenv("REDIS_SLAVE_PORT", REDIS_MASTER_PORT))
-    REDIS_LOCAL_HOST = os.getenv("REDIS_LOCAL_HOST", "redis-local")
-    REDIS_LOCAL_PORT = int(os.getenv("REDIS_LOCAL_PORT", 6379))
-    REDIS_SLAVE_HOST = os.getenv("REDIS_SLAVE_HOST", REDIS_MASTER_HOST)
+    REDIS_MASTER_HOST = getenv("REDIS_MASTER_HOST", "redis-master")
+    REDIS_MASTER_PORT = int(getenv("REDIS_MASTER_PORT", 6379))
+    REDIS_SLAVE_PORT = int(getenv("REDIS_SLAVE_PORT", REDIS_MASTER_PORT))
+    REDIS_LOCAL_HOST = getenv("REDIS_LOCAL_HOST", "redis-local")
+    REDIS_LOCAL_PORT = int(getenv("REDIS_LOCAL_PORT", 6379))
+    REDIS_SLAVE_HOST = getenv("REDIS_SLAVE_HOST", REDIS_MASTER_HOST)
 
     # -------------------------------------------------------------------------
     class AioRedisClient(metaclass=Singleton):
@@ -150,25 +151,25 @@ class MovaiDB:
             self.thread = None
 
         @property
-        def db_global(self):
+        def db_global(self) -> redis.Redis:
             return redis.Redis(connection_pool=self.master_pool,
                                decode_responses=False)
 
         @property
-        def db_slave(self):
+        def db_slave(self) -> redis.Redis:
             return redis.Redis(connection_pool=self.slave_pool,
                                decode_responses=False)
 
         @property
-        def db_local(self):
+        def db_local(self) -> redis.Redis:
             return redis.Redis(connection_pool=self.local_pool,
                                decode_responses=False)
 
         @property
-        def slave_pubsub(self):
+        def slave_pubsub(self) -> redis.client.PubSub:
             return self.db_slave.pubsub()
 
-        def local_pubsub(self):
+        def local_pubsub(self) -> redis.client.PubSub:
             return self.db_local.pubsub()
 
         @classmethod
@@ -655,7 +656,7 @@ class MovaiDB:
         kk = dict()
         for k, v in kv:
             o = kk
-            pieces = re.split("[:,]", k)
+            pieces = split("[:,]", k)
             if len(pieces) >= 3:
                 for idx, h in enumerate(pieces):
                     if idx == len(pieces)-2:
@@ -967,7 +968,7 @@ class MovaiDB:
                               MovaiDB.get_from_path(new_dict, path))
             to_delete = {}
 
-            diff = deepdiff.DeepDiff(first_dict, second_dict)
+            diff = DeepDiff(first_dict, second_dict)
             if diff:
                 # Check differences and build to_set and to_delete dict_keys
                 type_changes = diff.get('type_changes', False)
