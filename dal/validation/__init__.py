@@ -3,5 +3,5 @@ from .validator import Validator
 
 __all__ = [
     "Schema",
-    Validator
+    "Validator"
 ]
