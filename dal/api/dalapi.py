@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from dal import validation
 from os.path import realpath, dirname
 from dal.movaidb.lock import Lock
-from dal.classes import protocols
+import dal.classes.protocols as protocols
 
 
 class DAL(ABC):
@@ -175,32 +175,33 @@ class DAL(ABC):
     def var(self):
         pass
 
-    class RedisProtocols:
-        """organize all of Redis related Protocols
-        """
-        @staticmethod
-        def context_client_in(node_name: str, port_name: str,
-                              topic: str, callback: callable, params: dict,
-                              **kwargs) -> protocols.ContextClientIn:
-            return protocols.ContextClientIn(node_name, port_name, topic,
-                                             callback, params, **kwargs)
 
-        @staticmethod
-        def context_client_out(node_name: str,
-                               params: dict) -> protocols.ContextClientOut:
-            return protocols.ContextClientOut(node_name, params)
+class RedisProtocols:
+    """organize all of Redis related Protocols
+    """
+    @staticmethod
+    def context_client_in(node_name: str, port_name: str,
+                          topic: str, callback: callable, params: dict,
+                          **kwargs) -> protocols.ContextClientIn:
+        return protocols.ContextClientIn(node_name, port_name, topic,
+                                         callback, params, **kwargs)
 
-        @staticmethod
-        def context_server_in(node_name: str, port_name: str, topic: str,
-                              callback: callable, params: dict,
-                              **kwargs) -> protocols.ContextServerIn:
-            return protocols.ContextServerIn(node_name, port_name, topic,
-                                             callback, params, **kwargs)
+    @staticmethod
+    def context_client_out(node_name: str,
+                           params: dict) -> protocols.ContextClientOut:
+        return protocols.ContextClientOut(node_name, params)
 
-        @staticmethod
-        def context_server_out(node_name: str,
-                               params: dict) -> protocols.ContextServerOut:
-            return protocols.ContextServerOut(node_name, params)
+    @staticmethod
+    def context_server_in(node_name: str, port_name: str, topic: str,
+                          callback: callable, params: dict,
+                          **kwargs) -> protocols.ContextServerIn:
+        return protocols.ContextServerIn(node_name, port_name, topic,
+                                         callback, params, **kwargs)
+
+    @staticmethod
+    def context_server_out(node_name: str,
+                           params: dict) -> protocols.ContextServerOut:
+        return protocols.ContextServerOut(node_name, params)
 
 
 class SlaveDAL(DAL):
