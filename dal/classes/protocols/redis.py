@@ -14,11 +14,7 @@ class ContextMsg:
 
 
 class ContextProtocolIn:
-    def __init__(self, node_name: str, port_name: str, topic: str,
-                 callback: callable, params: dict, **ignore) -> None:
-        self.node_name = node_name
-        self.port_name = port_name
-        self.topic = topic
+    def __init__(self, callback: callable, params: dict, **ignore) -> None:
         self._callback = callback
         self.stack = params.get('Namespace', '')
         self.loop = asyncio.get_event_loop()
@@ -48,10 +44,8 @@ class ContextProtocolIn:
 
 
 class ContextClientIn(ContextProtocolIn):
-    def __init__(self, node_name: str, port_name: str, topic: str,
-                 callback: callable, params: dict, **kwargs) -> None:
-        super().__init__(node_name, port_name, topic,
-                         callback, params, **kwargs)
+    def __init__(self, callback: callable, params: dict, **kwargs) -> None:
+        super().__init__(callback, params, **kwargs)
 
     @property
     def ID(self):
@@ -59,10 +53,8 @@ class ContextClientIn(ContextProtocolIn):
 
 
 class ContextServerIn(ContextProtocolIn):
-    def __init__(self, node_name: str, port_name: str, topic: str,
-                 callback: callable, params: dict, **kwargs) -> None:
-        super().__init__(node_name, port_name, topic,
-                         callback, params, **kwargs)
+    def __init__(self, callback: callable, params: dict, **kwargs) -> None:
+        super().__init__(callback, params, **kwargs)
 
     @property
     def ID(self):

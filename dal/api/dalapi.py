@@ -180,11 +180,9 @@ class RedisProtocols:
     """organize all of Redis related Protocols
     """
     @staticmethod
-    def context_client_in(node_name: str, port_name: str,
-                          topic: str, callback: callable, params: dict,
+    def context_client_in(callback: callable, params: dict,
                           **kwargs) -> protocols.ContextClientIn:
-        return protocols.ContextClientIn(node_name, port_name, topic,
-                                         callback, params, **kwargs)
+        return protocols.ContextClientIn(callback, params, **kwargs)
 
     @staticmethod
     def context_client_out(node_name: str,
@@ -192,11 +190,9 @@ class RedisProtocols:
         return protocols.ContextClientOut(node_name, params)
 
     @staticmethod
-    def context_server_in(node_name: str, port_name: str, topic: str,
-                          callback: callable, params: dict,
+    def context_server_in(callback: callable, params: dict,
                           **kwargs) -> protocols.ContextServerIn:
-        return protocols.ContextServerIn(node_name, port_name, topic,
-                                         callback, params, **kwargs)
+        return protocols.ContextServerIn(callback, params, **kwargs)
 
     @staticmethod
     def context_server_out(node_name: str,
