@@ -1,5 +1,5 @@
 import os
-from movai.core import Resource
+from dal.classes.common.resource import Resource
 
 
 class Configuration:

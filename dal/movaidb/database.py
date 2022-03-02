@@ -9,6 +9,7 @@ import aioredis
 from redis.client import Pipeline
 from typing import Any, Tuple
 from .configuration import Configuration
+import dal.classes.plugins.file.file
 
 from dal.classes.common.singleton import Singleton
 
