@@ -40,7 +40,7 @@ class ContextProtocolIn:
         changed.pop('_id')
 
         msg = ContextMsg(id=_id, data=full_table, changed=changed)
-        self._callback(msg)
+        self._callback.execute(msg)
 
 
 class ContextClientIn(ContextProtocolIn):
