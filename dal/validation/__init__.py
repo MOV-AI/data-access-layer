@@ -1,7 +1,7 @@
 from .schema import Schema
-from .validator import Validator
+from .validator import JsonValidator
 
 __all__ = [
     "Schema",
-    "Validator"
+    "JsonValidator"
 ]

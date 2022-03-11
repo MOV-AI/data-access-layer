@@ -35,7 +35,8 @@ def get_tokenized_repo(remote, username):
 
 
 MOVAI_FOLDER_NAME = ".movai"
-default_local_base = path_join(FileSystem.get_home_folder(), MOVAI_FOLDER_NAME)
+MOVAI_BASE_FOLDER = path_join(FileSystem.get_home_folder(), MOVAI_FOLDER_NAME)
+GIT_BASE_FOLDER = path_join(MOVAI_BASE_FOLDER, 'git')
 
 
 class GitRepo:
@@ -605,7 +606,7 @@ class SlaveGitManager(GitManager):
 
     def _get_local_path(self, remote):
         git_link = GitLink(remote)
-        path_params = [default_local_base]
+        path_params = [GIT_BASE_FOLDER]
         path_params.append(git_link.get_repo_name())
         return path_join(*path_params)
 
@@ -620,7 +621,7 @@ class MasterGitManager(GitManager):
 
     def _get_local_path(self, remote):
         git_link = GitLink(remote)
-        path_params = [default_local_base]
+        path_params = [GIT_BASE_FOLDER]
         path_params.append(self._username)
         path_params.append(git_link.get_repo_name())
         return path_join(*path_params)

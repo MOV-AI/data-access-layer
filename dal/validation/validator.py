@@ -6,8 +6,8 @@ from json import loads as load_json
 from dal.classes.exceptions import SchemaTypeNotKnown, ValidationError
 
 
-class Validator:
-    """Validator class
+class JsonValidator:
+    """JsonValidator class
        responsible to load schema json files and validate files according
        to it's type.
        types: node/flow/callback/annotation/layout/graphicscene
@@ -47,7 +47,7 @@ class Validator:
         """
         validation_path = dirname(realpath(__file__))
         for schema_json in listdir(f"{validation_path}/schemas"):
-            m = search("(\w+)\.schema\.json", schema_json)
+            m = search(r"(\w+)\.schema\.json", schema_json)
             if m is not None:
                 schema_type = m.group(1).lower()
                 schema_path = f"{validation_path}/schemas/{schema_json}"

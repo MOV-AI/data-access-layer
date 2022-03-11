@@ -25,7 +25,7 @@ class DAL(ABC):
         self.schema_types = None
         self.user = user
         self.schema_folder = schema_folder
-        self.validator = validation.Validator()
+        self.validator = validation.JsonValidator()
 
     def validate(self, file_path: str) -> dict:
         """validate a local file path against it's matching schema

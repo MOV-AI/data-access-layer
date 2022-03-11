@@ -1,5 +1,4 @@
 import asyncio
-import re
 from os import getenv
 from re import split
 import redis
@@ -9,211 +8,10 @@ import aioredis
 from redis.client import Pipeline
 from typing import Any, Tuple
 from .configuration import Configuration
-import dal.classes.plugins.file.file
+#import dal.classes.plugins.file.file
 
 from dal.classes.common.singleton import Singleton
-
-from packaging import version
 # LOGGER = StdoutLogger("spawner.mov.ai")
-
-NAME_REGEX = r"^(\/)?[~@a-zA-Z_0-9-.]+([~@a-zA-Z_0-9-]+)?([\/a-zA-Z_0-9-.]+)?$"
-LINK_REGEX = r"^([~@a-zA-Z_0-9-]+)([\/])([\/~@a-zA-Z_0-9]+)+([\/])([~@a-zA-Z_0-9]+)$"
-CONFIG_REGEX = r"\$\((param|config|var|flow)[^$)]+\)"
-
-
-class Validator:
-
-    """
-    Class that validates the dictionary recieved as a valid input for the database.
-    Enforces the API structure and value rules
-
-    """
-
-    def __init__(self, db='global') -> None:
-        """Init
-        """
-        #TODO - dict, list, hash, code, file, message
-        self.db = db
-        self.val = {}
-        self.val['str'] = lambda x: isinstance(x, str)
-        self.val['bool'] = lambda x: isinstance(x, bool)
-        self.val['float'] = lambda x: isinstance(x, float)
-
-        self.val['name'] = self.valid_name
-        self.val['version'] = self.valid_version
-        self.val['link'] = self.valid_link
-        self.val['code'] = self.valid_code
-
-        self.val['node_name'] = self.existant_node
-        self.val['callback_name'] = self.existant_callback
-        self.val['ports_name'] = self.existant_ports
-        self.val['widget_name'] = self.existant_widget
-
-        self.val['new_role_name'] = self.new_role
-        self.val['role_name'] = self.existant_role
-        self.val['resources_dict'] = self.existant_resources
-
-        self.name_re = re.compile(NAME_REGEX)
-        self.link_re = re.compile(LINK_REGEX)
-        # THIS WAS "(^[a-zA-Z_0-9-]+\/)([\/a-zA-Z_0-9-]+){1,2}(\/[a-zA-Z_0-9-]+$)"
-
-    def valid_name(self, value: str) -> None:
-        """Checks if a given name is valid
-
-        Args:
-            value: Name
-
-        Raises:
-            Exception: Unvalid name
-        """
-
-        if self.name_re.match(value) is None:
-            # raise InvalidStructure('Value "%s" is not a valid Name' % value)
-            print('Value "%s" is not a valid Name' % value)
-
-    def valid_link(self, value: str) -> None:
-        """Checks if a given name is valid
-
-        Args:
-            value: Name
-
-        Raises:
-            Exception: Unvalid link
-        """
-
-        if self.link_re.match(value) is None:
-            # raise InvalidStructure('Value "%s" is not a valid Link' % value)
-            print('Value "%s" is not a valid Link' % value)
-
-    @staticmethod
-    def valid_version(value: str) -> None:
-        """Checks if a given version is valid
-
-        Args:
-            value: Version
-
-        Raises:
-            Exception: Unvalid version
-        """
-        try:
-            ver = version.Version(value)
-        except version.InvalidVersion:
-            #raise InvalidStructure('Value "%s" is not a valid Version' % value)
-            print('Value "%s" is not a valid Version' % value)
-
-        if ver.base_version == value and len(ver.release) == 3:
-            # TODO
-            # if non existant, check if its 0.0.0 or 0.0.1
-            # else check if latest was incremented by 1 in one of the fields
-
-            pass
-        else:
-            #raise InvalidStructure('Value "%s" is not a valid version' % value)
-            print('Value "%s" is not a valid version' % value)
-
-    @staticmethod
-    def valid_code(value: str) -> None:
-        """Checks if a given code is valid for SyntaxErrors"""
-        compile(value, 'fake', 'exec')
-        #raise Exception("Code is not valid")
-
-    def existant_node(self, value: str) -> None:
-        """Checks if a node exists in the database
-        Args:
-            value: Name of the node
-        Raises:
-            DoesNotExist: Unexistant node
-        """
-        if not MovaiDB(self.db).search_by_args('Node', Name=value)[1]:
-            #raise DoesNotExist('Value "%s" is not an existent Node' % value)
-            print('Value "%s" is not an existent Node' % value)
-
-    def existant_callback(self, value: str) -> None:
-        """Checks if a callback exists in the database
-        Args:
-            value: Name of the callback
-        Raises:
-            DoesNotExist: Unexistant callback
-        """
-        if not MovaiDB(self.db).search_by_args('Callback', Name=value)[1]:
-            #raise DoesNotExist(
-            #    'Value "%s" is not an existent Callback' % value)
-            print('Value "%s" is not an existent Callback' % value)
-
-    def existant_ports(self, value: str) -> None:
-        """Checks if a set of ports exists in the database
-
-        Args:
-            value: Name of the ports set
-
-        Raises:
-            DoesNotExist: Unexistant ports
-        """
-        if not MovaiDB(self.db).search_by_args('Ports', Name=value)[1]:
-            #raise DoesNotExist('Value "%s" is not an existent Ports' % value)
-            print('Value "%s" is not an existent Ports' % value)
-
-    def existant_widget(self, value: str) -> None:
-        """Checks if a widget exists in the database
-
-        Args:
-            value: Name of the widget
-
-        Raises:
-            DoesNotExist: Unexistant widget
-        """
-        if not MovaiDB(self.db).search_by_args('Widget', Name=value)[1]:
-            #raise DoesNotExist('Value "%s" is not an existent Widget' % value)
-            print('Value "%s" is not an existent Widget' % value)
-
-    def new_role(self, value: str) -> None:
-        """Checks if a Role exists in the database
-
-        Args:
-            value: Name of the Role
-
-        Raises:
-            AlreadyExist: existant Role
-        """
-
-        if MovaiDB(self.db).search_by_args('Role', Name=value)[1]:
-            #raise AlreadyExist(
-            #    'Value "%s" is an already existent Role' % value)
-            print('Value "%s" is an already existent Role' % value)
-
-    def existant_role(self, value: str) -> None:
-        """Checks if a Role exists in the database
-
-        Args:
-            value: Name of the Role
-
-        Raises:
-            DoesNotExist: Unexistant Role
-        """
-
-        if value and not MovaiDB(self.db).search_by_args('Role', Name=value)[1]:
-            #raise DoesNotExist('Value "%s" is not an existent Role' % value)
-            print('Value "%s" is not an existent Role' % value)
-
-    def existant_resources(self, value: str) -> None:
-        """Checks if a Resource(s) exists in the database
-
-        Args:
-            value: dict with the Resources and Permissions
-
-        Raises:
-            DoesNotExist: Unexistant Role
-        """
-
-        if not value:
-            return None
-
-        from API2.ACLManager import ACLManager
-        resources_data = ACLManager.get_resources()
-        if not set(value.keys()).issubset(resources_data):
-            invalid_values = list(set(value.keys()) - set(resources_data))
-            #raise DoesNotExist('Invalid resource(s): "%s" ' % invalid_values)
-            print('Invalid resource(s): "%s" ' % invalid_values)
 
 
 class MovaiDB:
@@ -232,11 +30,9 @@ class MovaiDB:
     }
 
     REDIS_MASTER_HOST = getenv("REDIS_MASTER_HOST", "redis-master")
-    REDIS_MASTER_HOST = "192.168.96.8"
     REDIS_MASTER_PORT = int(getenv("REDIS_MASTER_PORT", 6379))
     REDIS_SLAVE_PORT = int(getenv("REDIS_SLAVE_PORT", REDIS_MASTER_PORT))
     REDIS_LOCAL_HOST = getenv("REDIS_LOCAL_HOST", "redis-local")
-    REDIS_LOCAL_HOST = "192.168.96.7"
     REDIS_LOCAL_PORT = int(getenv("REDIS_LOCAL_PORT", 6379))
     REDIS_SLAVE_HOST = getenv("REDIS_SLAVE_HOST", REDIS_MASTER_HOST)
 
@@ -376,16 +172,6 @@ class MovaiDB:
         def local_pubsub(self) -> redis.client.PubSub:
             return self.db_local.pubsub()
 
-        @classmethod
-        def get_instance(cls):
-            """
-            this a Singleton class, will initialize intance once and return
-            the same instance always when called.
-
-            Returns:
-                a Redis class instance.
-            """
-            return cls()
     # -------------------------- End Of Redis class ---------------------------
 
     def __init__(self, db: str = 'global', _api_version: str = 'latest',
@@ -394,7 +180,7 @@ class MovaiDB:
         self.db_write: redis.Redis = None
         self.pubsub: redis.client.PubSub = None
 
-        self.movaidb = databases or type(self).Redis.get_instance()
+        self.movaidb = databases or type(self).Redis()
         for attribute, val in self.db_dict[db].items():
             setattr(self, attribute, getattr(self.movaidb, val))
 
@@ -404,7 +190,7 @@ class MovaiDB:
             # we then need to get this from database!!!!
             self.api_struct = Configuration.API(version=_api_version).get_api()
         self.api_star = self.template_to_star(self.api_struct)
-        self.validator = Validator(db).val
+        # self.validator = Validator(db).val
 
         self.loop = loop
         if not self.loop:
@@ -639,7 +425,7 @@ class MovaiDB:
 
         except Exception as e:
             #TODO add log
-            #raise InvalidStructure('Invalid rename: %s' % e)
+            #raise Exception('Invalid rename: %s' % e)
             return False
 
         for old, new in keys:
