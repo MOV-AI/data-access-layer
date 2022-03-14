@@ -1,9 +1,20 @@
+"""
+   Copyright (C) Mov.ai  - All Rights Reserved
+   Unauthorized copying of this file, via any medium is strictly prohibited
+   Proprietary and confidential
+
+   Developers:
+   - Moawiya Mograbi (moawiya@mov.ai) - 2022
+
+   API for the git part
+"""
+
 from git.refs.tag import TagReference
 from dal.classes.exceptions import (NoChangesToCommit,
-                                SlaveManagerCannotChange,
-                                TagAlreadyExist,
-                                VersionDoesNotExist,
-                                BranchAlreadyExist)
+                                    SlaveManagerCannotChange,
+                                    TagAlreadyExist,
+                                    VersionDoesNotExist,
+                                    BranchAlreadyExist)
 from dal import FileSystem
 from git import (Repo,
                  InvalidGitRepositoryError,

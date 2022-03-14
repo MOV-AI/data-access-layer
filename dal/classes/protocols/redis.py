@@ -1,3 +1,14 @@
+"""
+   Copyright (C) Mov.ai  - All Rights Reserved
+   Unauthorized copying of this file, via any medium is strictly prohibited
+   Proprietary and confidential
+
+   Developers:
+   - Moawiya Mograbi (moawiya@mov.ai) - 2022
+
+   Redis related protocols to be used in new Mov-Node
+"""
+
 import asyncio
 from dal.movaidb.database import MovaiDB
 

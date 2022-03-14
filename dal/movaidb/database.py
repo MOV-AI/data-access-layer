@@ -1,3 +1,14 @@
+"""
+   Copyright (C) Mov.ai  - All Rights Reserved
+   Unauthorized copying of this file, via any medium is strictly prohibited
+   Proprietary and confidential
+
+   Developers:
+   - Manuel Silva (manuel.silva@mov.ai) - 2020
+   - Tiago Paulino (tiago@mov.ai) - 2020
+   - Moawiya Mograbi (moawiya@mov.ai) - 2022
+"""
+
 import asyncio
 from os import getenv
 from re import split
@@ -8,7 +19,6 @@ import aioredis
 from redis.client import Pipeline
 from typing import Any, Tuple
 from .configuration import Configuration
-#import dal.classes.plugins.file.file
 
 from dal.classes.common.singleton import Singleton
 # LOGGER = StdoutLogger("spawner.mov.ai")
@@ -204,9 +214,7 @@ class MovaiDB:
         Search redis for a certain structure, returns a list of matching
         keys Meant to be used by other functions in this class
         """
-        patterns = list()
-        for k, v, s in self.dict_to_keys(_input, validate=False):
-            patterns.append(k)
+        patterns = [k for k, _, _ in self.dict_to_keys(_input, validate=False)]
         keys = list()
         for p in patterns:
             for elem in self.db_read.scan_iter(p, count=1000):
@@ -757,18 +765,16 @@ class MovaiDB:
 
         def changeKeys(d, n):
             for k, v in d.items():
+                key = k
+                if '$' in k:
+                    key = "*"
+
                 if isinstance(v, dict):
-                    if '$' in k:
-                        n['*'] = dict()
-                        changeKeys(v, n['*'])
-                    else:
-                        n[k] = dict()
-                        changeKeys(v, n[k])
+                    n[key] = dict()
+                    changeKeys(v, n[key])
                 else:
-                    if '$' in k:
-                        n['*'] = '*'
-                    else:
-                        n[k] = '*'
+                    n[key] = "*"
+
         changeKeys(_input, new)
         return new
 

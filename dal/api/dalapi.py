@@ -1,3 +1,14 @@
+"""
+   Copyright (C) Mov.ai  - All Rights Reserved
+   Unauthorized copying of this file, via any medium is strictly prohibited
+   Proprietary and confidential
+
+   Developers:
+   - Moawiya Mograbi (moawiya@mov.ai) - 2022
+
+   main DAL api
+"""
+
 from .gitapi import GitManager, SlaveGitManager, MasterGitManager
 from abc import ABC, abstractmethod
 from dal import validation

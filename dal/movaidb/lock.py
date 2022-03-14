@@ -217,7 +217,7 @@ class Lock:
                 res = False
                 break
 
-            time.sleep(0.1)
+            asyncio.sleep(0.1)
 
         return res
 
@@ -336,7 +336,7 @@ class Lock:
 
         while True:
             # wait x seconds before reacquire
-            time.sleep(_heartbeat)
+            asyncio.sleep(_heartbeat)
 
             # terminate heartbeat
             if self._name not in type(self).enabled_locks \
