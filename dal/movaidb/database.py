@@ -25,6 +25,7 @@ from dal.classes.common.singleton import Singleton
 
 
 class MovaiDB:
+    """Main MovaiDB"""
 
     db_dict = {
         "global": {
@@ -306,12 +307,7 @@ class MovaiDB:
         try:
             keys = self.search(_input)
         except:
-            try:
-                keys = self.search_wild(_input)
-            except Exception as e:
-                # TODO LOGGER = StdoutLogger("spawner.mov.ai")
-                # LOGGER.warning(f"Exception {e}, cannot find {_input} in DB")
-                pass
+            keys = self.search_wild(_input)
 
         kv = list()
         for idx, value in enumerate(self.db_read.mget(keys)):
@@ -433,8 +429,7 @@ class MovaiDB:
 
         except Exception as e:
             #TODO add log
-            #raise Exception('Invalid rename: %s' % e)
-            return False
+            raise InvalidStructure('Invalid rename: %s' % e)
 
         for old, new in keys:
             self.db_write.rename(old, new)
@@ -606,7 +601,7 @@ class MovaiDB:
         # can't validate against the new API, so:
         return  # no validate at all :)
         # pylint: disable=unreachable
-        function = None # self.validator.get(condition, False)
+        function = self.validator.get(condition, False)
         if function:
             function(value)
         else:
@@ -726,7 +721,7 @@ class MovaiDB:
         search_dict = self.get_search_dict(scope, **kwargs)
         return self.unsafe_delete(search_dict)
 
-    def subscribe_by_args(self, scope, function, **kwargs):
+    def subscribe_by_args(self, scope, function, **kwargs) -> dict:
         """Subscribe to a redis pattern giving arguments"""
         search_dict = self.get_search_dict(scope, **kwargs)
         self.loop.create_task(self.subscribe(search_dict, function))

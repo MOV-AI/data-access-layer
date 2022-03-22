@@ -15,13 +15,13 @@ import time
 import redis
 
 from dal.movaidb.database import MovaiDB
-# from deprecated.api.exceptions.exceptions import MovaiException
-# from deprecated.logger import StdoutLogger
+from deprecated.api.exceptions.exceptions import MovaiException
+from deprecated.logger import StdoutLogger
 # from .robot import Robot
 
 SCOPES = ['local', 'global']
 
-# logger = StdoutLogger('Lock')
+logger = StdoutLogger('Lock')
 
 
 class Lock:
@@ -46,8 +46,8 @@ class Lock:
 
     def __init__(self, name: str, scope: str = 'global', *, timeout: float = 0,
                  queue_level: int = None, blocking_timeout: float = 0,
-                 alive_timeout: float = 5000, robot_name: str = None,
-                 node_name: str = 'test_node', persistent: bool = False,
+                 alive_timeout: float = 5000, _robot_name: str = None,
+                 _node_name: str = 'test_node', persistent: bool = False,
                  reacquire: bool = False):
         """initialize the Lock object
 
@@ -75,8 +75,7 @@ class Lock:
             MovaiException: in case it's not a valid scope
         """
         if scope not in SCOPES:
-            # TODO, MoviaException
-            raise Exception(f"'{scope}' is not a valid scope. \
+            raise MovaiException(f"'{scope}' is not a valid scope. \
                                  Choose between: '{str(SCOPES)[1:-1]}")
 
         self.db_read = MovaiDB(scope).db_read
@@ -92,9 +91,8 @@ class Lock:
         self.queue_level = queue_level
         self.timeout = timeout
         self.alive_timeout = alive_timeout
-        self.robot_name = robot_name
-        # or Robot().name
-        self.node_name = node_name
+        self.robot_name = _robot_name or Robot().name
+        self.node_name = _node_name
 
         self.source = self.robot_name if scope == 'global' else self.node_name
 
@@ -136,7 +134,7 @@ class Lock:
         """
 
         if self.is_owned():
-            # logger.warning(f"Lock {self._name} already owned")
+            logger.warning(f"Lock {self._name} already owned")
             return True
 
         res = False
@@ -152,9 +150,8 @@ class Lock:
                 self.db_write.zadd(self.alive_name, {self.source: time_milis})
 
             except Exception as e:
-                #logger.error(f"Could not add to queue {self._name} in \
-                #             {self.source}. see error: {e}")
-                pass
+                logger.error(f"Could not add to queue {self._name} in \
+                             {self.source}. see error: {e}")
 
         if self.blocking_timeout is not None and not blocking:
             stop_trying_at = start_time + self.blocking_timeout
@@ -172,16 +169,15 @@ class Lock:
                 elem_name = elem.decode('utf-8')
                 last_alive = self.db_read.zscore(self.alive_name, elem_name)
                 if int(time.time() * 1000) - last_alive > self.alive_timeout:
-                    # logger.debug(
-                    #    f'{elem_name} removed from queue for inactivity')
+                    logger.debug(
+                        f'{elem_name} removed from queue for inactivity')
                     try:
                         self.db_write.zrem(self.queue_name, elem_name)
                         self.db_write.zrem(self.alive_name, elem_name)
 
                     except Exception as e:
-                        # logger.error(f"Could not remove {elem_name} from \
-                        #             queue {self._name}. see error: {e}")
-                        pass
+                        logger.error(f"Could not remove {elem_name} from \
+                                     queue {self._name}. see error: {e}")
 
             # return the first guy in the queue (lowest score)
             lowest_score_robot = self.db_read.zrange(self.queue_name, 0, 0)
@@ -203,11 +199,9 @@ class Lock:
                         self.db_write.zrem(self.alive_name, self.source)
 
                     except Exception as e:
-                        # TODO
-                        #logger.error(f"Could not remove from queue \
-                        #             {self._name} in {self.source}. \
-                        #             see error: {e}")
-                        pass
+                        logger.error(f"Could not remove from queue \
+                                     {self._name} in {self.source}. \
+                                     see error: {e}")
 
                     # enable Lock heartbeat
                     self.send_lock_cmd()
@@ -232,16 +226,12 @@ class Lock:
             self.db_lock.release()
 
         except redis.exceptions.LockNotOwnedError:
-            #TODO
-            #logger.warning(f"Cannot release a lock ({self._name})"
-            #               f" that's no longer owned ({self.source}) ")
-            pass
+            logger.warning(f"Cannot release a lock ({self._name})"
+                           f" that's no longer owned ({self.source}) ")
 
         except Exception as e:
-            #TODO
-            #logger.error(f"Could not release lock {self._name} in \
-            #             {self.source}. see error: {e}")
-            pass
+            logger.error(f"Could not release lock {self._name} in \
+                         {self.source}. see error: {e}")
 
         finally:
             self.send_unlock_cmd()
@@ -262,16 +252,12 @@ class Lock:
             return self.db_lock.extend(additional_time)
 
         except redis.exceptions.ConnectionError:
-            #TODO
-            #logger.warning(f"Could not extend lock ({self._name}). \
-            #               Connection error.")
-            pass
+            logger.warning(f"Could not extend lock ({self._name}). \
+                           Connection error.")
 
         except Exception as e:
-            #TODO
-            #logger.error(f"Could not extend lock {self._name} in \
-            #             {self.source}. see error: {e}")
-            pass
+            logger.error(f"Could not extend lock {self._name} in \
+                         {self.source}. see error: {e}")
 
         return False
 
@@ -285,22 +271,16 @@ class Lock:
             return self.db_lock.reacquire()
 
         except redis.exceptions.ConnectionError:
-            #TODO
-            #logger.warning(f"Could not reacquire lock ({self._name}). \
-            #               Connection error.")
-            pass
+            logger.warning(f"Could not reacquire lock ({self._name}). \
+                           Connection error.")
 
         except redis.exceptions.LockNotOwnedError:
-            #TODO
-            #logger.warning(f"Could not reacquire lock ({self._name}). \
-            #               Lock not owned error.")
-            pass
+            logger.warning(f"Could not reacquire lock ({self._name}). \
+                           Lock not owned error.")
 
         except Exception as e:
-            #TODO
-            #logger.error(f"Could not reacquire lock {self._name} in \
-            #             {self.source}. see error: {e}")
-            pass
+            logger.error(f"Could not reacquire lock {self._name} in \
+                         {self.source}. see error: {e}")
 
         return False
 
@@ -310,20 +290,16 @@ class Lock:
             return self.db_lock.owned()
 
         except redis.exceptions.ConnectionError:
-            #TODO
-            #logger.warning(f"Could not check lock ({self._name}) \
-            #               ownership. Connection error.")
-            pass
+            logger.warning(f"Could not check lock ({self._name}) \
+                           ownership. Connection error.")
 
         except Exception as e:
-            #TODO
-            #logger.error(f"Could not check lock ({self._name}) ownership. \
-            #             see error:{e}")
-            pass
+            logger.error(f"Could not check lock ({self._name}) ownership. \
+                         see error:{e}")
 
         return False
 
-    def th_reacquire(self):
+    async def th_reacquire(self):
         """
             Thread to keep Lock heartbeat
             Thread will exit when Lock is not in enabled_locks anymore
@@ -336,7 +312,7 @@ class Lock:
 
         while True:
             # wait x seconds before reacquire
-            asyncio.sleep(_heartbeat)
+            await asyncio.sleep(_heartbeat)
 
             # terminate heartbeat
             if self._name not in type(self).enabled_locks \
@@ -348,9 +324,8 @@ class Lock:
                 max_retries -= 1
                 if max_retries == 0:
                     type(self).enabled_locks.remove(self._name)
-                    #TODO
-                    #logger.error(f"Heartbeat could not reacquire lock \
-                    #             {self._name} in {self.source}")
+                    logger.error(f"Heartbeat could not reacquire lock \
+                                 {self._name} in {self.source}")
                     break
             else:
                 max_retries = self.DEFAULT_MAX_RETRIES
@@ -365,9 +340,7 @@ class Lock:
 
         # launch Lock heartbeat if not yet launched
         if lock_obj._name in cls.enabled_locks:
-            #TODO
-            #logger.debug("Lock already in heartbeat pool")
-            pass
+            logger.debug("Lock already in heartbeat pool")
         else:
             # append to enabled locks pool
             cls.enabled_locks.append(lock_obj._name)
@@ -376,7 +349,8 @@ class Lock:
             loop = asyncio.get_event_loop()
 
             # launch thread
-            await loop.run_in_executor(None, lock_obj.th_reacquire)
+            # loop = asyncio.get_event_loop()
+            await lock_obj.th_reacquire()
 
     @classmethod
     def disable_heartbeat(cls, name, **_):
@@ -418,7 +392,7 @@ class Lock:
         }
 
         # send command
-        # Robot().send_cmd(command='LOCK', data=_kwargs)
+        Robot().send_cmd(command='LOCK', data=_kwargs)
 
     def send_unlock_cmd(self):
         """
@@ -426,4 +400,4 @@ class Lock:
         """
 
         # send command
-        # Robot().send_cmd(command='UNLOCK', data={'name': self._name})
+        Robot().send_cmd(command='UNLOCK', data={'name': self._name})
