@@ -10,12 +10,12 @@
 """
 
 from git.refs.tag import TagReference
-from dal.classes.exceptions import (NoChangesToCommit,
-                                    SlaveManagerCannotChange,
-                                    TagAlreadyExist,
-                                    VersionDoesNotExist,
-                                    BranchAlreadyExist)
-from dal import FileSystem
+from ..classes.exceptions import (NoChangesToCommit,
+                                  SlaveManagerCannotChange,
+                                  TagAlreadyExist,
+                                  VersionDoesNotExist,
+                                  BranchAlreadyExist)
+from ..classes.filesystem import FileSystem
 from git import (Repo,
                  InvalidGitRepositoryError,
                  GitError,
@@ -30,7 +30,7 @@ from abc import ABC, abstractmethod
 # -----------------------------------------------------------------------------
 # TODO
 # need to be replaced, just for testing
-from dal.classes.authentication import AuthService
+from DAL.dataaccesslayer.dal.classes.authentication import AuthService
 
 
 # TODO

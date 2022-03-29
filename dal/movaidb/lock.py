@@ -14,10 +14,10 @@ import asyncio
 import time
 import redis
 
-from dal.movaidb.database import MovaiDB
+from ..movaidb.database import MovaiDB
 from deprecated.api.exceptions.exceptions import MovaiException
 from deprecated.logger import StdoutLogger
-# from .robot import Robot
+from deprecated.api.models.robot import Robot
 
 SCOPES = ['local', 'global']
 
@@ -91,7 +91,7 @@ class Lock:
         self.queue_level = queue_level
         self.timeout = timeout
         self.alive_timeout = alive_timeout
-        self.robot_name = _robot_name or Robot().name
+        self.robot_name = _robot_name  # or Robot().name
         self.node_name = _node_name
 
         self.source = self.robot_name if scope == 'global' else self.node_name

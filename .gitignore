@@ -1,3 +1,3 @@
 *.pyc
-.vscode/*
+.vscode/settings.json
 dal/classes/authentication.py

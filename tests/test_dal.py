@@ -1,8 +1,8 @@
 import json
 import unittest
 from json import loads as json_loads
-from dal import SlaveDAL, MasterDAL, FileSystem
-from dal.classes.exceptions import SchemaTypeNotKnown, ValidationError
+from movai.dataaccesslayer.dal import SlaveDAL, MasterDAL, FileSystem
+from movai.dataaccesslayer.dal.classes.exceptions import SchemaTypeNotKnown, ValidationError
 
 USER = "Mograbi"
 remote = "https://github.com/Mograbi/test-git"

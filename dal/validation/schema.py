@@ -12,8 +12,8 @@ from jsonschema import validate as json_validate
 from jsonschema.exceptions import ValidationError
 from json import loads as load_json
 from os.path import abspath, dirname
-from dal.classes.filesystem import FileSystem
-from dal.classes.exceptions.exceptions import SchemaVersionError
+from ..classes.filesystem import FileSystem
+from ..classes.exceptions.exceptions import SchemaVersionError
 
 
 class Schema:

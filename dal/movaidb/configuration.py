@@ -8,7 +8,7 @@
 """
 
 import os
-from dal.classes.common.resource import Resource
+from ..plugins import Resource
 
 
 class Configuration:

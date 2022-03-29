@@ -53,7 +53,7 @@ class PluginManager:
                 import_module(
                     "movai.plugins.{}.{}".format(cls.plugin_class(), key))
             except ModuleNotFoundError as e:
-                raise ValueError("No plugin found for key") from e
+                raise ValueError(f"No plugin found for key:{key}") from e
 
         return cls._plugins[key]
 
@@ -68,7 +68,7 @@ class PluginManager:
                 import_module(
                     "movai.plugins.{}.{}".format(cls.plugin_class(), key))
             except ModuleNotFoundError as e:
-                raise ValueError("No plugin found for key") from e
+                raise ValueError(f"No plugin found for key:{key}") from e
 
         return type(cls._plugins[key])
 
@@ -81,46 +81,3 @@ class PluginManager:
             raise ValueError("Plugin not valid")
 
         cls._plugins[key] = drv()
-
-
-class SinglePluginManager:
-    """
-    Abastract class for single plugin manager
-    """
-    _plugin = None
-
-    @classmethod
-    def plugin_class(cls):
-        """
-        Get current class plugin
-        """
-        return type(cls._plugin)
-
-    @classmethod
-    def plugin(cls):
-        """
-        Get current class plugin
-        """
-        return cls._plugin
-
-    @classmethod
-    def load_plugin(cls, name: str):
-        """
-        Use a specific plugin
-        """
-        try:
-            # Try to load plugin from our library
-            import_module("movai.plugins.{}.{}".format(
-                cls.plugin_class(), name))
-        except ModuleNotFoundError:
-            raise ValueError("No plugin found")
-
-    @classmethod
-    def register_plugin(cls, plugin: type(Plugin)):
-        """
-        Register a plugin
-        """
-        if not issubclass(plugin, Plugin):
-            raise ValueError("Invalid plugin")
-
-        cls._plugin = plugin()

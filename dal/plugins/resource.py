@@ -13,7 +13,7 @@ from .plugin import Plugin, PluginManager
 
 class ResourceException(Exception):
     """
-    A resource handling exception
+    A resources handling exception
     """
 
 
@@ -44,7 +44,7 @@ class ResourcePlugin(Plugin):
     @abstractmethod
     def exists(self, url: str):
         """
-        check if resource exists, returns True/False
+        check if resources exists, returns True/False
         """
 
     @abstractmethod
@@ -56,11 +56,11 @@ class ResourcePlugin(Plugin):
 
 class Resource(PluginManager):
     """
-    This class represents a resource, a resource can be a image file, a
+    This class represents a resources, a resources can be a image file, a
     python script, a map, or any other kind of file that needs to be
     accessed
 
-    A resource might be located on the local filesystem, or a external
+    A resources might be located on the local filesystem, or a external
     filesystem.
 
     We provide one interface to implement a plugin to access the physical
@@ -72,7 +72,7 @@ class Resource(PluginManager):
         """
         Get current class plugin
         """
-        return "resource"
+        return "resources"
 
     @classmethod
     def get_plugin(cls, key: str):
@@ -122,7 +122,7 @@ class Resource(PluginManager):
     @staticmethod
     def exists(url: str):
         """
-        check if resource exists, returns True/False
+        check if resources exists, returns True/False
         """
         return Resource.get_plugin(url).exists(url)
 

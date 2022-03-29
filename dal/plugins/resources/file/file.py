@@ -12,8 +12,7 @@ from os import listdir, path, getenv, getcwd
 
 import yaml
 
-from dal.classes.common.plugin import Plugin
-from dal.classes.common.resource import Resource, ResourceException, ResourcePlugin
+from ...resource import Resource, ResourcePlugin, ResourceException, Plugin
 
 __DRIVER_NAME__ = "Filesystem Plugin"
 __DRIVER_VERSION__ = "0.0.1"
@@ -93,7 +92,7 @@ class FilePlugin(ResourcePlugin):
 
     def exists(self, url: str):
         """
-        check if resource exists, returns True/False
+        check if resources exists, returns True/False
         """
         try:
             _ = self._get_local_path(url)

@@ -20,7 +20,7 @@ from redis.client import Pipeline
 from typing import Any, Tuple
 from .configuration import Configuration
 
-from dal.classes.common.singleton import Singleton
+from ..classes.common.singleton import Singleton
 # LOGGER = StdoutLogger("spawner.mov.ai")
 
 
