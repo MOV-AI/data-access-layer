@@ -17,7 +17,7 @@ import redis
 from ..movaidb.database import MovaiDB
 from deprecated.api.exceptions.exceptions import MovaiException
 from deprecated.logger import StdoutLogger
-from deprecated.api.models.robot import Robot
+from DAL.dataaccesslayer.dal.models.robot import Robot
 
 SCOPES = ['local', 'global']
 

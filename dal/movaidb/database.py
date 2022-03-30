@@ -133,10 +133,9 @@ class MovaiDB:
                 setattr(self, conn_name, _conn)
 
         @classmethod
-        async def enable_db(cls, db_name):
+        def enable_db(cls, db_name):
             cls._register_databases()
             cls._databases[db_name]['enabled'] = True
-            await cls.get_client()
     # ---------------------- End Of AioRedisClient class ----------------------
 
     # -------------------------------------------------------------------------
