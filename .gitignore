@@ -1,3 +1,4 @@
 *.pyc
 .vscode/settings.json
 dal/classes/authentication.py
+.pytest_cache/*
