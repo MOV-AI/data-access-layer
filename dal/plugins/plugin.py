@@ -51,7 +51,7 @@ class PluginManager:
             try:
                 # Try to load plugin from our library
                 import_module(
-                    "movai.plugins.{}.{}".format(cls.plugin_class(), key))
+                    "DAL.dataaccesslayer.dal.plugins.{}.{}".format(cls.plugin_class(), key))
             except ModuleNotFoundError as e:
                 raise ValueError(f"No plugin found for key:{key}") from e
 
@@ -66,7 +66,7 @@ class PluginManager:
             try:
                 # Try to load plugin from our library
                 import_module(
-                    "movai.plugins.{}.{}".format(cls.plugin_class(), key))
+                    "DAL.dataaccesslayer.dal.plugins.{}.{}".format(cls.plugin_class(), key))
             except ModuleNotFoundError as e:
                 raise ValueError(f"No plugin found for key:{key}") from e
 

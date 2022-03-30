@@ -16,7 +16,8 @@ import tempfile
 from urllib.parse import urlparse
 from binascii import Error as BinasciiError
 from datetime import datetime
-from movai.core import Plugin, Log
+from movai.core import Log
+from ...plugin import Plugin
 from movai.data import (schemas, PersistencePlugin, TreeNode, SchemaPropertyNode,
                         Persistence, ScopeInstanceVersionNode, ScopesTree)
 from movai.models import Model
