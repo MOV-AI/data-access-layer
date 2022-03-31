@@ -11,7 +11,6 @@
    all data related operations will be delt within this module.
 """
 
-
 from .classes.filesystem import FileSystem
 from .api.dalapi import SlaveDAL, MasterDAL, RedisProtocols
 from .api.gitapi import (
@@ -19,7 +18,7 @@ from .api.gitapi import (
     MasterGitManager,
     GitManager
 )
-from .movaidb.database import MovaiDB
+from .movaidb import MovaiDB, Configuration
 
 __all__ = [
     # classes
@@ -30,5 +29,6 @@ __all__ = [
     "SlaveGitManager",
     "MasterGitManager",
     "GitManager",
-    "MovaiDB"
+    "MovaiDB",
+    "Configuration"
     ]

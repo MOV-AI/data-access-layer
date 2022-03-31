@@ -12,8 +12,7 @@
 import uuid
 import pickle
 
-from DAL import MovaiDB
-from deprecated.api.core.scope import Scope
+from DAL import MovaiDB, Scope
 
 from deprecated.api.models.configuration import Configuration
 from deprecated.api.models.fleetrobot import FleetRobot

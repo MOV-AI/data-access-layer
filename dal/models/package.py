@@ -13,10 +13,8 @@ import copy
 import hashlib
 import os
 
-from DAL import MovaiDB
-from deprecated.api.core.scope import Scope
+from DAL import MovaiDB, Scope, Struct
 from deprecated.api.core.helpers import Helpers
-from deprecated.api.core.structures import Struct
 
 from deprecated.logger import StdoutLogger
 LOGGER = StdoutLogger("spawner.mov.ai")
