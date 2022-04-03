@@ -13,7 +13,9 @@ import copy
 import hashlib
 import os
 
-from DAL import MovaiDB, Scope, Struct
+from ..movaidb.database import MovaiDB
+from .scope import Scope
+from .structures import Struct
 from deprecated.api.core.helpers import Helpers
 
 from deprecated.logger import StdoutLogger

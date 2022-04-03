@@ -12,10 +12,12 @@
 import uuid
 import pickle
 
-from DAL import MovaiDB, Scope
+from ..movaidb.database import MovaiDB
+from .scope import Scope
+from DAL.dataaccesslayer.dal.models.configuration import Configuration
+from DAL.dataaccesslayer.dal.models.fleetrobot import FleetRobot
 
-from deprecated.api.models.configuration import Configuration
-from deprecated.api.models.fleetrobot import FleetRobot
+
 
 class Robot(Scope):
     """Robot class that deals with robot related stuff"""
