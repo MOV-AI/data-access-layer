@@ -1,0 +1,7 @@
+# requirements for the execution of tests and packaging. Not runtime requirements.
+pytest
+mock
+bump2version
+flake8
+pylint
+black
