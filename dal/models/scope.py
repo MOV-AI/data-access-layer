@@ -9,7 +9,9 @@
 """
 
 from deprecated.api.exceptions import DoesNotExist, AlreadyExist
-from DAL import MovaiDB, Configuration, Struct
+from ..movaidb.database import MovaiDB
+from .structures import Struct
+from ..movaidb.configuration import Configuration
 
 
 class Scope(Struct):
@@ -32,7 +34,6 @@ class Scope(Struct):
         struct[name] = template_struct['$name']
         super().__init__(scope, struct, {}, db)
 
-        self.movaidb = MovaiDB(self.db)
         if new:
             if self.movaidb.exists_by_args(scope=scope, Name=name):
                 raise AlreadyExist(

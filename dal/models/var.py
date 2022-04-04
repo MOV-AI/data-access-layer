@@ -8,9 +8,10 @@
    - Tiago Paulino (tiago@mov.ai) - 2020
 """
 
-from DAL import MovaiDB
+from ..movaidb.database import MovaiDB
 
 SCOPES = ['callback', 'node', 'flow', 'robot', 'fleet', 'global']
+
 
 class Var:
     """Class for user to write and read vars"""

@@ -7,8 +7,9 @@
    - Manuel Silva (manuel.silva@mov.ai) - 2020
    - Tiago Paulino (tiago@mov.ai) - 2020
 """
-from DAL import Scope
+from .scope import Scope
 from deprecated.api.consts import TRANSITION_TYPE, ROS1_NODELETCLIENT, ROS1_NODELETSERVER
+
 
 class Ports(Scope):
     """Ports model"""

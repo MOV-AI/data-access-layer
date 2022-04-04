@@ -10,7 +10,7 @@
 import copy
 import re
 from deprecated.api.exceptions import AlreadyExist
-from DAL import MovaiDB
+from ..movaidb.database import MovaiDB
 from deprecated.api.core.helpers import Helpers
 
 
@@ -119,6 +119,7 @@ class Struct:
         # need a way to get rid of theese variables...
         self.__dict__['prev_struct'] = Helpers.update_dict(prev_struct, nada)
         self.__dict__['struct_dict'] = dict()
+        self.__dict__['movaidb'] = MovaiDB(db)
         self.__dict__['attrs'], self.__dict__['lists'], self.__dict__[
             'hashs'] = self.get_attributes(struct_dict)
 

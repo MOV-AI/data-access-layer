@@ -10,7 +10,7 @@
    handles all kind of data processing/fetching/modifying
    all data related operations will be delt within this module.
 """
-
+"""
 from .classes.filesystem import FileSystem
 from .api.dalapi import SlaveDAL, MasterDAL, RedisProtocols
 from .api.gitapi import (
@@ -32,3 +32,4 @@ __all__ = [
     "MovaiDB",
     "Configuration"
     ]
+"""
