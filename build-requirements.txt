@@ -9,3 +9,5 @@ gitpython
 jsonschema
 pyyaml
 pytest
+redis
+aioredis
