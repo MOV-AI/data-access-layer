@@ -12,7 +12,7 @@
 import asyncio
 from typing import Any
 
-from DAL import MovaiDB
+from dal.movaidb import MovaiDB
 from API2.Redis import RedisClient
 from API2.Robot import Robot
 from deprecated.gdnode.message import GD_Message

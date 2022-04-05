@@ -18,11 +18,11 @@ from binascii import Error as BinasciiError
 from datetime import datetime
 from movai.core import Log
 from ...plugin import Plugin
-from DAL.dataaccesslayer.dal.data import (schemas, PersistencePlugin, TreeNode, SchemaPropertyNode,
+from dal.data import (schemas, PersistencePlugin, TreeNode, SchemaPropertyNode,
                                           Persistence, ScopeInstanceVersionNode, ScopesTree)
 from movai.models import Model
 from movai.remote import RemoteArchive
-from DAL.dataaccesslayer.dal.backup import RestoreManager
+from dal.backup import RestoreManager
 
 
 __DRIVER_NAME__ = "Mov.ai Filesystem Plugin"
