@@ -1,0 +1,29 @@
+{
+  "_version": "1.0",
+  "schema": {
+    "$name": {
+      "Label": "str",
+      "Info": "str",
+      "Data": "hash",
+      "In": {
+        "$name": {
+          "Transport": "str",
+          "Protocol": "str",
+          "Message": "str",
+          "Callback": "str",
+          "Parameter": "hash",
+          "LinkEnabled": "bool"
+        }
+      },
+      "Out": {
+        "$name": {
+          "Transport": "str",
+          "Protocol": "str",
+          "Message": "str",
+          "Parameter": "hash",
+          "LinkEnabled": "bool"
+        }
+      }
+    }
+  }
+}

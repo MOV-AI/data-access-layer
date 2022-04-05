@@ -194,11 +194,13 @@ class MovaiDB:
         for attribute, val in self.db_dict[db].items():
             setattr(self, attribute, getattr(self.movaidb, val))
 
+        schema_folder = "file://DAL/dataaccesslayer/dal/validation/schema"
         if _api_version == 'latest':
-            self.api_struct = Configuration.API().get_api()
+
+            self.api_struct = Configuration.API(url=schema_folder).get_api()
         else:
             # we then need to get this from database!!!!
-            self.api_struct = Configuration.API(version=_api_version).get_api()
+            self.api_struct = Configuration.API(version=_api_version, url=schema_folder).get_api()
         self.api_star = self.template_to_star(self.api_struct)
         # self.validator = Validator(db).val
 

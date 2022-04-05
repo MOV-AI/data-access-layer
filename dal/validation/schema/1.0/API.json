@@ -1,0 +1,22 @@
+{
+  "_version": "1.0",
+  "schema": {
+    "$name": {
+      "Label": "str",
+      "Version": {
+        "$name": {
+          "Template": {
+            "$name": {}
+          },
+          "Class": {
+            "$name": {
+              "Function": {
+                "$name": "code"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://localhost/node.json",
+    "title": "Node",
+    "description": "a node",
+    "type": "object",
+    "unique" : true,
+    "version" : true,
+    "properties": {
+        "_id": {
+            "description": "Node ID",
+            "type": "string"
+        },
+        "_version": {
+            "description": "Node Version",
+            "type": "string"
+        },
+        "name": {
+            "description": "Node name",
+            "type": "string",
+            "indexed": "unique"
+        },
+        "type": {
+            "description": "Node type",
+            "type": "string"
+        },
+        "parameters": {
+            "description": "Node parameters",
+            "type": "object"
+        },
+        "tags": {
+            "description": "Node tags",
+            "type": "array",
+            "items": {
+                "$ref": "tag"
+            }
+        },
+        "protocols": {
+            "description": "Node used protocols",
+            "type": "array",
+            "items": {
+                "$ref": "protocol"
+            }
+        },
+        "ports": {
+            "description": "Node ports",
+            "type": "array",
+            "items": {
+                "$ref": "port"
+            }
+        }
+    }
+}

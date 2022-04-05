@@ -1,0 +1,36 @@
+{
+  "_version": "1.0",
+  "schema": {
+    "$name": {
+      "Label": "str",
+      "User": "str",
+      "LastUpdate": "any",
+      "State": {
+        "$name": {
+          "StateLabel": "name",
+          "Template": "str",
+          "Position": "str",
+          "Callback": "&callback_name",
+          "Out": "list",
+          "Parameter": {
+            "$name": {
+              "Value": "any"
+            }
+          },
+          "Visualization": {
+            "$name": {
+              "Value": "str"
+            }
+          }
+        }
+      },
+      "Link": {
+        "$name": {
+          "To": "&state_id",
+          "From": "&sm_link"
+        }
+      },
+      "Links": "hash"
+    }
+  }
+}

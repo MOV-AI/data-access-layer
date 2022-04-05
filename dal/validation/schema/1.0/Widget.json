@@ -1,0 +1,23 @@
+{
+  "_version": "1.0",
+  "schema": {
+    "$name": {
+      "Info": "str",
+      "Icon": "str",
+      "Label": "str",
+      "Version": "str",
+      "VersionDelta": "hash",
+      "File": {
+        "$name": {
+          "Value": "file"
+        }
+      },
+      "Parameter": {
+        "$name": {
+          "Value": "any",
+          "Type": "str"
+        }
+      }
+    }
+  }
+}

@@ -7,8 +7,8 @@
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
 """
 from ...plugin import Plugin
-from movai.data import (ObjectDeserializer, TreeNode, SchemaPropertyNode,
-                        SchemaObjectNode, SchemaDeserializer)
+from DAL.dataaccesslayer.dal.data import (ObjectDeserializer, TreeNode, SchemaPropertyNode,
+                                          SchemaObjectNode, SchemaDeserializer)
 
 __DRIVER_NAME__ = "Movai Schema Version 1.0 Plugin"
 __DRIVER_VERSION__ = "0.0.1"

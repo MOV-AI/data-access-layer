@@ -13,8 +13,8 @@ import uuid
 import pickle
 from .scope import Scope
 from ..movaidb.database import MovaiDB
-from DAL.dataaccesslayer.dal.models.configuration import Configuration
-from DAL.dataaccesslayer.dal.models.fleetrobot import FleetRobot
+from .fleetrobot import FleetRobot
+from .configuration import Configuration
 
 
 class Robot(Scope):

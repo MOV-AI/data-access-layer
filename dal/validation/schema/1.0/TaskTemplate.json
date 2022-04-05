@@ -1,0 +1,20 @@
+{
+  "_version": "1.0",
+  "schema": {
+    "$name": {
+      "Label": "str",
+      "Label_Template": "str",
+      "Description": "str",
+      "Description_Template": "str",
+      "ScoringFunction": "&callback_name",
+      "GenericScoringFunction": "&callback_name",
+      "TaskFilter": "&callback_name",
+      "Flow": "str",
+      "SharedData": {
+        "$name": {
+          "Enumerator": "str"
+        }
+      }
+    }
+  }
+}

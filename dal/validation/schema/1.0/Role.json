@@ -1,0 +1,10 @@
+{
+  "_version": "1.0",
+  "schema": {
+    "$name": {
+      "Label": "str",
+      "Resources": "hash",
+      "LastUpdate": "any"
+    }
+  }
+}
