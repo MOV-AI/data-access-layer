@@ -16,7 +16,7 @@ from redis.client import ConnectionPool, Redis
 from redis.exceptions import ResponseError
 
 from ...plugin import Plugin
-from DAL.dataaccesslayer.dal.data import (Persistence, PersistencePlugin, SchemaPropertyNode,
+from dal.data import (Persistence, PersistencePlugin, SchemaPropertyNode,
                                           SchemaNode, ScopeInstanceVersionNode, ScopesTree,
                                           TreeNode, schemas)
 
