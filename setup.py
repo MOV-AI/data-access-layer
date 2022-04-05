@@ -18,6 +18,6 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     include_package_data=True,
     classifiers=["Programming Language :: Python :: 3"],
-    install_requires=["jsonschema==3.2.0", "gitpython==3.1.24", "aioredis==1.3.1", "redis==4.1.3"],
+    install_requires=["jsonschema==3.2.0", "gitpython==3.1.24", "aioredis==2.0.1", "redis==4.1.3"],
     entry_points={},
 )
