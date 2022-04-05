@@ -14,7 +14,7 @@ import shutil
 from datetime import datetime
 from zipfile import ZipFile, BadZipFile
 
-from DAL.dataaccesslayer.dal.data import scopes
+from dal.data import scopes
 from movai.core import Log
 
 

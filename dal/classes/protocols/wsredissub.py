@@ -19,7 +19,7 @@ import yaml
 from aiohttp import WSMsgType, web
 
 
-from DAL import MovaiDB
+from dal.movaidb import MovaiDB
 from API2.Redis import RedisClient
 from deprecated.gdnode.callback import GD_Callback
 

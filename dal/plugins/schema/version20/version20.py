@@ -8,7 +8,7 @@
 """
 
 from ...plugin import Plugin
-from DAL.dataaccesslayer.dal.data import (ObjectDeserializer, TreeNode, SchemaDeserializer)
+from dal.data import (ObjectDeserializer, TreeNode, SchemaDeserializer)
 
 
 __DRIVER_NAME__ = "Movai Schema Version 2.0 Plugin"
