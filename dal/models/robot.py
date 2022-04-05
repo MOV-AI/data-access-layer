@@ -16,7 +16,6 @@ from ..movaidb.database import MovaiDB
 from .fleetrobot import FleetRobot
 from .configuration import Configuration
 
-
 class Robot(Scope):
     """Robot class that deals with robot related stuff"""
     scope = 'Robot'

@@ -109,6 +109,7 @@ class Struct:
 
         self.__dict__['Name'] = name
         self.__dict__['db'] = db
+        self.__dict__['movaidb'] = MovaiDB(db)
 
         nada = dict()
         for elem in struct_dict:
