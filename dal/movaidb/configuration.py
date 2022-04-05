@@ -7,8 +7,10 @@
    - Moawiya Mograbi (moawiya@mov.ai) - 2022
 """
 
-import os
+from os import path
 from ..plugins import Resource
+dir_path = path.dirname(path.realpath(__file__))
+__SCHEMAS_URL__ = f"file://{dir_path}/../validation/schema"
 
 
 class Configuration:
@@ -21,19 +23,19 @@ class Configuration:
         __API__ = {}
 
         def __init__(self, version: str = 'latest',
-                     url: str = "file://schema"):
+                     url: str = __SCHEMAS_URL__):
             super(type(self), self).__init__()
             # We force the version of the schemas to the deprecated version
             version = "1.0"
-            self.__url = os.path.join(url, version)
+            self.__url = path.join(url, version)
             self.__version = version
             if version not in type(self).__API__:
                 # load builtins schemas
-                current_path = os.path.join(url, version)
+                current_path = path.join(url, version)
                 type(self).__API__[version] = {
-                    os.path.splitext(schema_file)[0]:
+                    path.splitext(schema_file)[0]:
                         Resource.read_json(
-                            os.path.join(current_path, schema_file))["schema"]
+                            path.join(current_path, schema_file))["schema"]
                     for schema_file in Resource.list_resources(current_path)
                     if schema_file.endswith(".json")}
 
