@@ -6,3 +6,6 @@ flake8
 pylint
 black
 gitpython
+jsonschema
+yaml
+pytest
