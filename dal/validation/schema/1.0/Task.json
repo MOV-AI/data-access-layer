@@ -1,0 +1,14 @@
+{
+  "_version": "1.0",
+  "schema": {
+    "$name": {
+      "Description": "str",
+      "Assigned": "str",
+      "Created": "datetime",
+      "Started": "datetime",
+      "Finished": "datetime",
+      "Parameter": "hash",
+      "Status": "str"
+    }
+  }
+}

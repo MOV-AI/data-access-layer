@@ -1,0 +1,23 @@
+{
+  "_version": "1.0",
+  "schema": {
+    "$name": {
+      "Value": "any",
+      "Label": "str",
+      "Parameter": {
+        "$name": {
+          "Value": "hash"
+        }
+      },
+      "Package": {
+        "$name": {
+          "File": {
+            "$name": {
+              "Value": "file"
+            }
+          }
+        }
+      }
+    }
+  }
+}

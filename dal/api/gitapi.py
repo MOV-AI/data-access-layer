@@ -1,10 +1,21 @@
+"""
+   Copyright (C) Mov.ai  - All Rights Reserved
+   Unauthorized copying of this file, via any medium is strictly prohibited
+   Proprietary and confidential
+
+   Developers:
+   - Moawiya Mograbi (moawiya@mov.ai) - 2022
+
+   API for the git part
+"""
+
 from git.refs.tag import TagReference
-from dal.classes.exceptions import (NoChangesToCommit,
-                                SlaveManagerCannotChange,
-                                TagAlreadyExist,
-                                VersionDoesNotExist,
-                                BranchAlreadyExist)
-from dal import FileSystem
+from ..classes.exceptions import (NoChangesToCommit,
+                                  SlaveManagerCannotChange,
+                                  TagAlreadyExist,
+                                  VersionDoesNotExist,
+                                  BranchAlreadyExist)
+from ..classes.filesystem import FileSystem
 from git import (Repo,
                  InvalidGitRepositoryError,
                  GitError,
@@ -19,7 +30,7 @@ from abc import ABC, abstractmethod
 # -----------------------------------------------------------------------------
 # TODO
 # need to be replaced, just for testing
-from dal.classes.authentication import AuthService
+from DAL.dataaccesslayer.dal.classes.authentication import AuthService
 
 
 # TODO
@@ -35,7 +46,8 @@ def get_tokenized_repo(remote, username):
 
 
 MOVAI_FOLDER_NAME = ".movai"
-default_local_base = path_join(FileSystem.get_home_folder(), MOVAI_FOLDER_NAME)
+MOVAI_BASE_FOLDER = path_join(FileSystem.get_home_folder(), MOVAI_FOLDER_NAME)
+GIT_BASE_FOLDER = path_join(MOVAI_BASE_FOLDER, 'git')
 
 
 class GitRepo:
@@ -605,7 +617,7 @@ class SlaveGitManager(GitManager):
 
     def _get_local_path(self, remote):
         git_link = GitLink(remote)
-        path_params = [default_local_base]
+        path_params = [GIT_BASE_FOLDER]
         path_params.append(git_link.get_repo_name())
         return path_join(*path_params)
 
@@ -620,7 +632,7 @@ class MasterGitManager(GitManager):
 
     def _get_local_path(self, remote):
         git_link = GitLink(remote)
-        path_params = [default_local_base]
+        path_params = [GIT_BASE_FOLDER]
         path_params.append(self._username)
         path_params.append(git_link.get_repo_name())
         return path_join(*path_params)

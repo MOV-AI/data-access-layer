@@ -1,4 +1,13 @@
-from os import symlink, unlink
+"""
+   Copyright (C) Mov.ai  - All Rights Reserved
+   Unauthorized copying of this file, via any medium is strictly prohibited
+   Proprietary and confidential
+
+   Developers:
+   - Moawiya Mograbi (moawiya@mov.ai) - 2022
+"""
+
+from os import symlink, unlink, rename
 from os.path import isdir, isfile, expanduser, islink, dirname
 from pathlib import Path
 from shutil import rmtree
@@ -114,3 +123,18 @@ class FileSystem:
         if islink(dst):
             unlink(dst)
         symlink(src, dst)
+
+    @staticmethod
+    def rename_folder(folder_path: str, new_name: str):
+        """rename given folder to a new_name
+
+        Args:
+            folder_path (str): the current path of the folder
+            new_name (str): the new folder name.
+
+        Raises:
+            Exception: in case folder does not exist
+        """
+        if not isdir(folder_path):
+            raise Exception(f"folder {folder_path} does not exist")
+        rename(folder_path, new_name)

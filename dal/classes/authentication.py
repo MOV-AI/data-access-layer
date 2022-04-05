@@ -1,11 +1,10 @@
-from os import stat
 from re import search
 authentications = dict()
 authentications["github.com"] = \
             {
                 "Mograbi": {
                     "user": "Mograbi",
-                    "token": "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"
+                    "token": "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"
                     }
             }
 

@@ -1,9 +1,24 @@
+"""
+   Copyright (C) Mov.ai  - All Rights Reserved
+   Unauthorized copying of this file, via any medium is strictly prohibited
+   Proprietary and confidential
+
+   Developers:
+   - Moawiya Mograbi (moawiya@mov.ai) - 2022
+
+   main DAL api
+"""
+
 from .gitapi import GitManager, SlaveGitManager, MasterGitManager
 from abc import ABC, abstractmethod
-from dal import validation
+from .. import validation
 from os.path import realpath, dirname
-from dal.movaidb.lock import Lock
-import dal.classes.protocols as protocols
+from ..classes.protocols import (
+    ContextClientIn,
+    ContextServerIn,
+    ContextClientOut,
+    ContextServerOut
+)
 
 
 class DAL(ABC):
@@ -25,7 +40,7 @@ class DAL(ABC):
         self.schema_types = None
         self.user = user
         self.schema_folder = schema_folder
-        self.validator = validation.Validator()
+        self.validator = validation.JsonValidator()
 
     def validate(self, file_path: str) -> dict:
         """validate a local file path against it's matching schema
@@ -159,16 +174,6 @@ class DAL(ABC):
         self.manager.create_file(remote, relative_path, content,
                                  base_version, is_json)
 
-    def lock(self, name: str, scope: str = 'global', *, timeout: float = 0,
-             queue_level: int = None, blocking_timeout: float = 0,
-             alive_timeout: float = 5000, robot_name: str = None,
-             node_name: str = 'test_node', persistent: bool = False,
-             reacquire: bool = False):
-        Lock(name, scope, timeout, queue_level, blocking_timeout,
-             alive_timeout, robot_name, node_name, persistent, reacquire)
-        # TODO
-        pass
-
     def release(self):
         pass
 
@@ -181,23 +186,23 @@ class RedisProtocols:
     """
     @staticmethod
     def context_client_in(callback: callable, params: dict,
-                          **kwargs) -> protocols.ContextClientIn:
-        return protocols.ContextClientIn(callback, params, **kwargs)
+                          **kwargs) -> ContextClientIn:
+        return ContextClientIn(callback, params, **kwargs)
 
     @staticmethod
     def context_client_out(node_name: str,
-                           params: dict) -> protocols.ContextClientOut:
-        return protocols.ContextClientOut(node_name, params)
+                           params: dict) -> ContextClientOut:
+        return ContextClientOut(node_name, params)
 
     @staticmethod
     def context_server_in(callback: callable, params: dict,
-                          **kwargs) -> protocols.ContextServerIn:
-        return protocols.ContextServerIn(callback, params, **kwargs)
+                          **kwargs) -> ContextServerIn:
+        return ContextServerIn(callback, params, **kwargs)
 
     @staticmethod
     def context_server_out(node_name: str,
-                           params: dict) -> protocols.ContextServerOut:
-        return protocols.ContextServerOut(node_name, params)
+                           params: dict) -> ContextServerOut:
+        return ContextServerOut(node_name, params)
 
 
 class SlaveDAL(DAL):

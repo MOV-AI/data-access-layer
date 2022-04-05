@@ -1,10 +1,19 @@
+"""
+   Copyright (C) Mov.ai  - All Rights Reserved
+   Unauthorized copying of this file, via any medium is strictly prohibited
+   Proprietary and confidential
+
+   Developers:
+   - Moawiya Mograbi (moawiya@mov.ai) - 2022
+"""
+
 from jsonschema import RefResolver
 from jsonschema import validate as json_validate
 from jsonschema.exceptions import ValidationError
 from json import loads as load_json
 from os.path import abspath, dirname
-from dal.classes.filesystem import FileSystem
-from dal.classes.exceptions.exceptions import SchemaVersionError
+from ..classes.filesystem import FileSystem
+from ..classes.exceptions.exceptions import SchemaVersionError
 
 
 class Schema:

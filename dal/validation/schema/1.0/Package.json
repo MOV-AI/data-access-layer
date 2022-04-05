@@ -1,0 +1,15 @@
+{
+  "_version": "1.0",
+  "schema": {
+    "$name": {
+      "Label": "str",
+      "File": {
+        "$name": {
+          "FileLabel": "str",
+          "Value": "file",
+          "Checksum": "str"
+        }
+      }
+    }
+  }
+}

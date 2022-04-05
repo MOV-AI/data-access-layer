@@ -1,0 +1,16 @@
+{
+  "_version": "1.0",
+  "schema": {
+    "$name": {
+      "Label": "str",
+      "Description": "str",
+      "Field": {
+        "$name": {
+          "Type": "str",
+          "Default": "any",
+          "Options": "any"
+        }
+      }
+    }
+  }
+}

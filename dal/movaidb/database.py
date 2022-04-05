@@ -1,3 +1,14 @@
+"""
+   Copyright (C) Mov.ai  - All Rights Reserved
+   Unauthorized copying of this file, via any medium is strictly prohibited
+   Proprietary and confidential
+
+   Developers:
+   - Manuel Silva (manuel.silva@mov.ai) - 2020
+   - Tiago Paulino (tiago@mov.ai) - 2020
+   - Moawiya Mograbi (moawiya@mov.ai) - 2022
+"""
+
 import asyncio
 from os import getenv
 from re import split
@@ -7,15 +18,14 @@ import pickle
 import aioredis
 from redis.client import Pipeline
 from typing import Any, Tuple
+from .configuration import Configuration
 
-from dal.classes.common.singleton import Singleton
-# from .configuration import Configuration
-# from deprecated.api.core.database import Validator
-
+from ..classes.common.singleton import Singleton
 # LOGGER = StdoutLogger("spawner.mov.ai")
 
 
 class MovaiDB:
+    """Main MovaiDB"""
 
     db_dict = {
         "global": {
@@ -117,15 +127,15 @@ class MovaiDB:
                                 _conn = await aioredis.create_redis_pool(
                                     address, minsize=2, maxsize=100, timeout=1)
                         except Exception as e:
+                            print(f"Error, {e}")
                             # TODO LOGGER.error(e)
                             pass
                 setattr(self, conn_name, _conn)
 
         @classmethod
-        async def enable_db(cls, db_name):
+        def enable_db(cls, db_name):
             cls._register_databases()
             cls._databases[db_name]['enabled'] = True
-            await cls.get_client()
     # ---------------------- End Of AioRedisClient class ----------------------
 
     # -------------------------------------------------------------------------
@@ -172,16 +182,6 @@ class MovaiDB:
         def local_pubsub(self) -> redis.client.PubSub:
             return self.db_local.pubsub()
 
-        @classmethod
-        def get_instance(cls):
-            """
-            this a Singleton class, will initialize intance once and return
-            the same instance always when called.
-
-            Returns:
-                a Redis class instance.
-            """
-            return cls()
     # -------------------------- End Of Redis class ---------------------------
 
     def __init__(self, db: str = 'global', _api_version: str = 'latest',
@@ -190,11 +190,17 @@ class MovaiDB:
         self.db_write: redis.Redis = None
         self.pubsub: redis.client.PubSub = None
 
-        self.movaidb = databases or type(self).Redis.get_instance()
+        self.movaidb = databases or type(self).Redis()
         for attribute, val in self.db_dict[db].items():
             setattr(self, attribute, getattr(self.movaidb, val))
 
-        # self.api_struct = Configuration.API(version=_api_version).get_api()
+        schema_folder = "file://DAL/dataaccesslayer/dal/validation/schema"
+        if _api_version == 'latest':
+
+            self.api_struct = Configuration.API(url=schema_folder).get_api()
+        else:
+            # we then need to get this from database!!!!
+            self.api_struct = Configuration.API(version=_api_version, url=schema_folder).get_api()
         self.api_star = self.template_to_star(self.api_struct)
         # self.validator = Validator(db).val
 
@@ -210,9 +216,7 @@ class MovaiDB:
         Search redis for a certain structure, returns a list of matching
         keys Meant to be used by other functions in this class
         """
-        patterns = list()
-        for k, v, s in self.dict_to_keys(_input, validate=False):
-            patterns.append(k)
+        patterns = [k for k, _, _ in self.dict_to_keys(_input, validate=False)]
         keys = list()
         for p in patterns:
             for elem in self.db_read.scan_iter(p, count=1000):
@@ -304,12 +308,7 @@ class MovaiDB:
         try:
             keys = self.search(_input)
         except:
-            try:
-                keys = self.search_wild(_input)
-            except Exception as e:
-                # TODO LOGGER = StdoutLogger("spawner.mov.ai")
-                # LOGGER.warning(f"Exception {e}, cannot find {_input} in DB")
-                pass
+            keys = self.search_wild(_input)
 
         kv = list()
         for idx, value in enumerate(self.db_read.mget(keys)):
@@ -431,8 +430,7 @@ class MovaiDB:
 
         except Exception as e:
             #TODO add log
-            #raise InvalidStructure('Invalid rename: %s' % e)
-            return False
+            raise InvalidStructure('Invalid rename: %s' % e)
 
         for old, new in keys:
             self.db_write.rename(old, new)
@@ -604,7 +602,7 @@ class MovaiDB:
         # can't validate against the new API, so:
         return  # no validate at all :)
         # pylint: disable=unreachable
-        function = None # self.validator.get(condition, False)
+        function = self.validator.get(condition, False)
         if function:
             function(value)
         else:
@@ -629,6 +627,7 @@ class MovaiDB:
                         temp_api = api[k]
                         is_ok = True
                         break
+            
             if not is_ok:
                 raise Exception('Structure provided does not exist')
             if isinstance(v, dict) and isinstance(temp_api, dict):
@@ -723,7 +722,7 @@ class MovaiDB:
         search_dict = self.get_search_dict(scope, **kwargs)
         return self.unsafe_delete(search_dict)
 
-    def subscribe_by_args(self, scope, function, **kwargs):
+    def subscribe_by_args(self, scope, function, **kwargs) -> dict:
         """Subscribe to a redis pattern giving arguments"""
         search_dict = self.get_search_dict(scope, **kwargs)
         self.loop.create_task(self.subscribe(search_dict, function))
@@ -762,18 +761,16 @@ class MovaiDB:
 
         def changeKeys(d, n):
             for k, v in d.items():
+                key = k
+                if '$' in k:
+                    key = "*"
+
                 if isinstance(v, dict):
-                    if '$' in k:
-                        n['*'] = dict()
-                        changeKeys(v, n['*'])
-                    else:
-                        n[k] = dict()
-                        changeKeys(v, n[k])
+                    n[key] = dict()
+                    changeKeys(v, n[key])
                 else:
-                    if '$' in k:
-                        n['*'] = '*'
-                    else:
-                        n[k] = '*'
+                    n[key] = "*"
+
         changeKeys(_input, new)
         return new
 

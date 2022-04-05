@@ -1,0 +1,13 @@
+{
+  "_version": "1.0",
+  "schema": {
+    "$name": {
+      "Label": "str",
+      "Code": {
+        "$name": {
+          "Value": "str"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "_version": "1.0",
+  "schema": {
+    "$name": {
+      "Label": "str",
+      "Msg": {
+        "$name": {
+          "Source": "str",
+          "Compiled": "file"
+        }
+      },
+      "Srv": {
+        "$name": {
+          "Source": "str",
+          "Compiled": "file"
+        }
+      },
+      "Action": {
+        "$name": {
+          "Source": "str",
+          "Compiled": "str"
+        }
+      }
+    }
+  }
+}

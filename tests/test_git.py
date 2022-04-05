@@ -1,11 +1,11 @@
 import unittest
-from dal import (
+from movai.dataaccesslayer.dal import (
     MasterGitManager,
     SlaveGitManager,
     FileSystem
 )
 from json import loads as json_loads
-from dal.classes.exceptions import (
+from movai.dataaccesslayer.dal.classes.exceptions import (
     NoChangesToCommit,
     SlaveManagerCannotChange,
     TagAlreadyExist,

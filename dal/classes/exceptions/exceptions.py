@@ -1,3 +1,14 @@
+"""
+   Copyright (C) Mov.ai  - All Rights Reserved
+   Unauthorized copying of this file, via any medium is strictly prohibited
+   Proprietary and confidential
+
+   Developers:
+   - Moawiya Mograbi (moawiya@mov.ai) - 2022
+
+   DAL Exceptions
+"""
+
 BASE_GIT_ERR = 100
 VERSION_DOES_NOT_EXIST_ERR = BASE_GIT_ERR + 1
 BRANCH_ALREADY_EXIST_ERR = BASE_GIT_ERR + 2
@@ -13,9 +24,13 @@ BASE_VALIDATION_ERR = 300
 VALIDATION_ERR = BASE_VALIDATION_ERR + 1
 
 
+class DalException(Exception):
+    pass
+
+
 # Git Errors
 # ----------------------------------------------------------------------------
-class GitException(Exception):
+class GitException(DalException):
     def __init__(self, error, *args: object) -> None:
         self._error = error
         super().__init__(*args)
@@ -52,7 +67,7 @@ class TagAlreadyExist(GitException):
 
 # Schema Errors
 # ----------------------------------------------------------------------------
-class SchemaException(Exception):
+class SchemaException(DalException):
     def __init__(self, error, *args: object) -> None:
         self._error = error
         super().__init__(*args)
@@ -74,7 +89,7 @@ class SchemaTypeNotKnown(SchemaException):
 
 # Validation Errors
 # ----------------------------------------------------------------------------
-class ValidationException(Exception):
+class ValidationException(DalException):
     def __init__(self, error, *args: object) -> None:
         self._error = error
         super().__init__(*args)
