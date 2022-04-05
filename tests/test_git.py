@@ -1,11 +1,8 @@
 import unittest
-from movai.dataaccesslayer.dal import (
-    MasterGitManager,
-    SlaveGitManager,
-    FileSystem
-)
+from ..dal.api.gitapi import MasterGitManager, SlaveGitManager
+from ..dal.classes.filesystem.filesystem import FileSystem
 from json import loads as json_loads
-from movai.dataaccesslayer.dal.classes.exceptions import (
+from ..dal.classes.exceptions import (
     NoChangesToCommit,
     SlaveManagerCannotChange,
     TagAlreadyExist,
@@ -30,11 +27,13 @@ class TestGit(unittest.TestCase):
             self.master_manager._get_local_path(self.remote))
         super().__init__(methodName=methodName)
 
+    @pytest.mark.skip(reason="no way of currently testing this")
     def _validate_file(self, manager, filename, version, expect: dict):
         path = manager.get_file(filename, self.remote, version)
         file_json = json_loads(FileSystem.read(path))
         self.assertEqual(sorted(expect.items()), sorted(file_json.items()))
 
+    @pytest.mark.skip(reason="no way of currently testing this")
     def test_get(self):
         self.assertRaises(VersionDoesNotExist,
                           self._validate_file,
@@ -67,6 +66,7 @@ class TestGit(unittest.TestCase):
             "field3": [1, 2]
             }"""))
 
+    @pytest.mark.skip(reason="no way of currently testing this")
     def test_commit(self):
         # this would checkout file1 from v0.1
         path = self.slave_manager.get_file("file1", self.remote, "v0.1")
@@ -149,6 +149,7 @@ class TestGit(unittest.TestCase):
                                                     message="added node2")
         self.assertIsNotNone(commit_hash_4)
 
+    @pytest.mark.skip(reason="no way of currently testing this")
     def test_tag(self):
         self.assertTrue(
             self.master_manager.create_tag(
