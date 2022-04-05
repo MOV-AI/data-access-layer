@@ -30,7 +30,7 @@ from abc import ABC, abstractmethod
 # -----------------------------------------------------------------------------
 # TODO
 # need to be replaced, just for testing
-from DAL.dataaccesslayer.dal.classes.authentication import AuthService
+from dal.classes.authentication import AuthService
 
 
 # TODO
