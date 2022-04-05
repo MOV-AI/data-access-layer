@@ -1,0 +1,18 @@
+{
+  "_version": "1.0",
+  "schema": {
+    "$name": {
+      "Label": "str",
+      "RobotName": "&name",
+      "IP": "ip_add",
+      "Info": "str",
+      "Actions": "list",
+      "Status": "hash",
+      "Parameter": {
+        "$name": {
+          "Value": "any"
+        }
+      }
+    }
+  }
+}

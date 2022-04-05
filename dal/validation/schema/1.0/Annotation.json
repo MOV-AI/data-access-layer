@@ -1,0 +1,19 @@
+{
+  "_version": "1.0",
+  "schema": {
+    "$name": {
+      "Label": "str",
+      "User": "str",
+      "LastUpdate": "any",
+      "Type": "str",
+      "Policy": "any",
+      "Parameter": "hash",
+      "Field": {
+        "$name": {
+          "Value": "any",
+          "Type": "str"
+        }
+      }
+    }
+  }
+}

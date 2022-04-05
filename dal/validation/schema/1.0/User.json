@@ -1,0 +1,29 @@
+{
+  "_version": "1.0",
+  "schema": {
+    "$name": {
+      "Label": "str",
+      "LastUpdate": "any",
+      "Type": "str",
+      "Password": "str",
+      "Email": "str",
+      "SendReport": "bool",
+      "Superuser": "bool",
+      "Role": "role_name",
+      "Resources": "resources_dict",
+      "Workspace": "str",
+      "APIPermission": "list",
+      "WidgetPermission": "list",
+      "Applications": "list",
+      "Application": {
+        "$name": {
+          "Parameter": {
+            "$name": {
+              "Value": "any"
+            }
+          }
+        }
+      }
+    }
+  }
+}

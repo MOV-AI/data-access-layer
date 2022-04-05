@@ -10,6 +10,7 @@
 from .scope import Scope
 from deprecated.api.consts import TRANSITION_TYPE, ROS1_NODELETCLIENT, ROS1_NODELETSERVER
 
+
 class Ports(Scope):
     """Ports model"""
 

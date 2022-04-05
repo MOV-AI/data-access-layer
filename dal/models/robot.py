@@ -11,13 +11,10 @@
 """
 import uuid
 import pickle
-
-from ..movaidb.database import MovaiDB
 from .scope import Scope
-from DAL.dataaccesslayer.dal.models.configuration import Configuration
-from DAL.dataaccesslayer.dal.models.fleetrobot import FleetRobot
-
-
+from ..movaidb.database import MovaiDB
+from .fleetrobot import FleetRobot
+from .configuration import Configuration
 
 class Robot(Scope):
     """Robot class that deals with robot related stuff"""

@@ -1,0 +1,29 @@
+{
+  "_version": "1.0",
+  "schema": {
+    "$name": {
+      "User": "str",
+      "LastUpdate": "any",
+      "Label": "str",
+      "AssetType": {
+        "$name": {
+          "AssetName": {
+            "$name": {
+              "Value": "any",
+              "Annotation": {
+                "$name": {
+                  "Value": "any"
+                }
+              },
+              "AnnotationOverride": {
+                "$name": {
+                  "Value": "any"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

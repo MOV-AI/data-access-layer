@@ -16,9 +16,9 @@ from redis.client import ConnectionPool, Redis
 from redis.exceptions import ResponseError
 
 from ...plugin import Plugin
-from movai.data import (Persistence, PersistencePlugin, SchemaPropertyNode,
-                        SchemaNode, ScopeInstanceVersionNode, ScopesTree,
-                        TreeNode, schemas)
+from DAL.dataaccesslayer.dal.data import (Persistence, PersistencePlugin, SchemaPropertyNode,
+                                          SchemaNode, ScopeInstanceVersionNode, ScopesTree,
+                                          TreeNode, schemas)
 
 from movai.models import Model
 

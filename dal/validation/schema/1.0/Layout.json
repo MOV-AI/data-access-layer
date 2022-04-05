@@ -1,0 +1,30 @@
+{
+  "_version": "1.0",
+  "schema": {
+    "$name": {
+      "User": "str",
+      "LastUpdate": "any",
+      "Info": "str",
+      "Icon": "str",
+      "DashboardTitle": "str",
+      "LayoutColors": "list",
+      "Label": "str",
+      "Styles": "str",
+      "Version": "str",
+      "VersionDelta": "hash",
+      "WidgetInst": {
+        "$name": {
+          "WidgetLabel": "str",
+          "Parameter": {
+            "$name": {
+              "Value": "any"
+            }
+          },
+          "Template": "str"
+        }
+      },
+      "allLayouts": "hash",
+      "layoutEvents": "hash"
+    }
+  }
+}

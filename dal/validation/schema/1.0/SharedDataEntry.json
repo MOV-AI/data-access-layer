@@ -1,0 +1,15 @@
+{
+  "_version": "1.0",
+  "schema": {
+    "$name": {
+      "Label": "str",
+      "Description": "str",
+      "TemplateID": "str",
+      "Field": {
+        "$name": {
+          "Value": "any"
+        }
+      }
+    }
+  }
+}

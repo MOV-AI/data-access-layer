@@ -16,8 +16,9 @@ import re
 from deprecated.api.consts import (MOVAI_NODE, MOVAI_SERVER, MOVAI_STATE,
                                    MOVAI_TRANSITIONFOR, MOVAI_TRANSITIONTO, ROS1_NODE,
                                    ROS1_NODELET, ROS1_PLUGIN)
-from .scope import Scope
+
 from ..movaidb.database import MovaiDB
+from .scope import Scope
 from deprecated.api.core.helpers import Helpers
 
 from deprecated.logger import StdoutLogger

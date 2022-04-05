@@ -7,7 +7,7 @@
    - Manuel Silva (manuel.silva@mov.ai) - 2020
    - Tiago Paulino (tiago@mov.ai) - 2020
 """
-
+import os
 from deprecated.api.exceptions import DoesNotExist, AlreadyExist
 from .structures import Struct
 from ..movaidb.database import MovaiDB, Configuration
@@ -20,13 +20,15 @@ class Scope(Struct):
     permissions = ['create', 'read', 'update', 'delete']
 
     def __init__(self, scope, name, version, new=False, db='global'):
-
         self.__dict__['name'] = name
         self.__dict__['scope'] = scope
 
         # TODO
         # we then need to get this from database!!!!
-        template_struct = Configuration.API()[scope]
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+
+        schema_folder = f"file://{dir_path}/../validation/schema"
+        template_struct = Configuration.API(url=schema_folder)[scope]
         self.__dict__['struct'] = template_struct
 
         struct = dict()
