@@ -9,8 +9,10 @@
 
 from .schema import Schema
 from .validator import JsonValidator
+from .template import Template
 
 __all__ = [
     "Schema",
-    "JsonValidator"
+    "JsonValidator",
+    "Template"
 ]

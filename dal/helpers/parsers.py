@@ -12,7 +12,7 @@ import re
 import os
 
 from movai.core import Log
-from DAL.dataaccesslayer.dal.data import scopes
+from dal.data import scopes
 
 from API2.Var import Var
 
