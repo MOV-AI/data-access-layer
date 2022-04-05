@@ -1,4 +1,5 @@
 import unittest
+import pytest
 from dal.api.gitapi import MasterGitManager, SlaveGitManager
 from dal.classes.filesystem.filesystem import FileSystem
 from json import loads as json_loads
