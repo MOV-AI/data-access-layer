@@ -14,8 +14,8 @@ import hashlib
 import os
 
 from ..movaidb.database import MovaiDB
-from .structures import Struct
 from .scope import Scope
+from .structures import Struct
 from deprecated.api.core.helpers import Helpers
 
 from deprecated.logger import StdoutLogger

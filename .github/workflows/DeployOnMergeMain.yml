@@ -1,0 +1,26 @@
+name: "CI - On main/dev/release branches"
+on:
+  push:
+    branches:
+      - dev
+      - main
+      - 'releases/**'
+    paths-ignore:
+      - '.bumpversion.cfg'
+      - 'setup.py'
+
+jobs:
+  CI:
+    uses: MOV-AI/.github/.github/workflows/py-workflow.yml@v1
+    with:
+      deploy: 'true'
+    secrets:
+      auto_commit_user: ${{ secrets.RAISE_BOT_COMMIT_USER }}
+      auto_commit_mail: ${{ secrets.RAISE_BOT_COMMIT_MAIL }}
+      registry_user: ${{ secrets.PORTUS_APP_USER }}
+      registry_password: ${{ secrets.PORTUS_APP_TOKEN }}
+      nexus_publisher_user: ${{ secrets.NEXUS_PUBLISHER_USR }}
+      nexus_publisher_password: ${{ secrets.NEXUS_PUBLISHER_PWD }}
+      gh_token: ${{ secrets.GITHUB_TOKEN }}
+      sonar_token: ${{ secrets.SONAR_TOKEN }}
+      

@@ -9,9 +9,8 @@
 """
 import os
 from deprecated.api.exceptions import DoesNotExist, AlreadyExist
-from ..movaidb.database import MovaiDB
 from .structures import Struct
-from ..movaidb.configuration import Configuration
+from ..movaidb.database import MovaiDB, Configuration
 
 
 class Scope(Struct):
