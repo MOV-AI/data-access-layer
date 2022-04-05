@@ -91,7 +91,7 @@ class Lock:
         self.queue_level = queue_level
         self.timeout = timeout
         self.alive_timeout = alive_timeout
-        self.robot_name = _robot_name  # or Robot().name
+        self.robot_name = _robot_name or Robot().name
         self.node_name = _node_name
 
         self.source = self.robot_name if scope == 'global' else self.node_name
@@ -211,7 +211,7 @@ class Lock:
                 res = False
                 break
 
-            asyncio.sleep(0.1)
+            time.sleep(0.1)
 
         return res
 
@@ -228,6 +228,9 @@ class Lock:
         except redis.exceptions.LockNotOwnedError:
             logger.warning(f"Cannot release a lock ({self._name})"
                            f" that's no longer owned ({self.source}) ")
+
+        except redis.exceptions.LockError:
+            logger.warning(f"Cannot releease an unlocked lock, ({self._name})")
 
         except Exception as e:
             logger.error(f"Could not release lock {self._name} in \
@@ -275,8 +278,9 @@ class Lock:
                            Connection error.")
 
         except redis.exceptions.LockNotOwnedError:
-            logger.warning(f"Could not reacquire lock ({self._name}). \
-                           Lock not owned error.")
+            # backend already released that lock from redis.
+            logger.debug(f"Could not reacquire lock ({self._name}). \
+                           Lock not owned.")
 
         except Exception as e:
             logger.error(f"Could not reacquire lock {self._name} in \
@@ -323,9 +327,10 @@ class Lock:
             if not self.reacquire():
                 max_retries -= 1
                 if max_retries == 0:
-                    type(self).enabled_locks.remove(self._name)
-                    logger.error(f"Heartbeat could not reacquire lock \
-                                 {self._name} in {self.source}")
+                    if self._name in type(self).enabled_locks:
+                        type(self).enabled_locks.remove(self._name)
+                    logger.debug(f"Heartbeat could not reacquire lock \
+                                {self._name} in {self.source}")
                     break
             else:
                 max_retries = self.DEFAULT_MAX_RETRIES
@@ -345,11 +350,7 @@ class Lock:
             # append to enabled locks pool
             cls.enabled_locks.append(lock_obj._name)
 
-            # get new loop
-            loop = asyncio.get_event_loop()
-
             # launch thread
-            # loop = asyncio.get_event_loop()
             await lock_obj.th_reacquire()
 
     @classmethod
@@ -360,7 +361,10 @@ class Lock:
         """
         try:
             # remove lock from enabled locks pool
-            cls.enabled_locks.remove(name)
+            if name in cls.enabled_locks:
+                cls.enabled_locks.remove(name)
+            else:
+                logger.debug(f"lock {name} not in enabled hearbeat")
 
         # ignore if the lock is not in enabled_locks
         except ValueError:
