@@ -7,5 +7,5 @@ pylint
 black
 gitpython
 jsonschema
-yaml
+pyyaml
 pytest
