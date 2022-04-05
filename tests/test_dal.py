@@ -1,5 +1,6 @@
 import json
 import unittest
+import pytest
 from json import loads as json_loads
 from dal.api.dalapi import MasterDAL, SlaveDAL
 from dal.classes.filesystem.filesystem import FileSystem
