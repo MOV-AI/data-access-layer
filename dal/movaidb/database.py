@@ -19,9 +19,155 @@ import aioredis
 from redis.client import Pipeline
 from typing import Any, Tuple
 from .configuration import Configuration
+from ..classes import Singleton
+from movai_core_shared.logger import Log
+from movai_core_shared.exceptions import InvalidStructure
+LOGGER = Log.get_logger("dal.mov.ai")
 
-from ..classes.common.singleton import Singleton
-# LOGGER = StdoutLogger("spawner.mov.ai")
+
+class AioRedisClient(metaclass=Singleton):
+    """
+    A Singleton class implementing AioRedis API.
+    """
+    _databases = {}
+    loop = asyncio.get_event_loop()
+
+    @classmethod
+    def _register_databases(cls):
+        if not cls._databases:
+            cls._databases = {
+                "db_slave": {
+                    'name': 'db_slave',
+                    'host': MovaiDB.REDIS_SLAVE_HOST,
+                    'port': MovaiDB.REDIS_SLAVE_PORT,
+                    'mode': None,
+                    'enabled': True
+                },
+                "db_local": {
+                    'name': 'db_local',
+                    'host': MovaiDB.REDIS_LOCAL_HOST,
+                    'port': MovaiDB.REDIS_LOCAL_PORT,
+                    'mode': None,
+                    'enabled': True
+                },
+                "slave_pubsub": {
+                    'name': 'slave_pubsub',
+                    'host': MovaiDB.REDIS_SLAVE_HOST,
+                    'port': MovaiDB.REDIS_SLAVE_PORT,
+                    'mode': 'SUB',
+                    'enabled': True
+                },
+                "local_pubsub": {
+                    'name': 'local_pubsub',
+                    'host': MovaiDB.REDIS_LOCAL_HOST,
+                    'port': MovaiDB.REDIS_LOCAL_PORT,
+                    'mode': 'SUB',
+                    'enabled': True
+                },
+                "db_global": {
+                    'name': 'db_global',
+                    'host': MovaiDB.REDIS_MASTER_HOST,
+                    'port': MovaiDB.REDIS_MASTER_PORT,
+                    'mode': None,
+                    'enabled': False
+                }
+            }
+
+    async def shutdown(self):
+        """shutdown connections
+        """
+        for _, conn in type(self)._databases.items():
+            conn.close()
+        tasks = [getattr(self, db_name).wait_closed()
+                 for db_name in type(self)._databases.keys()]
+        await asyncio.gather(*tasks, return_exceptions=True)
+
+    @classmethod
+    async def get_client(cls):
+        """will return class singleton instance
+
+        Returns:
+            AioRedisClient: object of class AioRedisClient
+        """
+        cls._register_databases()
+        instance = cls()
+        await instance._init_databases()
+        return instance
+
+    async def _init_databases(self):
+        """will initialize connection pools
+        """
+        for conn_name, conn_config in type(self)._databases.items():
+            conn_enabled = conn_config.get("enabled", False)
+            _conn = None
+            if conn_enabled:
+                _conn = getattr(self, conn_name, None)
+                if not _conn or _conn.closed:
+                    try:
+                        address = (conn_config["host"], conn_config["port"])
+                        if conn_config.get("mode") == "SUB":
+                            _conn = await aioredis.create_pool(
+                                        address, minsize=1, maxsize=100)
+                        else:
+                            _conn = await aioredis.create_redis_pool(
+                                address, minsize=2, maxsize=100, timeout=1)
+                    except Exception as e:
+                        LOGGER.error(e)
+            setattr(self, conn_name, _conn)
+
+    @classmethod
+    def enable_db(cls, db_name):
+        """will enable the given db name
+
+        Args:
+            db_name (str): database name
+        """
+        cls._register_databases()
+        cls._databases[db_name]['enabled'] = True
+
+
+class Redis(metaclass=Singleton):
+    """
+    A Singleton class implementing Redis API.
+    """
+
+    def __init__(self):
+        self.master_pool = redis.ConnectionPool(
+                                            host=MovaiDB.REDIS_MASTER_HOST,
+                                            port=MovaiDB.REDIS_MASTER_PORT,
+                                            db=0)
+        self.slave_pool = redis.ConnectionPool(
+                                            host=MovaiDB.REDIS_SLAVE_HOST,
+                                            port=MovaiDB.REDIS_SLAVE_PORT,
+                                            db=0)
+        self.local_pool = redis.ConnectionPool(
+                                            host=MovaiDB.REDIS_LOCAL_HOST,
+                                            port=MovaiDB.REDIS_LOCAL_PORT,
+                                            db=0)
+
+        self.thread = None
+
+    @property
+    def db_global(self) -> redis.Redis:
+        return redis.Redis(connection_pool=self.master_pool,
+                           decode_responses=False)
+
+    @property
+    def db_slave(self) -> redis.Redis:
+        return redis.Redis(connection_pool=self.slave_pool,
+                           decode_responses=False)
+
+    @property
+    def db_local(self) -> redis.Redis:
+        return redis.Redis(connection_pool=self.local_pool,
+                           decode_responses=False)
+
+    @property
+    def slave_pubsub(self) -> redis.client.PubSub:
+        return self.db_slave.pubsub()
+
+    def local_pubsub(self) -> redis.client.PubSub:
+        return self.db_local.pubsub()
 
 
 class MovaiDB:
@@ -46,143 +192,6 @@ class MovaiDB:
     REDIS_LOCAL_HOST = getenv("REDIS_LOCAL_HOST", "redis-local")
     REDIS_LOCAL_PORT = int(getenv("REDIS_LOCAL_PORT", 6379))
     REDIS_SLAVE_HOST = getenv("REDIS_SLAVE_HOST", REDIS_MASTER_HOST)
-
-    # -------------------------------------------------------------------------
-    class AioRedisClient(metaclass=Singleton):
-        """
-        A Singleton class implementing AioRedis API.
-        """
-        _databases = {}
-        loop = asyncio.get_event_loop()
-
-        @classmethod
-        def _register_databases(cls):
-            if not cls._databases:
-                cls._databases = {
-                    "db_slave": {
-                        'name': 'db_slave',
-                        'host': MovaiDB.REDIS_SLAVE_HOST,
-                        'port': MovaiDB.REDIS_SLAVE_PORT,
-                        'mode': None,
-                        'enabled': True
-                    },
-                    "db_local": {
-                        'name': 'db_local',
-                        'host': MovaiDB.REDIS_LOCAL_HOST,
-                        'port': MovaiDB.REDIS_LOCAL_PORT,
-                        'mode': None,
-                        'enabled': True
-                    },
-                    "slave_pubsub": {
-                        'name': 'slave_pubsub',
-                        'host': MovaiDB.REDIS_SLAVE_HOST,
-                        'port': MovaiDB.REDIS_SLAVE_PORT,
-                        'mode': 'SUB',
-                        'enabled': True
-                    },
-                    "local_pubsub": {
-                        'name': 'local_pubsub',
-                        'host': MovaiDB.REDIS_LOCAL_HOST,
-                        'port': MovaiDB.REDIS_LOCAL_PORT,
-                        'mode': 'SUB',
-                        'enabled': True
-                    },
-                    "db_global": {
-                        'name': 'db_global',
-                        'host': MovaiDB.REDIS_MASTER_HOST,
-                        'port': MovaiDB.REDIS_MASTER_PORT,
-                        'mode': None,
-                        'enabled': False
-                    }
-                }
-
-        async def shutdown(self):
-            for _, conn in type(self)._databases.items():
-                conn.close()
-            tasks = [getattr(self, db_name).wait_closed()
-                     for db_name in type(self)._databases.keys()]
-            await asyncio.gather(*tasks, return_exceptions=True)
-
-        @classmethod
-        async def get_client(cls):
-            cls._register_databases()
-            instance = cls()
-            await instance._init_databases()
-            return instance
-
-        async def _init_databases(self):
-            for conn_name, conn_config in type(self)._databases.items():
-                conn_enabled = conn_config.get("enabled", False)
-                _conn = None
-                if conn_enabled:
-                    _conn = getattr(self, conn_name, None)
-                    if not _conn or _conn.closed:
-                        try:
-                            address = (conn_config["host"],
-                                       conn_config["port"])
-                            if conn_config.get("mode") == "SUB":
-                                _conn = await aioredis.create_pool(
-                                            address, minsize=1, maxsize=100)
-                            else:
-                                _conn = await aioredis.create_redis_pool(
-                                    address, minsize=2, maxsize=100, timeout=1)
-                        except Exception as e:
-                            print(f"Error, {e}")
-                            # TODO LOGGER.error(e)
-                            pass
-                setattr(self, conn_name, _conn)
-
-        @classmethod
-        def enable_db(cls, db_name):
-            cls._register_databases()
-            cls._databases[db_name]['enabled'] = True
-    # ---------------------- End Of AioRedisClient class ----------------------
-
-    # -------------------------------------------------------------------------
-    class Redis(metaclass=Singleton):
-        """
-        A Singleton class implementing Redis API.
-        """
-
-        def __init__(self):
-            self.master_pool = redis.ConnectionPool(
-                                               host=MovaiDB.REDIS_MASTER_HOST,
-                                               port=MovaiDB.REDIS_MASTER_PORT,
-                                               db=0)
-            self.slave_pool = redis.ConnectionPool(
-                                              host=MovaiDB.REDIS_SLAVE_HOST,
-                                              port=MovaiDB.REDIS_SLAVE_PORT,
-                                              db=0)
-            self.local_pool = redis.ConnectionPool(
-                                              host=MovaiDB.REDIS_LOCAL_HOST,
-                                              port=MovaiDB.REDIS_LOCAL_PORT,
-                                              db=0)
-
-            self.thread = None
-
-        @property
-        def db_global(self) -> redis.Redis:
-            return redis.Redis(connection_pool=self.master_pool,
-                               decode_responses=False)
-
-        @property
-        def db_slave(self) -> redis.Redis:
-            return redis.Redis(connection_pool=self.slave_pool,
-                               decode_responses=False)
-
-        @property
-        def db_local(self) -> redis.Redis:
-            return redis.Redis(connection_pool=self.local_pool,
-                               decode_responses=False)
-
-        @property
-        def slave_pubsub(self) -> redis.client.PubSub:
-            return self.db_slave.pubsub()
-
-        def local_pubsub(self) -> redis.client.PubSub:
-            return self.db_local.pubsub()
-
-    # -------------------------- End Of Redis class ---------------------------
 
     def __init__(self, db: str = 'global', _api_version: str = 'latest',
                  *, loop=None, databases=None) -> None:

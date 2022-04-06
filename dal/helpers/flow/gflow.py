@@ -8,8 +8,8 @@
 """
 from movai.core import Log
 from dal.validation import Template
-from deprecated.api.consts import (ROS1_NODELETCLIENT, ROS1_NODELETSERVER, ROS1_PLUGINCLIENT,
-                                   ROS1_PLUGINSERVER, MOVAI_TRANSITIONFOR, MOVAI_TRANSITIONTO)
+from movai_core_shared.consts import (ROS1_NODELETCLIENT, ROS1_NODELETSERVER, ROS1_PLUGINCLIENT,
+                                      ROS1_PLUGINSERVER, MOVAI_TRANSITIONFOR, MOVAI_TRANSITIONTO)
 
 
 class GFlow:

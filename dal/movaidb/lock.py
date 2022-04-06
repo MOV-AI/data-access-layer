@@ -15,13 +15,13 @@ import time
 import redis
 
 from ..movaidb.database import MovaiDB
-from deprecated.api.exceptions.exceptions import MovaiException
-from deprecated.logger import StdoutLogger
-from ..models.robot import Robot
+from movai_core_shared.exceptions import MovaiException
+from movai_core_shared.logger import Log
+from DAL.dataaccesslayer.dal.scopes.robot import Robot
 
 SCOPES = ['local', 'global']
 
-logger = StdoutLogger('Lock')
+logger = Log.get_logger('Lock')
 
 
 class Lock:

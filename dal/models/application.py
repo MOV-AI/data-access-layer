@@ -6,15 +6,16 @@
    Developers:
    - Tiago Teixeira  (tiago.teixeira@mov.ai) - 2020
 
-   System Model
+   Application Model
 """
 
 from .model import Model
 
 
-class System(Model):
-    """ System Model
+class Application(Model):
+    """ Application Model """
 
-        use deprecated instead"""
+    # default __init__
 
-#Model.register_model_class("System", System)
+
+Model.register_model_class("Application", Application)

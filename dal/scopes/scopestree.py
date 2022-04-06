@@ -9,12 +9,12 @@
 import re
 from abc import ABC
 from importlib import import_module
-from .tree import TreeNode, ObjectNode, PropertyNode, CallableNode, DictNode
-from .serialization import ObjectDeserializer, ObjectSerializer, SerializableObject
-from .workspace import WorkspaceObject, WorkspaceNode
-from .schema import schemas, SchemaPropertyNode, SchemaNode, SchemaObjectNode
-from .persistence import Persistence, PersistentObject
-from .version import VersionObject
+from ..data.tree import TreeNode, ObjectNode, PropertyNode, CallableNode, DictNode
+from ..data.serialization import ObjectDeserializer, ObjectSerializer, SerializableObject
+from ..data.workspace import WorkspaceObject, WorkspaceNode
+from ..data.schema import schemas, SchemaPropertyNode, SchemaNode, SchemaObjectNode
+from ..data.persistence import Persistence, PersistentObject
+from ..data.version import VersionObject
 
 
 class ScopeInstanceNode(DictNode, WorkspaceObject):
