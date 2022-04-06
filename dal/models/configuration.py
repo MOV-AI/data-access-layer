@@ -4,57 +4,54 @@
    Proprietary and confidential
 
    Developers:
-   - Manuel Silva (manuel.silva@mov.ai) - 2020
-   - Tiago Paulino (tiago@mov.ai) - 2020
-Module that implements Configuration scope class
+   - Manuel Silva  (manuel.silva@mov.ai) - 2020
 """
 import yaml
-from box import Box
-from deprecated.api.exceptions import DoesNotExist
-from ..movaidb.database import MovaiDB
-from .scope import Scope
+from .model import Model
 
 
-class Configuration(Scope):
-    """Configuration class"""
+class Configuration(Model):
+    """
+    Provides xml or yaml configuration
+    """
 
-    scope = 'Configuration'
-
-    def __init__(self, name, version='latest', new=False, db='global'):
-        super().__init__(scope="Configuration", name=name, version=version, new=new, db=db)
-
-    # ported
     def get_value(self) -> dict:
         """Returns a dictionary with the configuration values"""
+
         if self.Type == "xml":
+
+            # Yaml is the name of the field
             return self.Yaml
+
         return yaml.load(self.Yaml, Loader=yaml.FullLoader)
 
-    # ported
-    def get_param(self, param: str):
-        """ Returns the configuration value of a key in the format param.subparam.subsubparam"""
+    def get_param(self, param: str) -> any:
+        """ Returns the configuration value of a key in the format param.subparam.subsubparam """
+
         value = None
 
         dict_value = self.get_value()
 
         fields = param.split('.')
+
         try:
             temp_dict = dict_value
+
             for elem in fields:
-                temp_dict = temp_dict[elem]
+                temp_dict = temp_dict[elem] if elem in temp_dict else None 
+
+                if temp_dict is None:
+                    # this means either temp_dict returned None (happens when key: _empty_) or missing key
+                    break
+
             value = temp_dict
-        except Exception:
+
+        except Exception as exc:
             raise Exception(
-                '"%s" is not a valid parameter in configuration "%s"' % (param, self.name))
+                f'"{param}" is not a valid parameter in configuration "{self.path}"') from exc
+
         return value
 
 
-class Config(Box):
-    """Config with dot accessible elements"""
-
-    def __init__(self, name):
-        config = MovaiDB().get_value({'Configuration': {name: {'Yaml': ''}}})
-        if not config:
-            raise DoesNotExist('Configuration %s was not found' % config)
-        config = yaml.load(config, Loader=yaml.FullLoader)
-        super().__init__(Box(config))
+# Register class as model of scope Flow
+Model.register_model_class("Configuration", Configuration)
