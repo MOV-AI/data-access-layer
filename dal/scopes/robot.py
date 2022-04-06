@@ -12,9 +12,10 @@
 import uuid
 import pickle
 from .scope import Scope
-from ..movaidb.database import MovaiDB
+from ..movaidb import MovaiDB
 from .fleetrobot import FleetRobot
 from .configuration import Configuration
+
 
 class Robot(Scope):
     """Robot class that deals with robot related stuff"""

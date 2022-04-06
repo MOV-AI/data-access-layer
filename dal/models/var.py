@@ -7,7 +7,6 @@
    - Manuel Silva (manuel.silva@mov.ai) - 2020
    - Tiago Paulino (tiago@mov.ai) - 2020
 """
-
 from ..movaidb.database import MovaiDB
 
 SCOPES = ['callback', 'node', 'flow', 'robot', 'fleet', 'global']

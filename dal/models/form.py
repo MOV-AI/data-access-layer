@@ -6,15 +6,14 @@
    Developers:
    - Tiago Teixeira  (tiago.teixeira@mov.ai) - 2020
 
-   System Model
+   Form Model
 """
 
-from .model import Model
+from DAL import Model
 
+class Form(Model):
+    """ Form Model """
 
-class System(Model):
-    """ System Model
+    # default __init__
 
-        use deprecated instead"""
-
-#Model.register_model_class("System", System)
+Model.register_model_class("Form", Form)

@@ -9,9 +9,9 @@
 """
 import copy
 import re
-from deprecated.api.exceptions import AlreadyExist
-from ..movaidb.database import MovaiDB
-from deprecated.api.core.helpers import Helpers
+from movai_core_shared.exceptions import AlreadyExist
+from ..movaidb import MovaiDB
+from ..helpers import Helpers
 
 
 class List(list):
