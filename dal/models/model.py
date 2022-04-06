@@ -8,8 +8,9 @@
 """
 from abc import ABC
 from importlib import import_module
-from ...data import (ScopeInstanceVersionNode, ScopesTree,
-                                          ScopeNode, TreeNode, SchemaPropertyNode, scopes)
+from ..scopes.scopestree import (
+    ScopeInstanceVersionNode, ScopesTree,
+    ScopeNode, TreeNode, SchemaPropertyNode, scopes)
 
 
 class Model(ScopeInstanceVersionNode, ABC):

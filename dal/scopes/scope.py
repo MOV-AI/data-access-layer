@@ -8,9 +8,9 @@
    - Tiago Paulino (tiago@mov.ai) - 2020
 """
 import os
-from deprecated.api.exceptions import DoesNotExist, AlreadyExist
+from movai_core_shared.exceptions import DoesNotExist, AlreadyExist
 from .structures import Struct
-from ..movaidb.database import MovaiDB, Configuration
+from ..movaidb import MovaiDB, Configuration
 
 
 class Scope(Struct):

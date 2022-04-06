@@ -11,8 +11,6 @@ from .workspace import (WorkspaceObject, WorkspaceManager)
 from .version import VersionObject
 from .schema import (schemas, SchemaObjectNode, SchemaPropertyNode,
                      SchemasTree, SchemaDeserializer, SchemaNode)
-from .scope import (scopes, ScopeInstanceVersionNode, ScopePropertyNode,
-                    ScopeNode, ScopeObjectNode, ScopesTree)
 from .tree import (TreeNode,
                    ObjectNode, PropertyNode)
 from .serialization import (ObjectSerializer, ObjectDeserializer)
@@ -25,12 +23,6 @@ __all__ = [
     "Persistence",
     "WorkspaceObject",
     "VersionObject",
-    "scopes",
-    "ScopeInstanceVersionNode",
-    "ScopePropertyNode",
-    "ScopeNode",
-    "ScopeObjectNode",
-    "ScopesTree",
     "schemas",
     "SchemaObjectNode",
     "SchemaPropertyNode",

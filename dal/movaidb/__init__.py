@@ -9,11 +9,14 @@
 """
 
 from .configuration import Configuration
-from .database import MovaiDB
+from .database import MovaiDB, Redis, AioRedisClient
 from .lock import Lock
 
+RedisClient = AioRedisClient
 __all__ = [
     "Configuration",
     "MovaiDB",
-    "Lock"
+    "Lock",
+    "Redis",
+    "RedisClient"
 ]
