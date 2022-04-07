@@ -6,8 +6,7 @@
    Developers:
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
 """
-
-from ...plugin import Plugin
+from dal.plugins import Plugin
 from dal.data import (ObjectDeserializer, TreeNode, SchemaDeserializer)
 
 

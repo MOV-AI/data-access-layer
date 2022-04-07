@@ -12,7 +12,7 @@
 import uuid
 import pickle
 from .scope import Scope
-from ..movaidb import MovaiDB
+from dal.movaidb import MovaiDB
 from .fleetrobot import FleetRobot
 from .configuration import Configuration
 

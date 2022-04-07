@@ -10,7 +10,7 @@
 import argparse
 
 # TODO those classes does not exist in data
-from ..data import SchemaManager, ScopeSerializer, ScopeManager
+from dal.data import SchemaManager, ScopeSerializer, ScopeManager
 
 if __name__ == "__main__":
 

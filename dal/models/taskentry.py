@@ -8,8 +8,8 @@
 
    TaskEntry Model
 """
-from ..scopes import scopes
-from ..helpers import get_string_from_template
+from dal.scopes import scopes
+from dal.helpers import get_string_from_template
 from .tasktemplate import TaskTemplate
 from .model import Model
 

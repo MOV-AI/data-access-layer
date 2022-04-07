@@ -8,7 +8,7 @@
 """
 from abc import ABC
 from importlib import import_module
-from ..scopes.scopestree import (
+from dal.scopes.scopestree import (
     ScopeInstanceVersionNode, ScopesTree,
     ScopeNode, TreeNode, SchemaPropertyNode, scopes)
 

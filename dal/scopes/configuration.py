@@ -11,7 +11,7 @@ Module that implements Configuration scope class
 import yaml
 from box import Box
 from movai_core_shared.exceptions import DoesNotExist
-from ..movaidb import MovaiDB
+from dal.movaidb import MovaiDB
 from .scope import Scope
 
 

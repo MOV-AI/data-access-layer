@@ -9,8 +9,7 @@
 from io import BytesIO, StringIO
 from json import JSONDecodeError, load
 from os import path
-
-from ...resource import Resource, ResourcePlugin, ResourceException
+from dal.plugins import Resource, ResourcePlugin, ResourceException
 
 
 class RedisPlugin(ResourcePlugin):

@@ -10,8 +10,8 @@
 import copy
 import re
 from movai_core_shared.exceptions import AlreadyExist
-from ..movaidb import MovaiDB
-from ..helpers import Helpers
+from dal.movaidb import MovaiDB
+from dal.helpers import Helpers
 
 
 class List(list):

@@ -13,11 +13,10 @@
 import asyncio
 import time
 import redis
-
-from ..movaidb.database import MovaiDB
+from .database import MovaiDB
 from movai_core_shared.exceptions import MovaiException
 from movai_core_shared.logger import Log
-from DAL.dataaccesslayer.dal.scopes.robot import Robot
+from dal.scopes import Robot
 
 SCOPES = ['local', 'global']
 

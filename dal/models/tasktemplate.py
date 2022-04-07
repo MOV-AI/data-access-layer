@@ -10,7 +10,7 @@
 """
 
 import re
-from ..scopes import scopes
+from dal.scopes import scopes
 from .model import Model
 
 

@@ -10,7 +10,7 @@
 """
 from typing import Dict
 from types import SimpleNamespace
-from ..scopes import ScopesTree
+from dal.scopes import ScopesTree
 from movai_core_shared.logger import Log
 from .model import Model
 
