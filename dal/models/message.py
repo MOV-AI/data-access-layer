@@ -15,7 +15,7 @@ from typing import Dict, List
 import genmsg
 import rosmsg
 import rospkg
-from ..scopes import System, scopes
+from dal.scopes import System, scopes
 from .model import Model
 from movai.core import Log
 logger = Log.get_logger('')

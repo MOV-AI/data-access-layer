@@ -12,10 +12,10 @@
 import copy
 import hashlib
 import os
-from ..movaidb import MovaiDB
+from dal.movaidb import MovaiDB
 from .scope import Scope
 from .structures import Struct
-from ..helpers import Helpers
+from dal.helpers import Helpers
 from movai_core_shared.logger import Log
 
 LOGGER = Log.get_logger("spawner.mov.ai")

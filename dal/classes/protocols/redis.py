@@ -8,9 +8,8 @@
 
    Redis related protocols to be used in new Mov-Node
 """
-
 import asyncio
-from ...movaidb.database import MovaiDB
+from dal.movaidb import MovaiDB
 
 
 class ContextMsg:

@@ -8,8 +8,8 @@
 
    Form Model
 """
+from .model import Model
 
-from DAL import Model
 
 class Form(Model):
     """ Form Model """
