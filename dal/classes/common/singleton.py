@@ -8,8 +8,6 @@
 
     Module that implements a Singleton Base class.
 """
-
-
 class Singleton(type):
     """
     A Singleton metaclass, every class that is intended to be a Singleton

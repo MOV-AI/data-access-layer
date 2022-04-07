@@ -9,7 +9,7 @@
 import re
 import uuid
 from .scopestree import (ScopePropertyNode, ScopeNode)
-from ..validation import Template
+from dal.validation import Template
 
 
 class FlowLinks(ScopePropertyNode):

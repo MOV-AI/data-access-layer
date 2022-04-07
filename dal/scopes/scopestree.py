@@ -9,12 +9,12 @@
 import re
 from abc import ABC
 from importlib import import_module
-from ..data.tree import TreeNode, ObjectNode, PropertyNode, CallableNode, DictNode
-from ..data.serialization import ObjectDeserializer, ObjectSerializer, SerializableObject
-from ..data.workspace import WorkspaceObject, WorkspaceNode
-from ..data.schema import schemas, SchemaPropertyNode, SchemaNode, SchemaObjectNode
-from ..data.persistence import Persistence, PersistentObject
-from ..data.version import VersionObject
+from dal.data.tree import TreeNode, ObjectNode, PropertyNode, CallableNode, DictNode
+from dal.data.serialization import ObjectDeserializer, ObjectSerializer, SerializableObject
+from dal.data.workspace import WorkspaceObject, WorkspaceNode
+from dal.data.schema import schemas, SchemaPropertyNode, SchemaNode, SchemaObjectNode
+from dal.data.persistence import Persistence, PersistentObject
+from dal.data.version import VersionObject
 
 
 class ScopeInstanceNode(DictNode, WorkspaceObject):
