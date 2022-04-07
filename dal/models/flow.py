@@ -11,8 +11,8 @@
 from types import SimpleNamespace
 
 from movai.core import Log
-from ..scopes import scopes
-from ..helpers import GFlow, ParamParser
+from dal.scopes import scopes
+from dal.helpers import GFlow, ParamParser
 from movai_core_shared.consts import (ROS1_NODELETSERVER)
 from .model import Model
 

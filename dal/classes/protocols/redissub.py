@@ -15,8 +15,8 @@ from typing import Any
 from dal.movaidb import MovaiDB
 from API2.Redis import RedisClient
 from API2.Robot import Robot
-from deprecated.gdnode.message import GD_Message
-from deprecated.gdnode.protocols.base import BaseIport
+from gd_node.message import GD_Message
+from gd_node.protocols.base import BaseIport
 
 '''
 class Redis_Subscriber(BaseIport):

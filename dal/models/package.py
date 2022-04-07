@@ -11,8 +11,8 @@
 
 import hashlib
 from typing import Tuple
-from ..scopes import scopes
-from DAL import Model
+from dal.scopes import scopes
+from .model import Model
 
 class Package(Model):
    """

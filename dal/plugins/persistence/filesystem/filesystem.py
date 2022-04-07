@@ -16,11 +16,12 @@ import tempfile
 from urllib.parse import urlparse
 from binascii import Error as BinasciiError
 from datetime import datetime
-from movai.core import Log
-from ...plugin import Plugin
-from dal.data import (schemas, PersistencePlugin, TreeNode, SchemaPropertyNode,
-                                          Persistence, ScopeInstanceVersionNode, ScopesTree)
-from movai.models import Model
+from movai_core_shared.logger import Log
+from dal.plugins import Plugin
+from dal.data import (schemas, PersistencePlugin,
+                      TreeNode, SchemaPropertyNode, Persistence)
+from dal.scopes import ScopeInstanceVersionNode, ScopesTree
+from dal.models import Model
 from movai.remote import RemoteArchive
 from dal.backup import RestoreManager
 

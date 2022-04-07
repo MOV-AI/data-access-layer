@@ -10,14 +10,12 @@
 import ast
 import re
 import os
-
 from movai.core import Log
-from dal.data import scopes
+from dal.scopes import scopes
+from dal.models import Var
 
-from API2.Var import Var
 
-
-class ParamParser():
+class ParamParser:
     '''
     Parser for the node instance, container and flow parameters
     Supports configuration. parameters, var, flow and env variables

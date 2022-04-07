@@ -8,11 +8,14 @@
 """
 from .resources.file import FilePlugin
 
-from .resource import Resource, Plugin, PluginManager, ResourceException
+from .resource import (
+    Resource, Plugin, PluginManager, ResourceException, ResourcePlugin
+)
 
 __all__ = [
     "Resource",
     "Plugin",
     "PluginManager",
-    "ResourceException"
+    "ResourceException",
+    "ResourcePlugin"
 ]

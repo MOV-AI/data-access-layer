@@ -19,7 +19,7 @@ import aioredis
 from redis.client import Pipeline
 from typing import Any, Tuple
 from .configuration import Configuration
-from ..classes import Singleton
+from dal.classes import Singleton
 from movai_core_shared.logger import Log
 from movai_core_shared.exceptions import InvalidStructure
 LOGGER = Log.get_logger("dal.mov.ai")
