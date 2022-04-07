@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 # The 'install_requires' is where you specify the package dependencies of your package. They will be automaticly installed, before your package.  # noqa: E501
 setuptools.setup(
     name="dal",
-    version="1.0.0-4",
+    version="1.0.0-5",
     author="Backend team",
     author_email="backend@mov.ai",
     description="Dummy description",
