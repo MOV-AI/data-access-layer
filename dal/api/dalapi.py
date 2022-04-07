@@ -8,12 +8,11 @@
 
    main DAL api
 """
-
 from .gitapi import GitManager, SlaveGitManager, MasterGitManager
 from abc import ABC, abstractmethod
-from .. import validation
+from dal import validation
 from os.path import realpath, dirname
-from ..classes.protocols import (
+from dal.classes.protocols import (
     ContextClientIn,
     ContextServerIn,
     ContextClientOut,

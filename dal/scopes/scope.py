@@ -10,7 +10,7 @@
 import os
 from movai_core_shared.exceptions import DoesNotExist, AlreadyExist
 from .structures import Struct
-from ..movaidb import MovaiDB, Configuration
+from dal.movaidb import MovaiDB, Configuration
 
 
 class Scope(Struct):

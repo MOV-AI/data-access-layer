@@ -15,9 +15,9 @@ from movai_core_shared.consts import (
     MOVAI_NODE, MOVAI_SERVER, MOVAI_STATE,
     MOVAI_TRANSITIONFOR, MOVAI_TRANSITIONTO, ROS1_NODE,
     ROS1_NODELET, ROS1_PLUGIN)
-from ..movaidb import MovaiDB
+from dal.movaidb import MovaiDB
 from .scope import Scope
-from ..helpers import Helpers
+from dal.helpers import Helpers
 from movai_core_shared.logger import Log
 LOGGER = Log.get_logger("Node")
 

@@ -8,7 +8,8 @@
 """
 from abc import ABC, abstractmethod, abstractproperty
 from movai.core import Log
-from ..plugins import Plugin, PluginManager
+from dal.plugins import Plugin, PluginManager
+
 
 class PersistentObject(ABC):
     """

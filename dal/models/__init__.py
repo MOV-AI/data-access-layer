@@ -24,6 +24,8 @@ from .tasktemplate import TaskTemplate
 from .var import Var
 from .widget import Widget
 from .flow import Flow
+from .acl import ACLManager
+from .user import User
 
 __all__ = [
     "Annotation",
@@ -43,5 +45,7 @@ __all__ = [
     "Var",
     "Model",
     "Widget",
-    "Flow"
+    "Flow",
+    "ACLManager",
+    "User"
 ]

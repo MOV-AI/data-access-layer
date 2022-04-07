@@ -1,0 +1,7 @@
+miracle-acl==0.0.4.post1
+gitpython
+jsonschema
+pyyaml
+redis
+aioredis
+box

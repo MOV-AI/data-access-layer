@@ -7,9 +7,9 @@
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
    - Manuel Silva  (manuel.silva@mov.ai) - 2020
 """
-from deprecated.api.consts import (ROS1_NODELET, MOVAI_STATE, ROS1_PLUGIN)
+from movai_core_shared.consts import (ROS1_NODELET, MOVAI_STATE, ROS1_PLUGIN)
 #from .ports import Ports
-from ..scopes import scopes
+from dal.scopes import scopes
 from .model import Model
 
 

@@ -11,15 +11,12 @@ import pickle
 import re
 import json
 import fnmatch
-
 from redis.client import ConnectionPool, Redis
 from redis.exceptions import ResponseError
-
-from ...plugin import Plugin
+from dal.plugins import Plugin
 from dal.data import (Persistence, PersistencePlugin, SchemaPropertyNode,
-                                          SchemaNode, ScopeInstanceVersionNode, ScopesTree,
-                                          TreeNode, schemas)
-
+                      SchemaNode, ScopeInstanceVersionNode, schemas)
+from dal.scopes import TreeNode, ScopesTree
 from movai.models import Model
 
 
