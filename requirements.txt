@@ -1,7 +1,9 @@
+aioredis==1.3.0
+hiredis==1.0.1
+redis==3.3.11
 miracle-acl==0.0.4.post1
+rejson==0.5.4
 gitpython
 jsonschema
 pyyaml
-redis
-aioredis
 box
