@@ -10,7 +10,8 @@ from io import BytesIO, StringIO
 from json import JSONDecodeError, load
 from os import listdir, path, getenv, getcwd
 import yaml
-from dal.plugins import Resource, ResourcePlugin, ResourceException, Plugin
+from ...resource import Resource, ResourcePlugin, ResourceException
+from ...plugin import Plugin
 
 __DRIVER_NAME__ = "Filesystem Plugin"
 __DRIVER_VERSION__ = "0.0.1"

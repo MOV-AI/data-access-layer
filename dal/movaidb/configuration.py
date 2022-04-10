@@ -8,7 +8,7 @@
 """
 
 from os import path
-from dal.plugins import Resource
+from ..plugins import Resource
 dir_path = path.dirname(path.realpath(__file__))
 __SCHEMAS_URL__ = f"file://{dir_path}/../validation/schema"
 
