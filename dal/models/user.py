@@ -25,7 +25,7 @@ from .model import Model
 from movai_core_shared.logger import Log
 
 # declare logger
-logger = Log.get_logger('GraphicScene')
+logger = Log.get_logger('User')
 
 
 class User(Model):

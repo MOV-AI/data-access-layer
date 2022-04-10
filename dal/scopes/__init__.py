@@ -26,7 +26,7 @@ from .scopestree import (
     ScopesTree,
     scopes
 )
-from .structures import Struct
+from .structures import Struct, List, Hash
 from .system import System
 from .container import Container
 from .flowlinks import FlowLinks
@@ -59,5 +59,8 @@ __all__ = [
     "FlowLinks",
     "Callback",
     "Flow",
-    "Form"
+    "Form",
+    "Widget",
+    "List",
+    "Hash"
 ]
