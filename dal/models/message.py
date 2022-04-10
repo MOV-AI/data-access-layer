@@ -17,7 +17,7 @@ import rosmsg
 import rospkg
 from dal.scopes import System, scopes
 from .model import Model
-from movai.core import Log
+from movai_core_shared.logger import Log
 logger = Log.get_logger('')
 
 

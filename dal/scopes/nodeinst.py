@@ -8,7 +8,7 @@
    - Manuel Sila  (manuel.silva@mov.ai) - 2020
 """
 from .scopestree import (ScopeObjectNode, ScopeNode, scopes)
-from movai.core import Log
+from movai_core_shared.logger import Log
 
 
 class NodeInst(ScopeObjectNode):

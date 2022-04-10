@@ -13,8 +13,8 @@ import glob
 import shutil
 from datetime import datetime
 from zipfile import ZipFile, BadZipFile
-from dal.data import scopes
-from movai.core import Log
+from dal.scopes import scopes
+from movai_core_shared.logger import Log
 
 
 class RestoreJob:

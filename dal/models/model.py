@@ -10,7 +10,8 @@ from abc import ABC
 from importlib import import_module
 from dal.scopes.scopestree import (
     ScopeInstanceVersionNode, ScopesTree,
-    ScopeNode, TreeNode, SchemaPropertyNode, scopes)
+    ScopeNode, scopes)
+from dal.data import TreeNode, SchemaPropertyNode
 
 
 class Model(ScopeInstanceVersionNode, ABC):

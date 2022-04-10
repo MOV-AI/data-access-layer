@@ -12,7 +12,7 @@ import os
 import re
 import uuid
 from itertools import product
-from deprecated.helpers import flatten ??
+from dal.helpers import flatten
 from movai_core_shared.consts import (
     CONFIG_REGEX,
     LINK_REGEX,
@@ -32,7 +32,7 @@ from dal.movaidb import MovaiDB
 from .scope import Scope
 from .ports import Ports
 from .node import Node
-from dal.models import Var
+from ..models.var import Var
 from movai_core_shared.exceptions import DoesNotExist
 from .configuration import Configuration
 from movai_core_shared.logger import Log
@@ -847,7 +847,7 @@ class Flow(Scope):
     # WONT PORT -> Node
     def get_node_ports_gen(self, node_name: str, port: str = None):
         """
-        [Generator] Returns ports CCredenciais guardadas…Credenciais guardadas…redenciais guardadas… guardadas…     1\cd eeeec vx1 1qaaaaaaaaaaq \    ased on node links
+        [Generator] Returns ports node links
         'port' must be PortInst/port_name
         """
         node_template = self.get_node(node_name)
