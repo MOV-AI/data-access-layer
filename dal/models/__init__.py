@@ -19,8 +19,6 @@ from .ports import Ports
 from .shareddatatemplate import SharedDataTemplate
 from .shareddataentry import SharedDataEntry
 from .system import System
-from .taskentry import TaskEntry
-from .tasktemplate import TaskTemplate
 from .var import Var
 from .widget import Widget
 from .flow import Flow
@@ -33,8 +31,6 @@ __all__ = [
     "Message",
     "SharedDataEntry",
     "SharedDataTemplate",
-    "TaskEntry",
-    "TaskTemplate",
     "Configuration",
     "Callback",
     "Form",
