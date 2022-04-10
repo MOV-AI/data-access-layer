@@ -7,7 +7,7 @@
    - Manuel Silva (manuel.silva@mov.ai) - 2020
    - Tiago Paulino (tiago@mov.ai) - 2020
 """
-from dal.scope import Scope
+from dal.scopes import Scope
 
 
 class Widget(Scope):

@@ -19,7 +19,6 @@ import re
 from importlib import import_module
 
 from dal.movaidb import MovaiDB
-import dal.scopes as API2
 
 from dal.scopes import scopes
 
@@ -72,9 +71,9 @@ class Factory:
         """
         if scope not in Factory.CLASSES_CACHE:
             try:
-                mod = import_module(f"API2.{scope}")
+                mod = import_module(f"dal.scopes.{scope}")
             except ImportError:
-                mod = import_module("API2.Scopes")
+                mod = import_module("dal.scopes.Scopes")
 
             try:
                 Factory.CLASSES_CACHE[scope] = mod.__getattribute__(scope)
