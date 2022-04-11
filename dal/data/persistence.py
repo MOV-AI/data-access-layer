@@ -7,7 +7,7 @@
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
 """
 from abc import ABC, abstractmethod, abstractproperty
-from movai.core import Log
+from movai_core_shared.logger import Log
 from dal.plugins import Plugin, PluginManager
 
 

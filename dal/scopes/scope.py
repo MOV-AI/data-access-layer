@@ -10,7 +10,7 @@
 import os
 from movai_core_shared.exceptions import DoesNotExist, AlreadyExist
 from .structures import Struct
-from dal.movaidb import MovaiDB, Configuration
+from dal.movaidb import MovaiDB
 
 
 class Scope(Struct):
@@ -28,7 +28,7 @@ class Scope(Struct):
         dir_path = os.path.dirname(os.path.realpath(__file__))
 
         schema_folder = f"file://{dir_path}/../validation/schema"
-        template_struct = Configuration.API(url=schema_folder)[scope]
+        template_struct = MovaiDB.API(url=schema_folder)[scope]
         self.__dict__['struct'] = template_struct
 
         struct = dict()

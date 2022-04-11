@@ -6,8 +6,8 @@
    Developers:
    - Moawiya Mograbi  (moawiya@mov.ai) - 2022
 """
-from .annotation import Annotation
-from .configuration import Configuration
+#from .annotation import Annotation
+#from .configuration import Configuration
 from .application import Application
 from .callback import Callback
 from .message import Message
@@ -24,14 +24,15 @@ from .widget import Widget
 from .flow import Flow
 from .acl import ACLManager
 from .user import User
+from .lock import Lock
 
 __all__ = [
-    "Annotation",
+    #"Annotation",
     "Application",
     "Message",
     "SharedDataEntry",
     "SharedDataTemplate",
-    "Configuration",
+    #"Configuration",
     "Callback",
     "Form",
     "Node",
@@ -43,5 +44,6 @@ __all__ = [
     "Widget",
     "Flow",
     "ACLManager",
-    "User"
+    "User",
+    "Lock"
 ]
