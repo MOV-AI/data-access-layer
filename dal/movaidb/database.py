@@ -272,7 +272,7 @@ class MovaiDB:
         self.db_write: redis.Redis = None
         self.pubsub: redis.client.PubSub = None
 
-        self.movaidb = databases or type(self).Redis()
+        self.movaidb = databases or Redis()
         for attribute, val in self.db_dict[db].items():
             setattr(self, attribute, getattr(self.movaidb, val))
 

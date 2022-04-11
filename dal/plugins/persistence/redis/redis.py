@@ -15,9 +15,9 @@ from redis.client import ConnectionPool, Redis
 from redis.exceptions import ResponseError
 from dal.plugins import Plugin
 from dal.data import (Persistence, PersistencePlugin, SchemaPropertyNode,
-                      SchemaNode, ScopeInstanceVersionNode, schemas)
-from dal.scopes import TreeNode, ScopesTree
-from movai.models import Model
+                      SchemaNode, schemas, TreeNode)
+from dal.scopes import ScopesTree, ScopeInstanceVersionNode
+from dal.models import Model
 
 
 __DRIVER_NAME__ = "Mov.ai Redis Plugin"
