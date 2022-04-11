@@ -18,6 +18,7 @@ from dal.data import (Persistence, PersistencePlugin, SchemaPropertyNode,
                       SchemaNode, schemas, TreeNode)
 from dal.scopes import ScopesTree, ScopeInstanceVersionNode
 from dal.models import Model
+from dal.movaidb import MovaiDB
 
 
 __DRIVER_NAME__ = "Mov.ai Redis Plugin"
@@ -35,10 +36,10 @@ class RedisPlugin(PersistencePlugin):
     the key composition, otherwise it will be stored as a value
     - Composition pattern: <scope>:<id>[(,<attr>:<id>)*](,<attr>)+:(<value>)*
     """
-    _REDIS_MASTER_HOST = os.getenv('REDIS_MASTER_HOST', "localhost")
-    _REDIS_MASTER_PORT = os.getenv('REDIS_MASTER_PORT', "6379")
-    _REDIS_SLAVE_HOST = os.getenv('REDIS_SLAVE_HOST', _REDIS_MASTER_HOST)
-    _REDIS_SLAVE_PORT = os.getenv('REDIS_SLAVE_PORT', _REDIS_MASTER_PORT)
+    _REDIS_MASTER_HOST = MovaiDB.REDIS_MASTER_HOST
+    _REDIS_MASTER_PORT = MovaiDB.REDIS_MASTER_PORT
+    _REDIS_SLAVE_HOST = MovaiDB.REDIS_SLAVE_HOST
+    _REDIS_SLAVE_PORT = MovaiDB.REDIS_SLAVE_PORT
 
     _REDIS_MASTER_POOL = ConnectionPool(
         host=_REDIS_MASTER_HOST, port=_REDIS_MASTER_PORT, db=0)
