@@ -18,13 +18,16 @@ import pickle
 import aioredis
 from redis.client import Pipeline
 from typing import Any, Tuple
+import dal
 from dal.classes import Singleton
 from dal.plugins import Resource
 from movai_core_shared.logger import Log
 from movai_core_shared.exceptions import InvalidStructure
 LOGGER = Log.get_logger("dal.mov.ai")
-dir_path = path.dirname(path.realpath(__file__))
-__SCHEMAS_URL__ = f"file://{dir_path}/../validation/schema"
+
+
+dal_directory = path.dirname(dal.__file__)
+__SCHEMAS_URL__ = f"file://{dal_directory}/validation/schema"
 
 
 class AioRedisClient(metaclass=Singleton):
@@ -276,13 +279,11 @@ class MovaiDB:
         for attribute, val in self.db_dict[db].items():
             setattr(self, attribute, getattr(self.movaidb, val))
 
-        schema_folder = "file://DAL/dataaccesslayer/dal/validation/schema"
         if _api_version == 'latest':
-
-            self.api_struct = MovaiDB.API(url=schema_folder).get_api()
+            self.api_struct = MovaiDB.API(url=__SCHEMAS_URL__).get_api()
         else:
             # we then need to get this from database!!!!
-            self.api_struct = MovaiDB.API(version=_api_version, url=schema_folder).get_api()
+            self.api_struct = MovaiDB.API(version=_api_version, url=__SCHEMAS_URL__).get_api()
         self.api_star = self.template_to_star(self.api_struct)
         # self.validator = Validator(db).val
 

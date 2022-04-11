@@ -73,6 +73,9 @@ class ScopeInstanceVersionNode(ObjectNode, VersionObject, WorkspaceObject, Persi
         "_children",
     ]
 
+    def set_acl(self):
+        pass
+
     @property
     def node_type(self):
         return "scope_version"
@@ -691,7 +694,7 @@ class ScopeNode(DictNode, WorkspaceObject):
         try:
             # Try to load model from our library if not already loaded
             if self._scope not in ScopeNode.__SCOPES_MAP__:
-                import_module("movai.models")
+                import_module("dal.scopes")
 
         except ModuleNotFoundError:
             pass
@@ -802,7 +805,7 @@ class ScopeWorkspace(WorkspaceNode):
         try:
             # Try to load model from our library if not already loaded
             if scope not in ScopeNode.__SCOPES_MAP__:
-                import_module("movai.models")
+                import_module("dal.scopes")
         except ModuleNotFoundError:
             pass
 
