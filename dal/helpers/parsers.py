@@ -10,9 +10,9 @@
 import ast
 import re
 import os
-from movai.core import Log
-from dal.scopes import scopes
-from dal.models import Var
+from movai_core_shared.logger import Log
+from ..scopes.scopestree import scopes
+from ..models.var import Var
 
 
 class ParamParser:

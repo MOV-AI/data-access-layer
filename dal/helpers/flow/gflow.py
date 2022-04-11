@@ -6,7 +6,8 @@
    Developers:
    - Manuel Silva  (manuel.silva@mov.ai) - 2020
 """
-from movai.core import Log
+
+from movai_core_shared.logger import Log
 from dal.validation import Template
 from movai_core_shared.consts import (ROS1_NODELETCLIENT, ROS1_NODELETSERVER, ROS1_PLUGINCLIENT,
                                       ROS1_PLUGINSERVER, MOVAI_TRANSITIONFOR, MOVAI_TRANSITIONTO)

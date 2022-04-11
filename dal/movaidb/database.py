@@ -10,7 +10,7 @@
 """
 
 import asyncio
-from os import getenv
+from os import getenv, path
 from re import split
 import redis
 from deepdiff import DeepDiff
@@ -18,11 +18,13 @@ import pickle
 import aioredis
 from redis.client import Pipeline
 from typing import Any, Tuple
-from .configuration import Configuration
 from dal.classes import Singleton
+from dal.plugins import Resource
 from movai_core_shared.logger import Log
 from movai_core_shared.exceptions import InvalidStructure
 LOGGER = Log.get_logger("dal.mov.ai")
+dir_path = path.dirname(path.realpath(__file__))
+__SCHEMAS_URL__ = f"file://{dir_path}/../validation/schema"
 
 
 class AioRedisClient(metaclass=Singleton):
@@ -173,6 +175,77 @@ class Redis(metaclass=Singleton):
 class MovaiDB:
     """Main MovaiDB"""
 
+    class API(dict):
+        """
+        # Represents the API template dict. Can be Imported or saved into Redis
+        """
+
+        __API__ = {}
+
+        def __init__(self, version: str = 'latest',
+                     url: str = __SCHEMAS_URL__):
+            super(type(self), self).__init__()
+            # We force the version of the schemas to the deprecated version
+            version = "1.0"
+            self.__url = path.join(url, version)
+            self.__version = version
+            if version not in type(self).__API__:
+                # load builtins schemas
+                current_path = path.join(url, version)
+                type(self).__API__[version] = {
+                    path.splitext(schema_file)[0]:
+                        Resource.read_json(
+                            path.join(current_path, schema_file))["schema"]
+                    for schema_file in Resource.list_resources(current_path)
+                    if schema_file.endswith(".json")}
+
+        @property
+        def version(self):
+            """ Current version """
+            return self.__version
+
+        @property
+        def url(self):
+            """ Base uri """
+            return self.__url
+
+        def __setitem__(self, key, value):
+            raise NotImplementedError
+
+        def __getitem__(self, key):
+            return type(self).__API__[self.__version][key]
+
+        def __iter__(self):
+            return type(self).__API__[self.__version].__iter__
+
+        def __repr__(self):
+            return type(self).__API__[self.__version].__repr__()
+
+        def __str__(self):
+            return type(self).__API__[self.__version].__str__()
+
+        def keys(self):
+            return type(self).__API__[self.__version].keys()
+
+        def values(self):
+            return type(self).__API__[self.__version].values()
+
+        @classmethod
+        def get_schema(cls, version, name):
+            """
+            return scope schema for the specifed version
+            """
+            try:
+                return cls(version=version).get_api()[name]
+            except KeyError:
+                return {}
+
+        def get_api(self):
+            """
+            return the current API
+            """
+            return type(self).__API__[self.__version]
+
     db_dict = {
         "global": {
             "db_read": "db_slave",
@@ -206,10 +279,10 @@ class MovaiDB:
         schema_folder = "file://DAL/dataaccesslayer/dal/validation/schema"
         if _api_version == 'latest':
 
-            self.api_struct = Configuration.API(url=schema_folder).get_api()
+            self.api_struct = MovaiDB.API(url=schema_folder).get_api()
         else:
             # we then need to get this from database!!!!
-            self.api_struct = Configuration.API(version=_api_version, url=schema_folder).get_api()
+            self.api_struct = MovaiDB.API(version=_api_version, url=schema_folder).get_api()
         self.api_star = self.template_to_star(self.api_struct)
         # self.validator = Validator(db).val
 
