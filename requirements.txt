@@ -6,4 +6,8 @@ rejson==0.5.4
 gitpython
 jsonschema
 pyyaml
-box
+python-box
+genmsg
+miracle
+pyros-genmsg
+py3rosmsgs
