@@ -18,7 +18,7 @@ schema_files += ["dal/validation/schema/2.0/" + file for file in os.listdir("dal
 # The 'install_requires' is where you specify the package dependencies of your package. They will be automaticly installed, before your package.  # noqa: E501
 setuptools.setup(
     name="dal",
-    version="1.0.0-16",
+    version="1.0.0-17",
     author="Backend team",
     author_email="backend@mov.ai",
     description="Dummy description",
