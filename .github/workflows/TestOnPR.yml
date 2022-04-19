@@ -28,7 +28,7 @@ jobs:
     needs:  [CI]
     container:
       image: registry.cloud.mov.ai/devops/movai-base-noetic:v1.4.5
-      options: --user movai
+      options: --user root
       credentials:
         username: ${{ secrets.PORTUS_APP_USER }}
         password: ${{ secrets.PORTUS_APP_TOKEN }}
