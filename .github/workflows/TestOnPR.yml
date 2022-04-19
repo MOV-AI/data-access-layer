@@ -22,4 +22,36 @@ jobs:
       nexus_publisher_password: ${{ secrets.NEXUS_PUBLISHER_PWD }}
       gh_token: ${{ secrets.GITHUB_TOKEN }}
       sonar_token: ${{ secrets.SONAR_TOKEN }}
-      
+
+  Install-Tests:
+    runs-on: ubuntu-20.04
+    needs:  [CI]
+    container:
+      image: registry.cloud.mov.ai/devops/movai-base-noetic:v1.4.5
+      options: --user movai
+      credentials:
+        username: ${{secrets.registry_user}}
+        password: ${{secrets.registry_password}}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          # Disabling shallow clone is recommended for improving relevancy of reporting
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Download generated python artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: packages
+          path: dist
+
+      - name: Install pip
+        run: |
+          python3 -m pip install --no-cache-dir \
+          --index-url="https://artifacts.cloud.mov.ai/repository/pypi-experimental/simple" \
+          --extra-index-url https://pypi.org/simple \
+          ./dist/*.whl
+
+
