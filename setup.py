@@ -1,7 +1,17 @@
+import os
+
 import setuptools
+from os import listdir
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
+
+requirements = []
+with open("requirements.txt", "r") as f:
+    requirements = [a.split('\n')[0] for a in f.readlines()]
+
+schema_files = ["dal/validation/schema/1.0/" + file for file in os.listdir("dal/validation/schema/1.0")]
+schema_files += ["dal/validation/schema/2.0/" + file for file in os.listdir("dal/validation/schema/2.0")]
 
 # TODO Adapt your project configuration to your own project.
 # The name of the package is the one to be used in runtime.
@@ -18,6 +28,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     include_package_data=True,
     classifiers=["Programming Language :: Python :: 3"],
-    install_requires=["jsonschema==3.2.0", "gitpython==3.1.20", "aioredis==1.3.0", "redis==3.3.11"],
+    install_requires=requirements,
+    data_files=schema_files,
     entry_points={},
 )
