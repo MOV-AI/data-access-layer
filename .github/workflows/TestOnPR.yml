@@ -30,8 +30,8 @@ jobs:
       image: registry.cloud.mov.ai/devops/movai-base-noetic:v1.4.5
       options: --user movai
       credentials:
-        username: ${{secrets.registry_user}}
-        password: ${{secrets.registry_password}}
+        username: ${{ secrets.PORTUS_APP_USER }}
+        password: ${{ secrets.PORTUS_APP_TOKEN }}
 
     steps:
       - name: Checkout
