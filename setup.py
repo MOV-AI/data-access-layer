@@ -27,7 +27,7 @@ setuptools.setup(
     install_requires=["jsonschema==3.2.0", "gitpython==3.1.2",
                       "py3rosmsgs", "aioredis==1.3.0", "redis==3.3.11", "Pillow>=5.1.0",
                       "pyros-genmsg", "python-box==4.0.4", "deepdiff==4.0.9",
-                      "miracle-acl==0.0.4.post1", "pyjwt==1.7.1"],
+                      "miracle-acl==0.0.4.post1", "pyjwt==2.3.0"],
     data_files=data_files,
     entry_points={},
 )

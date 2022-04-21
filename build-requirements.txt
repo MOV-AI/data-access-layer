@@ -15,4 +15,4 @@ pyros-genmsg
 python-box==4.0.4
 deepdiff==4.0.9
 miracle-acl==0.0.4.post1
-pyjwt==1.7.1
+pyjwt==2.3.0
