@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs:  [CI]
     container:
-      image: registry.cloud.mov.ai/devops/movai-base-melodic:v1.4.5
+      image: registry.cloud.mov.ai/devops/movai-base-melodic:v1.4.9
       options: --user root
       credentials:
         username: ${{ secrets.PORTUS_APP_USER }}
