@@ -1114,7 +1114,7 @@ class Flow(Scope):
         except DoesNotExist:
             # No exposed ports...
             pass
-            
+
         except Exception as e:
             LOGGER.error(str(e))
 
