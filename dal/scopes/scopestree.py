@@ -709,7 +709,7 @@ class ScopeNode(DictNode, WorkspaceObject):
         try:
             # Try to load model from our library if not already loaded
             if self._scope not in ScopeNode.__SCOPES_MAP__:
-                import_module("dal.scopes")
+                import_module("dal.models")
 
         except ModuleNotFoundError:
             pass
@@ -826,7 +826,7 @@ class ScopeWorkspace(WorkspaceNode):
         try:
             # Try to load model from our library if not already loaded
             if scope not in ScopeNode.__SCOPES_MAP__:
-                import_module("dal.scopes")
+                import_module("dal.models")
         except ModuleNotFoundError:
             pass
 

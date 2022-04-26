@@ -6,16 +6,12 @@
    Developers:
    - Moawiya Mograbi  (moawiya@mov.ai) - 2022
 """
-#from .annotation import Annotation
-#from .configuration import Configuration
+from .configuration import Configuration
 from .application import Application
 from .callback import Callback
-from .message import Message
 from .form import Form
 from .model import Model
 from .node import Node
-from .package import Package
-from .ports import Ports
 from .shareddatatemplate import SharedDataTemplate
 from .shareddataentry import SharedDataEntry
 from .system import System
@@ -26,24 +22,61 @@ from .acl import ACLManager
 from .user import User
 from .lock import Lock
 
-__all__ = [
-    #"Annotation",
-    "Application",
-    "Message",
-    "SharedDataEntry",
-    "SharedDataTemplate",
-    #"Configuration",
-    "Callback",
-    "Form",
-    "Node",
-    "Package",
-    "Ports",
-    "System",
-    "Var",
-    "Model",
-    "Widget",
-    "Flow",
-    "ACLManager",
-    "User",
-    "Lock"
+# scope part modules
+from ..scopes.container import Container
+from ..scopes.nodeinst import NodeInst
+
+try:
+    from movai_core_enterprise.models import (
+        SharedDataEntry, SharedDataTemplate, TaskTemplate,
+        TaskEntry, Annotation, GraphicAsset, Layout, GraphicScene
+    )
+    enterprise_modules = [
+        'Annotation',
+        'GraphicAsset',
+        'GraphicScene',
+        'Layout',
+        'SharedDataEntry',
+        'SharedDataTemplate',
+        'TaskEntry',
+        'TaskTemplate'
+    ]
+except ImportError:
+    enterprise_modules = []
+
+try:
+    from backend.endpoints.api.v2.models.role import Role
+    backend_moduels = ['Role']
+except ImportError:
+    backend_moduels = []
+
+# the following modules is not used in the old models implementation
+# from .package import Package
+# from .ports import Ports
+# from .message import Message
+
+modules = [
+    'ACLManager',
+    'Application',
+    'Callback',
+    'Configuration',
+    'Container',
+    'Flow',
+    'Form',
+    'Lock',
+    # 'Message',
+    'Model',
+    'Node',
+    'NodeInst',
+    # 'Package',
+    # 'Ports',
+    'Role',
+    'System',
+    'User',
+    'Var',
+    'Widget'
 ]
+modules.extend(enterprise_modules)
+modules.extend(backend_moduels)
+
+__all__ = modules
