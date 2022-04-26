@@ -9,12 +9,12 @@
 
 from os import path
 from dal.plugins import Resource
+
 dir_path = path.dirname(path.realpath(__file__))
 __SCHEMAS_URL__ = f"file://{dir_path}/../validation/schema"
 
 
 class Configuration:
-
     class API(dict):
         """
         # Represents the API template dict. Can be Imported or saved into Redis
@@ -22,8 +22,7 @@ class Configuration:
 
         __API__ = {}
 
-        def __init__(self, version: str = 'latest',
-                     url: str = __SCHEMAS_URL__):
+        def __init__(self, version: str = "latest", url: str = __SCHEMAS_URL__):
             super(type(self), self).__init__()
             # We force the version of the schemas to the deprecated version
             version = "1.0"
@@ -33,20 +32,21 @@ class Configuration:
                 # load builtins schemas
                 current_path = path.join(url, version)
                 type(self).__API__[version] = {
-                    path.splitext(schema_file)[0]:
-                        Resource.read_json(
-                            path.join(current_path, schema_file))["schema"]
+                    path.splitext(schema_file)[0]: Resource.read_json(
+                        path.join(current_path, schema_file)
+                    )["schema"]
                     for schema_file in Resource.list_resources(current_path)
-                    if schema_file.endswith(".json")}
+                    if schema_file.endswith(".json")
+                }
 
         @property
         def version(self):
-            """ Current version """
+            """Current version"""
             return self.__version
 
         @property
         def url(self):
-            """ Base uri """
+            """Base uri"""
             return self.__url
 
         def __setitem__(self, key, value):

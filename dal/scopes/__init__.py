@@ -24,7 +24,7 @@ from .scopestree import (
     ScopeNode,
     ScopeWorkspace,
     ScopesTree,
-    scopes
+    scopes,
 )
 from .structures import Struct, List, Hash
 from .system import System
@@ -62,5 +62,5 @@ __all__ = [
     "Form",
     "Widget",
     "List",
-    "Hash"
+    "Hash",
 ]
