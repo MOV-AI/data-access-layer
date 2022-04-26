@@ -21,6 +21,9 @@ from .flow import Flow
 from .acl import ACLManager
 from .user import User
 from .lock import Lock
+from .package import Package
+from .ports import Ports
+from .message import Message
 
 # scope part modules
 from ..scopes.container import Container
@@ -50,11 +53,6 @@ try:
 except ImportError:
     backend_moduels = []
 
-# the following modules is not used in the old models implementation
-# from .package import Package
-# from .ports import Ports
-# from .message import Message
-
 modules = [
     'ACLManager',
     'Application',
@@ -64,12 +62,12 @@ modules = [
     'Flow',
     'Form',
     'Lock',
-    # 'Message',
+    'Message',
     'Model',
     'Node',
     'NodeInst',
-    # 'Package',
-    # 'Ports',
+    'Package',
+    'Ports',
     'Role',
     'System',
     'User',
