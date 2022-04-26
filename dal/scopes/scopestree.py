@@ -10,7 +10,11 @@ import re
 from abc import ABC
 from importlib import import_module
 from dal.data.tree import TreeNode, ObjectNode, PropertyNode, CallableNode, DictNode
-from dal.data.serialization import ObjectDeserializer, ObjectSerializer, SerializableObject
+from dal.data.serialization import (
+    ObjectDeserializer,
+    ObjectSerializer,
+    SerializableObject,
+)
 from dal.data.workspace import WorkspaceObject, WorkspaceNode
 from dal.data.schema import schemas, SchemaPropertyNode, SchemaNode, SchemaObjectNode
 from dal.data.persistence import Persistence, PersistentObject
@@ -60,11 +64,14 @@ class ScopeInstanceNode(DictNode, WorkspaceObject):
         return None if workspace is None else workspace.workspace
 
 
-class ScopeInstanceVersionNode(ObjectNode, VersionObject, WorkspaceObject, PersistentObject, ABC):
+class ScopeInstanceVersionNode(
+    ObjectNode, VersionObject, WorkspaceObject, PersistentObject, ABC
+):
     """
     This class represents a instance version, the instance version is the
     object that actually contains the data
     """
+
     __PROTECTED__ = [
         "_parent",
         "_sorted",
@@ -208,7 +215,8 @@ class ScopeInstanceVersionNode(ObjectNode, VersionObject, WorkspaceObject, Persi
                     attr_child.attributes["schema"] = attr_schema
                     for node_attr in attr_schema.children:
                         ScopeAttributeDeserializer._deserialize(
-                            node_attr, attr_child, v)
+                            node_attr, attr_child, v
+                        )
                     attr.add_child(attr_child)
                 self.add_child((name, attr))
                 return
@@ -218,8 +226,7 @@ class ScopeInstanceVersionNode(ObjectNode, VersionObject, WorkspaceObject, Persi
             attr.attributes["schema"] = attr_schema
 
             for child in attr_schema.children:
-                ScopeAttributeDeserializer._deserialize(
-                    child, attr, value)
+                ScopeAttributeDeserializer._deserialize(child, attr, value)
 
             self.add_child(attr)
 
@@ -248,7 +255,9 @@ class ScopeInstanceVersionNode(ObjectNode, VersionObject, WorkspaceObject, Persi
                 a_cls = ScopePropertyNode
                 i_value = None
             print(a_cls, attr_schema.path)
-            attr = a_cls(name, i_value) # FIXME Properties should probably raise an exception or something
+            attr = a_cls(
+                name, i_value
+            )  # FIXME Properties should probably raise an exception or something
             attr.attributes["schema"] = attr_schema
             self.add_child(attr)
             # in case it gets overriden
@@ -264,8 +273,7 @@ class ScopeInstanceVersionNode(ObjectNode, VersionObject, WorkspaceObject, Persi
                 return attr
 
             # a object
-            a_cls = ScopeNode.__OBJECTS_MAP__.get(
-                attr_schema.path, ScopeObjectNode)
+            a_cls = ScopeNode.__OBJECTS_MAP__.get(attr_schema.path, ScopeObjectNode)
             attr = a_cls(name)
             attr.attributes["schema"] = attr_schema
             self.add_child(attr)
@@ -355,7 +363,7 @@ class ScopeDictNode(DictNode, SerializableObject):
         self.remove_child(key)
 
     def __delitem__(self, key):
-        """ Removes an element from this dict """
+        """Removes an element from this dict"""
         self.remove_child(key)
 
     def create(self, key: str, data: dict = None) -> ObjectNode:
@@ -366,18 +374,22 @@ class ScopeDictNode(DictNode, SerializableObject):
         """
         attr = ScopeObjectNode(key)
         schema = self.schema
-        attr.attributes['schema'] = schema
+        attr.attributes["schema"] = schema
         self.add_child(attr)
         try:
             for data_key in data:
                 try:
-                    ScopeAttributeDeserializer._deserialize(schema[data_key], attr, data)
+                    ScopeAttributeDeserializer._deserialize(
+                        schema[data_key], attr, data
+                    )
                 except KeyError:
                     # not defined on schema, ignore
                     pass
         except AttributeError as e:
             # looks like data is not `dict`
-            raise TypeError("Can't deserialize given object (should be an `dict`)") from e
+            raise TypeError(
+                "Can't deserialize given object (should be an `dict`)"
+            ) from e
         except TypeError:
             # data is `None`
             pass
@@ -396,7 +408,7 @@ class ScopeDictNode(DictNode, SerializableObject):
             old = None
         try:
             self.create(key, data)
-        except Exception:   # pylint: disable=broad-except
+        except Exception:  # pylint: disable=broad-except
             # if something goes wrong, revert
             if old is not None:
                 self._children[key] = old
@@ -409,6 +421,7 @@ class ScopeObjectNode(ObjectNode, SerializableObject, ABC):
     a Callback, a Flow or a Node, an instance is the actual object
     that contains the data
     """
+
     __PROTECTED__ = [
         "_parent",
         "_sorted",
@@ -468,7 +481,8 @@ class ScopeObjectNode(ObjectNode, SerializableObject, ABC):
                     attr_child.attributes["schema"] = attr_schema
                     for node_attr in attr_schema.children:
                         ScopeAttributeDeserializer._deserialize(
-                            node_attr, attr_child, v)
+                            node_attr, attr_child, v
+                        )
                     attr.add_child(attr_child)
                 self.add_child((name, attr))
                 return
@@ -478,8 +492,7 @@ class ScopeObjectNode(ObjectNode, SerializableObject, ABC):
             attr.attributes["schema"] = attr_schema
 
             for child in attr_schema.children:
-                ScopeAttributeDeserializer._deserialize(
-                    child, attr, value)
+                ScopeAttributeDeserializer._deserialize(child, attr, value)
 
             self.add_child(attr)
 
@@ -507,7 +520,9 @@ class ScopeObjectNode(ObjectNode, SerializableObject, ABC):
             except KeyError:
                 a_cls = ScopePropertyNode
                 i_value = None
-            attr = a_cls(name, i_value) # FIXME Properties should probably raise an exception or something
+            attr = a_cls(
+                name, i_value
+            )  # FIXME Properties should probably raise an exception or something
             attr.attributes["schema"] = attr_schema
             self.add_child(attr)
             # in case it gets overriden later
@@ -523,8 +538,7 @@ class ScopeObjectNode(ObjectNode, SerializableObject, ABC):
                 return attr
 
             # a object
-            a_cls = ScopeNode.__OBJECTS_MAP__.get(
-                attr_schema.path, ScopeObjectNode)
+            a_cls = ScopeNode.__OBJECTS_MAP__.get(attr_schema.path, ScopeObjectNode)
             attr = a_cls(name)
             attr.attributes["schema"] = attr_schema
             self.add_child(attr)
@@ -541,6 +555,7 @@ class ScopePropertyNode(PropertyNode, SerializableObject):
     """
     Represents a property node in a scope tree
     """
+
     @property
     def scope(self):
         """
@@ -572,6 +587,7 @@ class ScopeNode(DictNode, WorkspaceObject):
     Implements a scope node, a scope is an mov.ai object
     for instance a Callback, a Flow or a Node
     """
+
     __SCOPES_MAP__ = {}
     __PROPERTIES_MAP__ = {}
     __OBJECTS_MAP__ = {}
@@ -678,8 +694,7 @@ class ScopeNode(DictNode, WorkspaceObject):
         # found we might be creating a new one, therefor we overide
         # the version to "__UNVERSIONED__"
         try:
-            data = workspace.plugin.read(
-                scope=self._scope, ref=key, version=version)
+            data = workspace.plugin.read(scope=self._scope, ref=key, version=version)
             schema_version = data.get("schema_version", "1.0")
             data = data.get(self._scope, {})
         except (FileNotFoundError, AttributeError) as e:
@@ -694,7 +709,7 @@ class ScopeNode(DictNode, WorkspaceObject):
         try:
             # Try to load model from our library if not already loaded
             if self._scope not in ScopeNode.__SCOPES_MAP__:
-                import_module("dal.scopes")
+                import_module("dal.models")
 
         except ModuleNotFoundError:
             pass
@@ -716,11 +731,13 @@ class ScopeNode(DictNode, WorkspaceObject):
         scope_instance.add_child((version, scope_instance_version))
 
         scope_instance_version.attributes["schema"] = schemas(
-            self._scope, scope_instance_version.schema_version)
+            self._scope, scope_instance_version.schema_version
+        )
 
         for _, v in data.items():
             ScopeAttributeDeserializer(scope_instance_version.schema).deserialize(
-                scope_instance_version, v)
+                scope_instance_version, v
+            )
 
         scope_instance_version.set_acl()
         return scope_instance_version
@@ -730,6 +747,7 @@ class ScopeWorkspace(WorkspaceNode):
     """
     This class represents a workspace with scopes
     """
+
     @property
     def path(self):
         """
@@ -759,6 +777,7 @@ class ScopeWorkspace(WorkspaceNode):
         """
         for scope in self._children.values():
             scope._children.clear()
+
     def __getattr__(self, name):
         try:
             return self.__dict__["_children"][name]
@@ -780,7 +799,9 @@ class ScopeWorkspace(WorkspaceNode):
         """
         return self.plugin.list_versions(workspace=self.workspace, scope=scope, ref=ref)
 
-    def create(self, scope: str, ref: str, version="__UNVERSIONED__", overwrite: bool = False):
+    def create(
+        self, scope: str, ref: str, version="__UNVERSIONED__", overwrite: bool = False
+    ):
         """
         create a new scope
         """
@@ -805,7 +826,7 @@ class ScopeWorkspace(WorkspaceNode):
         try:
             # Try to load model from our library if not already loaded
             if scope not in ScopeNode.__SCOPES_MAP__:
-                import_module("dal.scopes")
+                import_module("dal.models")
         except ModuleNotFoundError:
             pass
 
@@ -826,7 +847,8 @@ class ScopeWorkspace(WorkspaceNode):
         scope_instance_version.__init__(version)
         scope_instance.add_child((version, scope_instance_version))
         scope_instance_version.attributes["schema"] = schemas(
-            scope, scope_instance_version.schema_version)
+            scope, scope_instance_version.schema_version
+        )
 
         return scope_instance_version
 
@@ -841,10 +863,10 @@ class ScopeWorkspace(WorkspaceNode):
             ref = data.ref
         except AttributeError:
             try:
-                scope = kwargs['scope']
-                ref = kwargs['ref']
+                scope = kwargs["scope"]
+                ref = kwargs["ref"]
             except KeyError as e:
-                raise ValueError('Missing `scope` and/or `ref` argument') from e
+                raise ValueError("Missing `scope` and/or `ref` argument") from e
 
         # else, we got it
         try:
@@ -868,11 +890,14 @@ class ScopesTree(CallableNode):
     A scopes tree is an interface to access the stored
     data in mov.ai
     """
+
     # split pattern 1: <workspace>/<scope>/(<ref>/<ref>/..)/<version>
     __REFERENCE_REGEX_1__ = r"^([a-zA-Z0-9-_.]+)/([a-zA-Z0-9_.]+)/([a-zA-Z0-9_.-]+[/a-zA-Z0-9_.-]*)/([a-zA-Z0-9_.]+)$"
 
     # split pattern 2: <workspace>/<scope>/<ref>/<version>
-    __REFERENCE_REGEX_2__ = r"^([a-zA-Z0-9-_.]+)/([a-zA-Z0-9_.]+)/([a-zA-Z0-9_.-]+)/([/a-zA-Z0-9_.]+)$"
+    __REFERENCE_REGEX_2__ = (
+        r"^([a-zA-Z0-9-_.]+)/([a-zA-Z0-9_.]+)/([a-zA-Z0-9_.-]+)/([/a-zA-Z0-9_.]+)$"
+    )
 
     # split pattern 3: <workspace>/<scope>/<ref>
     __REFERENCE_REGEX_3__ = r"^([a-zA-Z0-9-_.]+)/([a-zA-Z0-9_.]+)/([a-zA-Z0-9_.-]+)$"
@@ -885,27 +910,50 @@ class ScopesTree(CallableNode):
         try:
             # split pattern 1: <workspace>/<scope>/(<ref>/<ref>/..)/<version>
             workspace, scope, ref, version = re.findall(
-                ScopesTree.__REFERENCE_REGEX_1__, path)[0]
-            return kwargs.get("workspace", workspace), kwargs.get("scope", scope), ref, kwargs.get("version", version)
+                ScopesTree.__REFERENCE_REGEX_1__, path
+            )[0]
+            return (
+                kwargs.get("workspace", workspace),
+                kwargs.get("scope", scope),
+                ref,
+                kwargs.get("version", version),
+            )
         except IndexError:
             pass
 
         try:
             # split pattern 2: <workspace>/<scope>/<ref>/<version>
             workspace, scope, ref, version = re.findall(
-                ScopesTree.__REFERENCE_REGEX_2__, path)[0]
-            return kwargs.get("workspace", workspace), kwargs.get("scope", scope), ref, kwargs.get("version", version)
+                ScopesTree.__REFERENCE_REGEX_2__, path
+            )[0]
+            return (
+                kwargs.get("workspace", workspace),
+                kwargs.get("scope", scope),
+                ref,
+                kwargs.get("version", version),
+            )
         except IndexError:
             pass
 
         try:
             # split pattern 3: <workspace>/<scope>/<ref>/<version>
-            workspace, scope, ref = re.findall(
-                ScopesTree.__REFERENCE_REGEX_3__, path)[0]
-            return kwargs.get("workspace", workspace), kwargs.get("scope", scope), ref, kwargs.get("version", "__UNVERSIONED__")
+            workspace, scope, ref = re.findall(ScopesTree.__REFERENCE_REGEX_3__, path)[
+                0
+            ]
+            return (
+                kwargs.get("workspace", workspace),
+                kwargs.get("scope", scope),
+                ref,
+                kwargs.get("version", "__UNVERSIONED__"),
+            )
         except IndexError:
             # path is just a ref
-            return kwargs.get("workspace", "global"), kwargs["scope"], path, kwargs.get("version", "__UNVERSIONED__")
+            return (
+                kwargs.get("workspace", "global"),
+                kwargs["scope"],
+                path,
+                kwargs.get("version", "__UNVERSIONED__"),
+            )
 
     @property
     def node_type(self):
@@ -927,7 +975,8 @@ class ScopesTree(CallableNode):
         """
         try:
             workspace, scope, ref, version = ScopesTree.extract_reference(
-                path, **kwargs)
+                path, **kwargs
+            )
             return self(workspace=workspace).read(scope=scope, ref=ref, version=version)
         except KeyError as e:
             raise ValueError("Invalid path") from e
@@ -938,7 +987,8 @@ class ScopesTree(CallableNode):
         """
         try:
             workspace, scope, ref, version = ScopesTree.extract_reference(
-                path, **kwargs)
+                path, **kwargs
+            )
             return getattr(self(workspace=workspace), scope)[ref, version]
         except IndexError as e:
             raise ValueError("Invalid path") from e
@@ -949,8 +999,11 @@ class ScopesTree(CallableNode):
         """
         try:
             workspace, scope, ref, version = ScopesTree.extract_reference(
-                path, **kwargs)
-            return self(workspace=workspace).backup(scope=scope, ref=ref, version=version, **kwargs)
+                path, **kwargs
+            )
+            return self(workspace=workspace).backup(
+                scope=scope, ref=ref, version=version, **kwargs
+            )
         except KeyError as e:
             raise ValueError("Invalid path") from e
 
@@ -960,8 +1013,11 @@ class ScopesTree(CallableNode):
         """
         try:
             workspace, scope, ref, version = ScopesTree.extract_reference(
-                path, **kwargs)
-            return self(workspace=workspace).restore(scope=scope, ref=ref, version=version, **kwargs)
+                path, **kwargs
+            )
+            return self(workspace=workspace).restore(
+                scope=scope, ref=ref, version=version, **kwargs
+            )
         except KeyError as e:
             raise ValueError("Invalid path") from e
 
@@ -975,11 +1031,9 @@ class ScopesTree(CallableNode):
             return self._children[workspace]
         except KeyError:
             if workspace == "global":
-                plugin = Persistence.get_plugin_class(
-                    "redis")(workspace="global")
+                plugin = Persistence.get_plugin_class("redis")(workspace="global")
             else:
-                plugin = Persistence.get_plugin_class(
-                    "filesystem")(workspace=workspace)
+                plugin = Persistence.get_plugin_class("filesystem")(workspace=workspace)
 
             workspace_node = ScopeWorkspace(workspace, plugin)
             self.add_child((workspace, workspace_node))
@@ -1048,7 +1102,8 @@ class ScopeAttributeDeserializer(ObjectDeserializer):
                             attr.attributes["schema"] = schema
                             for node_attr in node_attrs:
                                 ScopeAttributeDeserializer._deserialize(
-                                    node_attr, attr, value)
+                                    node_attr, attr, value
+                                )
                             node.add_child(attr)
                         except KeyError:
                             pass
@@ -1064,8 +1119,7 @@ class ScopeAttributeDeserializer(ObjectDeserializer):
                 node_data = data[schema.name]
 
                 for child in schema.children:
-                    ScopeAttributeDeserializer._deserialize(
-                        child, node, node_data)
+                    ScopeAttributeDeserializer._deserialize(child, node, node_data)
 
                 root.add_child(node)
             except KeyError:
@@ -1116,8 +1170,7 @@ class ScopeAttributeSerializer(ObjectSerializer):
 
             key = child.name
             if issubclass(type(child), (ScopeObjectNode, ScopeDictNode)):
-                value = ScopeAttributeSerializer(
-                    self._schema).serialize(child)
+                value = ScopeAttributeSerializer(self._schema).serialize(child)
             elif issubclass(type(child), ScopePropertyNode):
                 value = child.value
             else:
