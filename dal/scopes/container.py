@@ -7,7 +7,7 @@
    - Manuel Sila  (manuel.silva@mov.ai) - 2020
 """
 
-from .scopestree import (ScopeObjectNode, ScopeNode, scopes)
+from .scopestree import ScopeObjectNode, ScopeNode, scopes
 
 
 class Container(ScopeObjectNode):
@@ -17,17 +17,17 @@ class Container(ScopeObjectNode):
 
     @property
     def flow(self):
-        """ Returns the parent flow instance (Flow)"""
+        """Returns the parent flow instance (Flow)"""
         return self.parent.parent
 
     @property
     def subflow(self):
-        """ Returns the flow instance (Flow) represented by the container """
+        """Returns the flow instance (Flow) represented by the container"""
         return scopes.from_path(self.ContainerFlow, scope="Flow")
 
     @property
     def parser(self):
-        """ Get the parser (GParser) from the parent """
+        """Get the parser (GParser) from the parent"""
         return self.parent.parent.parser
 
     def get_node_inst(self, key: str):
@@ -37,7 +37,7 @@ class Container(ScopeObjectNode):
         return self.flow.NodeInst[key]
 
     def get_params(self, name: str = None) -> dict:
-        """ Returns all the parameters """
+        """Returns all the parameters"""
         params = {}
         _name = name or self.name
 
@@ -47,7 +47,9 @@ class Container(ScopeObjectNode):
 
         return params
 
-    def get_param(self, key: str, name: str = None, context=None, custom_parser: any = None) -> any:
+    def get_param(
+        self, key: str, name: str = None, context=None, custom_parser: any = None
+    ) -> any:
         """
         Returns a specific parameter of the container after
         parsing it
