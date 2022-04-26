@@ -60,7 +60,7 @@ jobs:
     steps:
       - name: Install dependencies 
         run: |
-          apt update && apt install libjpeg-dev zlib1g
+          apt update && apt install -y libjpeg-dev zlib1g
 
       - name: Download generated python artifact
         uses: actions/download-artifact@v2
