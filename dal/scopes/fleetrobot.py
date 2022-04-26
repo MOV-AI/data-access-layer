@@ -14,15 +14,14 @@ from .scope import Scope
 
 
 class FleetRobot(Scope):
-
-    def __init__(self, name, version='latest', new=False, db='global'):
+    def __init__(self, name, version="latest", new=False, db="global"):
         super().__init__(scope="Robot", name=name, version=version, new=new, db=db)
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot"""
         to_send = {}
         for key, value in locals().items():
-            if value is not None and key in ('command', 'flow', 'node', 'port', 'data'):
+            if value is not None and key in ("command", "flow", "node", "port", "data"):
                 to_send.update({key: value})
 
         to_send = pickle.dumps(to_send)
