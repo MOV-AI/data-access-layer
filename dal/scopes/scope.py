@@ -18,51 +18,54 @@ class Scope(Struct):
     """
     A scope
     """
-
     permissions = ["create", "read", "update", "delete"]
 
     def __init__(self, scope, name, version, new=False, db="global"):
+
         self.__dict__["name"] = name
         self.__dict__["scope"] = scope
 
-        # TODO
-        # we then need to get this from database!!!!
         dal_dir = os.path.dirname(os.path.realpath(dal.__file__))
         schema_folder = f"file://{dal_dir}/validation/schema"
         template_struct = MovaiDB.API(url=schema_folder)[scope]
+
+        # we then need to get this from database!!!!
         self.__dict__["struct"] = template_struct
 
         struct = dict()
         struct[name] = template_struct["$name"]
-        exist = self.movaidb.exists_by_args(scope=scope, Name=name)
         super().__init__(scope, struct, {}, db)
 
-        if new and exist:
-            raise AlreadyExist('This already exists. To edit dont send the "new" flag')
-        elif not new and not exist:
-            raise DoesNotExist(
-                '%s does not exist yet. If you wish to create please use "new=True"'
-                % name
-            )
+        if new:
+            if MovaiDB(self.db).exists_by_args(scope=scope, Name=name):
+                raise AlreadyExist(
+                    "This already exists. To edit dont send the 'new' flag")
+        else:
+            if not MovaiDB(self.db).exists_by_args(scope=scope, Name=name):
+                raise DoesNotExist(
+                    f"{name} does not exist yet. If you wish to create \
+                        please use 'new=True'")
 
     def calc_scope_update(self, old_dict, new_dict):
-        """Calc the objects differences and returns list with dict keys to delete/set"""
+        """ Calc the objects differences and returns list with dict keys to delete/set """
         structure = self.__dict__.get("struct").get("$name")
         return MovaiDB().calc_scope_update(old_dict, new_dict, structure)
 
     def remove(self, force=True):
-        """Removes Scope"""
-        result = self.movaidb.unsafe_delete({self.scope: {self.name: "**"}})
+        """ Removes Scope """
+        result = MovaiDB(self.db).unsafe_delete(
+            {self.scope: {self.name: "**"}})
         return result
 
     def remove_partial(self, dict_key):
-        """Remove Scope key"""
-        result = self.movaidb.unsafe_delete({self.scope: {self.name: dict_key}})
+        """ Remove Scope key """
+        result = MovaiDB(self.db).unsafe_delete(
+            {self.scope: {self.name: dict_key}})
         return result
 
     def get_dict(self):
-        """Returns the full dictionary of the scope from db"""
-        result = self.movaidb.get({self.scope: {self.name: "**"}})
+        """ Returns the full dictionary of the scope from db"""
+        result = MovaiDB(self.db).get({self.scope: {self.name: "**"}})
         attrs, lists, hashs = self.get_attributes(self.struct)
         for list_name in lists:
             if list_name not in result[self.scope][self.name]:
@@ -80,7 +83,7 @@ class Scope(Struct):
     def has_scope_permission(self, user, permission) -> bool:
         if not user.has_permission(
             self.scope,
-            "{prefix}.{permission}".format(prefix=self.name, permission=permission),
+            "{prefix}.{permission}".format(prefix=self.name, permission=permission)
         ):
             if not user.has_permission(self.scope, permission):
                 return False
