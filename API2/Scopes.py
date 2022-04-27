@@ -6,10 +6,21 @@
    Developers:
    - Moawiya Mograbi  (moawiya@mov.ai) - 2022
 """
+try:
+    from movai_core_enterprise.models import (
+        Layout, GraphicAsset, SharedDataEntry, SharedDataTemplate, TaskTemplate, Annotation
+    )
+    enterprise_modules = [
+        "Annotation",
+        "SharedDataEntry",
+        "SharedDataTemplate",
+        "Layout",
+        "TaskTemplate",
+        "GraphicAsset",
+    ]
+except ImportError:
+    enterprise_modules = []
 
-from movai_core_enterprise.models import (
-    Layout, GraphicAsset, SharedDataEntry, SharedDataTemplate, TaskTemplate, Annotation
-)
 from dal.helpers import Helpers
 from backend.endpoints.api.v1.models.user import User
 from dal.scopes import (
@@ -23,9 +34,7 @@ from dal.scopes import (
     Struct
 )
 
-__all__ = [
-    "Annotation",
-    "GraphicAsset",
+modules = [
     "Application",
     "Form",
     "List",
@@ -34,11 +43,9 @@ __all__ = [
     "Scope",
     "Struct",
     "User",
-    "Layout",
     "Widget",
     "System",
     "Ports",
-    "SharedDataEntry",
-    "SharedDataTemplate",
-    "TaskTemplate"
 ]
+modules.extend(enterprise_modules)
+__all__ = modules

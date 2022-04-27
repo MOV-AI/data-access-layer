@@ -7,6 +7,9 @@
    - Moawiya Mograbi  (moawiya@mov.ai) - 2022
 """
 
-from movai_core_enterprise.models import Application
+try:
+    from movai_core_enterprise.models import Application
 
-__all__ = ["Application"]
+    __all__ = ["Application"]
+except ImportError:
+    __all__ = []
