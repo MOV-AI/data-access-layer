@@ -6,6 +6,8 @@
    Developers:
    - Moawiya Mograbi  (moawiya@mov.ai) - 2022
 """
-from movai_core_enterprise.models import GraphicScene
-
-__all__ = ["GraphicScene"]
+try:
+    from movai_core_enterprise.models import GraphicScene
+    __all__ = ["GraphicScene"]
+except ImportError:
+    pass
