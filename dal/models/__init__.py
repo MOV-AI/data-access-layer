@@ -68,7 +68,6 @@ modules = [
     'NodeInst',
     'Package',
     'Ports',
-    'Role',
     'System',
     'User',
     'Var',
