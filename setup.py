@@ -14,7 +14,7 @@ data_files += ["dal/validation/schema/2.0/" + file for file in os.listdir("dal/v
 # The 'install_requires' is where you specify the package dependencies of your package. They will be automaticly installed, before your package.  # noqa: E501
 setuptools.setup(
     name="dal",
-    version="1.0.0-24",
+    version="1.0.0-25",
     author="Backend team",
     author_email="backend@mov.ai",
     description="Dummy description",
@@ -24,7 +24,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     include_package_data=True,
     classifiers=["Programming Language :: Python :: 3"],
-    install_requires=["jsonschema==3.2.0", "gitpython==3.1.2",
+    install_requires=["jsonschema==3.2.0", "gitpython==3.1.2","movai_core_shared==1.0.0.9",
                       "py3rosmsgs", "aioredis==1.3.0", "redis==3.3.11", "Pillow>=5.1.0",
                       "pyros-genmsg", "python-box==6.0.2", "deepdiff==4.0.9",
                       "miracle-acl==0.0.4.post1", "pyjwt==1.7.1"],
