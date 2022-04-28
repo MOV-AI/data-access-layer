@@ -4,3 +4,4 @@ py3rosmsgs
 aioredis==1.3.0
 redis==3.3.11
 pyros-genmsg
+movai_core_shared==1.0.0.9
