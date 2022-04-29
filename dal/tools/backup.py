@@ -70,13 +70,9 @@ class Factory:
         Get the scope
         """
         if scope not in Factory.CLASSES_CACHE:
+            models = import_module(f"dal.models")
             try:
-                mod = import_module(f"dal.scopes.{scope}")
-            except ImportError:
-                mod = import_module("dal.scopes.Scopes")
-
-            try:
-                Factory.CLASSES_CACHE[scope] = mod.__getattribute__(scope)
+                Factory.CLASSES_CACHE[scope] = getattr(models, scope)
             except AttributeError:
                 raise BackupException(f"Scope does not exists {scope}")
 
