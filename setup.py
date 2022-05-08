@@ -26,7 +26,7 @@ setuptools.setup(
     classifiers=["Programming Language :: Python :: 3"],
     install_requires=["jsonschema==3.2.0", "gitpython==3.1.2","movai_core_shared==1.0.0.9",
                       "py3rosmsgs", "aioredis==1.3.0", "redis==3.3.11", "Pillow>=5.1.0",
-                      "pyros-genmsg", "python-box==4.0.4", "deepdiff==4.0.9",
+                      "pyros-genmsg", "python-box==6.0.2", "deepdiff==4.0.9",
                       "miracle-acl==0.0.4.post1", "pyjwt==1.7.1"],
     data_files=data_files,
     entry_points={},
