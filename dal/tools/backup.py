@@ -1009,7 +1009,7 @@ class Importer(Backup):
             else:
                 conf_name = conf
 
-            cf_importer(*cf_args(conf_name))
+            cf_importer(*cf_args([conf_name]))
 
 
 #
