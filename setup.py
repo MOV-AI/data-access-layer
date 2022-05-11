@@ -21,7 +21,6 @@ requirements = [
     "pyros-genmsg",
     "python-box==4.0.4",
     "redis==3.3.11",
-
     "movai_core_shared==1.0.0.10"
 ]
 
