@@ -70,13 +70,9 @@ class Factory:
         Get the scope
         """
         if scope not in Factory.CLASSES_CACHE:
+            mod = import_module("dal.scopes")
             try:
-                mod = import_module(f"dal.scopes.{scope}")
-            except ImportError:
-                mod = import_module("dal.scopes.Scopes")
-
-            try:
-                Factory.CLASSES_CACHE[scope] = mod.__getattribute__(scope)
+                Factory.CLASSES_CACHE[scope] = getattr(mod, scope)
             except AttributeError:
                 raise BackupException(f"Scope does not exists {scope}")
 
@@ -1013,7 +1009,7 @@ class Importer(Backup):
             else:
                 conf_name = conf
 
-            cf_importer(*cf_args(conf_name))
+            cf_importer(*cf_args([conf_name]))
 
 
 #
