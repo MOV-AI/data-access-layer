@@ -7,7 +7,7 @@
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
    - Manuel Sila  (manuel.silva@mov.ai) - 2020
 """
-from .scopestree import (ScopeObjectNode, ScopeNode, scopes)
+from .scopestree import ScopeObjectNode, ScopeNode, scopes
 from movai_core_shared.logger import Log
 
 
@@ -15,26 +15,27 @@ class NodeInst(ScopeObjectNode):
     """
     A node instance
     """
+
     logger = Log.get_logger("NodeInst.mov.ai")
 
     @property
     def flow(self):
-        """ Returns the flow (Flow)"""
+        """Returns the flow (Flow)"""
         return self.parent.parent
 
     @property
     def type(self) -> str:
-        """ Returns the type of the node """
+        """Returns the type of the node"""
         return self.node_template.Type
 
     @property
     def parser(self):
-        """ Get the parser from the parent (GParser) """
+        """Get the parser from the parent (GParser)"""
         return self.parent.parent.parser
 
     @property
     def all(self) -> dict:
-        """ Get all node instances from the full flow """
+        """Get all node instances from the full flow"""
         return self.flow.full.NodeInst
 
     @property
@@ -47,18 +48,18 @@ class NodeInst(ScopeObjectNode):
 
     @property
     def namespace(self) -> str:
-        """ Returns the value from the parameter _namespace """
+        """Returns the value from the parameter _namespace"""
         return self.get_param("_namespace") or ""
 
     @property
     def is_remappable(self) -> bool:
-        """ Returns True if the ports are allowed to remap """
+        """Returns True if the ports are allowed to remap"""
         # get the value from the node template
         temp = self.node_template.is_remappable
 
         # get the value from the property Remappable
         prop = temp if self.Remappable in [None, ""] else self.Remappable
-        #prop = True
+        # prop = True
 
         # get the value from the parameter _remappable
         # parameter takes precedence
@@ -68,13 +69,13 @@ class NodeInst(ScopeObjectNode):
 
     @property
     def is_node_to_launch(self) -> bool:
-        """ Returns True if it should be launched """
+        """Returns True if it should be launched"""
         # get the value from the node template
         temp = self.node_template.is_node_to_launch
 
         # get the value from the property Launch
         prop = temp if self.Launch in [None, ""] else self.Launch
-        #prop = True
+        # prop = True
 
         # get the value from the parameter _launch
         # parameter takes precedence
@@ -84,7 +85,7 @@ class NodeInst(ScopeObjectNode):
 
     @property
     def is_persistent(self) -> bool:
-        """ Returns True if it persists on state transitions """
+        """Returns True if it persists on state transitions"""
         # get the value from the node template
         temp = self.node_template.is_persistent
 
@@ -93,33 +94,33 @@ class NodeInst(ScopeObjectNode):
 
         # get the value from the parameter _persistent
         # parameter takes precedence
-        #param = self.get_param("_persistent")
+        # param = self.get_param("_persistent")
 
         # return prop if param in [None, ""] else param
         return prop
 
     @property
     def is_dummy(self) -> bool:
-        """ Returns True if the node is configured as Dummy """
+        """Returns True if the node is configured as Dummy"""
         return self.Dummy if not None else self.node_template.Dummy
 
     @property
     def is_nodelet(self) -> bool:
-        """ Returns True if the node is of type Nodelet """
+        """Returns True if the node is of type Nodelet"""
         return self.node_template.is_nodelet
 
     @property
     def is_state(self) -> bool:
-        """ Returns True if the node is of type state """
+        """Returns True if the node is of type state"""
         return self.node_template.is_state
 
     @property
     def is_plugin(self) -> bool:
-        """ Returns True if the node is of type plugin """
+        """Returns True if the node is of type plugin"""
         return self.node_template.is_plugin
 
     def get_params(self, name: str = None, context: str = None) -> dict:
-        """ Returns all the parameters """
+        """Returns all the parameters"""
         params = {}
         _name = name or self.name
         _context = context or self.flow.ref
@@ -130,8 +131,9 @@ class NodeInst(ScopeObjectNode):
 
         return params
 
-    def get_param(self, key: str, name: str = None, context: str = None,
-                  custom_parser: any = None) -> any:
+    def get_param(
+        self, key: str, name: str = None, context: str = None, custom_parser: any = None
+    ) -> any:
         """
         Returns a specific parameter of the node instance after
         parsing it
@@ -145,7 +147,8 @@ class NodeInst(ScopeObjectNode):
 
         # get the template value
         tpl_value = self.node_template.get_params().get(
-            key, None)  # Parameter[key].Value
+            key, None
+        )  # Parameter[key].Value
 
         # get the instance value
         try:
@@ -162,9 +165,9 @@ class NodeInst(ScopeObjectNode):
             # this means that the instance does not contain a valid parameter. This can also be the case
             # that the user does not want to redefine the template arg and is only overriding the right
             # params. Parse parameter again using template argument
-            _value = tpl_value     
+            _value = tpl_value
             output = _parser.parse(key, str(_value), _name, self, _context)
-        
+
         return output
 
 

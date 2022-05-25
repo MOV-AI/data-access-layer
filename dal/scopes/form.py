@@ -15,8 +15,7 @@ class Form(Scope):
 
     scope = "Form"
 
-    def __init__(self, name, version='latest', new=False, db='global'):
-        """ Initializes the object """
+    def __init__(self, name, version="latest", new=False, db="global"):
+        """Initializes the object"""
 
-        super().__init__(scope='Form',
-                         name=name, version=version, new=new, db=db)
+        super().__init__(scope="Form", name=name, version=version, new=new, db=db)

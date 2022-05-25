@@ -23,11 +23,11 @@ class List(list):
         self.prev_struct = prev_struct
         init_value = init_value or []
         super(List, self).__init__(init_value)
-        methods = ['clear', 'copy', 'count', 'extend',
-                   'index', 'insert', 'remove', 'reverse', 'sort']
+        methods = ["clear", "copy", "count", "extend",
+                   "index", "insert", "remove", "reverse", "sort"]
         for elem in methods:
             self.__dict__[elem] = lambda self, * \
-                args, **kwargs: print('Method not implemented for Redis lists')
+                args, **kwargs: print("Method not implemented for Redis lists")
 
     def append(self, value):
         """Append both to python list and redis list"""
@@ -37,7 +37,9 @@ class List(list):
     def pop(self):
         """Pop from python list and redis list"""
         # struct = copy.deepcopy(self.prev_struct)
-        return MovaiDB(self.db).pop(Helpers.update_dict(self.prev_struct, {self.name: ''}))
+        return MovaiDB(self.db).pop(
+            Helpers.update_dict(self.prev_struct, {self.name: ""})
+        )
 
 
 class Hash(dict):
@@ -64,15 +66,15 @@ class Hash(dict):
         super(Hash, self).update(value)
         # struct = copy.deepcopy(self.prev_struct)
         # Helpers already do a deepcopy
-        MovaiDB(self.db).hset(
-            Helpers.update_dict(self.prev_struct, {self.name: value}))
+        MovaiDB(self.db).hset(Helpers.update_dict(self.prev_struct, {self.name: value}))
 
     def get(self, var: str, default=None):
-        """ Gets a hash field and returns it"""
+        """Gets a hash field and returns it"""
         # struct = copy.deepcopy(self.prev_struct)
         # Helpers already do a deepcopy
         result = MovaiDB(self.db).hget(
-            Helpers.update_dict(self.prev_struct, {self.name: ''}), var)
+            Helpers.update_dict(self.prev_struct, {self.name: ""}), var
+        )
         if result:
             # update python with db value
             super(Hash, self).__setitem__(var, result)
@@ -87,11 +89,12 @@ class Hash(dict):
         # struct = copy.deepcopy(self.prev_struct)
         # Helpers already do a deepcopy
         deletes = MovaiDB(self.db).hdel(
-            Helpers.update_dict(self.prev_struct, {self.name: ''}), var)
+            Helpers.update_dict(self.prev_struct, {self.name: ""}), var
+        )
         return result
 
     def delete(self, var: str):
-        """ Deletes a hash field and returns True if successfully deleted"""
+        """Deletes a hash field and returns True if successfully deleted"""
         try:
             self.pop(var)
         except:
@@ -107,48 +110,61 @@ class Struct:
 
     def __init__(self, name, struct_dict, prev_struct, db):
 
-        self.__dict__['Name'] = name
-        self.__dict__['db'] = db
-        self.__dict__['movaidb'] = MovaiDB(db)
+        self.__dict__["Name"] = name
+        self.__dict__["db"] = db
+        self.__dict__["movaidb"] = MovaiDB(db)
 
         nada = dict()
         for elem in struct_dict:
             nada[name] = dict()
-            nada[name][elem] = ''
+            nada[name][elem] = ""
             break
 
         # need a way to get rid of theese variables...
-        self.__dict__['prev_struct'] = Helpers.update_dict(prev_struct, nada)
-        self.__dict__['struct_dict'] = dict()
-        self.__dict__['movaidb'] = MovaiDB(db)
-        self.__dict__['attrs'], self.__dict__['lists'], self.__dict__[
-            'hashs'] = self.get_attributes(struct_dict)
+        self.__dict__["prev_struct"] = Helpers.update_dict(prev_struct, nada)
+        self.__dict__["struct_dict"] = dict()
+        self.__dict__["attrs"], self.__dict__["lists"], self.__dict__[
+            "hashs"] = self.get_attributes(struct_dict)
 
     def __getattribute__(self, name):
 
-        if name in ['__dict__', 'Name', 'prev_struct', 'struct_dict', 'attrs', 'lists',
-                    'hashs', 'get_attributes', 'get_ref', 'db', 'add', 'delete']:
+        if name in [
+            "__dict__",
+            "Name",
+            "prev_struct",
+            "struct_dict",
+            "attrs",
+            "lists",
+            "hashs",
+            "get_attributes",
+            "get_ref",
+            "db",
+            "add",
+            "delete"
+        ]:
             return super().__getattribute__(name)
 
         if name in self.attrs:
-            return MovaiDB(self.db).get_value(Helpers.join_first({name: '*'}, self.prev_struct))
+            return MovaiDB(self.db).get_value(
+                Helpers.join_first({name: "*"}, self.prev_struct)
+            )
         elif name in self.lists:
             list_value = MovaiDB(self.db).get_list(
-                Helpers.join_first({name: '*'}, self.prev_struct))
+                Helpers.join_first({name: "*"}, self.prev_struct))
             return List(name, list_value, self.db, self.prev_struct)
         elif name in self.hashs:
             hash_value = MovaiDB(self.db).get_hash(
-                Helpers.join_first({name: '*'}, self.prev_struct))
+                Helpers.join_first({name: "*"}, self.prev_struct))
             return Hash(name, hash_value, self.db, self.prev_struct)
         else:
-            if self.__dict__['struct_dict'].get(name) is None:
+            if self.__dict__["struct_dict"].get(name) is None:
                 return super().__getattribute__(name)
 
             temp = copy.deepcopy(self.prev_struct)
 
             final = {}
             result = MovaiDB(self.db).get2(
-                Helpers.join_first({name: '*'}, self.prev_struct))
+                Helpers.join_first({name: "*"}, self.prev_struct))
             if not result:
                 return super().__getattribute__(name)
 
@@ -170,21 +186,21 @@ class Struct:
 
     def __getattr__(self, name):
 
-        if self.__dict__.get('attrs', None) is None:
+        if self.__dict__.get("attrs", None) is None:
             raise Exception(
-                'This instance was removed and its no longer available')
+                "This instance was removed and its no longer available")
 
         if name in self.attrs:  # it exists, just not defined yet
             return None
-        raise AttributeError(('Attribute "%s" does not exist') % name)
+        raise AttributeError(f"Attribute '{name}' does not exist")
 
     def __delattr__(self, name):
 
         if getattr(self, name) is None:
-            print('Attribute is not defined')
+            print("Attribute is not defined")
             return False
         result = MovaiDB(self.db).unsafe_delete(
-            Helpers.join_first({name: '*'}, self.prev_struct))
+            Helpers.join_first({name: "*"}, self.prev_struct))
         if name in self.lists:  # do some cleaver delete
             self.__dict__[name] = List(name, [], self.db, self.prev_struct)
         elif name in self.hashs:
@@ -200,11 +216,11 @@ class Struct:
             MovaiDB(self.db).set(Helpers.join_first(
                 {name: value}, self.prev_struct))
         elif name in self.lists:
-            raise AttributeError(('"%s" is a list not an attribute') % name)
+            raise AttributeError(f"'{name}' is a list not an attribute")
         elif name in self.hashs:
-            raise AttributeError(('"%s" is a hash not an attribute') % name)
+            raise AttributeError(f"'{name}' is a hash not an attribute")
         else:
-            raise AttributeError(('Attribute "%s" does not exist') % name)
+            raise AttributeError(f"Attribute '{name}' does not exist")
 
     def delete(self, key, name):
 
@@ -242,12 +258,12 @@ class Struct:
         try:  # check if new name already exists
             getattr(self, key)[new_name]
             raise AlreadyExist(
-                '%s with name "%s" already exists' % (key, new_name))
+                "{key} with name '{new_name}' already exists")
         except KeyError:
             pass
 
-        part1_old = Helpers.join_first({key: {old_name: ''}}, self.prev_struct)
-        part1_new = Helpers.join_first({key: {new_name: ''}}, self.prev_struct)
+        part1_old = Helpers.join_first({key: {old_name: ""}}, self.prev_struct)
+        part1_new = Helpers.join_first({key: {new_name: ""}}, self.prev_struct)
 
         old_struct = Helpers.join_first(part2, part1_old)
         new_struct = Helpers.join_first(part2, part1_new)
@@ -284,11 +300,11 @@ class Struct:
         hashs = []
         for key, value in new_dict.items():
             if not isinstance(value, dict):
-                if value == 'list':
+                if value == "list":
                     self.__dict__[key] = List(
                         key, [], self.db, self.prev_struct)
                     lists.append(key)
-                elif value == 'hash':
+                elif value == "hash":
                     self.__dict__[key] = Hash(
                         key, {}, self.db, self.prev_struct)
                     hashs.append(key)
@@ -296,7 +312,7 @@ class Struct:
                     attrs.append(key)
             else:
                 self.__dict__[key] = dict()
-                self.__dict__['struct_dict'][key] = new_dict[key]
+                self.__dict__["struct_dict"][key] = new_dict[key]
         return attrs, lists, hashs
 
     def get_ref(self, value: str):
@@ -305,7 +321,7 @@ class Struct:
             for (_, value), (key, val) in zip(_dict.items(), _initial.items()):
                 if isinstance(value, dict):
                     return iterate(value, val)
-                if len(_dict) > 1 and key != '*':  # in case of hash
+                if len(_dict) > 1 and key != "*":  # in case of hash
                     return _dict[key]
                 return value
 
@@ -314,14 +330,14 @@ class Struct:
             return str(iterate(MovaiDB(self.db).get(key), key))
 
         if isinstance(value, str):
-            if '$' in value and value.count('$') % 2 == 0:  # its a REF!!
+            if "$" in value and value.count("$") % 2 == 0:  # its a REF!!
                 # only single ref
-                if value.count('$') == 2 and value[0] == '$' and value[-1] == '$':
+                if value.count("$") == 2 and value[0] == "$" and value[-1] == "$":
                     # the value type is maintained
                     value = iterate(MovaiDB(self.db).get(
                         eval(value[1:-1])), eval(value[1:-1]))
                 else:  # it has more stuff so lets make a nice string with everything
-                    value = re.sub(r'\$([^\$]*)\$',
+                    value = re.sub(r"\$([^\$]*)\$",
                                    lambda x: replace(x.group()), value)
                     # result always a string here
         return value

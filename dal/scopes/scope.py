@@ -18,52 +18,54 @@ class Scope(Struct):
     """
     A scope
     """
-    permissions = ['create', 'read', 'update', 'delete']
+    permissions = ["create", "read", "update", "delete"]
 
-    def __init__(self, scope, name, version, new=False, db='global'):
-        self.__dict__['name'] = name
-        self.__dict__['scope'] = scope
+    def __init__(self, scope, name, version, new=False, db="global"):
 
-        # TODO
-        # we then need to get this from database!!!!
+        self.__dict__["name"] = name
+        self.__dict__["scope"] = scope
+
         dal_dir = os.path.dirname(os.path.realpath(dal.__file__))
         schema_folder = f"file://{dal_dir}/validation/schema"
         template_struct = MovaiDB.API(url=schema_folder)[scope]
-        self.__dict__['struct'] = template_struct
+
+        # we then need to get this from database!!!!
+        self.__dict__["struct"] = template_struct
 
         struct = dict()
-        struct[name] = template_struct['$name']
+        struct[name] = template_struct["$name"]
         super().__init__(scope, struct, {}, db)
 
         if new:
-            if self.movaidb.exists_by_args(scope=scope, Name=name):
+            if MovaiDB(self.db).exists_by_args(scope=scope, Name=name):
                 raise AlreadyExist(
-                    'This already exists. To edit dont send the "new" flag')
+                    "This already exists. To edit dont send the 'new' flag")
         else:
-            if not self.movaidb.exists_by_args(scope=scope, Name=name):
+            if not MovaiDB(self.db).exists_by_args(scope=scope, Name=name):
                 raise DoesNotExist(
-                    '%s does not exist yet. If you wish to create please use "new=True"' % name)
+                    f"{name} does not exist yet. If you wish to create \
+                        please use 'new=True'")
 
     def calc_scope_update(self, old_dict, new_dict):
         """ Calc the objects differences and returns list with dict keys to delete/set """
-        structure = self.__dict__.get('struct').get('$name')
+        structure = self.__dict__.get("struct").get("$name")
         return MovaiDB().calc_scope_update(old_dict, new_dict, structure)
 
     def remove(self, force=True):
         """ Removes Scope """
-        result = self.movaidb.unsafe_delete(
-            {self.scope: {self.name: '**'}})
+        result = MovaiDB(self.db).unsafe_delete(
+            {self.scope: {self.name: "**"}})
         return result
 
     def remove_partial(self, dict_key):
         """ Remove Scope key """
-        result = self.movaidb.unsafe_delete(
+        result = MovaiDB(self.db).unsafe_delete(
             {self.scope: {self.name: dict_key}})
         return result
 
     def get_dict(self):
         """ Returns the full dictionary of the scope from db"""
-        result = self.movaidb.get({self.scope: {self.name: '**'}})
+        result = MovaiDB(self.db).get({self.scope: {self.name: "**"}})
         attrs, lists, hashs = self.get_attributes(self.struct)
         for list_name in lists:
             if list_name not in result[self.scope][self.name]:
@@ -74,12 +76,15 @@ class Scope(Struct):
 
         for attr in attrs:
             if attr not in result[self.scope][self.name]:
-                result[self.scope][self.name][attr] = ''
+                result[self.scope][self.name][attr] = ""
 
         return result
 
     def has_scope_permission(self, user, permission) -> bool:
-        if not user.has_permission(self.scope, '{prefix}.{permission}'.format(prefix=self.name, permission=permission)):
+        if not user.has_permission(
+            self.scope,
+            "{prefix}.{permission}".format(prefix=self.name, permission=permission)
+        ):
             if not user.has_permission(self.scope, permission):
                 return False
         return True
@@ -93,10 +98,10 @@ class Scope(Struct):
         return value
 
     @classmethod
-    def get_all(cls, db='global'):
+    def get_all(cls, db="global"):
         names_list = []
         try:
-            for elem in MovaiDB(db).search_by_args(cls.scope, Name='*')[0][cls.scope]:
+            for elem in MovaiDB(db).search_by_args(cls.scope, Name="*")[0][cls.scope]:
                 names_list.append(elem)
         except KeyError:
             pass  # when does not exist
