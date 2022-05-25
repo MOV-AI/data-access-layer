@@ -6,7 +6,7 @@
    Developers:
    - Moawiya Mograbi  (moawiya@mov.ai) - 2022
 """
-from dal.movaidb import Lock
+from dal.models import Lock
 
 
 __all__ = ["Lock"]
