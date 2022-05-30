@@ -36,6 +36,10 @@ class FlowLinks(ScopePropertyNode):
         r"^([~@a-zA-Z_0-9-]+)([\/])([\/~@a-zA-Z_0-9]+)+([\/])([~@a-zA-Z_0-9]+)$"
     )
 
+    def __init__(self, name: str, value: str):
+        super().__init__(name, value)
+        self.cache = {}
+
     def __getitem__(self, key: str) -> Template:
         data = None
 
@@ -189,6 +193,8 @@ class FlowLinks(ScopePropertyNode):
 
     def get_node_links(self, node_name: str) -> list:
         """Returns the node instance links in the flow and subflows"""
+        if node_name in self.cache:
+            return self.cache[node_name]
         links = []
 
         for key in self.full:
@@ -200,8 +206,9 @@ class FlowLinks(ScopePropertyNode):
                 _link = {"Type": _type, "ref": link, "id": key}
 
                 links.append(_link)
-
+        self.cache[node_name] = links
         return links
+
 
 
 ScopeNode.register_scope_property("schemas/1.0/Flow/Links", FlowLinks)
