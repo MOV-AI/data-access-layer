@@ -79,6 +79,9 @@ class NodeInst(ScopeObjectNode):
 
         # get the value from the parameter _launch
         # parameter takes precedence
+        # Todo: remove duplication and only use "Launch" and remove "_launch"
+        #       the next line is missing the context, and it can't passed with property
+        #       neet to fix this garbage
         param = self.get_param("_launch")
 
         return prop if param in [None, ""] else param
@@ -167,7 +170,9 @@ class NodeInst(ScopeObjectNode):
             # params. Parse parameter again using template argument
             _value = tpl_value
             output = _parser.parse(key, str(_value), _name, self, _context)
-
+        # the _launch params will need to be calculated only once
+        if output is not None and key == "_launch":
+            self.Parameter[key].Value = output
         return output
 
 
