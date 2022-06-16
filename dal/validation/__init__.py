@@ -10,9 +10,23 @@
 from .schema import Schema
 from .validator import JsonValidator
 from .template import Template
+from os.path import dirname, realpath, isdir
+
+
+dir = dirname(realpath(__file__))
+SCHEMA_FOLDER_PATH = f"file:/{dir}/schema"
+
+
+def get_schema_folder(version):
+    if isdir(f"{dir}/schema/{version}"):
+        return f"file:/{dir}/schema/{version}"
+    raise Exception(f"schema version {version} does not exist")
+
 
 __all__ = [
     "Schema",
     "JsonValidator",
-    "Template"
+    "Template",
+    "SCHEMA_FOLDER_PATH",
+    "get_schema_folder"
 ]

@@ -1,5 +1,5 @@
 {
-    "$id": "ArgSchema-0.1",
+    "$id": "ArgSchema-2.3",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "Description": "a common schema used to validate Params part of multiple documents",
 

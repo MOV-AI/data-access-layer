@@ -1,5 +1,5 @@
 {
-    "$id": "NodeSchema-0.1",
+    "$id": "NodeSchema-2.3",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "Node Schema",
     "definitions": {

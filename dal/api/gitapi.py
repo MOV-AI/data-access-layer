@@ -9,23 +9,26 @@
    API for the git part
 """
 
-from git.refs.tag import TagReference
-from ..classes.exceptions import (NoChangesToCommit,
-                                  SlaveManagerCannotChange,
-                                  TagAlreadyExist,
-                                  VersionDoesNotExist,
-                                  BranchAlreadyExist)
-from ..classes.filesystem import FileSystem
+from abc import abstractmethod
+from os import getenv
+from os.path import join as path_join
+from pathlib import Path
+from re import search
 from git import (Repo,
                  InvalidGitRepositoryError,
                  GitError,
                  GitCommandError)
-from git.refs import HEAD
 from git.index import IndexFile
+from git.refs import HEAD
+from git.refs.tag import TagReference
 from git.remote import PushInfo
-from re import search
-from os.path import join as path_join
-from abc import ABC, abstractmethod
+from ..exceptions import (NoChangesToCommit,
+                          SlaveManagerCannotChange,
+                          TagAlreadyExist,
+                          VersionDoesNotExist,
+                          BranchAlreadyExist)
+from ..classes.filesystem import FileSystem
+from ..archive.basearchive import BaseArchive
 
 # -----------------------------------------------------------------------------
 # TODO
@@ -47,6 +50,7 @@ def get_tokenized_repo(remote, username):
 
 MOVAI_FOLDER_NAME = ".movai"
 MOVAI_BASE_FOLDER = path_join(FileSystem.get_home_folder(), MOVAI_FOLDER_NAME)
+MOVAI_BASE_FOLDER = getenv("MOVAI_FOLDER", MOVAI_BASE_FOLDER)
 GIT_BASE_FOLDER = path_join(MOVAI_BASE_FOLDER, 'git')
 
 
@@ -72,7 +76,7 @@ class GitRepo:
         self._default_branch = None
         self._local_path = local_path
         FileSystem.create_folder_recursively(self._local_path)
-        self._repo_object = self._clone_no_checkout()
+        self._repo_object = self._clone()
 
     def version_exist(self, revision: str) -> bool:
         """check if version (commit / tag) exist in the repo
@@ -289,7 +293,7 @@ class GitRepo:
             elif e.stderr.find("did not match any file") != -1:
                 raise VersionDoesNotExist(f"version {version} does not exist")
 
-    def _clone_no_checkout(self) -> Repo:
+    def _clone(self, no_checkout=False) -> Repo:
         """clone given branch, commit, tag without really checking out files
            similar to empty repository but with all the repo information.
 
@@ -305,7 +309,7 @@ class GitRepo:
             tokenized_repo = get_tokenized_repo(self._remote_link,
                                                 self._username)
             repo = Repo.clone_from(tokenized_repo, self._local_path,
-                                   no_checkout=True)
+                                   no_checkout=no_checkout)
         except GitError as e:
             print(f"Error {e}")
 
@@ -347,14 +351,14 @@ class GitRepo:
         return remote.pull()
 
 
-class GitManager(ABC):
+class GitManager(BaseArchive, id="Git"):
     _username = None
     _repos = {}
     SLAVE = "slave"
     MASTER = "master"
     DEFAULT_REPO_ID = "default"
 
-    def __init__(self, username: str, mode: str = SLAVE):
+    def __init__(self, username: str, mode: str):
         """initialize Object with username
 
         Args:
@@ -364,6 +368,20 @@ class GitManager(ABC):
         self._mode = mode
         if mode not in GitManager._repos:
             GitManager._repos[mode] = {}
+
+    @staticmethod
+    def get_client(**kwargs):
+        manager_uri = getenv("MOVAI_MANAGER_URI", "localhost")
+        git_user = getenv("GIT_USER")
+        client = None
+        if manager_uri.find("localhost") != -1 or \
+           manager_uri.find("127.0.0.1") != -1:
+            # this is a manager
+            client = MasterGitManager(git_user, **kwargs)
+        else:
+            client = SlaveGitManager(git_user, **kwargs)
+
+        return client
 
     def is_tag(self, remote: str, revision: str) -> bool:
         """check if the provided revision is a tag or not
@@ -402,7 +420,7 @@ class GitManager(ABC):
 
     def _get_or_add_version(self,
                             remote: str,
-                            version: str = None) -> GitRepo:
+                            version: str) -> GitRepo:
         """will get the desired version repo if exists
            if not will create a new one and returns it.
 
@@ -420,12 +438,11 @@ class GitManager(ABC):
             repo = GitRepo(remote, self._username,
                            self._get_local_path(remote), version)
             GitManager._repos[self._mode][repo_name] = repo
-        if version is not None:
-            try:
-                repo.checkout(version)
-            except VersionDoesNotExist:
-                repo.fetch()
-                repo.checkout(version)
+        try:
+            repo.checkout(version)
+        except VersionDoesNotExist:
+            repo.fetch()
+            repo.checkout(version)
         return repo
 
     def get_full_commit_sha(self, remote: str, revision: str) -> str:
@@ -443,57 +460,62 @@ class GitManager(ABC):
             return repo.get_latest_commit()
         return repo.git_client.rev_parse(revision)
 
-    def get_file(self,
-                 file_name: str,
-                 remote: str,
-                 version: str = None) -> str:
+    def get(self,
+            obj_name: str,
+            remote: str,
+            version: str,
+            **kwargs) -> Path:
         """Get a File from repository with specific version
 
         Args:
-            file_name (str): name of the file.
+            obj_name (str): name of the file.
             remote (str): the remote repository link.
             version (str, optional): the commit/ tag/branch id desired.
                                       Defaults to None.
 
         Returns:
-            str: the local path of the requested File.
+            Path: the local path of the requested File.
         """
-        if file_name.find('json') == -1:
-            file_name = file_name + '.json'
+        if obj_name.find('json') == -1:
+            obj_name = obj_name + '.json'
         repo = self._get_or_add_version(remote, version)
-        file_path = repo.checkout_file(file_name)
+        file_path = repo.checkout_file(obj_name)
 
-        return file_path
+        return Path(file_path)
 
-    def commit_file(self,
-                    remote: str,
-                    filename: str,
-                    new_branch: str = None,
-                    base_branch: str = None,
-                    message: str = "") -> str:
-        """will commit the specified file locally.
+    def commit(self,
+               obj_name: str,
+               remote: str,
+               new_version: str = None,
+               base_version: str = None,
+               message: str = "",
+               **kwargs) -> str:
+        """will commit/save the specified obj locally.
 
         Args:
+            obj_name (str): the filename of the desired file.
             remote (str): the remote link of the repo.
-            filename (str): the filename of the desired file.
-            new_branch (str, optional): if given will create the new commit in
+            new_version (str, optional): if given will create the new commit in
                                         a new branch with the name
                                         new_branch.
                                         Defaults to None.
-            base_branch (str, optional): on what branch we want to be based in
+            base_version (str, optional): on what branch we want to be based in
                                          the new commit.
             message (str, optional): the commit message. Defaults to "".
 
         Returns:
             str: the newly committed commit hash id.
+
+        Raises:
+            NoChangesToCommit: in case there was no changes to commit.
         """
-        repo = self._get_or_add_version(remote, base_branch)
-        if filename.find('.json') == -1:
-            filename += '.json'
-        if filename not in repo.get_modified_files() \
-           and filename not in repo.get_untracked_files():
+        repo = self._get_or_add_version(remote, base_version)
+        if obj_name.find('.json') == -1:
+            obj_name += '.json'
+        if obj_name not in repo.get_modified_files() \
+           and obj_name not in repo.get_untracked_files():
             raise NoChangesToCommit()
-        return repo.commit(filename, new_branch, message)
+        return repo.commit(obj_name, new_version, message)
 
     def diff_file(self,
                   remote: str,
@@ -536,12 +558,13 @@ class GitManager(ABC):
         tag_reference = repo.tag(base_version, tag, message)
         return tag_reference is not None
 
-    def create_file(self,
-                    remote: str,
-                    relative_path: str,
-                    content: str,
-                    base_version: str = None,
-                    is_json: bool = True) -> None:
+    def create_obj(self,
+                   remote: str,
+                   relative_path: str,
+                   content: str,
+                   base_version: str = None,
+                   is_json: bool = True,
+                   **kwargs) -> None:
         """will create new file in repository locally using the relative path
            of the local repository path.
            this function neede because external user is not fully aware of the
@@ -560,7 +583,7 @@ class GitManager(ABC):
         new_file_path = path_join(repo.local_path, relative_path)
         FileSystem.write(new_file_path, content, is_json)
 
-    def pull(self, remote: str, remote_name: str):
+    def pull(self, remote: str, remote_name: str, **kwargs):
         """will pull changes to local repository from remote_name repo
 
         Args:
@@ -574,7 +597,7 @@ class GitManager(ABC):
         return repo.pull(remote_name)
 
     def push(self, remote: str, remote_name: str, tag_name: str = None,
-             only_tag: bool = False) -> PushInfo:
+             only_tag: bool = False, **kwargs) -> PushInfo:
         """will push repository defined by remote to remote_name repository
 
         Args:
@@ -597,6 +620,14 @@ class GitManager(ABC):
         """
         pass
 
+    def local_path(self, remote: str) -> Path:
+        """local path of the repository
+
+        Returns:
+            str: local path of the repo.
+        """
+        return Path(self._get_local_path(remote))
+
 
 class SlaveGitManager(GitManager):
     """a class to manage Slave Git Manager
@@ -606,13 +637,16 @@ class SlaveGitManager(GitManager):
     def __init__(self, username: str):
         super().__init__(username, mode=GitManager.SLAVE)
 
-    def commit_file(self, *args, **kwargs):
+    def commit(self, *args, **kwargs):
+        raise SlaveManagerCannotChange()
+
+    def push(self, *args, **kwargs):
         raise SlaveManagerCannotChange()
 
     def create_tag(self, *args, **kwargs):
         raise SlaveManagerCannotChange()
 
-    def create_file(self, *args, **kwargs) -> None:
+    def create_obj(self, *args, **kwargs) -> None:
         raise SlaveManagerCannotChange()
 
     def _get_local_path(self, remote):

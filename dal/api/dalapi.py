@@ -11,7 +11,6 @@
 from .gitapi import GitManager, SlaveGitManager, MasterGitManager
 from abc import ABC, abstractmethod
 from dal import validation
-from os.path import realpath, dirname
 from dal.classes.protocols import (
     ContextClientIn,
     ContextServerIn,
@@ -23,7 +22,7 @@ from dal.classes.protocols import (
 class DAL(ABC):
     """Data Access Layer Main class API
     """
-    schema_folder_path = dirname(realpath(validation.__file__)) + '/schemas'
+    schema_folder_path = validation.get_schema_folder(version="2.3")
 
     @abstractmethod
     def __init__(self, user: str, schema_folder: str) -> None:

@@ -1,13 +1,13 @@
 {
-    "$id": "LayoutSchema-0.1",
+    "$id": "AnnotationSchema-2.3",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "title": "Layout Schema",
+    "title": "Annotation Schema",
     "definitions": {
     },
 
     "type": "object",
     "properties": {
-        "Layout": {
+        "Annotation": {
             "type": "object",
             "patternProperties": {
                 "^[a-zA-Z0-9_]+$": {
@@ -20,32 +20,33 @@
                             "type": "object",
                             "Description": "all of the other fields (optional fields)",
                             "properties": {
-                                "Icon": {
+                                "Type": {
                                     "type": "string"
                                 },
-                                "DashboardTitle": {
+                                "Policy": {
                                     "type": "string"
                                 },
-                                "Styles": {
-                                    "type": "string"
-                                },
-                                "WidgetInst": {
+                                "Parameter": {
                                     "patternProperties": {
-                                        "^Button[0-9]*$": {
+                                        "^[0-9a-zA-Z_]+$": {
+                                            "type": ["string", "boolean"]
+                                        }
+                                    }
+                                },
+                                "Field": {
+                                    "patternProperties": {
+                                        "^[0-9a-zA-Z_]+$": {
                                             "type": "object",
                                             "properties": {
-                                                "Template": {
+                                                "Type": {
                                                     "type": "string"
                                                 },
-                                                "Parameter": {
-                                                    "$ref": "common/arg.schema.json"
+                                                "Value": {
+                                                    "type": ["string", "boolean"]
                                                 }
                                             }
                                         }
                                     }
-                                },
-                                "LayoutColors": {
-                                    "type": "array"
                                 }
                             }
                         }
@@ -55,6 +56,6 @@
             "additionalProperties": false
         }
     },
-    "required": ["Layout"],
+    "required": ["Annotation"],
     "additionalProperties": false
 }
