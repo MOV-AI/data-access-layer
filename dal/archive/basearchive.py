@@ -1,36 +1,58 @@
 from abc import abstractmethod
 from pathlib import Path
 from typing import Any
+from dal.exceptions import (
+    NoActiveArchiveRegistered,
+    ArchiveNotRegistered,
+    ArchiveAlreadyRegistered
+)
 
 
 class BaseArchive:
     active_archive = None
     classes = {}
 
-    def __call__(self) -> "BaseArchive":
+    def __call__(self, user: str = None) -> "BaseArchive":
+        """whenever an instance of Archive is called this method should run and
+           return an instance of the active archive
+
+        Args:
+            user (str, optional): the user to be used in the Archive.
+                                  in case None the Archive should handle this.
+                                  Defaults to None.
+
+        Raises:
+            NoActiveArchiveRegistered: in case there was no active archive
+                                       registered.
+
+        Returns:
+            BaseArchive: an instance of the Active Archive used in code.
+        """
         if BaseArchive.active_archive is None:
-            raise Exception("No active Archive registered")
-        return BaseArchive.active_archive.get_client()
+            raise NoActiveArchiveRegistered("")
+        kwargs = {}
+        if user is not None:
+            kwargs["user"] = user
+        return BaseArchive.active_archive.get_client(**kwargs)
 
     def __init_subclass__(cls, id=None):
         if id is None:
             return
         if id in BaseArchive.classes:
-            raise Exception("Archive id={id} is already registered")
+            raise ArchiveAlreadyRegistered("Archive id={id}")
 
         BaseArchive.classes[id] = cls
 
     @classmethod
     def set_active_archive(cls, name):
         if name not in cls.classes:
-            raise Exception("Archive not registered")
+            raise ArchiveNotRegistered(name)
         cls.active_archive = cls.classes[name]
 
     @abstractmethod
     def get_client(self, **kwargs) -> "BaseArchive":
         """instantiate Archive instance and returns it.
         """
-        pass
 
     @abstractmethod
     def get(self,
@@ -48,7 +70,6 @@ class BaseArchive:
         Returns:
             Path: the local path of the requested File.
         """
-        pass
 
     @abstractmethod
     def commit(self,
@@ -64,7 +85,6 @@ class BaseArchive:
         Returns:
             str: new version hash
         """
-        pass
 
     @abstractmethod
     def pull(self, remote: str, **kwargs) -> Any:
@@ -73,7 +93,6 @@ class BaseArchive:
         Args:
             remote (str): remote link of Archive
         """
-        pass
 
     @abstractmethod
     def push(self, remote: str, **kwargs) -> Any:
@@ -97,7 +116,6 @@ class BaseArchive:
             relative_path (str): the relative path to the root of the local archive
             content (str): the obj content to be added
         """
-        pass
 
     @abstractmethod
     def diff(self, remote: str, obj_name: str, **kwargs) -> str:
@@ -110,7 +128,6 @@ class BaseArchive:
         Returns:
             str: string representing the diff to the changes done
         """
-        pass
 
     @abstractmethod
     def local_path(self, remote: str, **kwargs) -> Path:
@@ -122,4 +139,3 @@ class BaseArchive:
         Returns:
             Path: local path of the desired remote link.
         """
-        pass

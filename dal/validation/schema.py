@@ -13,7 +13,7 @@ from jsonschema.exceptions import ValidationError
 from json import loads as load_json
 from os.path import abspath, dirname
 from dal.classes.filesystem import FileSystem
-from dal.classes.exceptions import SchemaVersionError
+from dal.exceptions import SchemaVersionError
 
 
 class Schema:

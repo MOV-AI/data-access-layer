@@ -23,6 +23,11 @@ SCHEMA_TYPE_NOT_KNOWN = BASE_SCHEMA_ERR + 2
 BASE_VALIDATION_ERR = 300
 VALIDATION_ERR = BASE_VALIDATION_ERR + 1
 
+BASE_ARCHIVE_ERR = 400
+NO_ACTIVE_ARCHIVE_REGISTERED = BASE_ARCHIVE_ERR + 1
+ARCHIVE_NOT_REGISTERED = BASE_ARCHIVE_ERR + 2
+ARCHIVE_ALREADY_REGISTERED = BASE_ARCHIVE_ERR + 3
+
 
 class DalException(Exception):
     pass
@@ -102,3 +107,26 @@ class ValidationException(DalException):
 class ValidationError(ValidationException):
     def __init__(self, *args: object) -> None:
         super().__init__(SCHEMA_VERSION_ERR, *args)
+
+
+# Archive Errors
+# ----------------------------------------------------------------------------
+class ArchiveException(DalException):
+    def __init__(self, error, *args: object) -> None:
+        self._error = error
+        super().__init__(*args)
+
+
+class NoActiveArchiveRegistered(ArchiveException):
+    def __init__(self, *args: object) -> None:
+        super().__init__(NO_ACTIVE_ARCHIVE_REGISTERED, *args)
+
+
+class ArchiveNotRegistered(ArchiveException):
+    def __init__(self, *args: object) -> None:
+        super().__init__(ARCHIVE_NOT_REGISTERED, *args)
+
+
+class ArchiveAlreadyRegistered(ArchiveException):
+    def __init__(self, *args: object) -> None:
+        super().__init__(ARCHIVE_ALREADY_REGISTERED, *args)

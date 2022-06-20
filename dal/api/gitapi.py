@@ -22,13 +22,13 @@ from git.index import IndexFile
 from git.refs import HEAD
 from git.refs.tag import TagReference
 from git.remote import PushInfo
-from ..exceptions import (NoChangesToCommit,
-                          SlaveManagerCannotChange,
-                          TagAlreadyExist,
-                          VersionDoesNotExist,
-                          BranchAlreadyExist)
-from ..classes.filesystem import FileSystem
-from ..archive.basearchive import BaseArchive
+from dal.exceptions import (NoChangesToCommit,
+                            SlaveManagerCannotChange,
+                            TagAlreadyExist,
+                            VersionDoesNotExist,
+                            BranchAlreadyExist)
+from dal.classes.filesystem import FileSystem
+from dal.archive.basearchive import BaseArchive
 
 # -----------------------------------------------------------------------------
 # TODO
@@ -294,9 +294,12 @@ class GitRepo:
                 raise VersionDoesNotExist(f"version {version} does not exist")
 
     def _clone(self, no_checkout=False) -> Repo:
-        """clone given branch, commit, tag without really checking out files
-           similar to empty repository but with all the repo information.
+        """clone given branch, commit, tag.
 
+        Args:
+            no_checkout (bool): if set, no checkout will be done (empty folder)
+                                without actual files, only .git folder that has
+                                all of the information about the repo.
         Returns:
             git.Repo: Repo object.
         """
@@ -370,16 +373,24 @@ class GitManager(BaseArchive, id="Git"):
             GitManager._repos[mode] = {}
 
     @staticmethod
-    def get_client(**kwargs):
+    def get_client(**kwargs) -> "GitManager":
+        """will create an instance of GitManager, dynamically choose between
+           master/slave according to the current running Robot.
+
+        Args:
+            user (str): the username to be used for GIT client.
+
+        Returns:
+            GitManager: an instance of the current mode applicable to the Robot.
+        """
         manager_uri = getenv("MOVAI_MANAGER_URI", "localhost")
-        git_user = getenv("GIT_USER")
+        git_user = kwargs.get("user", getenv("GIT_USER"))
         client = None
-        if manager_uri.find("localhost") != -1 or \
-           manager_uri.find("127.0.0.1") != -1:
+        if manager_uri.lower().strip() in ["localhost", "127.0.0.1"]:
             # this is a manager
-            client = MasterGitManager(git_user, **kwargs)
+            client = MasterGitManager(git_user)
         else:
-            client = SlaveGitManager(git_user, **kwargs)
+            client = SlaveGitManager(git_user)
 
         return client
 

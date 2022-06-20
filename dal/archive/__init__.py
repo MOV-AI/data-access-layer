@@ -11,7 +11,7 @@
 
    in order to use it an instance of Archive should be called
    for example:
-       archive = Archive()
+       archive = Archive(user=None)
        archive.get('file', remote, version)
 """
 

@@ -15,7 +15,10 @@ from .exceptions import (
     TagAlreadyExist,
     SchemaTypeNotKnown,
     SchemaVersionError,
-    ValidationError
+    ValidationError,
+    NoActiveArchiveRegistered,
+    ArchiveNotRegistered,
+    ArchiveAlreadyRegistered
 )
 
 __all__ = [
@@ -26,5 +29,8 @@ __all__ = [
     'TagAlreadyExist',
     'SchemaTypeNotKnown',
     'SchemaVersionError',
-    'ValidationError'
+    'ValidationError',
+    'NoActiveArchiveRegistered',
+    'ArchiveNotRegistered',
+    'ArchiveAlreadyRegistered'
 ]

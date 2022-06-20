@@ -12,7 +12,7 @@ from os.path import dirname, realpath
 from re import search
 from .schema import Schema
 from json import loads as load_json
-from dal.classes.exceptions import SchemaTypeNotKnown, ValidationError
+from dal.exceptions import SchemaTypeNotKnown, ValidationError
 
 
 class JsonValidator:
