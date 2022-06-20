@@ -30,10 +30,7 @@ class BaseArchive:
         """
         if BaseArchive.active_archive is None:
             raise NoActiveArchiveRegistered("")
-        kwargs = {}
-        if user is not None:
-            kwargs["user"] = user
-        return BaseArchive.active_archive.get_client(**kwargs)
+        return BaseArchive.active_archive.get_client(user=user)
 
     def __init_subclass__(cls, id=None):
         if id is None:

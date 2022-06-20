@@ -15,6 +15,7 @@ BRANCH_ALREADY_EXIST_ERR = BASE_GIT_ERR + 2
 NO_CHANGES_TO_COMMIT_ERR = BASE_GIT_ERR + 3
 SLAVE_MANAGER_CANNOT_CHANGE_ERR = BASE_GIT_ERR + 4
 TAG_ALREADY_EXIST_ERR = BASE_GIT_ERR + 5
+GIT_USER_ERR = BASE_GIT_ERR + 6
 
 BASE_SCHEMA_ERR = 200
 SCHEMA_VERSION_ERR = BASE_SCHEMA_ERR + 1
@@ -68,6 +69,11 @@ class SlaveManagerCannotChange(GitException):
 class TagAlreadyExist(GitException):
     def __init__(self, *args: object) -> None:
         super().__init__(TAG_ALREADY_EXIST_ERR, *args)
+
+
+class GitUserErr(GitException):
+    def __init__(self, *args: object) -> None:
+        super().__init__(GIT_USER_ERR, *args)
 
 
 # Schema Errors

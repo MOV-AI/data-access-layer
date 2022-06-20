@@ -26,7 +26,8 @@ from dal.exceptions import (NoChangesToCommit,
                             SlaveManagerCannotChange,
                             TagAlreadyExist,
                             VersionDoesNotExist,
-                            BranchAlreadyExist)
+                            BranchAlreadyExist,
+                            GitUserErr)
 from dal.classes.filesystem import FileSystem
 from dal.archive.basearchive import BaseArchive
 
@@ -382,9 +383,14 @@ class GitManager(BaseArchive, id="Git"):
 
         Returns:
             GitManager: an instance of the current mode applicable to the Robot.
+
+        Raises:
+            GitUserError: in case there was a problem fetching git username.
         """
         manager_uri = getenv("MOVAI_MANAGER_URI", "localhost")
         git_user = kwargs.get("user", getenv("GIT_USER"))
+        if git_user is None:
+            raise GitUserErr("Git User NOT provided!!")
         client = None
         if manager_uri.lower().strip() in ["localhost", "127.0.0.1"]:
             # this is a manager
