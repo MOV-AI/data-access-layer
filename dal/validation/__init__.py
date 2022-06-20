@@ -10,7 +10,7 @@
 from .schema import Schema
 from .validator import JsonValidator
 from .template import Template
-from os.path import dirname, realpath, isdir
+from os.path import dirname, realpath
 
 
 dir = dirname(realpath(__file__))

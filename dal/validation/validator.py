@@ -13,7 +13,6 @@ from re import search
 from .schema import Schema
 from json import loads as load_json
 from dal.exceptions import SchemaTypeNotKnown, ValidationError
-from . import SCHEMA_FOLDER_PATH
 
 
 class JsonValidator:
@@ -56,7 +55,10 @@ class JsonValidator:
         """will initialize schemas objects in the schema folder
             for all of our configuration files
         """
-        schema_version_folder = f"{SCHEMA_FOLDER_PATH}/{self._version}"
+        # validator is in the root of validation module
+        validation_path = dirname(realpath(__file__))
+
+        schema_version_folder = f"{validation_path}/schema/{self._version}"
         for schema_json in listdir(schema_version_folder):
             m = search(r"(\w+)\.schema\.json", schema_json)
             if m is not None:
