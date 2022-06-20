@@ -15,12 +15,7 @@ from os.path import dirname, realpath, isdir
 
 dir = dirname(realpath(__file__))
 SCHEMA_FOLDER_PATH = f"file:/{dir}/schema"
-
-
-def get_schema_folder(version):
-    if isdir(f"{dir}/schema/{version}"):
-        return f"file:/{dir}/schema/{version}"
-    raise Exception(f"schema version {version} does not exist")
+default_version = "2.3"
 
 
 __all__ = [
@@ -28,5 +23,5 @@ __all__ = [
     "JsonValidator",
     "Template",
     "SCHEMA_FOLDER_PATH",
-    "get_schema_folder"
+    "default_version"
 ]
