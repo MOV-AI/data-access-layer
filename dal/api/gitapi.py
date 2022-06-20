@@ -374,7 +374,7 @@ class GitManager(BaseArchive, id="Git"):
             GitManager._repos[mode] = {}
 
     @staticmethod
-    def get_client(**kwargs) -> "GitManager":
+    def get_client(user: str = None) -> "GitManager":
         """will create an instance of GitManager, dynamically choose between
            master/slave according to the current running Robot.
 
@@ -382,13 +382,13 @@ class GitManager(BaseArchive, id="Git"):
             user (str): the username to be used for GIT client.
 
         Returns:
-            GitManager: an instance of the current mode applicable to the Robot.
+            GitManager: an instance of the current mode applicable to the Robot
 
         Raises:
             GitUserError: in case there was a problem fetching git username.
         """
         manager_uri = getenv("MOVAI_MANAGER_URI", "localhost")
-        git_user = kwargs.get("user", getenv("GIT_USER"))
+        git_user = getenv("GIT_USER") or user
         if git_user is None:
             raise GitUserErr("Git User NOT provided!!")
         client = None
@@ -480,8 +480,7 @@ class GitManager(BaseArchive, id="Git"):
     def get(self,
             obj_name: str,
             remote: str,
-            version: str,
-            **kwargs) -> Path:
+            version: str) -> Path:
         """Get a File from repository with specific version
 
         Args:
@@ -505,8 +504,7 @@ class GitManager(BaseArchive, id="Git"):
                remote: str,
                new_version: str = None,
                base_version: str = None,
-               message: str = "",
-               **kwargs) -> str:
+               message: str = "") -> str:
         """will commit/save the specified obj locally.
 
         Args:
@@ -580,8 +578,7 @@ class GitManager(BaseArchive, id="Git"):
                    relative_path: str,
                    content: str,
                    base_version: str = None,
-                   is_json: bool = True,
-                   **kwargs) -> None:
+                   is_json: bool = True) -> None:
         """will create new file in repository locally using the relative path
            of the local repository path.
            this function neede because external user is not fully aware of the
@@ -600,7 +597,7 @@ class GitManager(BaseArchive, id="Git"):
         new_file_path = path_join(repo.local_path, relative_path)
         FileSystem.write(new_file_path, content, is_json)
 
-    def pull(self, remote: str, remote_name: str, **kwargs):
+    def pull(self, remote: str, remote_name: str):
         """will pull changes to local repository from remote_name repo
 
         Args:
@@ -614,7 +611,7 @@ class GitManager(BaseArchive, id="Git"):
         return repo.pull(remote_name)
 
     def push(self, remote: str, remote_name: str, tag_name: str = None,
-             only_tag: bool = False, **kwargs) -> PushInfo:
+             only_tag: bool = False) -> PushInfo:
         """will push repository defined by remote to remote_name repository
 
         Args:

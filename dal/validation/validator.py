@@ -8,11 +8,16 @@
 """
 
 from os import listdir
-from os.path import dirname, realpath
+from os.path import dirname, realpath, isdir
 from re import search
+
 from .schema import Schema
 from json import loads as load_json
-from dal.exceptions import SchemaTypeNotKnown, ValidationError
+from dal.exceptions import (
+    SchemaTypeNotKnown,
+    ValidationError,
+    SchemaVersionError
+)
 
 
 class JsonValidator:
@@ -59,6 +64,8 @@ class JsonValidator:
         validation_path = dirname(realpath(__file__))
 
         schema_version_folder = f"{validation_path}/schema/{self._version}"
+        if not isdir(schema_version_folder):
+            raise SchemaVersionError(f"version {self._version} does not exist")
         for schema_json in listdir(schema_version_folder):
             m = search(r"(\w+)\.schema\.json", schema_json)
             if m is not None:

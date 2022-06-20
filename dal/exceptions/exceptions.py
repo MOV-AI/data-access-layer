@@ -112,7 +112,7 @@ class ValidationException(DalException):
 
 class ValidationError(ValidationException):
     def __init__(self, *args: object) -> None:
-        super().__init__(SCHEMA_VERSION_ERR, *args)
+        super().__init__(VALIDATION_ERR, *args)
 
 
 # Archive Errors
