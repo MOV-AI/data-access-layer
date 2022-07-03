@@ -21,6 +21,12 @@
           "Description": "str"
         }
       },
+      "container_conf": {
+        "$name": {
+          "Value": "str",
+          "Description": "str"
+        }
+      },
       "EnvVar": {
         "$name": {
           "Value": "str",
