@@ -12,8 +12,8 @@
 from abc import abstractmethod
 from os import getenv
 from os.path import join as path_join
+from os.path import expanduser
 from pathlib import Path
-from re import search
 from git import (Repo,
                  InvalidGitRepositoryError,
                  GitError,
@@ -29,30 +29,14 @@ from dal.exceptions import (NoChangesToCommit,
                             BranchAlreadyExist,
                             GitUserErr)
 from dal.classes.filesystem import FileSystem
+from dal.classes.common.gitlink import GitLink
 from dal.archive.basearchive import BaseArchive
-
-# -----------------------------------------------------------------------------
-# TODO
-# need to be replaced, just for testing
-from dal.classes.authentication import AuthService
-
-
-# TODO
-# should be replaced by authentication service ?
-# not sure how this should work
-def get_tokenized_repo(remote, username):
-    git_link = GitLink(remote)
-    git_user = AuthService.get_username(remote, username)
-    token = AuthService.get_token(remote, username)
-    remote = git_link.get_https_link().split('https://')[1]
-    return f"https://{git_user}:{token}@{remote}"
-# -----------------------------------------------------------------------------
 
 
 MOVAI_FOLDER_NAME = ".movai"
 MOVAI_BASE_FOLDER = path_join(FileSystem.get_home_folder(), MOVAI_FOLDER_NAME)
-MOVAI_BASE_FOLDER = getenv("MOVAI_FOLDER", MOVAI_BASE_FOLDER)
-GIT_BASE_FOLDER = path_join(MOVAI_BASE_FOLDER, 'git')
+MOVAI_BASE_FOLDER = getenv("MOVAI_USERSPACE", MOVAI_BASE_FOLDER)
+GIT_BASE_FOLDER = path_join(MOVAI_BASE_FOLDER, 'database')
 
 
 class GitRepo:
@@ -70,7 +54,6 @@ class GitRepo:
             version (str, optional): branch/tag/commit id.
         """
         self._git_link = GitLink(remote)
-        self._remote_link = self._git_link.get_https_link()
         self._username = username
         self._version = version
         self._repo_object = None
@@ -310,10 +293,11 @@ class GitRepo:
             repo = Repo(self._local_path)
         except InvalidGitRepositoryError:
             # Repository does not exist, creating one.
-            tokenized_repo = get_tokenized_repo(self._remote_link,
-                                                self._username)
-            repo = Repo.clone_from(tokenized_repo, self._local_path,
-                                   no_checkout=no_checkout)
+            git_ssh_cmd = f"ssh -i {expanduser('~/.ssh/id_rsa')}"
+            repo = Repo.clone_from(self._git_link.repo_ssh_link,
+                                   self._local_path,
+                                   env=dict(GIT_SSH_COMMAND=git_ssh_cmd))
+            self._default_branch = repo.active_branch.name
         except GitError as e:
             print(f"Error {e}")
 
@@ -388,15 +372,15 @@ class GitManager(BaseArchive, id="Git"):
             GitUserError: in case there was a problem fetching git username.
         """
         manager_uri = getenv("MOVAI_MANAGER_URI", "localhost")
-        git_user = getenv("GIT_USER") or user
-        if git_user is None:
+        movai_user = getenv("MOVAI_USER") or user
+        if movai_user is None:
             raise GitUserErr("Git User NOT provided!!")
         client = None
         if manager_uri.lower().strip() in ["localhost", "127.0.0.1"]:
             # this is a manager
-            client = MasterGitManager(git_user)
+            client = MasterGitManager(movai_user)
         else:
-            client = SlaveGitManager(git_user)
+            client = SlaveGitManager(movai_user)
 
         return client
 
@@ -449,7 +433,7 @@ class GitManager(BaseArchive, id="Git"):
             GitRepo: GitRepo Object representing the requested version.
         """
         git_link = GitLink(remote)
-        repo_name = git_link.get_repo_name()
+        repo_name = git_link.repo
         repo = self._get_repo(repo_name)
         if repo is None:
             repo = GitRepo(remote, self._username,
@@ -492,7 +476,8 @@ class GitManager(BaseArchive, id="Git"):
         Returns:
             Path: the local path of the requested File.
         """
-        if obj_name.find('json') == -1:
+        # TODO: check filename extension "json"
+        if not obj_name.endswith('.json') and not obj_name.endswith('.py'):
             obj_name = obj_name + '.json'
         repo = self._get_or_add_version(remote, version)
         file_path = repo.checkout_file(obj_name)
@@ -525,6 +510,7 @@ class GitManager(BaseArchive, id="Git"):
             NoChangesToCommit: in case there was no changes to commit.
         """
         repo = self._get_or_add_version(remote, base_version)
+        # TODO: check filename extension
         if obj_name.find('.json') == -1:
             obj_name += '.json'
         if obj_name not in repo.get_modified_files() \
@@ -666,7 +652,7 @@ class SlaveGitManager(GitManager):
     def _get_local_path(self, remote):
         git_link = GitLink(remote)
         path_params = [GIT_BASE_FOLDER]
-        path_params.append(git_link.get_repo_name())
+        path_params.append(git_link.repo)
         return path_join(*path_params)
 
 
@@ -682,63 +668,5 @@ class MasterGitManager(GitManager):
         git_link = GitLink(remote)
         path_params = [GIT_BASE_FOLDER]
         path_params.append(self._username)
-        path_params.append(git_link.get_repo_name())
+        path_params.append(git_link.repo)
         return path_join(*path_params)
-
-
-class GitLink:
-    """a class to represent a remote git link
-        whether it was ssh link or https.
-    """
-    def __init__(self, link: str):
-        self._link = link
-        self._ssh_link = None
-        self._https_link = None
-        if link.find("https://") != -1:
-            self._https_link = link
-            self._ssh_link = self.get_ssh_link()
-        elif link.find("git@") != -1:
-            self._ssh_link = link
-            self._https_link = self.get_https_link()
-        else:
-            raise Exception("not a valid Git link")
-
-    def get_https_link(self) -> str:
-        """reutrns a https link for provided link in init function
-
-        Returns:
-            str: https link
-        """
-        if self._https_link is not None:
-            return self._https_link
-        return "https://" + self._ssh_link.split("@")[1].replace(":", "/")
-
-    def get_ssh_link(self) -> str:
-        """returns a ssh link for the provided link in init function
-
-        Returns:
-            str: ssh link
-        """
-        if self._ssh_link is not None:
-            return self._ssh_link
-        return "git@" + \
-            self._https_link.split("//")[1].replace("/", ":", 1)
-
-    def get_relative_repo_path(self) -> str:
-        """will return relative repository path without the domain
-
-        Returns:
-            str: relative repository path.
-        """
-        return search("https://([^/]+)(/.*)", self._https_link).group(2)
-
-    def get_repo_name(self) -> str:
-        """returns the repository name from the provided link in init.
-
-        Returns:
-            str: repository name
-        """
-        repo_name = self._https_link.split("/")[-1]
-        if repo_name.find(".") != -1:
-            repo_name = repo_name.split(".")[0]
-        return repo_name

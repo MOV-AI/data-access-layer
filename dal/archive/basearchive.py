@@ -36,7 +36,7 @@ class BaseArchive:
         if id is None:
             return
         if id in BaseArchive.classes:
-            raise ArchiveAlreadyRegistered("Archive id={id}")
+            raise ArchiveAlreadyRegistered(f"Archive id={id}")
 
         BaseArchive.classes[id] = cls
 

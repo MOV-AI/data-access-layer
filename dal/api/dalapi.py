@@ -203,12 +203,16 @@ class RedisProtocols:
 
 
 class SlaveDAL(DAL):
-    def __init__(self, user: str, schema_version: str = validation.default_version) -> None:
+    def __init__(self,
+                 user: str,
+                 schema_version: str = validation.default_version) -> None:
         super().__init__(user, schema_version)
         self.manager = SlaveGitManager(user)
 
 
 class MasterDAL(DAL):
-    def __init__(self, user: str, schema_version: str = validation.default_version) -> None:
+    def __init__(self,
+                 user: str,
+                 schema_version: str = validation.default_version) -> None:
         super().__init__(user, schema_version)
         self.manager = MasterGitManager(user)

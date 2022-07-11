@@ -14,13 +14,13 @@
        archive = Archive(user=None)
        archive.get('file', remote, version)
 """
-
-
+from os import getenv
 from .basearchive import BaseArchive
 # in order to register Git Archive
 from dal.api.gitapi import GitManager
 
-BaseArchive.set_active_archive("Git")
+# default archive is GIT
+BaseArchive.set_active_archive(getenv("ACTIVE_ARCHIVE", "Git"))
 Archive = BaseArchive()
 
 __all__ = [
