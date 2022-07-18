@@ -34,7 +34,7 @@
                                             "type": "object",
                                             "properties": {
                                                 "Class": {
-                                                    "type": "string"
+                                                    "type": ["string", "boolean"]
                                                 },
                                                 "Module": {
                                                     "type": "string"
