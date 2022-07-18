@@ -221,7 +221,8 @@
                                                                     "required": ["Value"]
                                                                 }
                                                             }
-                                                        }
+                                                        },
+                                                        "NodeLayers": {}
                                                     }
                                                 }
                                             ]
