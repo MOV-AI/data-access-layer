@@ -199,6 +199,28 @@
                                                         },
                                                         "Template": {
                                                             "$ref": "#/definitions/validName"
+                                                        },
+                                                        "CmdLine": {
+                                                            "patternProperties": {
+                                                                "^[a-zA-Z0-9_]$": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "Value": {}
+                                                                    },
+                                                                    "required": ["Value"]
+                                                                }
+                                                            }
+                                                        },
+                                                        "EnvVar": {
+                                                            "patternProperties": {
+                                                                "^[a-zA-Z0-9_]$": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "Value": {}
+                                                                    },
+                                                                    "required": ["Value"]
+                                                                }
+                                                            }
                                                         }
                                                     }
                                                 }

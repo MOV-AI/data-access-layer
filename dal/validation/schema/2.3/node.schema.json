@@ -60,6 +60,12 @@
                         {
                             "type": "object",
                             "properties": {
+                                "EnvVar": {
+                                    "$ref": "common/arg.schema.json"
+                                },
+                                "CmdLine": {
+                                    "$ref": "common/arg.schema.json"
+                                },
                                 "Parameter": {
                                     "$ref": "common/arg.schema.json"
                                 },
