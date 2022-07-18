@@ -30,7 +30,6 @@
                                 "Parameter": {
                                     "patternProperties": {
                                         "^[0-9a-zA-Z_]+$": {
-                                            "type": ["string", "boolean"]
                                         }
                                     }
                                 },
