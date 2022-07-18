@@ -256,7 +256,20 @@
                                                             "properties": {
                                                                 "Value": {
                                                                     "$ref": "#/definitions/position"
-                                                                }
+                                                                },
+								"Annotation": {
+								    "type": "object",
+								    "patternProperties": {
+									"^[0-9]+$": {
+									    "type": "object",
+									    "properties": {
+										"Value": {
+										    "type": "string"
+										}
+									    }
+									}
+								    }
+								}
                                                             }
                                                         }
                                                     }
