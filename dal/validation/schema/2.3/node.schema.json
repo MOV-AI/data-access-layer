@@ -1,6 +1,7 @@
 {
-    "$id": "NodeSchema-2.3",
+    "$id": "node.schema.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$version": "2.3",
     "title": "Node Schema",
     "definitions": {
         "portfields": {
@@ -63,7 +64,7 @@
                                     "$ref": "common/arg.schema.json"
                                 },
                                 "Launch": {
-                                    "type": "boolean"
+                                    "type": ["boolean", "string"]
                                 },
                                 "PackageDepends": {
                                     "type": ["string", "array"]

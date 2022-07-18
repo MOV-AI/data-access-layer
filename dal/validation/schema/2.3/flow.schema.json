@@ -1,5 +1,6 @@
 {
-    "$id": "FlowSchema-2.3",
+    "$id": "flow.schema.json",
+    "$version": "2.3",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "Flow Schema",
     "definitions": {

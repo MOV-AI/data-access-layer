@@ -9,6 +9,7 @@
 
 from os import listdir
 from os.path import dirname, realpath, isdir
+from pathlib import Path
 from re import search
 
 from .schema import Schema
@@ -76,7 +77,7 @@ class JsonValidator:
                     # TODO print approperiate message
                     pass
 
-    def validate(self, file_path: str) -> dict:
+    def validate(self, file_path: Path) -> dict:
         """validate a local file path against it's matching schema
 
         Args:
@@ -90,16 +91,18 @@ class JsonValidator:
                         - path: the path of the error in case there is one
             """
         content = None
-        with open(file_path) as f:
+        with file_path.open() as f:
             content = load_json(f.read())
         type = (list(content.keys())[0]).lower()
         if type not in self.schema_types:
             raise SchemaTypeNotKnown(f"type: {type}")
         schema_obj: Schema = getattr(self, type)
 
+        """
         validation_res = schema_obj.validate(content)
         if validation_res["status"] is False:
             # validation Failed
             raise ValidationError(f"message:{validation_res['message']},\
                                 path:{validation_res['path']}")
+        """
         return schema_obj.validate(content)

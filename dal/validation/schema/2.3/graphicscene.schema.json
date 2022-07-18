@@ -1,5 +1,6 @@
 {
-    "$id": "GraphicSceneSchema-2.3",
+    "$id": "graphicscene.schema.json",
+    "$version": "2.3",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "Layout Schema",
     "definitions": {
