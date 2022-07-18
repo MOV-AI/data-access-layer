@@ -13,16 +13,23 @@
             "type": "string"
         },
         "LastUpdate": {
-            "properties": {
-                "date": {
-                    "type": "string"
+            "anyOf": [
+                {
+                    "properties": {
+                        "date": {
+                            "type": "string"
+                        },
+                        "user": {
+                            "type": "string"
+                        }
+                    },
+                    "type": "object",
+                    "required": ["user", "date"]
                 },
-                "user": {
+                {
                     "type": "string"
                 }
-            },
-            "type": "object",
-            "required": ["user", "date"]
+            ]
         }  
     },
     "required": ["Label", "LastUpdate"]
