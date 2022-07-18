@@ -455,7 +455,10 @@
                                                                             "items": {
                                                                                 "$ref": "#/definitions/coordinate"
                                                                             }
-                                                                        }
+                                                                        },
+									"navigationAllowed": {
+									    "type": "boolean"
+									}
                                                                     }
                                                                 }
                                                             }
