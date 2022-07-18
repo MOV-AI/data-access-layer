@@ -13,6 +13,10 @@
             "type": "string",
             "pattern": "^[a-zA-Z0-9_-]+$"
         },
+        "Description": {
+            "$comment": "this field should be removed in future verisons and use Info instead",
+            "type": "string"
+        },
         "LastUpdate": {
             "anyOf": [
                 {
