@@ -23,6 +23,14 @@
                 }
             }
         },
+        "3arrayPoint": {
+			"type": "array",
+			"items": {
+				"type": "number"
+			},
+			"minItems": 3,
+			"maxItems": 3
+		},
         "position": {
             "type": "object",
             "properties": {
@@ -59,6 +67,9 @@
                         "color": {
                             "type": "array"
                         },
+                        "weight": {
+							"type": "integer"
+						},
                         "keyValueMap": {
                             "type": "object"
                         },
@@ -97,7 +108,66 @@
                         },
                         "type": {
                             "type": "string"
-                        }
+                        },
+                        "isVisible": {
+							"type": "boolean"
+						},
+						"annotationPropOverrides": {},
+						"assetName": {
+							"type": "string"
+						},
+						"size": {
+							"type": "array",
+							"items": {
+								"type": "number"
+							}
+						},
+						"vertices": {
+							"type": "object",
+							"patternProperties": {
+								"^[0-9]+$": {
+									"type": "object",
+									"properties": {
+										"id": {},
+										"position": {
+											"$ref": "#/definitions/3arrayPoint"
+										}
+									}
+								}
+							}
+						},
+						"edges": {
+							"type": "object",
+							"patternProperties": {
+								"^[0-9]+(_[0-9]+)?$": {
+									"type": "object",
+									"properties": {
+										"belongsSrc": {
+											"$ref": "#/definitions/belongsObj"
+										},
+										"belongsTrg": {
+											"$ref": "#/definitions/belongsObj"
+										},
+										"ids": {
+											"type": "array",
+											"items": {
+												"type": "string"
+											}
+										},
+										"keyValueMap": {},
+										"weight": {
+											"type": "integer"
+										}
+									}
+								}
+							}
+						},
+						"corners": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/3arrayPoint"
+							}
+						}
                     }
                 },
                 "name": {
