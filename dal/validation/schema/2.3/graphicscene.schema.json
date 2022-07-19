@@ -329,7 +329,20 @@
                                                             "properties": {
                                                                 "Value": {
                                                                     "$ref": "#/definitions/position"
-                                                                }
+                                                                },
+								"Annotation": {
+								    "type": "object",
+								    "patternProperties": {
+									"^[0-9]+$": {
+									    "type": "object",
+									    "properties": {
+										"Value": {
+										    "type": "string"
+										}
+									    }
+									}
+								    }
+								}
                                                             }
                                                         }
                                                     }
@@ -489,7 +502,7 @@
                                                 "AssetName": {
                                                     "type": "object",
                                                     "patternProperties": {
-                                                        "^[a-zA-Z0-9_]+$": {
+                                                        "^[a-zA-Z0-9_.]+$": {
                                                             "type": "object",
                                                             "properties": {
                                                                 "Value": {
@@ -518,7 +531,10 @@
                                                                             "items": {
                                                                                 "$ref": "#/definitions/coordinate"
                                                                             }
-                                                                        }
+                                                                        },
+									"navigationAllowed": {
+									    "type": "boolean"
+									}
                                                                     }
                                                                 }
                                                             }
