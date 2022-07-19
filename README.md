@@ -1,5 +1,5 @@
 # data-access-layer
-The data access layer (DAL) is an abstraction layer for accessing the required data. 
+The data access layer (DAL) is an abstraction layer Library for accessing the required data. 
 The data may be fetched/written (pending permission) from/to the appropriate data sources:
     GIT
     DB (Redis)
@@ -14,13 +14,19 @@ The Data Service provides:
 The DAL exposes API for reading and writing the data and is used by the MOV.AI platform component
 The DAL is a python package and it is incapsulated in the Backend and in the Spawner (Flow initiator) containers
 
-> Prerequisites : The DAL is depended on 6 packages:
-    1) jsonschema
-    2) gitpython
-    3) py3rosmsgs
-    4) aioredis
-    5) redis
-    6) pyros-genmsg
+> Prerequisites : The DAL is depended on the following packages:
+    Pillow>=5.1.0
+    aioredis==1.3.0
+    deepdiff==4.0.9
+    gitpython==3.1.2
+    jsonschema==3.2.0
+    miracle-acl==0.0.4.post1
+    py3rosmsgs
+    pyjwt==1.7.1
+    pyros-genmsg
+    python-box==4.0.4
+    redis==3.3.11
+    movai_core_shared==1.0.0.10
 
 
 ## Build

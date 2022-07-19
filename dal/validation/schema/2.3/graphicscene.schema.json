@@ -1,5 +1,6 @@
 {
-    "$id": "GraphicSceneSchema-0.1",
+    "$id": "graphicscene.schema.json",
+    "$version": "2.3",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "Layout Schema",
     "definitions": {
@@ -22,6 +23,27 @@
                 }
             }
         },
+        "annotationValue": {
+            "type": "object",
+            "properties": {
+                "behaviour": {
+                    "type": "object",
+                    "properties": {
+                        "Value": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "3arrayPoint": {
+			"type": "array",
+			"items": {
+				"type": "number"
+			},
+			"minItems": 3,
+			"maxItems": 3
+		},
         "position": {
             "type": "object",
             "properties": {
@@ -58,6 +80,9 @@
                         "color": {
                             "type": "array"
                         },
+                        "weight": {
+							"type": "integer"
+						},
                         "keyValueMap": {
                             "type": "object"
                         },
@@ -96,7 +121,66 @@
                         },
                         "type": {
                             "type": "string"
-                        }
+                        },
+                        "isVisible": {
+							"type": "boolean"
+						},
+						"annotationPropOverrides": {},
+						"assetName": {
+							"type": "string"
+						},
+						"size": {
+							"type": "array",
+							"items": {
+								"type": "number"
+							}
+						},
+						"vertices": {
+							"type": "object",
+							"patternProperties": {
+								"^[0-9]+$": {
+									"type": "object",
+									"properties": {
+										"id": {},
+										"position": {
+											"$ref": "#/definitions/3arrayPoint"
+										}
+									}
+								}
+							}
+						},
+						"edges": {
+							"type": "object",
+							"patternProperties": {
+								"^[0-9]+(_[0-9]+)?$": {
+									"type": "object",
+									"properties": {
+										"belongsSrc": {
+											"$ref": "#/definitions/belongsObj"
+										},
+										"belongsTrg": {
+											"$ref": "#/definitions/belongsObj"
+										},
+										"ids": {
+											"type": "array",
+											"items": {
+												"type": "string"
+											}
+										},
+										"keyValueMap": {},
+										"weight": {
+											"type": "integer"
+										}
+									}
+								}
+							}
+						},
+						"corners": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/3arrayPoint"
+							}
+						}
                     }
                 },
                 "name": {
@@ -145,17 +229,7 @@
                                                                     }
                                                                 },
                                                                 "Annotation": {
-                                                                    "type": "object",
-                                                                    "properties": {
-                                                                        "behaviour": {
-                                                                            "type": "object",
-                                                                            "properties": {
-                                                                                "Value": {
-                                                                                    "type": "string"
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }
+                                                                    "$ref": "#/definitions/annotationValue"
                                                                 }
                                                             },
                                                             "required": ["Value"]
@@ -255,7 +329,20 @@
                                                             "properties": {
                                                                 "Value": {
                                                                     "$ref": "#/definitions/position"
-                                                                }
+                                                                },
+								"Annotation": {
+								    "type": "object",
+								    "patternProperties": {
+									"^[0-9]+$": {
+									    "type": "object",
+									    "properties": {
+										"Value": {
+										    "type": "string"
+										}
+									    }
+									}
+								    }
+								}
                                                             }
                                                         }
                                                     }
@@ -399,6 +486,9 @@
                                                                             }
                                                                         }
                                                                     }
+                                                                },
+                                                                "Annotation": {
+                                                                    "$ref": "#/definitions/annotationValue"
                                                                 }
                                                             }
                                                         }
@@ -412,7 +502,7 @@
                                                 "AssetName": {
                                                     "type": "object",
                                                     "patternProperties": {
-                                                        "^[a-zA-Z0-9_]+$": {
+                                                        "^[a-zA-Z0-9_.]+$": {
                                                             "type": "object",
                                                             "properties": {
                                                                 "Value": {
@@ -441,7 +531,10 @@
                                                                             "items": {
                                                                                 "$ref": "#/definitions/coordinate"
                                                                             }
-                                                                        }
+                                                                        },
+									"navigationAllowed": {
+									    "type": "boolean"
+									}
                                                                     }
                                                                 }
                                                             }

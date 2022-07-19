@@ -1,13 +1,14 @@
 {
-    "$id": "LayoutSchema-0.1",
+    "$id": "callback.schema.json",
+    "$version": "2.3",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "title": "Layout Schema",
+    "title": "Callback Schema",
     "definitions": {
     },
 
     "type": "object",
     "properties": {
-        "Layout": {
+        "Callback": {
             "type": "object",
             "patternProperties": {
                 "^[a-zA-Z0-9_]+$": {
@@ -20,32 +21,28 @@
                             "type": "object",
                             "Description": "all of the other fields (optional fields)",
                             "properties": {
-                                "Icon": {
+                                "Code": {
                                     "type": "string"
                                 },
-                                "DashboardTitle": {
+                                "Message": {
                                     "type": "string"
                                 },
-                                "Styles": {
-                                    "type": "string"
-                                },
-                                "WidgetInst": {
+                                "Py3Lib": {
+                                    "type": "object",
                                     "patternProperties": {
-                                        "^Button[0-9]*$": {
+                                        "^[a-zA-Z_]+$": {
                                             "type": "object",
                                             "properties": {
-                                                "Template": {
-                                                    "type": "string"
+                                                "Class": {
+                                                    "type": ["string", "boolean"]
                                                 },
-                                                "Parameter": {
-                                                    "$ref": "common/arg.schema.json"
+                                                "Module": {
+                                                    "type": "string"
                                                 }
-                                            }
+                                            },
+                                            "required": ["Class", "Module"]
                                         }
                                     }
-                                },
-                                "LayoutColors": {
-                                    "type": "array"
                                 }
                             }
                         }
@@ -55,6 +52,6 @@
             "additionalProperties": false
         }
     },
-    "required": ["Layout"],
+    "required": ["Callback"],
     "additionalProperties": false
 }

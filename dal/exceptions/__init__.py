@@ -13,9 +13,13 @@ from .exceptions import (
     NoChangesToCommit,
     SlaveManagerCannotChange,
     TagAlreadyExist,
+    GitUserErr,
     SchemaTypeNotKnown,
     SchemaVersionError,
-    ValidationError
+    ValidationError,
+    NoActiveArchiveRegistered,
+    ArchiveNotRegistered,
+    ArchiveAlreadyRegistered
 )
 
 __all__ = [
@@ -24,7 +28,11 @@ __all__ = [
     'NoChangesToCommit',
     'SlaveManagerCannotChange',
     'TagAlreadyExist',
+    'GitUserErr',
     'SchemaTypeNotKnown',
     'SchemaVersionError',
-    'ValidationError'
+    'ValidationError',
+    'NoActiveArchiveRegistered',
+    'ArchiveNotRegistered',
+    'ArchiveAlreadyRegistered'
 ]
