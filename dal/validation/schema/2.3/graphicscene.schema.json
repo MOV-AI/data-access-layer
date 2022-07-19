@@ -23,6 +23,19 @@
                 }
             }
         },
+        "annotationValue": {
+            "type": "object",
+            "properties": {
+                "behaviour": {
+                    "type": "object",
+                    "properties": {
+                        "Value": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "3arrayPoint": {
 			"type": "array",
 			"items": {
@@ -216,17 +229,7 @@
                                                                     }
                                                                 },
                                                                 "Annotation": {
-                                                                    "type": "object",
-                                                                    "properties": {
-                                                                        "behaviour": {
-                                                                            "type": "object",
-                                                                            "properties": {
-                                                                                "Value": {
-                                                                                    "type": "string"
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }
+                                                                    "$ref": "#/definitions/annotationValue"
                                                                 }
                                                             },
                                                             "required": ["Value"]
@@ -470,6 +473,9 @@
                                                                             }
                                                                         }
                                                                     }
+                                                                },
+                                                                "Annotation": {
+                                                                    "$ref": "#/definitions/annotationValue"
                                                                 }
                                                             }
                                                         }
