@@ -21,7 +21,7 @@
           "Description": "str"
         }
       },
-      "container_conf": {
+      "ContainerConf": {
         "$name": {
           "Value": "str",
           "Description": "str"
