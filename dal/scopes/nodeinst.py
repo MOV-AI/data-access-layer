@@ -7,7 +7,7 @@
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
    - Manuel Sila  (manuel.silva@mov.ai) - 2020
 """
-from .scopestree import ScopeObjectNode, ScopeNode, scopes
+from dal.scopes.scopestree import ScopeObjectNode, ScopeNode, scopes
 from movai_core_shared.logger import Log
 
 
@@ -70,6 +70,11 @@ class NodeInst(ScopeObjectNode):
     @property
     def is_node_to_launch(self) -> bool:
         """Returns True if it should be launched"""
+        # already been calculated
+        if isinstance(self.Launch, tuple):
+            cmd, res = self.Launch
+            if cmd == "override" and isinstance(res, bool):
+                return res
         # get the value from the node template
         temp = self.node_template.is_node_to_launch
 
