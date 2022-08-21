@@ -4,10 +4,10 @@
    Proprietary and confidential
 
    Developers:
-   - Manuel Sila  (manuel.silva@mov.ai) - 2020
+   - Manuel Silva  (manuel.silva@mov.ai) - 2020
 """
 
-from .scopestree import ScopeObjectNode, ScopeNode, scopes
+from dal.scopes.scopestree import ScopeObjectNode, ScopeNode, scopes
 
 
 class Container(ScopeObjectNode):
@@ -47,9 +47,10 @@ class Container(ScopeObjectNode):
 
         return params
 
-    def get_param(
-        self, key: str, name: str = None, context=None, custom_parser: any = None
-    ) -> any:
+    def get_param(self, key: str,
+                  name: str = None,
+                  context=None,
+                  custom_parser: any = None) -> any:
         """
         Returns a specific parameter of the container after
         parsing it
