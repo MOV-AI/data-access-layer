@@ -10,7 +10,9 @@
 """
 
 from movai_core_shared.consts import (
-    TRANSITION_TYPE, ROS1_NODELETCLIENT, ROS1_NODELETSERVER
+    TRANSITION_TYPE,
+    ROS1_NODELETCLIENT,
+    ROS1_NODELETSERVER
 )
 from .model import Model
 
