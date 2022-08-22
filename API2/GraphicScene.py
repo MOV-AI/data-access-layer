@@ -7,7 +7,7 @@
    - Moawiya Mograbi  (moawiya@mov.ai) - 2022
 """
 try:
-    from movai_core_enterprise.models import GraphicScene
+    from movai_core_enterprise.scopes import GraphicScene
     __all__ = ["GraphicScene"]
 except ImportError:
     pass

@@ -7,8 +7,12 @@
    - Moawiya Mograbi  (moawiya@mov.ai) - 2022
 """
 try:
-    from movai_core_enterprise.models import (
-        Task, TaskEntry, TaskTemplate, SharedDataTemplate, SharedDataEntry
+    from movai_core_enterprise.scopes import (
+        Task,
+        TaskEntry,
+        TaskTemplate,
+        SharedDataTemplate,
+        SharedDataEntry
     )
 
     __all__ = [

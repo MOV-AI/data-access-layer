@@ -8,7 +8,7 @@
 """
 
 try:
-    from movai_core_enterprise.models import Application
+    from movai_core_enterprise.scopes import Application
 
     __all__ = ["Application"]
 except ImportError:

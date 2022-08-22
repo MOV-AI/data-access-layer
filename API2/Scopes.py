@@ -7,8 +7,13 @@
    - Moawiya Mograbi  (moawiya@mov.ai) - 2022
 """
 try:
-    from movai_core_enterprise.models import (
-        Layout, GraphicAsset, SharedDataEntry, SharedDataTemplate, TaskTemplate, Annotation
+    from movai_core_enterprise.scopes import (
+        Layout,
+        GraphicAsset,
+        SharedDataEntry,
+        SharedDataTemplate,
+        TaskTemplate,
+        Annotation
     )
     enterprise_modules = [
         "Annotation",
