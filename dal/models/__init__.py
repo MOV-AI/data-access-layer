@@ -12,8 +12,6 @@ from .callback import Callback
 from .form import Form
 from .model import Model
 from .node import Node
-from .shareddatatemplate import SharedDataTemplate
-from .shareddataentry import SharedDataEntry
 from .system import System
 from .var import Var
 from .widget import Widget
@@ -48,7 +46,7 @@ except ImportError:
     enterprise_modules = []
 
 try:
-    from backend.endpoints.api.v2.models.role import Role
+    from backend.models.role import Role
     backend_moduels = ['Role']
 except ImportError:
     backend_moduels = []
