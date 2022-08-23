@@ -16,11 +16,11 @@ import pkgutil
 import pydoc
 import importlib
 from dal.movaidb import MovaiDB
-from .scope import Scope
+from dal.scopes.scope import Scope
 
 
 class Callback(Scope):
-    """Message class"""
+    """Callback class"""
 
     scope = "Callback"
     permissions = [*Scope.permissions, "execute"]
