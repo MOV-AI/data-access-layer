@@ -7,6 +7,7 @@
    - Moawiya Mograbi  (moawiya@mov.ai) - 2022
 """
 
+from .application import Application
 from .configuration import Configuration
 from .fleetrobot import FleetRobot
 from .node import Node
@@ -36,6 +37,7 @@ from .form import Form
 from .widget import Widget
 
 __all__ = [
+    "Application",
     "Configuration",
     "FleetRobot",
     "Node",
