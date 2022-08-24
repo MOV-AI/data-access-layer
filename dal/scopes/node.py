@@ -22,11 +22,11 @@ from movai_core_shared.consts import (
     ROS1_PLUGIN,
 )
 from dal.movaidb import MovaiDB
-from .scope import Scope
+from dal.scopes.scope import Scope
 from dal.helpers import Helpers
 from movai_core_shared.logger import Log
 
-LOGGER = Log.get_logger("Node")
+LOGGER = Log.get_logger(__name__)
 
 
 class Node(Scope):
