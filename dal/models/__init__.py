@@ -22,6 +22,7 @@ from .node import Node
 from .package import Package
 from .ports import Ports
 from .remoteuser import RemoteUser
+from .role import Role
 from .system import System
 from .user import User
 from .var import Var
@@ -57,8 +58,9 @@ except ImportError:
     enterprise_modules = []
 
 try:
-    from backend.models.role import Role
-    backend_moduels = ['Role']
+#    from backend.models.role import Role
+#    backend_moduels = ['Role']
+    pass
 except ImportError:
     backend_moduels = []
 
