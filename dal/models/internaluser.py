@@ -6,10 +6,11 @@
    Developers:
    - Erez Zomer  (erez@mov.ai) - 2022
 """
-from movai.core.securepassword import SecurePassword
+
 from dal.models.baseuser import BaseUser
 from dal.models.user import User
 from .model import Model
+from movai_core_shared.core.securepassword import SecurePassword
 from movai_core_shared.envvars import DEFAULT_ROLE_NAME
 from movai_core_shared.consts import INTERNAL_DOMAIN
 from movai_core_shared.exceptions import (
