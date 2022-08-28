@@ -10,6 +10,7 @@ from abc import ABC
 from importlib import import_module
 from datetime import datetime
 from movai_core_shared.exceptions import DoesNotExist
+from movai_core_shared.logger import Log
 from dal.scopes.scopestree import (
     ScopeInstanceVersionNode,
     ScopesTree,
@@ -38,6 +39,7 @@ class Model(ScopeInstanceVersionNode, ABC):
     """
 
     __FORWARD_RELATIONS__ = {}
+    log = Log.get_logger(__name__)
 
     def __new__(cls, ref_or_path: str, workspace: str = 'global', version: str = '__UNVERSIONED__'):
         return scopes.from_path(ref_or_path, scope=cls.__name__, workspace=workspace, version=version)
