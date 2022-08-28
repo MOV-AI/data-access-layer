@@ -6,6 +6,7 @@
    Developers:
    - Moawiya Mograbi  (moawiya@mov.ai) - 2022
 """
+from .acl import ACLManager
 from .aclobject import AclObject
 from .application import Application
 from .baseuser import BaseUser
@@ -27,7 +28,7 @@ from .system import System
 from .user import User
 from .var import Var
 from .widget import Widget
-from .acl import ACLManager
+
 
 # scope part modules
 from ..scopes.container import Container
@@ -35,14 +36,14 @@ from ..scopes.nodeinst import NodeInst
 
 try:
     from movai_core_enterprise.scopes import (
-        SharedDataEntry,
-        SharedDataTemplate,
-        TaskTemplate,
-        TaskEntry,
         Annotation,
         GraphicAsset,
+        GraphicScene,
         Layout,
-        GraphicScene
+        SharedDataEntry,
+        SharedDataTemplate,
+        TaskEntry,
+        TaskTemplate,
     )
     enterprise_modules = [
         'Annotation',
@@ -57,21 +58,19 @@ try:
 except ImportError:
     enterprise_modules = []
 
-try:
-#    from backend.models.role import Role
-#    backend_moduels = ['Role']
-    pass
-except ImportError:
-    backend_moduels = []
 
 modules = [
     'ACLManager',
+    'AclObject',
     'Application',
+    'BaseUser',
     'Callback',
     'Configuration',
     'Container',
     'Flow',
     'Form',
+    'InternalUser',
+    'LdapConfig',
     'Lock',
     'Message',
     'Model',
@@ -79,12 +78,13 @@ modules = [
     'NodeInst',
     'Package',
     'Ports',
+    'RemoteUser',
+    'Role',
     'System',
     'User',
     'Var',
     'Widget'
 ]
 modules.extend(enterprise_modules)
-modules.extend(backend_moduels)
 
 __all__ = modules
