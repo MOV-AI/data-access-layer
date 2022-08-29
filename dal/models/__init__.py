@@ -25,7 +25,6 @@ from .ports import Ports
 from .remoteuser import RemoteUser
 from .role import Role
 from .system import System
-from .user import User
 from .var import Var
 from .widget import Widget
 
