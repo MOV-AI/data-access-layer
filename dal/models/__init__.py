@@ -9,7 +9,6 @@
 from .acl import ACLManager
 from .aclobject import AclObject
 from .application import Application
-from .baseuser import BaseUser
 from .callback import Callback
 from .configuration import Configuration
 from .flow import Flow
