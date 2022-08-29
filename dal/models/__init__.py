@@ -13,7 +13,6 @@ from .callback import Callback
 from .configuration import Configuration
 from .flow import Flow
 from .form import Form
-from .internaluser import InternalUser
 from .ldapconfig import LdapConfig
 from .lock import Lock
 from .message import Message
