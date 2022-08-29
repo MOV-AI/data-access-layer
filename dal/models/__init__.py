@@ -20,7 +20,6 @@ from .model import Model
 from .node import Node
 from .package import Package
 from .ports import Ports
-from .role import Role
 from .system import System
 from .var import Var
 from .widget import Widget
