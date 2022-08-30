@@ -1,14 +1,15 @@
 from typing import List
-from .model import Model
-from dal.scopes import ScopesTree, scopes
 from datetime import datetime
-from dal.models.baseuser import create_principal_name
 from movai_core_shared.exceptions import (
     AclObjectAlreadyExist,
     AclObjectDoesNotExist,
     AclObjectError,
     AclObjectIDMismatch,
     AclObjectInvalidAttribute)
+from dal.models.model import Model
+from dal.scopes import ScopesTree, scopes
+from movai.models.baseuser import create_principal_name
+
 
 
 class AclObject(Model):
