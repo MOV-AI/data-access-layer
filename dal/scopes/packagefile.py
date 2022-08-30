@@ -11,7 +11,7 @@
 
 import hashlib
 
-from movai.data import (ScopeObjectNode, ScopePropertyNode, ScopeNode, PropertyNode)
+from dal.scopes import (ScopeObjectNode, ScopePropertyNode, ScopeNode, PropertyNode)
 
 class PackageFileValue(ScopePropertyNode):
     """ Submodel for Package/File/Value
