@@ -728,7 +728,9 @@ class MovaiDB:
                         break
 
             if not is_ok:
-                raise Exception("Structure provided does not exist")
+                error_msg = f"Structure provided does not exist: {d}"
+                LOGGER.error(error_msg)
+                raise Exception(error_msg)
             if isinstance(v, dict) and isinstance(temp_api, dict):
                 self.validate(v, temp_api, key, validate, keys)
             else:
