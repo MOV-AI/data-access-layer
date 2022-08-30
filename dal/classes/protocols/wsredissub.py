@@ -83,8 +83,8 @@ class WSRedisSub:
         try:
             _conn = await self.acquire()
             conn = aioredis.Redis(_conn)
-        except Exception as error:
-            LOGGER.error()
+        except Exception as e:
+            LOGGER.error(e)
             await self.send_json(ws_resp, {"event":"", "patterns": None, "error": str(error)})
 
         #self.app["sub_connections"].add(ws_resp)
@@ -109,7 +109,7 @@ class WSRedisSub:
                             _config = {
                                 "conn_id": conn_id, "conn": conn, "callback": data.get("callback", None),
                                 "func": data.get("func", None), "data": data.get("data", None)
-                                }
+                            }
                         else:
                             _config = {
                                 "conn_id": conn_id, "conn": conn, "_pattern": data.get("pattern", None)
@@ -119,7 +119,7 @@ class WSRedisSub:
                         raise KeyError("Not all required keys found")
 
                 except Exception as e:
-                    LOGGER.error()
+                    LOGGER.error(e)
                     output = {"event": None, "patterns": None, "error": str(e)}
 
                     await self.send_json(ws_resp, output)
@@ -143,7 +143,8 @@ class WSRedisSub:
                 key, _, _ = elem
                 keys.append(key)
             return keys
-        except:
+        except Exception as e:
+            LOGGER.error(e)
             return None
             #error = "Pattern format unknown"
             #output = {"event": None, "pattern": None, "error": error}
@@ -187,11 +188,12 @@ class WSRedisSub:
     async def remove_pattern(self, conn_id, conn, _pattern, **ignore):
         """ Remove pattern from subscriber """
         LOGGER.debug(f"removing pattern {_pattern} {conn}")
-        if _pattern in self.connections[conn_id]['patterns']: self.connections[conn_id]['patterns'].remove(_pattern)
+        if _pattern in self.connections[conn_id]['patterns']:
+            self.connections[conn_id]['patterns'].remove(_pattern)
 
         key_patterns = self.convert_pattern(_pattern)
         for key_pattern in key_patterns:
-            pattern = '__keyspace@*__:%s' %(key_pattern)
+            pattern = '__keyspace@*__:%s' % (key_pattern)
             await conn.punsubscribe(pattern)
 
         ws = self.connections[conn_id]['conn']
@@ -200,7 +202,8 @@ class WSRedisSub:
     async def get_patterns(self, conn_id, conn, **ignore):
         """ Get list of patterns """
 
-        output = {"event": "list", "patterns": self.connections[conn_id]['patterns']}
+        output = {"event": "list",
+                  "patterns": self.connections[conn_id]['patterns']}
 
         await self.send_json(self.connections[conn_id]['conn'], output)
 
@@ -223,7 +226,12 @@ class WSRedisSub:
                 key_in_dict = await self.get_value(key)
             else:
                 key_in_dict = self.movaidb.keys_to_dict([(key, value)])
-            output.update({"event":msg[1], "patterns":match_patterns, "key":key_in_dict, "value":value})
+            output.update(
+                {"event": msg[1],
+                 "patterns": match_patterns,
+                 "key": key_in_dict,
+                 "value": value}
+                )
 
             await self.send_json(ws, output)
 
@@ -305,7 +313,6 @@ class WSRedisSub:
                     value = self.__decode_value('string', value)
 
             except ValueError:
-                LOGGER.error()
                 value = None
 
             output.append((key, value))
@@ -314,12 +321,11 @@ class WSRedisSub:
 
     async def get_key_val(self, _conn, key):
         """ get value by type """
-        
+
         type_ = await _conn.type(key)
 
         # get redis type
         type_ = type_.decode('utf-8')
-
 
         # get value by redis type
         if type_ == 'string':
@@ -366,7 +372,8 @@ class WSRedisSub:
 
         try:
             # get callback
-            callback = GD_Callback(callback, self.node_name, 'cloud', _update=False)
+            callback = GD_Callback(
+                callback, self.node_name, 'cloud', _update=False)
 
             # update callback with request data
             callback.user.globals.update({"msg": data, "response": {}})
@@ -374,7 +381,9 @@ class WSRedisSub:
             callback.execute(data)
 
             # create response
-            response = {"event": "execute", "result": None, "patterns": ["execute"]}
+            response = {"event": "execute",
+                        "result": None,
+                        "patterns": ["execute"]}
             _response = callback.updated_globals['response']
 
             if isinstance(_response, dict):
@@ -388,7 +397,10 @@ class WSRedisSub:
         except Exception:
             error = f"{str(sys.exc_info()[1])} {sys.exc_info()}"
             await self.send_json(ws,
-                {"event": "execute", "callback": callback, "result": None, "error": error})
+                {"event": "execute",
+                 "callback": callback,
+                 "result": None,
+                 "error": error})
 
 
     async def send_json(self, conn, data):
