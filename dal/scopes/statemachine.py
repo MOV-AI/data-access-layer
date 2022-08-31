@@ -9,7 +9,7 @@
 
    Module to work with State Machines in GD_Nodes
 """
-from deprecated.api.core.database import MovaiDB
+from dal.movaidb import MovaiDB
 from deprecated.api.core.scope import Scope
 
 
