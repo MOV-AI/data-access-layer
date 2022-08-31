@@ -1,5 +1,6 @@
 from typing import List
 from datetime import datetime
+from movai_core_shared.utils.principal_name import create_principal_name
 from movai_core_shared.exceptions import (
     AclObjectAlreadyExist,
     AclObjectDoesNotExist,
@@ -8,7 +9,6 @@ from movai_core_shared.exceptions import (
     AclObjectInvalidAttribute)
 from dal.models.model import Model
 from dal.scopes import ScopesTree, scopes
-from movai.models.baseuser import create_principal_name
 
 
 
