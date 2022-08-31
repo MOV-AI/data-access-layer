@@ -22,8 +22,9 @@ from dal.data import (schemas, PersistencePlugin,
                       TreeNode, SchemaPropertyNode, Persistence)
 from dal.scopes import ScopeInstanceVersionNode, ScopesTree
 from dal.models import Model
-from movai.remote import RemoteArchive
 from dal.backup import RestoreManager
+from movai.remote import RemoteArchive
+
 
 
 __DRIVER_NAME__ = "Mov.ai Filesystem Plugin"
