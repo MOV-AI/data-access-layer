@@ -10,7 +10,7 @@
    Module to work with State Machines in GD_Nodes
 """
 from dal.movaidb import MovaiDB
-from deprecated.api.core.scope import Scope
+from dal.scopes.scope import Scope
 
 
 class StateMachine(Scope):

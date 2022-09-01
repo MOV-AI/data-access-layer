@@ -7,7 +7,7 @@
    - Manuel Silva (manuel.silva@mov.ai) - 2020
    - Tiago Paulino (tiago@mov.ai) - 2020
 """
-from deprecated.api.core.scope import Scope
+from dal.scopes.scope import Scope
 
 class Role(Scope):
 

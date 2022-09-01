@@ -15,10 +15,10 @@ import os
 import sys
 
 import rospkg
-
 import genmsg
 import rosmsg
-from deprecated.api.core.scope import Scope, MovaiDB
+from dal.scopes.scope import Scope
+from dal.movaidb import MovaiDB
 
 sys.stderr = open(os.devnull, "w")  # just to ignore stupid print
 sys.stderr = sys.__stderr__
