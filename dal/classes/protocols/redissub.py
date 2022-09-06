@@ -11,10 +11,8 @@
 """
 import asyncio
 from typing import Any
-
-from dal.movaidb import MovaiDB
-from API2.Redis import RedisClient
-from API2.Robot import Robot
+from dal.movaidb import MovaiDB, RedisClient
+from dal.scopes.robot import Robot
 from gd_node.message import GD_Message
 from gd_node.protocols.base import BaseIport
 
