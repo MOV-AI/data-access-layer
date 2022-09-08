@@ -16,9 +16,17 @@ import uuid
 import aioredis
 import yaml
 from aiohttp import WSMsgType, web
-from dal.movaidb import MovaiDB, RedisClient
-from gd_node.callback import GD_Callback
+import gdnode
 from movai_core_shared.logger import Log
+from dal.movaidb import MovaiDB, RedisClient
+try:
+    from gd_node.callback import GD_Callback
+    gdnode_modules = {
+        "GD_Callback": GD_Callback
+    }
+except ImportError:
+    gdnode_modules = {}
+
 LOGGER = Log.get_logger("WSRedisSub")
 
 
@@ -61,8 +69,8 @@ class WSRedisSub:
             return _conn
         try:
             _conn = await self.databases.slave_pubsub.acquire()
-        except Exception:
-            LOGGER.error()
+        except Exception as e:
+            LOGGER.error(e)
             await self.connect()
             _conn = await self.acquire(retries -1)
         return _conn
@@ -372,7 +380,7 @@ class WSRedisSub:
 
         try:
             # get callback
-            callback = GD_Callback(
+            callback = gdnode_modules["GD_Callback"](
                 callback, self.node_name, 'cloud', _update=False)
 
             # update callback with request data
@@ -408,5 +416,5 @@ class WSRedisSub:
         try:
             if not conn.closed:
                 await conn.send_json(data)
-        except Exception:
-            LOGGER.error()
+        except Exception as e:
+            LOGGER.error(e)

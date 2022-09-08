@@ -13,68 +13,18 @@ import asyncio
 from typing import Any
 from dal.movaidb import MovaiDB, RedisClient
 from dal.scopes.robot import Robot
-from gd_node.message import GD_Message
-from gd_node.protocols.base import BaseIport
-
-'''
-class Redis_Subscriber(BaseIport):
-
-    """
-    Redis Event Subscriber. Implementention of redis pubsub
-
-    Args:
-        _node_name: Name of the node instance
-        _port_name:  Name of the port
-        _topic: Iport topic - not used
-        _message: Custom Message containing subscribed info
-        _callback: Name of the callback to be executed
-    """
-
-    def __init__(self, _node_name: str, _port_name: str, _topic: str,
-                 _message: str, _callback: str, _params: dict, _update: bool, **_ignore):
-        """Init
-        """
-        super().__init__(_node_name, _port_name, _topic, _message, _callback, _update)
-
-        # args = eval(_message.replace(';', ',').replace('=', ':')) #well, this is stupid
-
-        self.msg = GD_Message('movai_msgs/redis_sub').get()
-        self.loop = asyncio.get_event_loop()
-        for sub_dict in _params.get('Pattern') or {}:
-            scope = sub_dict.pop('Scope')
-            self.loop.create_task(self.register_sub(
-                self.loop, scope, self.callback, **sub_dict))
-
-    async def register_sub(self, loop, scope, callback, **sub_dict):
-        databases = await RedisClient.get_client()
-        MovaiDB(loop=loop, databases=databases).subscribe_by_args(
-            scope, callback, **sub_dict)
-
-    def callback(self, msg: Any) -> None:
-        """Callback of the Redis subscriber protocol
-
-        Args:
-            msg: Redis psubscribe message
-        """
-
-        new_msg = self.msg()
-
-        operation = msg[1]
-        new_msg.type = operation
-        changed_key = msg[0].decode('utf-8').split(':', 1)
-        changed_dict = MovaiDB().keys_to_dict([(changed_key[1], '')])
-
-        if operation == 'del':
-            new_msg.data = changed_dict
-        else:
-            new_msg.data = MovaiDB().get(changed_dict)
-
-        super().callback(new_msg)
-
-'''
+try :
+    from gd_node.message import GD_Message
+    from gd_node.protocols.base import BaseIport
+    gdnode_modules = {
+        "GD_Message": GD_Message,
+        "BaseIport": BaseIport,
+    }
+except ImportError:
+    gdnode_modules = {}
 
 
-class Var_Subscriber(BaseIport):
+class Var_Subscriber(gdnode_modules["BaseIport"]):
 
     """
     Redis Var Event Subscriber. Implementention of redis pubsub
@@ -93,7 +43,7 @@ class Var_Subscriber(BaseIport):
         """
         super().__init__(_node_name, _port_name, _topic, _message, _callback, _update)
 
-        self.msg = GD_Message('movai_msgs/redis_sub').get()
+        self.msg = gdnode_modules["GD_Message"]('movai_msgs/redis_sub').get()
         self.loop = asyncio.get_event_loop()
 
         scopes = ['node', 'robot', 'fleet', 'global', 'flow']
