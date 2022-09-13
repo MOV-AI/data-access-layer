@@ -8,7 +8,7 @@ from movai_core_shared.exceptions import (
     AclObjectIDMismatch,
     AclObjectInvalidAttribute)
 from dal.models.model import Model
-from dal.scopes import ScopesTree, scopes
+from dal.scopes.scopestree import ScopesTree, scopes
 
 
 

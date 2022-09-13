@@ -11,7 +11,12 @@
 
 import hashlib
 
-from dal.scopes import (ScopeObjectNode, ScopePropertyNode, ScopeNode, PropertyNode)
+from dal.scopes.scopestree import (
+    ScopeObjectNode,
+    ScopePropertyNode,
+    ScopeNode,
+    PropertyNode
+)
 
 class PackageFileValue(ScopePropertyNode):
     """ Submodel for Package/File/Value

@@ -14,9 +14,10 @@ import shutil
 from datetime import datetime
 from zipfile import ZipFile
 
-from dal.scopes import ScopesTree, scopes
-from dal.models import Model
 from movai_core_shared.logger import Log
+from dal.scopes.scopestree import ScopesTree, scopes
+from dal.models.model import Model
+
 
 
 class BackupJob:

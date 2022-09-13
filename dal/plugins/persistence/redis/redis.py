@@ -13,6 +13,7 @@ import json
 import fnmatch
 from redis.client import ConnectionPool, Redis
 from redis.exceptions import ResponseError
+
 from dal.plugins import Plugin
 from dal.data import (Persistence,
                       PersistencePlugin,
@@ -20,8 +21,8 @@ from dal.data import (Persistence,
                       SchemaNode,
                       schemas,
                       TreeNode)
-from dal.scopes import ScopesTree, ScopeInstanceVersionNode
-from dal.models import Model
+from dal.scopes.scopestree import ScopesTree, ScopeInstanceVersionNode
+from dal.models.model import Model
 from dal.movaidb import MovaiDB
 
 

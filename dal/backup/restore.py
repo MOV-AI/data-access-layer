@@ -15,7 +15,7 @@ from datetime import datetime
 from zipfile import ZipFile, BadZipFile
 
 from movai_core_shared.logger import Log
-from dal.scopes import scopes
+from dal.scopes.scopestree import scopes
 
 
 class RestoreJob:

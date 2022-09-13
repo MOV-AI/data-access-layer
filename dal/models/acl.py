@@ -12,7 +12,7 @@ from typing import List, Dict
 from miracle import Acl
 from movai_core_shared.envvars import REST_SCOPES
 from movai_core_shared.logger import Log
-from dal.scopes import scopes
+from dal.scopes.scopestree import scopes
 
 LOGGER = Log.get_logger(".mov.ai")
 

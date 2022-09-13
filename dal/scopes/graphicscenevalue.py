@@ -7,7 +7,8 @@
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
 """
 from geometry_msgs.msg import Pose  # pylint: disable=import-error
-from dal.scopes import ScopeNode, ScopePropertyNode
+
+from dal.scopes.scopestree import ScopeNode, ScopePropertyNode
 
 
 class GraphicSceneValue(ScopePropertyNode):

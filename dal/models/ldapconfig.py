@@ -1,14 +1,13 @@
 from movai_core_shared.envvars import LDAP_KEY_LENGTH
 from movai_core_shared.core.securepassword import SecurePassword
 from movai_core_shared.core.secure import generate_secret_string
-from dal.scopes import ScopesTree
 from movai_core_shared.exceptions import (
     LdapConfigAlreadyExist,
     LdapConfigDoesNotExist,
     LdapConfigMissingParameter)
-from dal.models.model import Model
 
-from dal.scopes import scopes
+from dal.models.model import Model
+from dal.scopes.scopestree import ScopesTree, scopes
 
 
 

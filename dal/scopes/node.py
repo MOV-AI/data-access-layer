@@ -103,7 +103,7 @@ class Node(Scope):
 
         if key in ["PortsInst", "PortInst"]:
             # If PortsInst then search for Flow links where the port exists and delete those entries
-            from dal.scopes import Flow
+            from dal.scopes.flow import Flow
 
             dependencies = self.port_inst_depends(name)
             for dependence in dependencies:
@@ -160,7 +160,7 @@ class Node(Scope):
                 for port_inst in ports_inst:
                     self.delete(key="PortsInst", name=port_inst)
 
-                from dal.scopes import Flow
+                from dal.scopes.flow import Flow
 
                 for node_inst_ref_key in node_inst_ref_keys:
                     flow_name = next(iter(node_inst_ref_key.get("Flow")))
@@ -428,7 +428,7 @@ class Node(Scope):
         flow_container_link_keys = []
         flows_with_containers = MovaiDB().get({"Flow": {"*": {"Container": "*"}}})
 
-        from dal.scopes import Flow
+        from dal.scopes.flow import Flow
 
         for (flow_name, flows_containers) in flows_with_containers.get("Flow").items():
             for container_node_inst_name in flows_containers.get("Container").keys():
