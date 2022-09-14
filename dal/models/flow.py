@@ -7,7 +7,6 @@
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
    - Manuel Silva  (manuel.silva@mov.ai) - 2020
 """
-
 from types import SimpleNamespace
 from movai_core_shared.consts import (ROS1_NODELETSERVER)
 from movai_core_shared.logger import Log
@@ -16,7 +15,6 @@ from dal.scopes.flowlinks import FlowLinks
 from dal.scopes.scopestree import scopes
 from dal.helpers.flow import GFlow
 from dal.helpers.parsers import ParamParser
-
 from dal.models.model import Model
 
 
