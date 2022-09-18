@@ -14,9 +14,10 @@ class Application(Scope):
     """Application model"""
 
     scope = "Application"
-    
-    permissions = [*Scope.permissions, 'execute']
 
-    def __init__(self, name, version='latest', new=False, db='global'):
-        super().__init__(scope="Application", name=name, version=version, new=new, db=db)
+    permissions = [*Scope.permissions, "execute"]
 
+    def __init__(self, name, version="latest", new=False, db="global"):
+        super().__init__(
+            scope="Application", name=name, version=version, new=new, db=db
+        )
