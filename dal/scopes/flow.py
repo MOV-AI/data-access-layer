@@ -29,10 +29,10 @@ from movai_core_shared.consts import (
     MOVAI_TRANSITIONTO,
 )
 from dal.movaidb import MovaiDB
-from .scope import Scope
-from .ports import Ports
-from .node import Node
-from ..models.var import Var
+from dal.scopes.scope import Scope
+from dal.scopes.ports import Ports
+from dal.scopes.node import Node
+from dal.models.var import Var
 from movai_core_shared.exceptions import DoesNotExist
 from .configuration import Configuration
 from movai_core_shared.logger import Log

@@ -7,7 +7,7 @@
    - Manuel Silva (manuel.silva@mov.ai) - 2020
    - Tiago Paulino (tiago@mov.ai) - 2020
 """
-from .scope import Scope
+from dal.scopes.scope import Scope
 from movai_core_shared.consts import (
     TRANSITION_TYPE,
     ROS1_NODELETCLIENT,

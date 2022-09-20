@@ -8,7 +8,7 @@
 """
 import re
 import uuid
-from .scopestree import ScopePropertyNode, ScopeNode
+from dal.scopes.scopestree import ScopePropertyNode, ScopeNode
 from dal.validation import Template
 
 
@@ -62,8 +62,7 @@ class FlowLinks(ScopePropertyNode):
 
     @staticmethod
     def _parse_link(link: dict) -> dict:
-        """
-        Parse a link into a dictionary
+        """Parse a link into a dictionary
             Parameters:
                 link (dict): the link to parse
                     {
@@ -208,7 +207,5 @@ class FlowLinks(ScopePropertyNode):
                 links.append(_link)
         self.cache[node_name] = links
         return links
-
-
 
 ScopeNode.register_scope_property("schemas/1.0/Flow/Links", FlowLinks)

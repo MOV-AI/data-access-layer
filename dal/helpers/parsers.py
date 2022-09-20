@@ -12,7 +12,7 @@ import re
 import os
 from movai_core_shared.logger import Log
 from dal.models.scopestree import scopes
-from dal.models import Var
+from dal.models.var import Var
 
 
 class ParamParser:

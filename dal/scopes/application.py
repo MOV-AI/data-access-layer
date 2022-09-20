@@ -10,12 +10,13 @@
 from dal.scopes.scope import Scope
 
 
-class Form(Scope):
-    """Form model"""
+class Application(Scope):
+    """Application model"""
 
-    scope = "Form"
+    scope = "Application"
+    
+    permissions = [*Scope.permissions, 'execute']
 
-    def __init__(self, name, version="latest", new=False, db="global"):
-        """Initializes the object"""
+    def __init__(self, name, version='latest', new=False, db='global'):
+        super().__init__(scope="Application", name=name, version=version, new=new, db=db)
 
-        super().__init__(scope="Form", name=name, version=version, new=new, db=db)

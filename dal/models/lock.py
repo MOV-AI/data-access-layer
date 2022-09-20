@@ -13,10 +13,12 @@
 import asyncio
 import time
 import redis
-from dal.movaidb import MovaiDB
+
 from movai_core_shared.exceptions import MovaiException
 from movai_core_shared.logger import Log
-from dal.scopes import Robot
+
+from dal.movaidb import MovaiDB
+from dal.scopes.robot import Robot
 
 SCOPES = ['local', 'global']
 
@@ -227,13 +229,16 @@ class Lock:
         except redis.exceptions.LockNotOwnedError:
             logger.warning(f"Cannot release a lock ({self._name})"
                            f" that's no longer owned ({self.source}) ")
+            return False
 
         except redis.exceptions.LockError:
             logger.warning(f"Cannot releease an unlocked lock, ({self._name})")
+            return False
 
         except Exception as e:
             logger.error(f"Could not release lock {self._name} in \
                          {self.source}. see error: {e}")
+            return False
 
         finally:
             self.send_unlock_cmd()
