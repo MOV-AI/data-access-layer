@@ -28,8 +28,7 @@ from dal.data import (schemas,
 from dal.scopes.scopestree import ScopeInstanceVersionNode, ScopesTree
 from dal.models.model import Model
 from dal.backup import RestoreManager
-
-from movai.remote import RemoteArchive
+from dal.data.archive import RemoteArchive
 
 
 
