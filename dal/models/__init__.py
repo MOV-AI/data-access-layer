@@ -24,10 +24,11 @@ from .lock import Lock
 from .package import Package
 from .ports import Ports
 from .message import Message
+from .scopestree import scopes, ScopesTree, ScopeInstanceVersionNode
 
 # scope part modules
-from ..scopes.container import Container
-from ..scopes.nodeinst import NodeInst
+from .container import Container
+from .nodeinst import NodeInst
 
 try:
     from movai_core_enterprise.models import (
@@ -71,7 +72,10 @@ modules = [
     'System',
     'User',
     'Var',
-    'Widget'
+    'Widget',
+    'scopes',
+    'ScopesTree',
+    'ScopeInstanceVersionNode'
 ]
 modules.extend(enterprise_modules)
 modules.extend(backend_moduels)

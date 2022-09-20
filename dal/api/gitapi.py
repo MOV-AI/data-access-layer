@@ -106,7 +106,7 @@ class GitRepo:
         Returns:
             str: repository name.
         """
-        return self._git_link.get_repo_name()
+        return self._git_link.repo
 
     @property
     def branch(self) -> str:
@@ -297,14 +297,14 @@ class GitRepo:
         try:
             repo = Repo(self._local_path)
         except InvalidGitRepositoryError:
-            # Repository does not exist, creating one.
+            # local Repository does not exist, creating one.
             git_ssh_cmd = f"ssh -i {expanduser('~/.ssh/id_rsa')}"
             try:
                 repo = Repo.clone_from(self._git_link.repo_ssh_link,
-                                   self._local_path,
-                                   env=dict(GIT_SSH_COMMAND=git_ssh_cmd))
+                                       self._local_path,
+                                       env=dict(GIT_SSH_COMMAND=git_ssh_cmd))
             except GitCommandError as e:
-                raise RepositoryDoesNotExist(f"repository {self._git_link.repo_name} does not exist")  
+                raise RepositoryDoesNotExist(f"repository {self._git_link.owner}/{self._git_link.repo} does not exist")  
             self._default_branch = repo.active_branch.name
         except GitError as e:
             print(f"Error {e}")

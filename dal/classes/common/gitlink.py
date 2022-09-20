@@ -6,9 +6,11 @@
    Developers:
    - Moawiya Mograbi (moawiya@mov.ai) - 2022
 """
-
+from git import cmd as git_cmd
+from git import GitCommandError
 from re import search
 from os.path import join
+from dal.exceptions import RepositoryDoesNotExist
 
 
 class GitLink:
@@ -47,6 +49,13 @@ class GitLink:
         self._owner = m.group(2)
         self._repo = m.group(3)
         self._path = m.group(5) or ""
+
+        try:
+            # check if repository exist
+            g = git_cmd.Git()
+            g.ls_remote(self.repo_ssh_link)
+        except GitCommandError as e:
+            raise RepositoryDoesNotExist(f"Repository not found {self.repo_ssh_link}") 
 
     @property
     def repo_https_link(self) -> str:

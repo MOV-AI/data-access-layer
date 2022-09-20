@@ -20,7 +20,7 @@ from movai_core_shared.envvars import (
     JWT_EXPIRATION_DELTA, JWT_REFRESH_EXPIRATION_DELTA,
     JWT_SECRET_KEY
 )
-from dal.scopes import scopes
+from .scopestree import scopes
 from .model import Model
 from movai_core_shared.logger import Log
 

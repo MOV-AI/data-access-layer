@@ -19,7 +19,9 @@ from .exceptions import (
     ValidationError,
     NoActiveArchiveRegistered,
     ArchiveNotRegistered,
-    ArchiveAlreadyRegistered
+    ArchiveAlreadyRegistered,
+    FileDoesNotExist,
+    RepositoryDoesNotExist
 )
 
 __all__ = [
@@ -34,5 +36,7 @@ __all__ = [
     'ValidationError',
     'NoActiveArchiveRegistered',
     'ArchiveNotRegistered',
-    'ArchiveAlreadyRegistered'
+    'ArchiveAlreadyRegistered',
+    'FileDoesNotExist',
+    'RepositoryDoesNotExist'
 ]

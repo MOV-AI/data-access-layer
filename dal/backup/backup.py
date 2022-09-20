@@ -14,8 +14,7 @@ import shutil
 from datetime import datetime
 from zipfile import ZipFile
 
-from dal.scopes import ScopesTree, scopes
-from dal.models import Model
+from dal.models import Model, ScopesTree, scopes
 from movai_core_shared.logger import Log
 
 

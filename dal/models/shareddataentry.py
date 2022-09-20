@@ -10,7 +10,7 @@
 """
 
 from typing import Any
-from dal.scopes import scopes
+from .scopestree import scopes
 from .model import Model
 from .shareddatatemplate import SharedDataTemplate
 

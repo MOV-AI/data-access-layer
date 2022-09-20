@@ -19,6 +19,7 @@ from dal.data.workspace import WorkspaceObject, WorkspaceNode
 from dal.data.schema import schemas, SchemaPropertyNode, SchemaNode, SchemaObjectNode
 from dal.data.persistence import Persistence, PersistentObject
 from dal.data.version import VersionObject
+from dal.classes.common.singleton import Singleton
 
 
 class ScopeInstanceNode(DictNode, WorkspaceObject):
@@ -889,7 +890,7 @@ class ScopeWorkspace(WorkspaceNode):
             raise AttributeError("Plugin not defined") from e
 
 
-class ScopesTree(CallableNode):
+class ScopesTree(CallableNode, metaclass=Singleton):
     """
     A scopes tree is an interface to access the stored
     data in mov.ai

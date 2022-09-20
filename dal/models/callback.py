@@ -16,7 +16,8 @@ import pydoc
 import sys
 from typing import Any, Dict, List
 import rospkg
-from dal.scopes import System, scopes
+from dal.scopes import System
+from dal.models.scopestree import scopes
 from movai_core_shared.logger import Log
 from .model import Model
 logger = Log.get_logger('')

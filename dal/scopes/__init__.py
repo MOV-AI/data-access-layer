@@ -15,17 +15,6 @@ from .package import Package
 from .ports import Ports
 from .robot import Robot
 from .scope import Scope
-from .scopestree import (
-    ScopeInstanceNode,
-    ScopeInstanceVersionNode,
-    ScopeDictNode,
-    ScopeObjectNode,
-    ScopePropertyNode,
-    ScopeNode,
-    ScopeWorkspace,
-    ScopesTree,
-    scopes,
-)
 from .structures import Struct, List, Hash
 from .system import System
 from .container import Container
@@ -44,15 +33,6 @@ __all__ = [
     "Ports",
     "Robot",
     "Scope",
-    "ScopeInstanceNode",
-    "ScopeInstanceVersionNode",
-    "ScopeNode",
-    "ScopeDictNode",
-    "ScopeObjectNode",
-    "scopes",
-    "ScopeWorkspace",
-    "ScopePropertyNode",
-    "ScopesTree",
     "Struct",
     "System",
     "Container",
