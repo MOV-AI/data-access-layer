@@ -287,4 +287,4 @@ class Model(ScopeInstanceVersionNode, ABC):
             return obj
         except KeyError:
             msg = f"Failed to find {cls.__name__} named: {name}"
-            raise DoesNotExist(msg)
+
