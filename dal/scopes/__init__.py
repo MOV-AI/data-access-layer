@@ -10,15 +10,12 @@
 from .configuration import Configuration
 from .fleetrobot import FleetRobot
 from .node import Node
-from .nodeinst import NodeInst
 from .package import Package
 from .ports import Ports
 from .robot import Robot
 from .scope import Scope
 from .structures import Struct, List, Hash
 from .system import System
-from .container import Container
-from .flowlinks import FlowLinks
 from .callback import Callback
 from .flow import Flow
 from .form import Form
@@ -28,15 +25,12 @@ __all__ = [
     "Configuration",
     "FleetRobot",
     "Node",
-    "NodeInst",
     "Package",
     "Ports",
     "Robot",
     "Scope",
     "Struct",
     "System",
-    "Container",
-    "FlowLinks",
     "Callback",
     "Flow",
     "Form",

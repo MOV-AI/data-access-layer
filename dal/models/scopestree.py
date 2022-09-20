@@ -19,7 +19,6 @@ from dal.data.workspace import WorkspaceObject, WorkspaceNode
 from dal.data.schema import schemas, SchemaPropertyNode, SchemaNode, SchemaObjectNode
 from dal.data.persistence import Persistence, PersistentObject
 from dal.data.version import VersionObject
-from dal.classes.common.singleton import Singleton
 
 
 class ScopeInstanceNode(DictNode, WorkspaceObject):
@@ -890,7 +889,7 @@ class ScopeWorkspace(WorkspaceNode):
             raise AttributeError("Plugin not defined") from e
 
 
-class ScopesTree(CallableNode, metaclass=Singleton):
+class ScopesTree(CallableNode):
     """
     A scopes tree is an interface to access the stored
     data in mov.ai
@@ -899,7 +898,7 @@ class ScopesTree(CallableNode, metaclass=Singleton):
     reference_regexes = [
         # split pattern 1: git/<scope>(<owner>/<project>)/(<ref>/<ref>/..)/<version>
         # (1)git  (2)github.com:remote/owner/project  (3)path  (4)version
-        r"^(git)/([a-zA-Z0-9_.-]+:[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+)/([/a-zA-Z0-9_.-]+)/([a-zA-Z0-9_.-]+)$",
+        r"^(git)/([a-zA-Z0-9_.-]+[:/][a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+)/([/a-zA-Z0-9_.-]+)/([a-zA-Z0-9_.-]+)$",
 
         # split pattern 2: <workspace>/<scope>/(<ref>/<ref>/..)/<version>
         r"^([a-zA-Z0-9-_.]+)/([a-zA-Z0-9_.]+)/([a-zA-Z0-9_.-]+[/a-zA-Z0-9_.-]*)/([a-zA-Z0-9_.]+)$",
@@ -917,7 +916,7 @@ class ScopesTree(CallableNode, metaclass=Singleton):
         Convert a path into workspace, scope, ref, version
         """
         for regex in ScopesTree.reference_regexes:
-            m = m.search(regex, path)
+            m = re.search(regex, path)
             if m is not None:
                 if len(m.groups()) == 3:
                     version = "__UNVERSIONED__"

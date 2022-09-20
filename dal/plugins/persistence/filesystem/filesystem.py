@@ -21,7 +21,7 @@ from dal.plugins import Plugin
 from dal.data import (schemas, PersistencePlugin,
                       TreeNode, SchemaPropertyNode, Persistence)
 from dal.models import Model, ScopesTree, ScopeInstanceVersionNode
-from movai.remote import RemoteArchive
+#from movai.remote import RemoteArchive
 from dal.backup import RestoreManager
 
 

@@ -50,13 +50,6 @@ class GitLink:
         self._repo = m.group(3)
         self._path = m.group(5) or ""
 
-        try:
-            # check if repository exist
-            g = git_cmd.Git()
-            g.ls_remote(self.repo_ssh_link)
-        except GitCommandError as e:
-            raise RepositoryDoesNotExist(f"Repository not found {self.repo_ssh_link}") 
-
     @property
     def repo_https_link(self) -> str:
         """return https link representing the remote link

@@ -291,6 +291,9 @@ class GitRepo:
                                 all of the information about the repo.
         Returns:
             git.Repo: Repo object.
+
+        Raises:
+            RepositoryDoesNotExist: in case remote repository does not exist
         """
         repo = None
         FileSystem.create_folder_recursively(self._local_path)
@@ -302,7 +305,8 @@ class GitRepo:
             try:
                 repo = Repo.clone_from(self._git_link.repo_ssh_link,
                                        self._local_path,
-                                       env=dict(GIT_SSH_COMMAND=git_ssh_cmd))
+                                       env=dict(GIT_SSH_COMMAND=git_ssh_cmd),
+                                       no_checkout=no_checkout)
             except GitCommandError as e:
                 raise RepositoryDoesNotExist(f"repository {self._git_link.owner}/{self._git_link.repo} does not exist")  
             self._default_branch = repo.active_branch.name
@@ -382,7 +386,7 @@ class GitManager(BaseArchive, id="Git"):
         manager_uri = getenv("MOVAI_MANAGER_URI", "localhost")
         movai_user = getenv("MOVAI_USER") or user
         if movai_user is None:
-            raise GitUserErr("Git User NOT provided!!")
+            raise GitUserErr("Mov.ai User NOT provided!!, either set it by program or set env $MOVAI_USER")
         client = None
         if manager_uri.lower().strip() in ["localhost", "127.0.0.1"]:
             # this is a manager
