@@ -27,7 +27,9 @@ from dal.exceptions import (NoChangesToCommit,
                             TagAlreadyExist,
                             VersionDoesNotExist,
                             BranchAlreadyExist,
-                            GitUserErr)
+                            GitUserErr,
+                            FileDoesNotExist,
+                            RepositoryDoesNotExist)
 from dal.classes.filesystem import FileSystem
 from dal.classes.common.gitlink import GitLink
 from dal.archive.basearchive import BaseArchive
@@ -223,7 +225,10 @@ class GitRepo:
             str: local path of the requested file
         """
         file_path = path_join(self._local_path, file_name)
-        self._repo_object.git.checkout(file_name)
+        try:
+            self._repo_object.git.checkout(file_name)
+        except GitCommandError:
+            raise FileDoesNotExist(f"file/path {file_name} does not exist")
         return file_path
 
     def get_latest_commit(self) -> str:
@@ -294,9 +299,12 @@ class GitRepo:
         except InvalidGitRepositoryError:
             # Repository does not exist, creating one.
             git_ssh_cmd = f"ssh -i {expanduser('~/.ssh/id_rsa')}"
-            repo = Repo.clone_from(self._git_link.repo_ssh_link,
+            try:
+                repo = Repo.clone_from(self._git_link.repo_ssh_link,
                                    self._local_path,
                                    env=dict(GIT_SSH_COMMAND=git_ssh_cmd))
+            except GitCommandError as e:
+                raise RepositoryDoesNotExist(f"repository {self._git_link.repo_name} does not exist")  
             self._default_branch = repo.active_branch.name
         except GitError as e:
             print(f"Error {e}")

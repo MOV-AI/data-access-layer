@@ -16,6 +16,8 @@ NO_CHANGES_TO_COMMIT_ERR = BASE_GIT_ERR + 3
 SLAVE_MANAGER_CANNOT_CHANGE_ERR = BASE_GIT_ERR + 4
 TAG_ALREADY_EXIST_ERR = BASE_GIT_ERR + 5
 GIT_USER_ERR = BASE_GIT_ERR + 6
+FILE_DOES_NOT_EXIST = BASE_GIT_ERR + 7
+REPO_DOES_NOT_EXIST = BASE_GIT_ERR + 8
 
 BASE_SCHEMA_ERR = 200
 SCHEMA_VERSION_ERR = BASE_SCHEMA_ERR + 1
@@ -74,6 +76,14 @@ class TagAlreadyExist(GitException):
 class GitUserErr(GitException):
     def __init__(self, *args: object) -> None:
         super().__init__(GIT_USER_ERR, *args)
+
+class FileDoesNotExist(GitException):
+    def __init__(self, *args):
+        super().__init__(FILE_DOES_NOT_EXIST, *args)
+
+class RepositoryDoesNotExist(GitException):
+    def __init__(self, *args):
+        super().__init__(REPO_DOES_NOT_EXIST, *args)
 
 
 # Schema Errors

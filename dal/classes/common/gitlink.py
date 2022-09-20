@@ -39,10 +39,10 @@ class GitLink:
         m = search(GitLink.HTTPS_REGEX, link) or \
             search(GitLink.SSH_REGEX, link)
         if m is None:
-            raise ValueError("git link provided does not start \
-                             with https or git@")
+            raise ValueError("git link provided does not match \
+                             with HTTPS or SSH git links")
         self._domain = m.group(1)
-        if "@" in self.domain:
+        if "@" in self._domain:
             self._domain = self._domain.split("@")[1]
         self._owner = m.group(2)
         self._repo = m.group(3)
