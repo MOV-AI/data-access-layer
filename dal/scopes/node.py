@@ -22,11 +22,11 @@ from movai_core_shared.consts import (
     ROS1_PLUGIN,
 )
 from dal.movaidb import MovaiDB
-from .scope import Scope
+from dal.scopes.scope import Scope
 from dal.helpers import Helpers
 from movai_core_shared.logger import Log
 
-LOGGER = Log.get_logger("Node")
+LOGGER = Log.get_logger(__name__)
 
 
 class Node(Scope):
@@ -103,7 +103,7 @@ class Node(Scope):
 
         if key in ["PortsInst", "PortInst"]:
             # If PortsInst then search for Flow links where the port exists and delete those entries
-            from API2.Flow import Flow
+            from dal.scopes.flow import Flow
 
             dependencies = self.port_inst_depends(name)
             for dependence in dependencies:
@@ -160,7 +160,7 @@ class Node(Scope):
                 for port_inst in ports_inst:
                     self.delete(key="PortsInst", name=port_inst)
 
-                from API2.Flow import Flow
+                from dal.scopes.flow import Flow
 
                 for node_inst_ref_key in node_inst_ref_keys:
                     flow_name = next(iter(node_inst_ref_key.get("Flow")))
@@ -428,7 +428,7 @@ class Node(Scope):
         flow_container_link_keys = []
         flows_with_containers = MovaiDB().get({"Flow": {"*": {"Container": "*"}}})
 
-        from API2.Flow import Flow
+        from dal.scopes.flow import Flow
 
         for (flow_name, flows_containers) in flows_with_containers.get("Flow").items():
             for container_node_inst_name in flows_containers.get("Container").keys():

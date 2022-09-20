@@ -8,7 +8,7 @@
 """
 from abc import ABC, abstractproperty
 from collections import OrderedDict
-from .mixins import ChildrenCmpMixin, ValueCmpMixin
+from dal.data.mixins import ChildrenCmpMixin, ValueCmpMixin
 
 
 class TreeNode(ABC):

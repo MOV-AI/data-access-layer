@@ -20,7 +20,7 @@ from importlib import import_module
 
 from dal.movaidb import MovaiDB
 
-from dal.scopes import scopes
+from dal.scopes.scopestree import scopes
 
 
 def _from_path(name):
