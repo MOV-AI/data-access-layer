@@ -16,7 +16,8 @@ from redis.exceptions import ResponseError
 from dal.plugins import Plugin
 from dal.data import (Persistence, PersistencePlugin, SchemaPropertyNode,
                       SchemaNode, schemas, TreeNode)
-from dal.models import Model, ScopesTree, ScopeInstanceVersionNode
+from dal.models.model import Model
+from dal.models.scopestree import ScopesTree, ScopeInstanceVersionNode
 from dal.movaidb import MovaiDB
 
 

@@ -20,8 +20,9 @@ from movai_core_shared.logger import Log
 from dal.plugins import Plugin
 from dal.data import (schemas, PersistencePlugin,
                       TreeNode, SchemaPropertyNode, Persistence)
-from dal.models import Model, ScopesTree, ScopeInstanceVersionNode
-#from movai.remote import RemoteArchive
+from dal.models.model import Model
+from dal.models.scopestree import ScopesTree, ScopeInstanceVersionNode
+from movai.remote import RemoteArchive
 from dal.backup import RestoreManager
 
 
