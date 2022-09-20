@@ -1,5 +1,6 @@
 {
-    "$id": "FlowSchema-0.1",
+    "$id": "flow.schema.json",
+    "$version": "2.3",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "Flow Schema",
     "definitions": {
@@ -28,7 +29,7 @@
         },
         "path": {
             "type": "string",
-            "pattern": "^~?[a-zA-Z_0-9]+(/[a-zA-Z_0-9]+){0,}$"
+            "pattern": "^~?[a-zA-Z_0-9]+(\/~?[a-zA-Z_0-9]+){0,}$"
         },
         "validName": {
             "type": "string",
@@ -182,7 +183,7 @@
                                 },
                                 "NodeInst": {
                                     "patternProperties": {
-                                        "^[a-zA-Z_]+$": {
+                                        "^[a-zA-Z_0-9]+$": {
                                             "allOf": [
                                                 {
                                                     "$ref": "#/definitions/visual"
@@ -198,7 +199,30 @@
                                                         },
                                                         "Template": {
                                                             "$ref": "#/definitions/validName"
-                                                        }
+                                                        },
+                                                        "CmdLine": {
+                                                            "patternProperties": {
+                                                                "^[a-zA-Z0-9_]$": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "Value": {}
+                                                                    },
+                                                                    "required": ["Value"]
+                                                                }
+                                                            }
+                                                        },
+                                                        "EnvVar": {
+                                                            "patternProperties": {
+                                                                "^[a-zA-Z0-9_]$": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "Value": {}
+                                                                    },
+                                                                    "required": ["Value"]
+                                                                }
+                                                            }
+                                                        },
+                                                        "NodeLayers": {}
                                                     }
                                                 }
                                             ]

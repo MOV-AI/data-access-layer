@@ -696,7 +696,11 @@ class ScopeNode(DictNode, WorkspaceObject):
         try:
             data = workspace.plugin.read(scope=self._scope, ref=key, version=version)
             schema_version = data.get("schema_version", "1.0")
-            data = data.get(self._scope, {})
+            scope = self._scope
+            if scope not in ["Node", "Flow", "Callback", "Annotation", "GraphicScene", "Layout"]:
+                # in case this is a git scope
+                scope = list(data.keys())[0]
+            data = data.get(scope, {})
         except (FileNotFoundError, AttributeError) as e:
             raise KeyError("Scope does not exist") from e
 
@@ -708,7 +712,7 @@ class ScopeNode(DictNode, WorkspaceObject):
         # their own models
         try:
             # Try to load model from our library if not already loaded
-            if self._scope not in ScopeNode.__SCOPES_MAP__:
+            if scope not in ScopeNode.__SCOPES_MAP__:
                 import_module("dal.models")
 
         except ModuleNotFoundError:
@@ -717,13 +721,13 @@ class ScopeNode(DictNode, WorkspaceObject):
         # If the model was correctly loaded it will be in the
         # models map
         try:
-            scope_class = ScopeNode.__SCOPES_MAP__[self._scope]
+            scope_class = ScopeNode.__SCOPES_MAP__[scope]
         except KeyError:
             scope_class = ScopeInstanceVersionNode
 
         # Deserialize object tree from the received data
         # force load of schema
-        schemas(self._scope, schema_version)
+        schemas(scope, schema_version)
         # FIXME hammered (2 lines)
         scope_instance_version = object.__new__(scope_class)  # scope_class(version)
         scope_instance_version.__init__(version)
@@ -731,7 +735,7 @@ class ScopeNode(DictNode, WorkspaceObject):
         scope_instance.add_child((version, scope_instance_version))
 
         scope_instance_version.attributes["schema"] = schemas(
-            self._scope, scope_instance_version.schema_version
+            scope, scope_instance_version.schema_version
         )
 
         for _, v in data.items():
@@ -891,69 +895,39 @@ class ScopesTree(CallableNode):
     data in mov.ai
     """
 
-    # split pattern 1: <workspace>/<scope>/(<ref>/<ref>/..)/<version>
-    __REFERENCE_REGEX_1__ = r"^([a-zA-Z0-9-_.]+)/([a-zA-Z0-9_.]+)/([a-zA-Z0-9_.-]+[/a-zA-Z0-9_.-]*)/([a-zA-Z0-9_.]+)$"
+    reference_regexes = [
+        # split pattern 1: git/<scope>(<owner>/<project>)/(<ref>/<ref>/..)/<version>
+        # (1)git  (2)github.com:remote/owner/project  (3)path  (4)version
+        r"^(git)/([a-zA-Z0-9_.-]+[:/][a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+)/([/a-zA-Z0-9_.-]+)/([a-zA-Z0-9_.-]+)$",
 
-    # split pattern 2: <workspace>/<scope>/<ref>/<version>
-    __REFERENCE_REGEX_2__ = (
-        r"^([a-zA-Z0-9-_.]+)/([a-zA-Z0-9_.]+)/([a-zA-Z0-9_.-]+)/([/a-zA-Z0-9_.]+)$"
-    )
+        # split pattern 2: <workspace>/<scope>/(<ref>/<ref>/..)/<version>
+        r"^([a-zA-Z0-9-_.]+)/([a-zA-Z0-9_.]+)/([a-zA-Z0-9_.-]+[/a-zA-Z0-9_.-]*)/([a-zA-Z0-9_.]+)$",
 
-    # split pattern 3: <workspace>/<scope>/<ref>
-    __REFERENCE_REGEX_3__ = r"^([a-zA-Z0-9-_.]+)/([a-zA-Z0-9_.]+)/([a-zA-Z0-9_.-]+)$"
+        # split pattern 3: <workspace>/<scope>/<ref>/<version>
+        r"^([a-zA-Z0-9-_.]+)/([a-zA-Z0-9_.]+)/([a-zA-Z0-9_.-]+)/([/a-zA-Z0-9_.]+)$",
+
+        # split pattern 4: <workspace>/<scope>/<ref>
+        r"^([a-zA-Z0-9-_.]+)/([a-zA-Z0-9_.]+)/([a-zA-Z0-9_.-]+)$",
+    ]
 
     @staticmethod
     def extract_reference(path, **kwargs):
         """
         Convert a path into workspace, scope, ref, version
         """
-        try:
-            # split pattern 1: <workspace>/<scope>/(<ref>/<ref>/..)/<version>
-            workspace, scope, ref, version = re.findall(
-                ScopesTree.__REFERENCE_REGEX_1__, path
-            )[0]
-            return (
-                kwargs.get("workspace", workspace),
-                kwargs.get("scope", scope),
-                ref,
-                kwargs.get("version", version),
-            )
-        except IndexError:
-            pass
-
-        try:
-            # split pattern 2: <workspace>/<scope>/<ref>/<version>
-            workspace, scope, ref, version = re.findall(
-                ScopesTree.__REFERENCE_REGEX_2__, path
-            )[0]
-            return (
-                kwargs.get("workspace", workspace),
-                kwargs.get("scope", scope),
-                ref,
-                kwargs.get("version", version),
-            )
-        except IndexError:
-            pass
-
-        try:
-            # split pattern 3: <workspace>/<scope>/<ref>/<version>
-            workspace, scope, ref = re.findall(ScopesTree.__REFERENCE_REGEX_3__, path)[
-                0
-            ]
-            return (
-                kwargs.get("workspace", workspace),
-                kwargs.get("scope", scope),
-                ref,
-                kwargs.get("version", "__UNVERSIONED__"),
-            )
-        except IndexError:
-            # path is just a ref
-            return (
-                kwargs.get("workspace", "global"),
-                kwargs["scope"],
-                path,
-                kwargs.get("version", "__UNVERSIONED__"),
-            )
+        for regex in ScopesTree.reference_regexes:
+            m = re.search(regex, path)
+            if m is not None:
+                if len(m.groups()) == 3:
+                    version = "__UNVERSIONED__"
+                else:
+                    version = m.group(4)
+                workspace, scope, ref = m.groups()[0:3]
+                if scope.find(":") == -1:
+                    # replace first / with : in order to have remote:owner/project
+                    scope = scope.replace('/', ":", 1)
+                return workspace, scope, ref, version
+        return kwargs.get("workspace", "global"), kwargs["scope"], path, kwargs.get("version", "__UNVERSIONED__")
 
     @property
     def node_type(self):
@@ -982,14 +956,24 @@ class ScopesTree(CallableNode):
             raise ValueError("Invalid path") from e
 
     def from_path(self, path: str, **kwargs):
-        """
-        Read a document from a specified path
+        """Read a document from a specified path
+
+        Args:
+            path (str): the path to read from 
+
+        Raises:
+            ValueError: in case invalid path recieved.
+
+        Returns:
+            Model: a Model Object representing the entitiy requested
         """
         try:
             workspace, scope, ref, version = ScopesTree.extract_reference(
                 path, **kwargs
             )
-            return getattr(self(workspace=workspace), scope)[ref, version]
+            scope_workspace: ScopeWorkspace = self(workspace=workspace)
+            node: ScopeNode = getattr(scope_workspace, scope)
+            return node[ref, version]
         except IndexError as e:
             raise ValueError("Invalid path") from e
 
@@ -1032,6 +1016,8 @@ class ScopesTree(CallableNode):
         except KeyError:
             if workspace == "global":
                 plugin = Persistence.get_plugin_class("redis")(workspace="global")
+            elif workspace == "git":
+                plugin = Persistence.get_plugin_class("git")()
             else:
                 plugin = Persistence.get_plugin_class("filesystem")(workspace=workspace)
 

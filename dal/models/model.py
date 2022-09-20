@@ -11,12 +11,13 @@ from importlib import import_module
 from datetime import datetime
 from movai_core_shared.exceptions import DoesNotExist
 from movai_core_shared.logger import Log
-from dal.scopes.scopestree import (
+from .scopestree import (
     ScopeInstanceVersionNode,
     ScopesTree,
     ScopeNode,
     scopes)
 from dal.data import TreeNode, SchemaPropertyNode
+from dal.archive import Archive
 
 
 class Model(ScopeInstanceVersionNode, ABC):
@@ -287,3 +288,4 @@ class Model(ScopeInstanceVersionNode, ABC):
         except KeyError:
             msg = f"Failed to find {cls.__name__} named: {name}"
             raise DoesNotExist(msg)
+

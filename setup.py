@@ -1,13 +1,15 @@
-import os
-
 import setuptools
 from os import listdir
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-data_files = ["dal/validation/schema/1.0/" + file for file in os.listdir("dal/validation/schema/1.0")]
-data_files += ["dal/validation/schema/2.0/" + file for file in os.listdir("dal/validation/schema/2.0")]
+data_files = ["dal/validation/schema/1.0/" + file
+              for file in listdir("dal/validation/schema/1.0")]
+data_files += ["dal/validation/schema/2.0/" + file
+               for file in listdir("dal/validation/schema/2.0")]
+data_files += ["dal/validation/schema/2.3/" + file
+               for file in listdir("dal/validation/schema/2.3")]
 
 requirements = [
     "Pillow>=5.1.0",
@@ -32,7 +34,7 @@ setuptools.setup(
     version="1.0.0-28",
     author="Backend team",
     author_email="backend@mov.ai",
-    description="Dummy description",
+    description="DATA ACCESS LAYER",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/MOV-AI/data-access-layer",

@@ -25,7 +25,7 @@ from dal.data import (schemas,
                       TreeNode,
                       SchemaPropertyNode,
                       Persistence)
-from dal.scopes.scopestree import ScopeInstanceVersionNode, ScopesTree
+from dal.models.scopestree import ScopeInstanceVersionNode, ScopesTree
 from dal.models.model import Model
 from dal.backup import RestoreManager
 

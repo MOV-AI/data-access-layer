@@ -9,7 +9,7 @@
 """
 from movai_core_shared.consts import (ROS1_NODELET, MOVAI_STATE, ROS1_PLUGIN)
 #from .ports import Ports
-from dal.scopes.scopestree import scopes
+from .scopestree import scopes
 from .model import Model
 
 

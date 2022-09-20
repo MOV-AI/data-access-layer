@@ -11,7 +11,6 @@
 from .gitapi import GitManager, SlaveGitManager, MasterGitManager
 from abc import ABC, abstractmethod
 from dal import validation
-from os.path import realpath, dirname
 from dal.classes.protocols import (
     ContextClientIn,
     ContextServerIn,
@@ -23,10 +22,9 @@ from dal.classes.protocols import (
 class DAL(ABC):
     """Data Access Layer Main class API
     """
-    schema_folder_path = dirname(realpath(validation.__file__)) + '/schemas'
 
     @abstractmethod
-    def __init__(self, user: str, schema_folder: str) -> None:
+    def __init__(self, user: str, schema_version: str) -> None:
         """initialize the DAL object and prepare the git managers with user
            and the schema folder which include schemas for the configuration
 
@@ -38,8 +36,8 @@ class DAL(ABC):
         self.manager: GitManager = None
         self.schema_types = None
         self.user = user
-        self.schema_folder = schema_folder
-        self.validator = validation.JsonValidator()
+        self.schema_version = schema_version
+        self.validator = validation.JsonValidator(schema_version)
 
     def validate(self, file_path: str) -> dict:
         """validate a local file path against it's matching schema
@@ -205,14 +203,16 @@ class RedisProtocols:
 
 
 class SlaveDAL(DAL):
-    def __init__(self, user: str,
-                 schema_folder: str = DAL.schema_folder_path) -> None:
-        super().__init__(user, schema_folder)
+    def __init__(self,
+                 user: str,
+                 schema_version: str = validation.default_version) -> None:
+        super().__init__(user, schema_version)
         self.manager = SlaveGitManager(user)
 
 
 class MasterDAL(DAL):
-    def __init__(self, user: str,
-                 schema_folder: str = DAL.schema_folder_path) -> None:
-        super().__init__(user, schema_folder)
-        self.manager = MasterGitManager
+    def __init__(self,
+                 user: str,
+                 schema_version: str = validation.default_version) -> None:
+        super().__init__(user, schema_version)
+        self.manager = MasterGitManager(user)

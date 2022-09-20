@@ -6,3 +6,8 @@
    Developers:
    - Moawiya Mograbi  (moawiya@mov.ai) - 2022
 """
+from .git import GitPlugin
+
+__all__ = [
+    "GitPlugin"
+]
