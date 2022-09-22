@@ -8,7 +8,7 @@
 """
 import re
 import uuid
-from dal.scopes.scopestree import ScopePropertyNode, ScopeNode, scopes
+from dal.models.scopestree import ScopePropertyNode, ScopeNode, scopes
 from dal.validation import Template
 
 
