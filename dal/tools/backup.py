@@ -19,7 +19,6 @@ import re
 from importlib import import_module
 
 from dal.movaidb import MovaiDB
-
 from dal.models.scopestree import scopes
 
 

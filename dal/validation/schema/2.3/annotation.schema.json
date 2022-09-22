@@ -1,13 +1,14 @@
 {
-    "$id": "CallbackSchema-0.1",
+    "$id": "annotation.schema.json",
+    "$version": "2.3",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "title": "Callback Schema",
+    "title": "Annotation Schema",
     "definitions": {
     },
 
     "type": "object",
     "properties": {
-        "Callback": {
+        "Annotation": {
             "type": "object",
             "patternProperties": {
                 "^[a-zA-Z0-9_]+$": {
@@ -20,26 +21,30 @@
                             "type": "object",
                             "Description": "all of the other fields (optional fields)",
                             "properties": {
-                                "Code": {
+                                "Type": {
                                     "type": "string"
                                 },
-                                "Message": {
+                                "Policy": {
                                     "type": "string"
                                 },
-                                "Py3Lib": {
-                                    "type": "object",
+                                "Parameter": {
                                     "patternProperties": {
-                                        "^[a-zA-Z_]+$": {
+                                        "^[0-9a-zA-Z_]+$": {
+                                        }
+                                    }
+                                },
+                                "Field": {
+                                    "patternProperties": {
+                                        "^[0-9a-zA-Z_!@?-]+$": {
                                             "type": "object",
                                             "properties": {
-                                                "Class": {
+                                                "Type": {
                                                     "type": "string"
                                                 },
-                                                "Module": {
-                                                    "type": "string"
+                                                "Value": {
+                                                    "type": ["string", "boolean"]
                                                 }
-                                            },
-                                            "required": ["Class", "Module"]
+                                            }
                                         }
                                     }
                                 }
@@ -51,6 +56,6 @@
             "additionalProperties": false
         }
     },
-    "required": ["Callback"],
+    "required": ["Annotation"],
     "additionalProperties": false
 }

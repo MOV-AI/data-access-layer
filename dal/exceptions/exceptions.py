@@ -15,6 +15,9 @@ BRANCH_ALREADY_EXIST_ERR = BASE_GIT_ERR + 2
 NO_CHANGES_TO_COMMIT_ERR = BASE_GIT_ERR + 3
 SLAVE_MANAGER_CANNOT_CHANGE_ERR = BASE_GIT_ERR + 4
 TAG_ALREADY_EXIST_ERR = BASE_GIT_ERR + 5
+GIT_USER_ERR = BASE_GIT_ERR + 6
+FILE_DOES_NOT_EXIST = BASE_GIT_ERR + 7
+REPO_DOES_NOT_EXIST = BASE_GIT_ERR + 8
 
 BASE_SCHEMA_ERR = 200
 SCHEMA_VERSION_ERR = BASE_SCHEMA_ERR + 1
@@ -22,6 +25,11 @@ SCHEMA_TYPE_NOT_KNOWN = BASE_SCHEMA_ERR + 2
 
 BASE_VALIDATION_ERR = 300
 VALIDATION_ERR = BASE_VALIDATION_ERR + 1
+
+BASE_ARCHIVE_ERR = 400
+NO_ACTIVE_ARCHIVE_REGISTERED = BASE_ARCHIVE_ERR + 1
+ARCHIVE_NOT_REGISTERED = BASE_ARCHIVE_ERR + 2
+ARCHIVE_ALREADY_REGISTERED = BASE_ARCHIVE_ERR + 3
 
 
 class DalException(Exception):
@@ -65,6 +73,19 @@ class TagAlreadyExist(GitException):
         super().__init__(TAG_ALREADY_EXIST_ERR, *args)
 
 
+class GitUserErr(GitException):
+    def __init__(self, *args: object) -> None:
+        super().__init__(GIT_USER_ERR, *args)
+
+class FileDoesNotExist(GitException):
+    def __init__(self, *args):
+        super().__init__(FILE_DOES_NOT_EXIST, *args)
+
+class RepositoryDoesNotExist(GitException):
+    def __init__(self, *args):
+        super().__init__(REPO_DOES_NOT_EXIST, *args)
+
+
 # Schema Errors
 # ----------------------------------------------------------------------------
 class SchemaException(DalException):
@@ -101,4 +122,27 @@ class ValidationException(DalException):
 
 class ValidationError(ValidationException):
     def __init__(self, *args: object) -> None:
-        super().__init__(SCHEMA_VERSION_ERR, *args)
+        super().__init__(VALIDATION_ERR, *args)
+
+
+# Archive Errors
+# ----------------------------------------------------------------------------
+class ArchiveException(DalException):
+    def __init__(self, error, *args: object) -> None:
+        self._error = error
+        super().__init__(*args)
+
+
+class NoActiveArchiveRegistered(ArchiveException):
+    def __init__(self, *args: object) -> None:
+        super().__init__(NO_ACTIVE_ARCHIVE_REGISTERED, *args)
+
+
+class ArchiveNotRegistered(ArchiveException):
+    def __init__(self, *args: object) -> None:
+        super().__init__(ARCHIVE_NOT_REGISTERED, *args)
+
+
+class ArchiveAlreadyRegistered(ArchiveException):
+    def __init__(self, *args: object) -> None:
+        super().__init__(ARCHIVE_ALREADY_REGISTERED, *args)
