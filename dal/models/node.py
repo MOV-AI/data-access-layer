@@ -17,6 +17,7 @@ class Node(Model):
     """
     Provides the default configuration to launch a GD_Node
     """
+
     __RELATIONS__ = {
         # "schemas/1.0/Node/PortsInst/Template": {
         #     "schema_version": "1.0",
@@ -30,7 +31,7 @@ class Node(Model):
 
     @property
     def is_remappable(self) -> bool:
-        """ Returns True if the ports are allowed to remap """
+        """Returns True if the ports are allowed to remap"""
         # get the value from the attribute Remappable
         # possible values True, False, None, ""
         prop = True if self.Remappable in [None, ""] else self.Remappable
@@ -46,7 +47,7 @@ class Node(Model):
 
     @property
     def is_node_to_launch(self) -> bool:
-        """ Returns True if it should be launched """
+        """Returns True if it should be launched"""
         # get the value from the attribute Launch
         # possible values True, False, None, ""
         prop = True if self.Launch in [None, ""] else self.Launch
@@ -62,7 +63,7 @@ class Node(Model):
 
     @property
     def is_persistent(self) -> bool:
-        """ Returns True if it persists on state transitions """
+        """Returns True if it persists on state transitions"""
         # get the value from the attribute Persistent
         # possible values True, False, None, ""
         prop = False if self.Persistent in [None, ""] else self.Persistent
@@ -78,30 +79,30 @@ class Node(Model):
 
     @property
     def is_nodelet(self) -> bool:
-        """ Returns True if the node is of type Nodelet """
+        """Returns True if the node is of type Nodelet"""
         return self.Type == ROS1_NODELET
 
     @property
     def is_state(self) -> bool:
-        """ Returns True if the node is of type State """
+        """Returns True if the node is of type State"""
         return self.Type == MOVAI_STATE
 
     @property
     def is_plugin(self) -> bool:
-        """ Returns True if the node is of type plugin """
+        """Returns True if the node is of type plugin"""
         return self.Type == ROS1_PLUGIN
 
     def get_params(self) -> dict:
-        '''
+        """
         Return a dict with all parameters in the format <parameter name>: <Parameter.Value>
         (Parameter format is {key:{Value: <value>, Description: <value>}})
-        '''
+        """
         params = self.Parameter.serialize()
         output = {key: value["Value"] for key, value in params.items()}
         return output
 
     def get_port(self, port_inst: str):
-        """ Returns an instance (Ports) of the port instance template """
+        """Returns an instance (Ports) of the port instance template"""
 
         tpl = self.PortsInst[port_inst].Template
 

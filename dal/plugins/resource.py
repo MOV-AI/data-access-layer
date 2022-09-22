@@ -8,7 +8,7 @@
 """
 from abc import abstractmethod
 from urllib.parse import urlparse
-from .plugin import Plugin, PluginManager
+from dal.plugins.plugin import Plugin, PluginManager
 
 
 class ResourceException(Exception):

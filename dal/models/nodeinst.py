@@ -7,7 +7,7 @@
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
    - Manuel Sila  (manuel.silva@mov.ai) - 2020
 """
-from dal.scopes.scopestree import ScopeObjectNode, ScopeNode, scopes
+from .scopestree import ScopeObjectNode, ScopeNode, scopes
 from movai_core_shared.logger import Log
 
 
