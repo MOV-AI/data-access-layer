@@ -697,7 +697,7 @@ class ScopeNode(DictNode, WorkspaceObject):
             data = workspace.plugin.read(scope=self._scope, ref=key, version=version)
             schema_version = data.get("schema_version", "1.0")
             scope = self._scope
-            if scope not in ["Node", "Flow", "Callback", "Annotation", "GraphicScene", "Layout"]:
+            if scope not in ["Node", "Flow", "Callback", "Annotation", "GraphicScene", "Layout", "LdapConfig"]:
                 # in case this is a git scope
                 scope = list(data.keys())[0]
             data = data.get(scope, {})
