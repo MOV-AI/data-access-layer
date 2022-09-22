@@ -14,9 +14,8 @@ import fnmatch
 from redis.client import ConnectionPool, Redis
 from redis.exceptions import ResponseError
 
-from dal.plugins import Plugin
-from dal.data import (Persistence,
-                      PersistencePlugin,
+from dal.plugins.classes import Plugin, Persistence, PersistencePlugin
+from dal.data import (
                       SchemaPropertyNode,
                       SchemaNode,
                       schemas,

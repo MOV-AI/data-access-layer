@@ -17,7 +17,6 @@ from .scopestree import (
     ScopeNode,
     scopes)
 from dal.data import TreeNode, SchemaPropertyNode
-from dal.archive import Archive
 
 
 class Model(ScopeInstanceVersionNode, ABC):

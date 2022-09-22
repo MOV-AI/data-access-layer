@@ -1,13 +1,11 @@
 import json
 import os
-from ..filesystem import FilesystemPlugin
 from movai_core_shared.logger import Log
-from dal.data import Persistence
-from dal.plugins import Plugin
 from dal.archive import Archive
+from dal.plugins.classes import PersistencePlugin, Persistence, Plugin
+from abc import abstractmethod
 
-
-class GitPlugin(FilesystemPlugin):
+class GitPlugin(PersistencePlugin):
     logger = Log.get_logger("git.mov.ai")
     _ROOT_PATH = os.path.join(os.getenv('MOVAI_USERSPACE', ""), "database")
     archive = Archive()
@@ -27,7 +25,14 @@ class GitPlugin(FilesystemPlugin):
         """
         Get current plugin class
         """
-        return "3.1.0"
+        return "2.2.3"
+
+    @PersistencePlugin.versioning.getter
+    def versioning(self):
+        """
+        returns if this plugin supports versioning
+        """
+        return True
 
     def read(self, **kwargs) -> dict:
         """
@@ -60,5 +65,84 @@ class GitPlugin(FilesystemPlugin):
             data = json.loads(f.read())
 
         return data
+
+    @abstractmethod
+    def create_workspace(self, ref:str, **kwargs):
+        """
+        creates a new workspace
+        """
+
+    @abstractmethod
+    def delete_workspace(self, ref:str):
+        """
+        deletes a existing workspace
+        """
+
+    @abstractmethod
+    def workspace_info(self, ref:str):
+        """
+        get information about a workspace
+        """
+
+    @abstractmethod
+    def list_workspaces(self):
+        """
+        list available workspaces
+        """
+
+    @abstractmethod
+    def list_scopes(self, **kwargs):
+        """
+        list all existing scopes
+        """
+
+    @abstractmethod
+    def get_scope_info(self, **kwargs):
+        """
+        get the information of a scope
+        """
+
+    @abstractmethod
+    def backup(self, **kwargs):
+        """
+        archive a scope/scopes into a zip file
+        """
+
+    @abstractmethod
+    def restore(self, **kwargs):
+        """
+        restore a scope/scopes from a zip file
+        """
+
+    @abstractmethod
+    def list_versions(self, **kwargs):
+        """
+        list all existing scopes
+        """
+
+    @abstractmethod
+    def get_related_objects(self, **kwargs):
+        """
+        Get a list of all related objects
+        """
+
+    @abstractmethod
+    def write(self, data: object, **kwargs):
+        """
+        write data to the persistent layer
+        """
+
+    @abstractmethod
+    def delete(self, data: object, **kwargs):
+        """
+        delete data in the persistent layer
+        """
+
+    @abstractmethod
+    def rebuild_indexes(self,**kwargs):
+        """
+        force the database layer to rebuild
+        all indexes
+        """
 
 Persistence.register_plugin("git", GitPlugin)
