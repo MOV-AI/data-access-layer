@@ -7,7 +7,7 @@
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
 """
 from abc import ABC, abstractproperty
-from dal.data.persistence import Persistence
+from dal.plugins.classes import Persistence
 from dal.data.tree import DictNode
 
 

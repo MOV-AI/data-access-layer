@@ -21,7 +21,7 @@ from movai_core_shared.logger import Log
 from .scopestree import scopes
 from dal.scopes.system import System
 
-from dal.models.model import Model
+from .model import Model
 
 
 logger = Log.get_logger('')

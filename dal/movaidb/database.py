@@ -22,7 +22,7 @@ import dal
 from movai_core_shared.logger import Log
 from movai_core_shared.exceptions import InvalidStructure
 from dal.classes import Singleton
-from dal.plugins import Resource
+from dal.plugins.classes import Resource
 
 
 LOGGER = Log.get_logger("dal.mov.ai")

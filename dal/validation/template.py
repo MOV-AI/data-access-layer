@@ -7,7 +7,7 @@
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
 """
 from types import SimpleNamespace
-from dal.plugins.resource import Resource, ResourceException
+from dal.plugins.classes import Resource, ResourceException
 
 
 class Template:  # pylint: disable=too-few-public-methods

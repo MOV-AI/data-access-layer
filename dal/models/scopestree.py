@@ -17,7 +17,7 @@ from dal.data.serialization import (
 )
 from dal.data.workspace import WorkspaceObject, WorkspaceNode
 from dal.data.schema import schemas, SchemaPropertyNode, SchemaNode, SchemaObjectNode
-from dal.data.persistence import Persistence, PersistentObject
+from dal.plugins.classes import Persistence, PersistentObject
 from dal.data.version import VersionObject
 
 
