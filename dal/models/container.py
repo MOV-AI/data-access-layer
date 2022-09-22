@@ -7,7 +7,7 @@
    - Manuel Silva  (manuel.silva@mov.ai) - 2020
 """
 
-from dal.models.scopestree import ScopeObjectNode, ScopeNode, scopes
+from .scopestree import ScopeObjectNode, ScopeNode, scopes
 
 
 class Container(ScopeObjectNode):

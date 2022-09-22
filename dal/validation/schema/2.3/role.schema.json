@@ -1,0 +1,59 @@
+{
+    "$id": "role.schema.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$version": "2.3",
+    "title": "Role Schema",
+    "type": "object",
+    "properties": {
+        "Role": {
+            "type": "object",
+            "patternProperties": {
+                "^[a-zA-Z0-9_]+$": {
+                    "Description": "allOf here will validate instance inside Role to every object in the array",
+                    "allOf": [
+                        {
+                            "$ref": "common/base.schema.json"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "Type": "string",
+                                "Password": "string",
+                                "Email": "string",
+                                "SendReport": "boolean",
+                                "Superuser": "boolean",
+                                "Role": {
+                                },
+                                "Resources": "object",
+                                "Workspace": "string",
+                                "APIPermission": "array",
+                                "WidgetPermission": "array",
+                                "Applications": "array",
+                                "Application": {
+                                    "type": "object",
+                                    "patternProperties": {
+                                        "^[a-zA-Z0-9_]+$": {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": "object",
+                                                "patternProperties": {
+                                                    "^[a-zA-Z0-9_]+$": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "Value": "object" 
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+

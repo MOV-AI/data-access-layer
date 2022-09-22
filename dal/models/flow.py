@@ -11,11 +11,11 @@ from types import SimpleNamespace
 from movai_core_shared.consts import (ROS1_NODELETSERVER)
 from movai_core_shared.logger import Log
 
-from dal.models.flowlinks import FlowLinks
-from dal.models.scopestree import scopes
+from .flowlinks import FlowLinks
+from .scopestree import scopes
 from dal.helpers.flow import GFlow
 from dal.helpers.parsers import ParamParser
-from dal.models.model import Model
+from .model import Model
 
 
 class Flow(Model):

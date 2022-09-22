@@ -16,9 +16,9 @@ import genmsg
 import rosmsg
 import rospkg
 
-from dal.models.scopestree import scopes
+from .scopestree import scopes
 from dal.scopes.system import System
-from dal.models.model import Model
+from .model import Model
 
 from movai_core_shared.logger import Log
 
