@@ -6,8 +6,8 @@ from movai_core_shared.exceptions import (
     LdapConfigDoesNotExist,
     LdapConfigMissingParameter)
 
-from dal.models.model import Model
-from dal.scopes.scopestree import ScopesTree, scopes
+from .model import Model
+from .scopestree import ScopesTree, scopes
 
 
 

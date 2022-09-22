@@ -6,7 +6,6 @@
    Developers:
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
 """
-from .persistence import (PersistentObject, PersistencePlugin, Persistence)
 from .workspace import (WorkspaceObject, WorkspaceManager)
 from .version import VersionObject
 from .schema import (schemas, SchemaObjectNode, SchemaPropertyNode,
@@ -18,9 +17,6 @@ from .serialization import (ObjectSerializer, ObjectDeserializer)
 __all__ = [
     "ObjectSerializer",
     "ObjectDeserializer",
-    "PersistentObject",
-    "PersistencePlugin",
-    "Persistence",
     "WorkspaceObject",
     "VersionObject",
     "schemas",
