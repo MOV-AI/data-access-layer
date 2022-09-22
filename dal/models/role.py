@@ -13,7 +13,7 @@ from typing import Dict
 from movai_core_shared.exceptions import RoleAlreadyExist, RoleDoesNotExist
 from movai_core_shared.envvars import DEFAULT_ROLE_NAME
 
-from dal.scopes.scopestree import scopes
+from dal.models.scopestree import scopes
 from dal.models.model import Model
 from dal.models.aclobject import AclObject
 from dal.models.remoteuser import RemoteUser

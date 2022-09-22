@@ -16,7 +16,7 @@ import genmsg
 import rosmsg
 import rospkg
 
-from dal.scopes.scopestree import scopes
+from dal.models.scopestree import scopes
 from dal.scopes.system import System
 from dal.models.model import Model
 

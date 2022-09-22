@@ -11,7 +11,7 @@ from importlib import import_module
 from datetime import datetime
 from movai_core_shared.exceptions import DoesNotExist
 from movai_core_shared.logger import Log
-from dal.scopes.scopestree import (
+from dal.models.scopestree import (
     ScopeInstanceVersionNode,
     ScopesTree,
     ScopeNode,

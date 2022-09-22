@@ -21,7 +21,7 @@ from dal.data import (Persistence,
                       SchemaNode,
                       schemas,
                       TreeNode)
-from dal.scopes.scopestree import ScopesTree, ScopeInstanceVersionNode
+from dal.models.scopestree import ScopesTree, ScopeInstanceVersionNode
 from dal.models.model import Model
 from dal.movaidb import MovaiDB
 

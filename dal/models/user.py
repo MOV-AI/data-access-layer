@@ -18,7 +18,7 @@ import jwt
 
 from movai_core_shared.exceptions import UserDoesNotExist
 
-from dal.scopes.scopestree import ScopesTree, scopes
+from dal.models.scopestree import ScopesTree, scopes
 from dal.models.model import Model
 from dal.classes.utils.acl import ACLManager
 

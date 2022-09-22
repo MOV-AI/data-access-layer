@@ -19,7 +19,7 @@ import rospkg
 
 from movai_core_shared.logger import Log
 
-from dal.scopes.scopestree import scopes
+from dal.models.scopestree import scopes
 from dal.scopes.system import System
 
 from dal.models.model import Model
