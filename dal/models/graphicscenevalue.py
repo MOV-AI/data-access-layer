@@ -8,7 +8,7 @@
 """
 from geometry_msgs.msg import Pose  # pylint: disable=import-error
 
-from dal.scopes.scopestree import ScopeNode, ScopePropertyNode
+from dal.models.scopestree import ScopeNode, ScopePropertyNode
 
 
 class GraphicSceneValue(ScopePropertyNode):

@@ -11,7 +11,7 @@
 
 import hashlib
 
-from dal.scopes.scopestree import (
+from dal.models.scopestree import (
     ScopeObjectNode,
     ScopePropertyNode,
     ScopeNode,

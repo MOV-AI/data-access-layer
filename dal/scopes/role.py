@@ -9,15 +9,16 @@
 """
 from dal.scopes.scope import Scope
 
+
 class Role(Scope):
 
-    scope = 'Role'
+    scope = "Role"
 
-    def __init__(self, name, version='latest', new=False, db='global'):
+    def __init__(self, name, version="latest", new=False, db="global"):
         super().__init__(scope="Role", name=name, version=version, new=new, db=db)
 
     def create_permission(self, resource: str, permission: str) -> bool:
-        """ Create new role permission """
+        """Create new role permission"""
         try:
             resource = resource.lower().capitalize()
             permission = permission.lower()
@@ -36,7 +37,7 @@ class Role(Scope):
         return True
 
     def delete_permission(self, resource: str, permission: str) -> bool:
-        """ Delete role permission """
+        """Delete role permission"""
         try:
             resource = resource.lower().capitalize()
             permission = permission.lower()
@@ -60,17 +61,19 @@ class Role(Scope):
 
     @classmethod
     def create(cls, *, name: str, resources: dict) -> bool:
-        """ Create a new role """
+        """Create a new role"""
         try:
             name = name.lower()
             new_role = Role(name, new=True)
             new_role.Label = name
-            new_role.Resources.update({
-                'User': resources.get('User', []),
-                'Flow': resources.get('Flow', []),
-                'Callbacks': resources.get('Callbacks', []),
-                'Applications': resources.get('Applications', []),
-            })
+            new_role.Resources.update(
+                {
+                    "User": resources.get("User", []),
+                    "Flow": resources.get("Flow", []),
+                    "Callbacks": resources.get("Callbacks", []),
+                    "Applications": resources.get("Applications", []),
+                }
+            )
         except Exception as e:
             return False
 
@@ -78,17 +81,19 @@ class Role(Scope):
 
     @classmethod
     def update(cls, *, name: str, resources: dict) -> bool:
-        """ Reset role data """
+        """Reset role data"""
         try:
             name = name.lower()
             role = Role(name)
             role.Label = name
-            role.Resources.update({
-                'User': resources.get('User', []),
-                'Flow': resources.get('Flow', []),
-                'Callbacks': resources.get('Callbacks', []),
-                'Applications': resources.get('Applications', []),
-            })
+            role.Resources.update(
+                {
+                    "User": resources.get("User", []),
+                    "Flow": resources.get("Flow", []),
+                    "Callbacks": resources.get("Callbacks", []),
+                    "Applications": resources.get("Applications", []),
+                }
+            )
         except Exception as e:
             return False
 
