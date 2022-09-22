@@ -16,7 +16,7 @@ import uuid
 import aioredis
 import yaml
 from aiohttp import WSMsgType, web
-import gdnode
+import gd_node
 from movai_core_shared.logger import Log
 from dal.movaidb import MovaiDB, RedisClient
 try:
