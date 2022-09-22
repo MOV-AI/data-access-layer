@@ -15,7 +15,7 @@ from datetime import datetime
 import jwt
 
 from dal.scopes.scope import Scope
-from dal.classes.utils.acl import ACLManager
+from dal.models.acl import ACLManager
 from dal.data.shared.vault import (
     JWT_ACCESS_EXPIRATION_DELTA,
     JWT_REFRESH_EXPIRATION_DELTA,

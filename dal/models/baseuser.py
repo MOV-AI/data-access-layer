@@ -19,7 +19,7 @@ from movai_core_shared.exceptions import (
 
 from dal.models.scopestree import ScopesTree, scopes
 from dal.models.model import Model
-from dal.classes.utils.acl import NewACLManager
+from dal.models.acl import NewACLManager
 
 
 class BaseUser(Model):

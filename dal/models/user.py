@@ -20,7 +20,7 @@ from movai_core_shared.exceptions import UserDoesNotExist
 
 from dal.models.scopestree import ScopesTree, scopes
 from dal.models.model import Model
-from dal.classes.utils.acl import ACLManager
+from dal.models.acl import ACLManager
 
 from dal.data.shared.vault import (
     JWT_ACCESS_EXPIRATION_DELTA,
