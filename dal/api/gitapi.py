@@ -370,7 +370,7 @@ class GitManager(BaseArchive, id="Git"):
             GitManager._repos[mode] = {}
 
     @staticmethod
-    def get_client(user: str = None) -> "GitManager":
+    def get_client(user: str = "MOVAI_USER") -> "GitManager":
         """will create an instance of GitManager, dynamically choose between
            master/slave according to the current running Robot.
 
@@ -384,7 +384,7 @@ class GitManager(BaseArchive, id="Git"):
             GitUserError: in case there was a problem fetching git username.
         """
         manager_uri = getenv("MOVAI_MANAGER_URI", "localhost")
-        movai_user = getenv("DEFAULT_USERNAME") or user
+        movai_user = getenv("MOVAI_USERNAME") or user
         if movai_user is None:
             raise GitUserErr("Mov.ai User NOT provided!!, either set it by program or set env $MOVAI_USER")
         client = None
