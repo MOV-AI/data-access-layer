@@ -172,6 +172,8 @@ class WSRedisSub:
             key_patterns = self.convert_pattern(_pattern)
         keys = []
         tasks = []
+        if not self.loop.is_running():
+            self.loop = asyncio.get_event_loop()        
         for key_pattern in key_patterns:
             pattern = '__keyspace@*__:%s' %(key_pattern)
             channel = await conn.psubscribe(pattern)
