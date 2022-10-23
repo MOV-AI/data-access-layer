@@ -90,7 +90,6 @@ class Lock:
         self.persistent = persistent
 
         self.queue_level = queue_level
-        self.timeout = timeout
         self.alive_timeout = alive_timeout
         self.robot_name = _robot_name or Robot().name
         self.node_name = _node_name
@@ -102,7 +101,7 @@ class Lock:
         if timeout == 0:
             # default timeout time
             timeout = self.DEFAULT_LOCK_TIMEOUT
-            self.should_reacquire = True
+        self.timeout = timeout
         self.db_lock = self.db_write.lock(self.lock_name, timeout=timeout,
                                           blocking_timeout=blocking_timeout,
                                           thread_local=False)
