@@ -720,6 +720,7 @@ class ScopeNode(DictNode, WorkspaceObject):
                 "TaskTemplate",
                 "SharedDataTemplate",
                 "SharedDataEntry",
+                "Role",
             ]:
                 # in case this is a git scope
                 scope = list(data.keys())[0]
