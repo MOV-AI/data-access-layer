@@ -12,7 +12,6 @@ from .model import Model
 from .scopestree import ScopesTree, scopes
 
 
-
 class AclObject(Model):
     """This class represents an access list for remote users.
     Each record in the access list is actually a user that is allowed
@@ -89,7 +88,7 @@ class AclObject(Model):
         if id == obj.ID:
             scopes().delete(obj)
             cls.log.info(f"Successfully removed {cls.__name__}:"
-                        f"{obj.principal_name}")
+                         f"{obj.principal_name}")
         else:
             error_msg = f"Failed to remove {obj.principal_name}, the "\
                 f"supplied id does not match object's id"

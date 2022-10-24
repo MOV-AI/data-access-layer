@@ -40,14 +40,16 @@ class GitPlugin(PersistencePlugin):
         following args
         - scope
         - ref
+        - version
         The following argument is optional:
         - schema_version
 
-        If the schema_version is not specified we will try to load it
-        from redis, if it is missing the default will be 1.0
+        If the schema_version is not specified the default version will be used
         """
         try:
-            # scope = github.com:remote/owner/project
+            # example:
+            #       scope = github.com:remote/owner/project
+
             scope = kwargs["scope"]
             # ref = path
             ref = kwargs["ref"]
@@ -55,7 +57,6 @@ class GitPlugin(PersistencePlugin):
         except KeyError as e:
             raise ValueError("missing scope or name") from e
 
-        
         remote = f"git@{scope}"
         # ref = path
         # scope = owner/project
@@ -65,6 +66,26 @@ class GitPlugin(PersistencePlugin):
             data = json.loads(f.read())
 
         return data
+
+    @abstractmethod
+    def write(self, data: object, **kwargs):
+        """
+        Stores the object on the persistent layer, for now we only support
+        ScopeInstanceVersionNode, and python dict.
+
+        if you pass a dict you must provide the following args:
+            - scope
+            - ref
+            - schema_version
+
+        Currently a dict must be in one of the following form:
+        - { <scope> : { {ref} : { <data> } } }
+        - { <data> }
+
+        The data part must comply with the schema of the scope
+        """
+
+
 
     @abstractmethod
     def create_workspace(self, ref:str, **kwargs):
@@ -124,12 +145,6 @@ class GitPlugin(PersistencePlugin):
     def get_related_objects(self, **kwargs):
         """
         Get a list of all related objects
-        """
-
-    @abstractmethod
-    def write(self, data: object, **kwargs):
-        """
-        write data to the persistent layer
         """
 
     @abstractmethod

@@ -699,18 +699,28 @@ class ScopeNode(DictNode, WorkspaceObject):
             scope = self._scope
             if scope not in [
                 "AclObject",
-                "Annotation",
                 "BaseUser",
                 "Callback",
-                "GraphicScene",
                 "Flow",
-                "InternalUser",
+                "Node",
+                "StateMachine",
+                "GraphicScene",
+                "Annotation",
+                "Package",
+                "Ports",
+                "Message",
+                "GraphicAsset",
                 "Layout",
                 "LdapConfig",
-                "Node",
-                "Ports",
+                "Robot",
+                "InternalUser",
                 "RemoteUser",
-                ]:
+                "System",
+                "Configuration",
+                "TaskTemplate",
+                "SharedDataTemplate",
+                "SharedDataEntry",
+            ]:
                 # in case this is a git scope
                 scope = list(data.keys())[0]
             data = data.get(scope, {})
