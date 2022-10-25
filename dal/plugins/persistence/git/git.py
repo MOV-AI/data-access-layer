@@ -84,8 +84,54 @@ class GitPlugin(PersistencePlugin):
 
         The data part must comply with the schema of the scope
         """
+        if isinstance(data, ScopeInstanceVersionNode):
+            pass
+        if isinstance(data, dict):
+            try:
+                scope = kwargs["scope"]
+                ref = kwargs["ref"]
+                # remove_extra = kwargs.get('remove_extra', False)
+                # schema_version = data.get("schema_version", kwargs.get("schema_version", "1.0"))
+            except KeyError as e:
+                raise ValueError("missing scope,ref or schema_version") from e
 
+            # get the current schema for this object
+            # schema = schemas(scope, schema_version)
 
+            try:
+                obj = data[scope][ref]
+            except KeyError:
+                obj = data
+
+            # TODO check if we want to save it to redis
+            """
+            # save the object into the database
+            redis_keys = self.fetch_keys(conn, scope, ref)
+            self.save_keys(schema, f"{scope}:{ref}", redis_keys, conn, obj)
+
+            # store the schema version of this data
+            conn.set(f"{scope}:{ref},_schema_version:", schema_version)
+            try:
+                redis_keys.remove(f"{scope}:{ref},_schema_version:")
+            except ValueError:
+                pass
+
+            # delete the old relations cache and update it
+            conn.delete(f"{scope}:{ref},relations:")
+            relations = self.get_related_objects(
+                scope=scope, ref=ref, schema_version=schema_version)
+            for relation in relations:
+                conn.rpush(f"{scope}:{ref},relations:", relation)
+            try:
+                redis_keys.remove(f"{scope}:{ref},relations:")
+            except ValueError:
+                pass
+
+            if remove_extra and len(redis_keys) > 0:
+                conn.delete(*redis_keys)
+            """
+
+            return None
 
     @abstractmethod
     def create_workspace(self, ref:str, **kwargs):

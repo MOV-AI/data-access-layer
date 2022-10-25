@@ -33,8 +33,9 @@ from dal.exceptions import (NoChangesToCommit,
 from dal.classes.filesystem import FileSystem
 from dal.classes.common.gitlink import GitLink
 from dal.archive.basearchive import BaseArchive
+from movai_core_shared.logger import Log
 
-
+LOGGER = Log.get_logger("Git")
 MOVAI_FOLDER_NAME = ".movai"
 MOVAI_BASE_FOLDER = path_join(FileSystem.get_home_folder(), MOVAI_FOLDER_NAME)
 MOVAI_BASE_FOLDER = getenv("MOVAI_USERSPACE", MOVAI_BASE_FOLDER)
@@ -385,8 +386,9 @@ class GitManager(BaseArchive, id="Git"):
         """
         manager_uri = getenv("MOVAI_MANAGER_URI", "localhost")
         movai_user = getenv("MOVAI_USERNAME") or user
-        if movai_user is None:
-            raise GitUserErr("Mov.ai User NOT provided!!, either set it by program or set env $MOVAI_USER")
+        if movai_user == user:
+            LOGGER.warning("user for movai git not provided ($MOVAI_USERNAME), using 'MOVAI_USER' instead")
+
         client = None
         if manager_uri.lower().strip() in ["localhost", "127.0.0.1"]:
             # this is a manager
