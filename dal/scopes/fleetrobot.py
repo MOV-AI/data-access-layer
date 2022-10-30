@@ -13,7 +13,7 @@ import pickle
 
 from movai_core_shared.logger import Log
 
-from .scope import Scope
+from .scope import MovaiDB, Scope
 
 logger = Log.get_logger("FleetRobot")
 class FleetRobot(Scope):
@@ -29,10 +29,21 @@ class FleetRobot(Scope):
             db (str, optional): "global/local". Defaults to "global".
         """
         super().__init__(scope="Robot", name=name, version=version, new=new, db=db)
+        db = MovaiDB('global')
+        robot_id = None
+        for key, val in db.search_by_args(scope='Robot')[0]['Robot'].items():
+            if val['RobotName'] == name:
+                robot_id = key
+                break
+        if robot_id is None:
+            logger.error(f"robot {name} not found in DB")
+        ip_key = {'Robot': {robot_id: {'IP': {}}}}
+        self.ip = db.get_value(ip_key)
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot"""
         to_send = {}
+        # Todo: change to zmq msg to the spawner with zmq
         for key, value in locals().items():
             if value is not None and key in ("command", "flow", "node", "port", "data"):
                 to_send.update({key: value})
