@@ -66,7 +66,7 @@ class JsonValidator:
 
         schema_version_folder = f"{validation_path}/schema/{self._version}"
         if not isdir(schema_version_folder):
-            raise SchemaVersionError(f"version {self._version} does not exist")
+            raise SchemaVersionError(f"version {self._version} does not exist in schema folder")
         for schema_json in listdir(schema_version_folder):
             m = search(r"(\w+)\.schema\.json", schema_json)
             if m is not None:
@@ -77,7 +77,7 @@ class JsonValidator:
                     # TODO print approperiate message
                     pass
 
-    def validate(self, file_path: Path) -> dict:
+    def validate(self, file_path: Path, content=None) -> dict:
         """validate a local file path against it's matching schema
 
         Args:
@@ -90,9 +90,9 @@ class JsonValidator:
                         - message: error or success message
                         - path: the path of the error in case there is one
             """
-        content = None
-        with file_path.open() as f:
-            content = load_json(f.read())
+        if file_path is not None:
+            with file_path.open() as f:
+                content = load_json(f.read())
         type = (list(content.keys())[0]).lower()
         if type not in self.schema_types:
             raise SchemaTypeNotKnown(f"type: {type}")

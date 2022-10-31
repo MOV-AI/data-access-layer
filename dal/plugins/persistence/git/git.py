@@ -4,6 +4,8 @@ from movai_core_shared.logger import Log
 from dal.archive import Archive
 from dal.plugins.classes import PersistencePlugin, Persistence, Plugin
 from abc import abstractmethod
+from dal.models.scopestree import ScopeInstanceVersionNode
+from dal.validation import JsonValidator, default_version
 
 class GitPlugin(PersistencePlugin):
     logger = Log.get_logger("git.mov.ai")
@@ -11,6 +13,7 @@ class GitPlugin(PersistencePlugin):
     archive = Archive()
 
     def validate_data(self, schema, data: dict, out: dict):
+        JsonValidator("2.3")
         pass
 
     @Plugin.plugin_name.getter
@@ -25,7 +28,7 @@ class GitPlugin(PersistencePlugin):
         """
         Get current plugin class
         """
-        return "2.2.3"
+        return "2.3.0"
 
     @PersistencePlugin.versioning.getter
     def versioning(self):
@@ -34,33 +37,31 @@ class GitPlugin(PersistencePlugin):
         """
         return True
 
+    @staticmethod
+    def remote(scope):
+        return f"git@{scope}"
+
     def read(self, **kwargs) -> dict:
         """
         load an object from the persistent layer, you must provide the
         following args
-        - scope
-        - ref
-        - version
+        - scope: example, github.com:remote/owner/project
+        - ref: path inside the project, /Flow/v1/fow1.json
+        - version: the desired version, v1.1
+
         The following argument is optional:
         - schema_version
 
         If the schema_version is not specified the default version will be used
         """
         try:
-            # example:
-            #       scope = github.com:remote/owner/project
-
             scope = kwargs["scope"]
-            # ref = path
             ref = kwargs["ref"]
             version = kwargs["version"]
         except KeyError as e:
             raise ValueError("missing scope or name") from e
 
-        remote = f"git@{scope}"
-        # ref = path
-        # scope = owner/project
-        path = GitPlugin.archive.get(ref, remote, version)
+        path = GitPlugin.archive.get(ref, GitPlugin.remote(scope), version)
         data = {}
         with path.open("r") as f:
             data = json.loads(f.read())
@@ -70,13 +71,15 @@ class GitPlugin(PersistencePlugin):
     @abstractmethod
     def write(self, data: object, **kwargs):
         """
-        Stores the object on the persistent layer, for now we only support
-        ScopeInstanceVersionNode, and python dict.
+        Stores the object on the persistent layer.
+        writes and creates new commit to relevant repository.
 
         if you pass a dict you must provide the following args:
             - scope
             - ref
-            - schema_version
+
+        optional:
+            - version: on what version to be based for changes to commit
 
         Currently a dict must be in one of the following form:
         - { <scope> : { {ref} : { <data> } } }
@@ -84,54 +87,37 @@ class GitPlugin(PersistencePlugin):
 
         The data part must comply with the schema of the scope
         """
+        data_to_write: dict = data
+        try:
+            scope = kwargs["scope"]
+            ref = kwargs["ref"]
+            version = kwargs.get("version", None)
+        except KeyError as e:
+            raise ValueError("missing scope,ref or version") from e
+
         if isinstance(data, ScopeInstanceVersionNode):
-            pass
+            data_to_write = data.serialize()
         if isinstance(data, dict):
-            try:
-                scope = kwargs["scope"]
-                ref = kwargs["ref"]
-                # remove_extra = kwargs.get('remove_extra', False)
-                # schema_version = data.get("schema_version", kwargs.get("schema_version", "1.0"))
-            except KeyError as e:
-                raise ValueError("missing scope,ref or schema_version") from e
-
-            # get the current schema for this object
-            # schema = schemas(scope, schema_version)
-
             try:
                 obj = data[scope][ref]
             except KeyError:
                 obj = data
+            data_to_write = obj
 
-            # TODO check if we want to save it to redis
-            """
-            # save the object into the database
-            redis_keys = self.fetch_keys(conn, scope, ref)
-            self.save_keys(schema, f"{scope}:{ref}", redis_keys, conn, obj)
+        if "schema_version" in data_to_write:
+            schema_version = data_to_write["schema_version"]
+        else:
+            schema_version = default_version
+        validator = JsonValidator(schema_version)
+        validation_res = validator.validate(file_path=None, content=data_to_write)
+        if validation_res["status"] is False:
+            self.logger.error(f"data is incompatible with schema version: {schema_version}\n", validation_res["message"])
 
-            # store the schema version of this data
-            conn.set(f"{scope}:{ref},_schema_version:", schema_version)
-            try:
-                redis_keys.remove(f"{scope}:{ref},_schema_version:")
-            except ValueError:
-                pass
+        self.archive.create_obj(GitPlugin.remote(scope), ref, json.dumps(data_to_write), base_version=version)
+        commit_sha = self.archive.commit(ref, GitPlugin.remote(scope))
+        self.logger.debug(f"file written and committed path:{self.archive.local_path(GitPlugin.remote(scope))}, commit sha:{commit_sha}")
 
-            # delete the old relations cache and update it
-            conn.delete(f"{scope}:{ref},relations:")
-            relations = self.get_related_objects(
-                scope=scope, ref=ref, schema_version=schema_version)
-            for relation in relations:
-                conn.rpush(f"{scope}:{ref},relations:", relation)
-            try:
-                redis_keys.remove(f"{scope}:{ref},relations:")
-            except ValueError:
-                pass
-
-            if remove_extra and len(redis_keys) > 0:
-                conn.delete(*redis_keys)
-            """
-
-            return None
+        return commit_sha
 
     @abstractmethod
     def create_workspace(self, ref:str, **kwargs):
