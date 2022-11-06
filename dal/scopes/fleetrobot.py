@@ -13,6 +13,8 @@ import pickle
 
 from movai_core_shared.logger import Log
 
+from dal.classes.protocols.zmq_client import ZmqClient
+
 from .scope import MovaiDB, Scope
 
 logger = Log.get_logger("FleetRobot")
@@ -39,14 +41,16 @@ class FleetRobot(Scope):
             logger.error(f"robot {name} not found in DB")
         ip_key = {'Robot': {robot_id: {'IP': {}}}}
         self.ip = db.get_value(ip_key)
+        # Todo: add public key from redis to the zmq client
+        self.zmq_client = ZmqClient(self.ip, name=name)
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot"""
         to_send = {}
-        # Todo: change to zmq msg to the spawner with zmq
         for key, value in locals().items():
             if value is not None and key in ("command", "flow", "node", "port", "data"):
                 to_send.update({key: value})
+        self.zmq_client.send_msg(to_send)
 
         to_send = pickle.dumps(to_send)
 
