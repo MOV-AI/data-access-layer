@@ -1,10 +1,12 @@
 # requirements for the execution of tests and packaging. Not runtime requirements.
 pytest
+pytest-cov
 mock
 bump2version
 flake8
 pylint
 pyyaml
+tox
 
 jsonschema==3.2.0
 gitpython==3.1.2
