@@ -1,9 +1,26 @@
+# requirements for the execution of tests and packaging. Not runtime requirements.
 pytest
 mock
 bump2version
 flake8
 pylint
 pyyaml
+
+
+# to be removed : runtime requirements
+aioredis==1.3.0
+aiohttp==3.8.1
+deepdiff==4.0.9
+gitpython==3.1.2
+jsonschema==3.2.0
+miracle-acl==0.0.4.post1
+pyjwt==1.7.1
+python-box==4.0.4
+redis==3.3.11
+yarl==1.7.2
+
+
+movai_core_shared==1.0.1.0
 
 
 
