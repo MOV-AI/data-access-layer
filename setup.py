@@ -37,5 +37,11 @@ setuptools.setup(
     classifiers=["Programming Language :: Python :: 3"],
     install_requires=requirements,
     data_files=data_files,
-    entry_points={},
+    entry_points={
+         "console_scripts":[
+             "backup = dal.tools.backup:main",
+             "edit_yaml = dal.tools.edit_yaml:main",
+             "secret_key = dal.tools.secret_key:main"
+         ]
+        },
 )
