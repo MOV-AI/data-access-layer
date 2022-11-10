@@ -29,7 +29,7 @@ __all__ = [
    "Application",
    "Callback",
    "Config",
-   "Configuration"
+   "Configuration",
    "FleetRobot",
    "Flow",
    "Form",
@@ -41,7 +41,7 @@ __all__ = [
    "Role",
    "Scope",
    "StateMachine",
-   "SMVars"
+   "SMVars",
    "Struct",
    "System",
    "User",
