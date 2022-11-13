@@ -156,6 +156,9 @@ class NodeInst(ScopeObjectNode):
         # get the instance value
         try:
             inst_value = self.Parameter[key].Value
+            if inst_value is None:
+                #param is disabled, and we return None
+                return None
         except KeyError:
             inst_value = None
 
