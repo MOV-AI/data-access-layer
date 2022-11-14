@@ -5,15 +5,19 @@ from glob import glob
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-requirements = []
-
-with open("build-requirements.txt", "r") as fh:
-    for line in fh.readlines(): 
-        if '#' in line or line == '\n':
-            continue
-        if '\n' in line:
-            line = line.rstrip('\n')
-            requirements.append(str(line))
+requirements = [
+    "aioredis==1.3.0",
+    "aiohttp==3.8.1",
+    "deepdiff==4.0.9",
+    "gitpython==3.1.2",
+    "jsonschema==3.2.0",
+    "miracle-acl==0.0.4.post1",
+    "pyjwt==1.7.1",
+    "python-box==4.0.4",
+    "redis==3.3.11",
+    "yarl==1.7.2",
+    "movai_core_shared==1.0.1.0"
+]
 
 
 data_files = [file for file in glob("dal/validation/schema/1.0/*.json")]
