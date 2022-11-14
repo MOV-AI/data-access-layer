@@ -7,11 +7,12 @@ with open("README.md", "r") as fh:
 
 requirements = []
 
-with open("requirements.txt", "r") as fh:
+with open("build-requirements.txt", "r") as fh:
     for line in fh.readlines(): 
-        if line != '\n':
-            if '\n' in line:
-                line = line.rstrip('\n')
+        if '#' in line or line == '\n':
+            continue
+        if '\n' in line:
+            line = line.rstrip('\n')
             requirements.append(str(line))
 
 
