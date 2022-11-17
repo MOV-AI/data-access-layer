@@ -16,7 +16,7 @@ requirements = [
     "python-box==4.0.4",
     "redis==3.3.11",
     "yarl==1.7.2",
-    "movai_core_shared==2.4.0.1"
+    "movai_core_shared==2.4.0-1-1.1"
 ]
 
 
@@ -30,7 +30,7 @@ data_files += [file for file in glob("dal/validation/schema/2.3/common/*.json")]
 # The 'install_requires' is where you specify the package dependencies of your package. They will be automaticly installed, before your package.  # noqa: E501
 setuptools.setup(
     name="data-access-layer",
-    version="2.4.0-0",
+    version="2.4.0-1",
     author="Backend team",
     author_email="backend@mov.ai",
     description="DATA ACCESS LAYER",
