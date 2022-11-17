@@ -16,7 +16,7 @@ requirements = [
     "python-box==4.0.4",
     "redis==3.3.11",
     "yarl==1.7.2",
-    "movai_core_shared==2.4.0.0"
+    "movai_core_shared==2.4.0.1"
 ]
 
 
