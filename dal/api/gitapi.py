@@ -435,7 +435,7 @@ class GitManager(BaseArchive, id="Git"):
 
     def _get_or_add_version(self,
                             remote: str,
-                            version: str) -> GitRepo:
+                            version: str="") -> GitRepo:
         """will get the desired version repo if exists
            if not will create a new one and returns it.
 
