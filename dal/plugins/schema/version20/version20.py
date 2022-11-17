@@ -6,8 +6,10 @@
    Developers:
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
 """
-from dal.plugins import Plugin
-from dal.data import (ObjectDeserializer, TreeNode, SchemaDeserializer)
+from dal.plugins.classes import Plugin
+from dal.data import (ObjectDeserializer,
+                      TreeNode,
+                      SchemaDeserializer)
 
 
 __DRIVER_NAME__ = "Movai Schema Version 2.0 Plugin"

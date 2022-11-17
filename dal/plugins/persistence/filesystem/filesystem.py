@@ -16,14 +16,17 @@ import tempfile
 from urllib.parse import urlparse
 from binascii import Error as BinasciiError
 from datetime import datetime
+
 from movai_core_shared.logger import Log
-from dal.plugins import Plugin
-from dal.data import (schemas, PersistencePlugin,
-                      TreeNode, SchemaPropertyNode, Persistence)
-from dal.scopes import ScopeInstanceVersionNode, ScopesTree
-from dal.models import Model
-from movai.remote import RemoteArchive
+from dal.data import (schemas,
+                      TreeNode,
+                      SchemaPropertyNode)
+from dal.plugins.classes import Plugin, PersistencePlugin, Persistence
+from dal.models.scopestree import ScopeInstanceVersionNode, ScopesTree
+from dal.models.model import Model
 from dal.backup import RestoreManager
+from dal.data.archive import RemoteArchive
+
 
 
 __DRIVER_NAME__ = "Mov.ai Filesystem Plugin"

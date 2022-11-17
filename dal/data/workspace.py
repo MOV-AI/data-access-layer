@@ -7,8 +7,8 @@
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
 """
 from abc import ABC, abstractproperty
-from .persistence import Persistence
-from .tree import DictNode
+from dal.plugins.classes import Persistence
+from dal.data.tree import DictNode
 
 
 class WorkspaceManager:

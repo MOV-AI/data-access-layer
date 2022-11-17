@@ -9,45 +9,37 @@
    API for the git part
 """
 
-from git.refs.tag import TagReference
-from ..classes.exceptions import (NoChangesToCommit,
-                                  SlaveManagerCannotChange,
-                                  TagAlreadyExist,
-                                  VersionDoesNotExist,
-                                  BranchAlreadyExist)
-from ..classes.filesystem import FileSystem
+from abc import abstractmethod
+from os import getenv
+from os.path import join as path_join
+from os.path import expanduser
+from pathlib import Path
 from git import (Repo,
                  InvalidGitRepositoryError,
                  GitError,
                  GitCommandError)
-from git.refs import HEAD
 from git.index import IndexFile
+from git.refs import HEAD
+from git.refs.tag import TagReference
 from git.remote import PushInfo
-from re import search
-from os.path import join as path_join
-from abc import ABC, abstractmethod
+from dal.exceptions import (NoChangesToCommit,
+                            SlaveManagerCannotChange,
+                            TagAlreadyExist,
+                            VersionDoesNotExist,
+                            BranchAlreadyExist,
+                            GitUserErr,
+                            FileDoesNotExist,
+                            RepositoryDoesNotExist)
+from dal.classes.filesystem import FileSystem
+from dal.classes.common.gitlink import GitLink
+from dal.archive.basearchive import BaseArchive
+from movai_core_shared.logger import Log
 
-# -----------------------------------------------------------------------------
-# TODO
-# need to be replaced, just for testing
-from dal.classes.authentication import AuthService
-
-
-# TODO
-# should be replaced by authentication service ?
-# not sure how this should work
-def get_tokenized_repo(remote, username):
-    git_link = GitLink(remote)
-    git_user = AuthService.get_username(remote, username)
-    token = AuthService.get_token(remote, username)
-    remote = git_link.get_https_link().split('https://')[1]
-    return f"https://{git_user}:{token}@{remote}"
-# -----------------------------------------------------------------------------
-
-
+LOGGER = Log.get_logger("Git")
 MOVAI_FOLDER_NAME = ".movai"
 MOVAI_BASE_FOLDER = path_join(FileSystem.get_home_folder(), MOVAI_FOLDER_NAME)
-GIT_BASE_FOLDER = path_join(MOVAI_BASE_FOLDER, 'git')
+MOVAI_BASE_FOLDER = getenv("MOVAI_USERSPACE", MOVAI_BASE_FOLDER)
+GIT_BASE_FOLDER = path_join(MOVAI_BASE_FOLDER, 'database')
 
 
 class GitRepo:
@@ -65,14 +57,13 @@ class GitRepo:
             version (str, optional): branch/tag/commit id.
         """
         self._git_link = GitLink(remote)
-        self._remote_link = self._git_link.get_https_link()
         self._username = username
         self._version = version
         self._repo_object = None
         self._default_branch = None
         self._local_path = local_path
         FileSystem.create_folder_recursively(self._local_path)
-        self._repo_object = self._clone_no_checkout()
+        self._repo_object = self._clone()
 
     def version_exist(self, revision: str) -> bool:
         """check if version (commit / tag) exist in the repo
@@ -116,7 +107,7 @@ class GitRepo:
         Returns:
             str: repository name.
         """
-        return self._git_link.get_repo_name()
+        return self._git_link.repo
 
     @property
     def branch(self) -> str:
@@ -235,7 +226,10 @@ class GitRepo:
             str: local path of the requested file
         """
         file_path = path_join(self._local_path, file_name)
-        self._repo_object.git.checkout(file_name)
+        try:
+            self._repo_object.git.checkout(file_name)
+        except GitCommandError:
+            raise FileDoesNotExist(f"file/path {file_name} does not exist")
         return file_path
 
     def get_latest_commit(self) -> str:
@@ -289,23 +283,34 @@ class GitRepo:
             elif e.stderr.find("did not match any file") != -1:
                 raise VersionDoesNotExist(f"version {version} does not exist")
 
-    def _clone_no_checkout(self) -> Repo:
-        """clone given branch, commit, tag without really checking out files
-           similar to empty repository but with all the repo information.
+    def _clone(self, no_checkout=False) -> Repo:
+        """clone given branch, commit, tag.
 
+        Args:
+            no_checkout (bool): if set, no checkout will be done (empty folder)
+                                without actual files, only .git folder that has
+                                all of the information about the repo.
         Returns:
             git.Repo: Repo object.
+
+        Raises:
+            RepositoryDoesNotExist: in case remote repository does not exist
         """
         repo = None
         FileSystem.create_folder_recursively(self._local_path)
         try:
             repo = Repo(self._local_path)
         except InvalidGitRepositoryError:
-            # Repository does not exist, creating one.
-            tokenized_repo = get_tokenized_repo(self._remote_link,
-                                                self._username)
-            repo = Repo.clone_from(tokenized_repo, self._local_path,
-                                   no_checkout=True)
+            # local Repository does not exist, creating one.
+            git_ssh_cmd = f"ssh -i {expanduser('~/.ssh/id_rsa')}"
+            try:
+                repo = Repo.clone_from(self._git_link.repo_ssh_link,
+                                       self._local_path,
+                                       env=dict(GIT_SSH_COMMAND=git_ssh_cmd),
+                                       no_checkout=no_checkout)
+            except GitCommandError as e:
+                raise RepositoryDoesNotExist(f"repository {self._git_link.owner}/{self._git_link.repo} does not exist")  
+            self._default_branch = repo.active_branch.name
         except GitError as e:
             print(f"Error {e}")
 
@@ -347,14 +352,14 @@ class GitRepo:
         return remote.pull()
 
 
-class GitManager(ABC):
+class GitManager(BaseArchive, id="Git"):
     _username = None
     _repos = {}
     SLAVE = "slave"
     MASTER = "master"
     DEFAULT_REPO_ID = "default"
 
-    def __init__(self, username: str, mode: str = SLAVE):
+    def __init__(self, username: str, mode: str):
         """initialize Object with username
 
         Args:
@@ -364,6 +369,34 @@ class GitManager(ABC):
         self._mode = mode
         if mode not in GitManager._repos:
             GitManager._repos[mode] = {}
+
+    @staticmethod
+    def get_client(user: str = "MOVAI_USER") -> "GitManager":
+        """will create an instance of GitManager, dynamically choose between
+           master/slave according to the current running Robot.
+
+        Args:
+            user (str): the username to be used for GIT client.
+
+        Returns:
+            GitManager: an instance of the current mode applicable to the Robot
+
+        Raises:
+            GitUserError: in case there was a problem fetching git username.
+        """
+        manager_uri = getenv("MOVAI_MANAGER_URI", "localhost")
+        movai_user = getenv("MOVAI_USERNAME") or user
+        if movai_user == user:
+            LOGGER.warning("user for movai git not provided ($MOVAI_USERNAME), using 'MOVAI_USER' instead")
+
+        client = None
+        if manager_uri.lower().strip() in ["localhost", "127.0.0.1"]:
+            # this is a manager
+            client = MasterGitManager(movai_user)
+        else:
+            client = SlaveGitManager(movai_user)
+
+        return client
 
     def is_tag(self, remote: str, revision: str) -> bool:
         """check if the provided revision is a tag or not
@@ -402,7 +435,7 @@ class GitManager(ABC):
 
     def _get_or_add_version(self,
                             remote: str,
-                            version: str = None) -> GitRepo:
+                            version: str) -> GitRepo:
         """will get the desired version repo if exists
            if not will create a new one and returns it.
 
@@ -414,18 +447,17 @@ class GitManager(ABC):
             GitRepo: GitRepo Object representing the requested version.
         """
         git_link = GitLink(remote)
-        repo_name = git_link.get_repo_name()
+        repo_name = git_link.repo
         repo = self._get_repo(repo_name)
         if repo is None:
             repo = GitRepo(remote, self._username,
                            self._get_local_path(remote), version)
             GitManager._repos[self._mode][repo_name] = repo
-        if version is not None:
-            try:
-                repo.checkout(version)
-            except VersionDoesNotExist:
-                repo.fetch()
-                repo.checkout(version)
+        try:
+            repo.checkout(version)
+        except VersionDoesNotExist:
+            repo.fetch()
+            repo.checkout(version)
         return repo
 
     def get_full_commit_sha(self, remote: str, revision: str) -> str:
@@ -443,57 +475,62 @@ class GitManager(ABC):
             return repo.get_latest_commit()
         return repo.git_client.rev_parse(revision)
 
-    def get_file(self,
-                 file_name: str,
-                 remote: str,
-                 version: str = None) -> str:
+    def get(self,
+            obj_name: str,
+            remote: str,
+            version: str) -> Path:
         """Get a File from repository with specific version
 
         Args:
-            file_name (str): name of the file.
+            obj_name (str): name of the file.
             remote (str): the remote repository link.
             version (str, optional): the commit/ tag/branch id desired.
                                       Defaults to None.
 
         Returns:
-            str: the local path of the requested File.
+            Path: the local path of the requested File.
         """
-        if file_name.find('json') == -1:
-            file_name = file_name + '.json'
+        # TODO: check filename extension "json"
+        if not obj_name.endswith('.json') and not obj_name.endswith('.py'):
+            obj_name = obj_name + '.json'
         repo = self._get_or_add_version(remote, version)
-        file_path = repo.checkout_file(file_name)
+        file_path = repo.checkout_file(obj_name)
 
-        return file_path
+        return Path(file_path)
 
-    def commit_file(self,
-                    remote: str,
-                    filename: str,
-                    new_branch: str = None,
-                    base_branch: str = None,
-                    message: str = "") -> str:
-        """will commit the specified file locally.
+    def commit(self,
+               obj_name: str,
+               remote: str,
+               new_version: str = None,
+               base_version: str = None,
+               message: str = "") -> str:
+        """will commit/save the specified obj locally.
 
         Args:
+            obj_name (str): the filename of the desired file.
             remote (str): the remote link of the repo.
-            filename (str): the filename of the desired file.
-            new_branch (str, optional): if given will create the new commit in
+            new_version (str, optional): if given will create the new commit in
                                         a new branch with the name
                                         new_branch.
                                         Defaults to None.
-            base_branch (str, optional): on what branch we want to be based in
+            base_version (str, optional): on what branch we want to be based in
                                          the new commit.
             message (str, optional): the commit message. Defaults to "".
 
         Returns:
             str: the newly committed commit hash id.
+
+        Raises:
+            NoChangesToCommit: in case there was no changes to commit.
         """
-        repo = self._get_or_add_version(remote, base_branch)
-        if filename.find('.json') == -1:
-            filename += '.json'
-        if filename not in repo.get_modified_files() \
-           and filename not in repo.get_untracked_files():
+        repo = self._get_or_add_version(remote, base_version)
+        # TODO: check filename extension
+        if obj_name.find('.json') == -1:
+            obj_name += '.json'
+        if obj_name not in repo.get_modified_files() \
+           and obj_name not in repo.get_untracked_files():
             raise NoChangesToCommit()
-        return repo.commit(filename, new_branch, message)
+        return repo.commit(obj_name, new_version, message)
 
     def diff_file(self,
                   remote: str,
@@ -536,12 +573,12 @@ class GitManager(ABC):
         tag_reference = repo.tag(base_version, tag, message)
         return tag_reference is not None
 
-    def create_file(self,
-                    remote: str,
-                    relative_path: str,
-                    content: str,
-                    base_version: str = None,
-                    is_json: bool = True) -> None:
+    def create_obj(self,
+                   remote: str,
+                   relative_path: str,
+                   content: str,
+                   base_version: str = None,
+                   is_json: bool = True) -> None:
         """will create new file in repository locally using the relative path
            of the local repository path.
            this function neede because external user is not fully aware of the
@@ -597,6 +634,14 @@ class GitManager(ABC):
         """
         pass
 
+    def local_path(self, remote: str) -> Path:
+        """local path of the repository
+
+        Returns:
+            str: local path of the repo.
+        """
+        return Path(self._get_local_path(remote))
+
 
 class SlaveGitManager(GitManager):
     """a class to manage Slave Git Manager
@@ -606,19 +651,22 @@ class SlaveGitManager(GitManager):
     def __init__(self, username: str):
         super().__init__(username, mode=GitManager.SLAVE)
 
-    def commit_file(self, *args, **kwargs):
+    def commit(self, *args, **kwargs):
+        raise SlaveManagerCannotChange()
+
+    def push(self, *args, **kwargs):
         raise SlaveManagerCannotChange()
 
     def create_tag(self, *args, **kwargs):
         raise SlaveManagerCannotChange()
 
-    def create_file(self, *args, **kwargs) -> None:
+    def create_obj(self, *args, **kwargs) -> None:
         raise SlaveManagerCannotChange()
 
     def _get_local_path(self, remote):
         git_link = GitLink(remote)
         path_params = [GIT_BASE_FOLDER]
-        path_params.append(git_link.get_repo_name())
+        path_params.append(git_link.repo)
         return path_join(*path_params)
 
 
@@ -634,63 +682,5 @@ class MasterGitManager(GitManager):
         git_link = GitLink(remote)
         path_params = [GIT_BASE_FOLDER]
         path_params.append(self._username)
-        path_params.append(git_link.get_repo_name())
+        path_params.append(git_link.repo)
         return path_join(*path_params)
-
-
-class GitLink:
-    """a class to represent a remote git link
-        whether it was ssh link or https.
-    """
-    def __init__(self, link: str):
-        self._link = link
-        self._ssh_link = None
-        self._https_link = None
-        if link.find("https://") != -1:
-            self._https_link = link
-            self._ssh_link = self.get_ssh_link()
-        elif link.find("git@") != -1:
-            self._ssh_link = link
-            self._https_link = self.get_https_link()
-        else:
-            raise Exception("not a valid Git link")
-
-    def get_https_link(self) -> str:
-        """reutrns a https link for provided link in init function
-
-        Returns:
-            str: https link
-        """
-        if self._https_link is not None:
-            return self._https_link
-        return "https://" + self._ssh_link.split("@")[1].replace(":", "/")
-
-    def get_ssh_link(self) -> str:
-        """returns a ssh link for the provided link in init function
-
-        Returns:
-            str: ssh link
-        """
-        if self._ssh_link is not None:
-            return self._ssh_link
-        return "git@" + \
-            self._https_link.split("//")[1].replace("/", ":", 1)
-
-    def get_relative_repo_path(self) -> str:
-        """will return relative repository path without the domain
-
-        Returns:
-            str: relative repository path.
-        """
-        return search("https://([^/]+)(/.*)", self._https_link).group(2)
-
-    def get_repo_name(self) -> str:
-        """returns the repository name from the provided link in init.
-
-        Returns:
-            str: repository name
-        """
-        repo_name = self._https_link.split("/")[-1]
-        if repo_name.find(".") != -1:
-            repo_name = repo_name.split(".")[0]
-        return repo_name

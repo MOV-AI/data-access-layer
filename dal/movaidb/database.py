@@ -19,10 +19,11 @@ import aioredis
 from redis.client import Pipeline
 from typing import Any, Tuple
 import dal
-from dal.classes import Singleton
-from dal.plugins import Resource
 from movai_core_shared.logger import Log
 from movai_core_shared.exceptions import InvalidStructure
+from dal.classes import Singleton
+from dal.plugins.classes import Resource
+
 
 LOGGER = Log.get_logger("dal.mov.ai")
 
@@ -728,7 +729,9 @@ class MovaiDB:
                         break
 
             if not is_ok:
-                raise Exception("Structure provided does not exist")
+                error_msg = f"Structure provided does not exist: {d}"
+                LOGGER.error(error_msg)
+                raise Exception(error_msg)
             if isinstance(v, dict) and isinstance(temp_api, dict):
                 self.validate(v, temp_api, key, validate, keys)
             else:

@@ -16,9 +16,14 @@ import pydoc
 import sys
 from typing import Any, Dict, List
 import rospkg
-from dal.scopes import System, scopes
 from movai_core_shared.logger import Log
+
+from .scopestree import scopes
+from dal.scopes.system import System
+
 from .model import Model
+
+
 logger = Log.get_logger('')
 
 

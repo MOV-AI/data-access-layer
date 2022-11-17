@@ -1,0 +1,26 @@
+{
+    "$id": "arg.schema.json",
+    "$version": "2.3",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "Description": "a common schema used to validate Params part of multiple documents",
+
+    "type": "object",
+    "patternProperties": {
+        "^[a-z0-9A-Z]+$": {
+            "type": "object",
+            "properties": {
+                "Description": {
+                    "type": "string"
+                },
+                "Value": {
+                    "$comment": "accept every type"
+                },
+                "Type": {
+                    "type": "string"
+                }
+            },
+            "required": ["Value"]
+        }
+    },
+    "minProperties": 1
+} 
