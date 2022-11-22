@@ -44,7 +44,7 @@ setuptools.setup(
     data_files=data_files,
     entry_points={
          "console_scripts":[
-             "dal_backup = dal.tools.dal_backup:main",
+             "backup = dal.tools.backup:main",
              "edit_yaml = dal.tools.edit_yaml:main",
              "secret_key = dal.tools.secret_key:main"
          ]
