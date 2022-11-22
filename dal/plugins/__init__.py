@@ -7,4 +7,3 @@
    - Moawiya Mograbi  (Moawiya@mov.ai) - 2022
 """
 from .resources.file import FilePlugin
-from .persistence.git import GitPlugin

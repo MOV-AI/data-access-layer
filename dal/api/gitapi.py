@@ -11,6 +11,7 @@
 
 from abc import abstractmethod
 from os import getenv
+from re import search
 from os.path import join as path_join
 from os.path import expanduser
 from pathlib import Path
@@ -59,11 +60,15 @@ class GitRepo:
         self._git_link = GitLink(remote)
         self._username = username
         self._version = version
+        self._versions = []
+        self._branches = []
+        self._manifest = {}
         self._repo_object = None
         self._default_branch = None
         self._local_path = local_path
         FileSystem.create_folder_recursively(self._local_path)
         self._repo_object = self._clone()
+        self._update_versions()
 
     def version_exist(self, revision: str) -> bool:
         """check if version (commit / tag) exist in the repo
@@ -277,13 +282,14 @@ class GitRepo:
         except GitCommandError as e:
             if e.stderr.find("Your local changes to the following files \
                               would be overwritten by checkout") != -1:
+                # TODO add log
                 self._repo_object.git.stash()
                 self._repo_object.git.checkout(version)
                 self._repo_object.git.pop()
             elif e.stderr.find("did not match any file") != -1:
                 raise VersionDoesNotExist(f"version {version} does not exist")
 
-    def _clone(self, no_checkout=False) -> Repo:
+    def _clone(self, no_checkout=False, shallow=True) -> Repo:
         """clone given branch, commit, tag.
 
         Args:
@@ -304,10 +310,16 @@ class GitRepo:
             # local Repository does not exist, creating one.
             git_ssh_cmd = f"ssh -i {expanduser('~/.ssh/id_rsa')}"
             try:
+                args = {
+                    "env": dict(GIT_SSH_COMMAND=git_ssh_cmd),
+                    "no_checkout": no_checkout
+                }
+                if shallow:
+                    args["filter"] = ["tree:0", "blob:none"]
+
                 repo = Repo.clone_from(self._git_link.repo_ssh_link,
                                        self._local_path,
-                                       env=dict(GIT_SSH_COMMAND=git_ssh_cmd),
-                                       no_checkout=no_checkout)
+                                       **args)
             except GitCommandError as e:
                 raise RepositoryDoesNotExist(f"repository {self._git_link.owner}/{self._git_link.repo} does not exist")  
             self._default_branch = repo.active_branch.name
@@ -347,13 +359,45 @@ class GitRepo:
         remote.push(tag_name)
         return remote.push()
 
-    def pull(self, remote_name: str):
-        remote = self._repo_object.remote(remote_name)
-        return remote.pull()
+    def pull(self, branch_name: str):
+        self.checkout(branch_name)
+        ret = self._repo_object.git.pull("origin", branch_name)
+        self._update_versions()
+        return ret
+
+    def _update_versions(self) -> None:
+        self._versions = sorted(self._repo_object.tags, key=lambda t: t.commit.committed_datetime, reverse=True)
+        self._branches = [ref.name for ref in self._repo_object.remote().refs]
+
+    def list_versions(self, is_branches: bool) -> list:
+        """
+        return a list of tags in repository sorted by commit date
+        """
+        if is_branches:
+            return self._branches
+        return self._versions
+
+    def list_models(self) -> dict:
+        manifest_path = path_join(self.local_path, "manifest.txt")
+        if not FileSystem.is_exist(manifest_path):
+            # TODO raise
+            pass
+        content = FileSystem.read(manifest_path)
+        models = {}
+        for line in content.split("\n"):
+            m = search(r"(\w+):([0-9a-zA-z-_]+)", line)
+            if m is not None:
+                model_type, model_name = m.group(1), m.group(2)
+                if model_type not in models:
+                    models[model_type] = []
+                if model_name not in models[model_type]:
+                    models[model_type].append(model_name)
+
+        return models
 
 
 class GitManager(BaseArchive, id="Git"):
-    _username = None
+    _username = "MOVAI_USER"
     _repos = {}
     SLAVE = "slave"
     MASTER = "master"
@@ -371,12 +415,12 @@ class GitManager(BaseArchive, id="Git"):
             GitManager._repos[mode] = {}
 
     @staticmethod
-    def get_client(user: str = "MOVAI_USER") -> "GitManager":
+    def get_client(username: str = "MOVAI_USER") -> "GitManager":
         """will create an instance of GitManager, dynamically choose between
            master/slave according to the current running Robot.
 
         Args:
-            user (str): the username to be used for GIT client.
+            username (str): the username to be used for GIT client.
 
         Returns:
             GitManager: an instance of the current mode applicable to the Robot
@@ -385,12 +429,13 @@ class GitManager(BaseArchive, id="Git"):
             GitUserError: in case there was a problem fetching git username.
         """
         manager_uri = getenv("MOVAI_MANAGER_URI", "localhost")
-        movai_user = getenv("MOVAI_USERNAME") or user
-        if movai_user == user:
+        movai_user = getenv("MOVAI_USERNAME") or username
+        if movai_user == username:
             LOGGER.warning("user for movai git not provided ($MOVAI_USERNAME), using 'MOVAI_USER' instead")
 
         client = None
-        if manager_uri.lower().strip() in ["localhost", "127.0.0.1"]:
+        if "localhost" in manager_uri.lower().strip() or \
+           "127.0.0.1" in manager_uri.lower().strip():
             # this is a manager
             client = MasterGitManager(movai_user)
         else:
@@ -433,6 +478,17 @@ class GitManager(BaseArchive, id="Git"):
             repo = GitManager._repos[self._mode][repo_name]
         return repo
 
+    def _get_or_add_repo(self, remote: str) -> GitRepo:
+        git_link = GitLink(remote)
+        repo_name = git_link.repo
+        repo = self._get_repo(repo_name)
+        if repo is None:
+            repo = GitRepo(remote, self._username,
+                           self._get_local_path(remote), "")
+            GitManager._repos[self._mode][repo_name] = repo
+
+        return repo
+
     def _get_or_add_version(self,
                             remote: str,
                             version: str) -> GitRepo:
@@ -446,13 +502,7 @@ class GitManager(BaseArchive, id="Git"):
         Returns:
             GitRepo: GitRepo Object representing the requested version.
         """
-        git_link = GitLink(remote)
-        repo_name = git_link.repo
-        repo = self._get_repo(repo_name)
-        if repo is None:
-            repo = GitRepo(remote, self._username,
-                           self._get_local_path(remote), version)
-            GitManager._repos[self._mode][repo_name] = repo
+        repo = self._get_or_add_repo(remote)
         try:
             repo.checkout(version)
         except VersionDoesNotExist:
@@ -474,6 +524,17 @@ class GitManager(BaseArchive, id="Git"):
         if revision is None:
             return repo.get_latest_commit()
         return repo.git_client.rev_parse(revision)
+
+    def list_versions(self, remote: str, is_branches: bool) -> list:
+        """
+
+        """
+        repo = self._get_or_add_repo(remote)
+        return repo.list_versions(is_branches)
+
+    def list_models(self, remote: str) -> dict:
+        repo = self._get_or_add_repo(remote)
+        return repo.list_models()
 
     def get(self,
             obj_name: str,
@@ -595,20 +656,49 @@ class GitManager(BaseArchive, id="Git"):
         """
         repo = self._get_or_add_version(remote, base_version)
         new_file_path = path_join(repo.local_path, relative_path)
+        if FileSystem.is_exist(new_file_path):
+            FileSystem.delete(new_file_path)
         FileSystem.write(new_file_path, content, is_json)
 
-    def pull(self, remote: str, remote_name: str):
+    def delete(self,
+               remote: str,
+               obj_name: str,
+               version: str,
+               **kwargs) -> str:
+        """deletes an object.
+
+        Args:
+            obj_name (str): Name of the object (path)
+            remote (str): Remote link.
+            version (str): Version desired to remove from.
+
+        Returns:
+            str: new version hash.
+        """
+        repo = self._get_or_add_version(remote, version)
+        file_path = path_join(repo.local_path, obj_name)
+        if not FileSystem.is_exist(file_path):
+            raise FileDoesNotExist(file_path)
+
+        if FileSystem.delete(file_path):
+            repo.index.remove(obj_name, working_tree=True)
+            repo.git_client.add(all=True)
+            return repo.git_client.commit(message=f"deleted {obj_name}")
+
+        return None
+
+    def pull(self, remote: str, branch: str):
         """will pull changes to local repository from remote_name repo
 
         Args:
             remote (str): the remote link of the repository.
-            remote_name (str): the remote name defined in local repo.
+            branch (str): the branch name.
 
         Returns:
             FetchInfo: see fetch method in GitPython
         """
-        repo = self._get_or_add_version(remote)
-        return repo.pull(remote_name)
+        repo = self._get_or_add_repo(remote)
+        return repo.pull(branch)
 
     def push(self, remote: str, remote_name: str, tag_name: str = None,
              only_tag: bool = False) -> PushInfo:

@@ -12,7 +12,7 @@ class BaseArchive:
     active_archive = None
     classes = {}
 
-    def __call__(self, user: str = None) -> "BaseArchive":
+    def __call__(self, user: str = "MOVAI_USER") -> "BaseArchive":
         """whenever an instance of Archive is called this method should run and
            return an instance of the active archive
 
@@ -30,7 +30,7 @@ class BaseArchive:
         """
         if BaseArchive.active_archive is None:
             raise NoActiveArchiveRegistered("")
-        return BaseArchive.active_archive.get_client(user=user)
+        return BaseArchive.active_archive.get_client(user)
 
     def __init_subclass__(cls, id=None):
         if id is None:
@@ -66,6 +66,23 @@ class BaseArchive:
 
         Returns:
             Path: the local path of the requested File.
+        """
+
+    @abstractmethod
+    def delete(self,
+               remote: str,
+               obj_name: str,
+               version: str,
+               **kwargs) -> str:
+        """deletes an object.
+
+        Args:
+            obj_name (str): Name of the object (path)
+            remote (str): Remote link.
+            version (str): Version desired to remove from.
+
+        Returns:
+            str: new version hash.
         """
 
     @abstractmethod

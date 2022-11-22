@@ -147,12 +147,22 @@ class WorkspaceNode(DictNode, WorkspaceObject):
         """
         self._plugin.write(data, **kwargs)
 
+    def pull(self, **kwargs):
+        return self._plugin.pull(**kwargs)
+
+    def push(self, **kwargs):
+        return self._plugin.push(**kwargs)
+
+    def create_version(self, version_tag, **kwargs):
+        return self._plugin.create_version(**kwargs)
+
     def read(self, **kwargs):
         """
         read object from this workspace
         """
         data = self._plugin.read(**kwargs)
-        del data["schema_version"]
+        if "schema_version" in data:
+            del data["schema_version"]
         return data
 
     def delete(self, data: object = None, **kwargs):

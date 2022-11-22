@@ -77,9 +77,11 @@ class GitUserErr(GitException):
     def __init__(self, *args: object) -> None:
         super().__init__(GIT_USER_ERR, *args)
 
+
 class FileDoesNotExist(GitException):
     def __init__(self, *args):
         super().__init__(FILE_DOES_NOT_EXIST, *args)
+
 
 class RepositoryDoesNotExist(GitException):
     def __init__(self, *args):

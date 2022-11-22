@@ -41,12 +41,21 @@ class GitPlugin(PersistencePlugin):
     def remote(scope):
         return f"git@{scope}"
 
+    def pull(self, **kwargs):
+        try:
+            scope = kwargs["scope"]
+            branch = kwargs["branch"]
+        except KeyError as e:
+            raise ValueError("missing scope or alias") from e
+
+        return GitPlugin.archive.pull(GitPlugin.remote(scope), branch)
+
     def read(self, **kwargs) -> dict:
         """
         load an object from the persistent layer, you must provide the
         following args
-        - scope: example, github.com:remote/owner/project
-        - ref: path inside the project, /Flow/v1/fow1.json
+        - scope: example, "remote:owner/project"
+        - ref: path inside the project, /Flow/v1/flow1.json
         - version: the desired version, v1.1
 
         The following argument is optional:
@@ -113,11 +122,24 @@ class GitPlugin(PersistencePlugin):
         if validation_res["status"] is False:
             self.logger.error(f"data is incompatible with schema version: {schema_version}\n", validation_res["message"])
 
-        self.archive.create_obj(GitPlugin.remote(scope), ref, json.dumps(data_to_write), base_version=version)
-        commit_sha = self.archive.commit(ref, GitPlugin.remote(scope))
-        self.logger.debug(f"file written and committed path:{self.archive.local_path(GitPlugin.remote(scope))}, commit sha:{commit_sha}")
+        self.archive.create_obj(GitPlugin.remote(scope), ref, data_to_write, base_version=version)
+        commit_sha = self.archive.commit(ref, GitPlugin.remote(scope), message=f"modified file {ref}")
+        self.logger.debug(f"file written and committed path:{self.archive.local_path(GitPlugin.remote(scope))}/{ref}, commit sha:{commit_sha}")
 
         return commit_sha
+
+    def create_version(self, version_tag, **kwargs):
+        scope = kwargs["scope"]
+        base_version = kwargs["base_version"]
+        message = kwargs["message"]
+        return GitPlugin.archive.create_tag(GitPlugin.remote(scope), base_version, version_tag, message)
+
+    def push(self, **kwargs):
+        scope = kwargs["scope"]
+        alias = kwargs.get("alias", "origin")
+
+        return GitPlugin.archive.push(GitPlugin.remote(scope))
+
 
     @abstractmethod
     def create_workspace(self, ref:str, **kwargs):
@@ -148,6 +170,8 @@ class GitPlugin(PersistencePlugin):
         """
         list all existing scopes
         """
+        scope = kwargs["scope"]
+        return GitPlugin.archive.list_models(GitPlugin.remote(scope))
 
     @abstractmethod
     def get_scope_info(self, **kwargs):
@@ -172,6 +196,9 @@ class GitPlugin(PersistencePlugin):
         """
         list all existing scopes
         """
+        scope = kwargs["scope"]
+        branches = kwargs["ref"] == "branches"
+        return GitPlugin.archive.list_versions(GitPlugin.remote(scope), branches)
 
     @abstractmethod
     def get_related_objects(self, **kwargs):
@@ -184,12 +211,23 @@ class GitPlugin(PersistencePlugin):
         """
         delete data in the persistent layer
         """
+        ref = kwargs["ref"]
+        scope = kwargs["scope"]
+        version = kwargs["version"]
+
+        new_version = self.archive.delete(GitPlugin.remote(scope), ref, version)
+        if new_version is None:
+            # Failed to delete
+            pass
+        else:
+            return new_version
 
     @abstractmethod
-    def rebuild_indexes(self,**kwargs):
+    def rebuild_indexes(self, **kwargs):
         """
         force the database layer to rebuild
         all indexes
         """
+
 
 Persistence.register_plugin("git", GitPlugin)
