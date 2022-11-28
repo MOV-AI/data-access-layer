@@ -15,7 +15,7 @@ requirements = [
     "pyjwt==1.7.1",
     "python-box==4.0.4",
     "redis==3.3.11",
-    "yarl==1.8.1",
+    "yarl>=1.7.2",
     "pyros-genmsg==0.5.8",
     "rospkg==1.4.0",
     "py3rosmsgs==1.18.2",
