@@ -13,7 +13,7 @@ import pickle
 
 from movai_core_shared.logger import Log
 
-from dal.classes.protocols.zmq_client import ZmqClient
+from .classes.protocols.zmq_client import ZmqClient
 
 from .scope import MovaiDB, Scope
 
