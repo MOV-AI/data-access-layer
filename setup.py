@@ -15,7 +15,10 @@ requirements = [
     "pyjwt==1.7.1",
     "python-box==4.0.4",
     "redis==3.3.11",
-    "yarl==1.7.2",
+    "yarl>=1.7.2",
+    "pyros-genmsg==0.5.8",
+    "rospkg==1.4.0",
+    "py3rosmsgs==1.18.2",
     "movai_core_shared==2.4.*"
 ]
 
@@ -44,7 +47,7 @@ setuptools.setup(
     data_files=data_files,
     entry_points={
          "console_scripts":[
-             "dal_backup = dal.tools.dal_backup:main",
+             "backup = dal.tools.backup:main",
              "edit_yaml = dal.tools.edit_yaml:main",
              "secret_key = dal.tools.secret_key:main"
          ]
