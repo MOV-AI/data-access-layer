@@ -150,6 +150,9 @@ class WorkspaceNode(DictNode, WorkspaceObject):
     def pull(self, **kwargs):
         return self._plugin.pull(**kwargs)
 
+    def prev_version(self, **kwargs):
+        return self._plugin.prev_version(**kwargs)
+
     def push(self, **kwargs):
         return self._plugin.push(**kwargs)
 

@@ -18,6 +18,7 @@ TAG_ALREADY_EXIST_ERR = BASE_GIT_ERR + 5
 GIT_USER_ERR = BASE_GIT_ERR + 6
 FILE_DOES_NOT_EXIST = BASE_GIT_ERR + 7
 REPO_DOES_NOT_EXIST = BASE_GIT_ERR + 8
+GIT_PERMISSION_ERR = BASE_GIT_ERR + 9
 
 BASE_SCHEMA_ERR = 200
 SCHEMA_VERSION_ERR = BASE_SCHEMA_ERR + 1
@@ -86,6 +87,11 @@ class FileDoesNotExist(GitException):
 class RepositoryDoesNotExist(GitException):
     def __init__(self, *args):
         super().__init__(REPO_DOES_NOT_EXIST, *args)
+
+
+class GitPermissionErr(GitException):
+    def __init__(self, *args):
+        super().__init__(GIT_PERMISSION_ERR, *args)
 
 
 # Schema Errors

@@ -7,6 +7,7 @@ from abc import abstractmethod
 from dal.models.scopestree import ScopeInstanceVersionNode
 from dal.validation import JsonValidator, default_version
 
+
 class GitPlugin(PersistencePlugin):
     logger = Log.get_logger("git.mov.ai")
     _ROOT_PATH = os.path.join(os.getenv('MOVAI_USERSPACE', ""), "database")
@@ -140,21 +141,25 @@ class GitPlugin(PersistencePlugin):
 
         return GitPlugin.archive.push(GitPlugin.remote(scope))
 
+    def prev_version(self, **kwargs):
+        scope = kwargs["scope"]
+        version = kwargs["version"]
+        return GitPlugin.archive.prev_version(GitPlugin.remote(scope), version)
 
     @abstractmethod
-    def create_workspace(self, ref:str, **kwargs):
+    def create_workspace(self, ref: str, **kwargs):
         """
         creates a new workspace
         """
 
     @abstractmethod
-    def delete_workspace(self, ref:str):
+    def delete_workspace(self, ref: str):
         """
         deletes a existing workspace
         """
 
     @abstractmethod
-    def workspace_info(self, ref:str):
+    def workspace_info(self, ref: str):
         """
         get information about a workspace
         """

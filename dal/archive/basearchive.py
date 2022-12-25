@@ -153,3 +153,17 @@ class BaseArchive:
         Returns:
             Path: local path of the desired remote link.
         """
+
+    @abstractmethod
+    def revert(self, remote: str, ob_name: str, version: str, **kwargs) -> Path:
+        """revert a given version to previous one and return the file path
+           for the reverted version
+
+        Args:
+            remote (str): the remote link of the repository.
+            obj_name (str): Name of the object (path).
+            version (str): the version we want to revert
+
+        Returns:
+            Path: the local path of the requested File.
+        """
