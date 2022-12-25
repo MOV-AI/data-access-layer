@@ -1,7 +1,6 @@
 import pytest
 from os import getenv
 from json import loads as json_loads
-from json import dumps as json_dumps
 from os.path import join as path_join
 
 from dal.exceptions import (
@@ -15,11 +14,12 @@ from dal.classes.filesystem import FileSystem
 from dal.archive import Archive, BaseArchive
 
 
-######################### AUX Functions #######################################
+# ######################## AUX Functions #################################### #
 def _validate_file(archive: BaseArchive, remote, filename, version, expect: dict):
     path = archive.get(filename, remote, version)
     file_json = json_loads(path.read_text())
     assert(sorted(expect.items()) == sorted(file_json.items()))
+
 
 @pytest.fixture(scope="session", autouse=True)
 def clean_environment(request):
@@ -31,10 +31,11 @@ def clean_environment(request):
         FileSystem.delete(path)
 ###############################################################################
 
+
 def test_basic():
     global archive
     archive = Archive(user="TEMP")
-    assert(archive != None)
+    assert(archive is not None)
 
 
 @pytest.mark.parametrize("params, expected_error", [
@@ -44,7 +45,7 @@ def test_basic():
     (("https://github.com/Mograbi/test-git", "file2", "v11DoesNotExist", json_loads("{}")), VersionDoesNotExist),
     (("https://github.com/Mograbi/test-git", "doesnotexist.json", "v0.1", json_loads("{}")), FileDoesNotExist),
 ])
-def test_read_errors(params ,expected_error):
+def test_read_errors(params, expected_error):
     archive = Archive(user="TEMP")
     with pytest.raises(expected_error):
         _validate_file(archive, *params)
@@ -61,13 +62,13 @@ def test_read_errors(params ,expected_error):
                                                                             "filed1": "side-branch",
                                                                             "field2": 2,
                                                                             "field3": [1, 2]
-                                                                        }""")),     
-    # use a branch as a version                                                                                                                                             
+                                                                        }""")),
+    # use a branch as a version
     ("https://github.com/Mograbi/test-git", "file1", "side-branch", json_loads("""{
                                                                                     "filed1": "side-branch",
                                                                                     "field2": 2,
                                                                                     "field3": [1, 2]
-                                                                                }""")),                                                                                                                                                  
+                                                                                }""")),
     ("https://github.com/Mograbi/test-git", "file1", "master", json_loads("""{
                                                                                     "filed1": "master",
                                                                                     "field2": 2,
@@ -78,7 +79,7 @@ def test_read_errors(params ,expected_error):
                                                                                     "field1": "master branch",
                                                                                     "field2": 4
                                                                                 }"""))
-    ])
+])
 def test_read(params):
     archive = Archive(user="TEMP")
     _validate_file(archive, *params)
@@ -88,7 +89,8 @@ def test_commit_errors():
     archive = Archive(user="TEMP2")
     with pytest.raises(NoChangesToCommit):
         archive.commit("file1", "https://github.com/Mograbi/test-git", base_version="master", message="")
-    
+
+
 def test_commit():
     archive = Archive(user="TEMP2")
     path = archive.get("file1", "https://github.com/Mograbi/test-git", "master")
@@ -100,6 +102,7 @@ def test_commit():
                                 "new_field": "new"
                             }"""))
     new_commit = archive.commit("file1", "https://github.com/Mograbi/test-git", base_version="master", message="new commit")
+
 
 def test_revert():
     archive = Archive(user="TEMP3")
