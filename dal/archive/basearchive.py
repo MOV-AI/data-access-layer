@@ -4,7 +4,7 @@ from typing import Any
 from dal.exceptions import (
     NoActiveArchiveRegistered,
     ArchiveNotRegistered,
-    ArchiveAlreadyRegistered
+    ArchiveAlreadyRegistered,
 )
 
 
@@ -48,15 +48,10 @@ class BaseArchive:
 
     @abstractmethod
     def get_client(self, **kwargs) -> "BaseArchive":
-        """instantiate Archive instance and returns it.
-        """
+        """instantiate Archive instance and returns it."""
 
     @abstractmethod
-    def get(self,
-            obj_name: str,
-            remote: str,
-            version: str,
-            **kwargs) -> Path:
+    def get(self, obj_name: str, remote: str, version: str, **kwargs) -> Path:
         """Get an Object from remote Archive, and save it locally.
 
         Args:
@@ -69,11 +64,7 @@ class BaseArchive:
         """
 
     @abstractmethod
-    def delete(self,
-               remote: str,
-               obj_name: str,
-               version: str,
-               **kwargs) -> str:
+    def delete(self, remote: str, obj_name: str, version: str, **kwargs) -> str:
         """deletes an object.
 
         Args:
@@ -86,10 +77,7 @@ class BaseArchive:
         """
 
     @abstractmethod
-    def commit(self,
-               obj_name: str,
-               remote: str,
-               **kwargs) -> str:
+    def commit(self, obj_name: str, remote: str, **kwargs) -> str:
         """saves changes locally, will create new version if requested.
 
         Args:
@@ -117,11 +105,7 @@ class BaseArchive:
         """
 
     @abstractmethod
-    def create_obj(self,
-                   remote: str,
-                   relative_path: str,
-                   content: str,
-                   **kwargs):
+    def create_obj(self, remote: str, relative_path: str, content: str, **kwargs):
         """will create new obj locally (relative path to local archive)
            of the local repository path.
 
@@ -166,4 +150,19 @@ class BaseArchive:
 
         Returns:
             Path: the local path of the requested File.
+        """
+
+    @abstractmethod
+    def create_version(
+        self, remote: str, base_version: str, new_version: str, **kwargs
+    ) -> bool:
+        """create a new version based on another version.
+
+        Args:
+            remote (str): remote Archive link.
+            base_version (str): the base version.
+            new_version (str): the new desired version.
+
+        Returns:
+            bool: True/False whether the creation succeeded or not.
         """

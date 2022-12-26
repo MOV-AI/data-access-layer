@@ -661,7 +661,7 @@ class GitManager(BaseArchive, id="Git"):
             raise TagAlreadyExist(f"Tag {tag} already exist in Repository")
         tag_reference = repo.tag(base_version, tag, message)
         return tag_reference is not None
-
+    
     def create_obj(self,
                    remote: str,
                    relative_path: str,
@@ -703,6 +703,9 @@ class GitManager(BaseArchive, id="Git"):
         Returns:
             str: new version hash.
         """
+        # TODO: check filename extension "json"
+        if not obj_name.endswith('.json') and not obj_name.endswith('.py'):
+            obj_name = obj_name + '.json'
         repo = self._get_or_add_version(remote, version)
         file_path = path_join(repo.local_path, obj_name)
         if not FileSystem.is_exist(file_path):
