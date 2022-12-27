@@ -6,14 +6,13 @@
    Developers:
    - Manuel Silva (manuel.silva@mov.ai) - 2020
    - Tiago Paulino (tiago@mov.ai) - 2020
+   - Dor Marcous (dor@mov.ai) - 2022
 
    Module that implements Robot namespace
 """
-import pickle
-
 from movai_core_shared.logger import Log
 
-from .classes.protocols.zmq_client import ZmqClient
+from movai_core_shared.core.zmq_client import ZmqClient
 
 from .scope import MovaiDB, Scope
 
@@ -41,8 +40,8 @@ class FleetRobot(Scope):
             logger.error(f"robot {name} not found in DB")
         ip_key = {'Robot': {robot_id: {'IP': {}}}}
         self.ip = db.get_value(ip_key)
-        # Todo: add public key from redis to the zmq client
-        self.zmq_client = ZmqClient(self.ip, name=name)
+        pub_key = db.get_value(pub_key)
+        self.zmq_client = ZmqClient(self.ip, name=name, pub_key=pub_key)
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot"""
