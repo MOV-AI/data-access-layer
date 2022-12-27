@@ -61,6 +61,11 @@ class Robot(Scope):
         self.IP = ip_address
         self.fleet.IP = ip_address
 
+    def set_pub_key(self, pub_key: str):
+        """Set the public key for zmq encryption"""
+        self.pub_key = pub_key
+        self.fleet.pub_key = pub_key
+
     def set_name(self, name: str):
         """Set the Name of the Robot"""
         self.RobotName = name
