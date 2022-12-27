@@ -2,6 +2,9 @@
    Copyright (C) Mov.ai  - All Rights Reserved
    Unauthorized copying of this file, via any medium is strictly prohibited
    Proprietary and confidential
+   
+   Usage:
+        a basic class for getting robot information.
 
    Developers:
    - Ofer Katz (ofer@mov.ai) - 2022
@@ -51,3 +54,9 @@ class LocalRobotInfo:
         else:
             LocalRobotInfo.robot_id = ''
             LocalRobotInfo.robot_name = os.getenv('DEVICE_NAME')
+
+    @staticmethod
+    def generate_identity_string(component: str) -> str:
+        LocalRobotInfo._get_robot_info()
+        identity = f"{LocalRobotInfo.robot_name}_{LocalRobotInfo.robot_id}_{component}"
+        return identity
