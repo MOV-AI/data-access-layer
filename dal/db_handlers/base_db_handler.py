@@ -8,7 +8,7 @@
 """
 from logging import Logger
 
-from movai_core_shared.exceptions import DBHandlerException
+from movai_core_shared.exceptions import DBHandlerError
 from movai_core_shared.logger import Log
 
 
@@ -28,9 +28,9 @@ class BaseDBHandler(object):
             Exception: _description_
         """
         if handler_name is None or handler_name == '':
-            raise DBHandlerException("DBHandler must have a qualified name.")
+            raise DBHandlerError("DBHandler must have a qualified name.")
         if db_type is None or db_type == '':
-            raise DBHandlerException("DBHandler must have a qualified type.")
+            raise DBHandlerError("DBHandler must have a qualified type.")
         self._db_name = None
         self._name = handler_name
         self._type = db_type
