@@ -11,7 +11,7 @@ import os
 from dal.movaidb import MovaiDB
 
 
-class RobotInfo:
+class LocalRobotInfo:
     """
     Helper class for retrieving the robot id  and robot name from the local Redis DB
     """
@@ -23,20 +23,20 @@ class RobotInfo:
         """
         Returns the robot ID
         """
-        if RobotInfo.robot_id is None:
-            RobotInfo._get_robot_info()
+        if LocalRobotInfo.robot_id is None:
+            LocalRobotInfo._get_robot_info()
 
-        return RobotInfo.robot_id
+        return LocalRobotInfo.robot_id
 
     @staticmethod
     def get_name():
         """
         Returns the robot name
         """
-        if RobotInfo.robot_name is None:
-            RobotInfo._get_robot_info()
+        if LocalRobotInfo.robot_name is None:
+            LocalRobotInfo._get_robot_info()
 
-        return RobotInfo.robot_name
+        return LocalRobotInfo.robot_name
 
     @staticmethod
     def _get_robot_info():
@@ -46,8 +46,8 @@ class RobotInfo:
         robot_struct = MovaiDB("local").search_by_args("Robot", Name="*")[0]
         if robot_struct:
             for name in robot_struct["Robot"]:
-                RobotInfo.robot_id = name
-                RobotInfo.robot_name = robot_struct["Robot"][name].get('RobotName')
+                LocalRobotInfo.robot_id = name
+                LocalRobotInfo.robot_name = robot_struct["Robot"][name].get('RobotName')
         else:
-            RobotInfo.robot_id = ''
-            RobotInfo.robot_name = os.getenv('DEVICE_NAME')
+            LocalRobotInfo.robot_id = ''
+            LocalRobotInfo.robot_name = os.getenv('DEVICE_NAME')

@@ -27,3 +27,26 @@ class FleetRobot(Scope):
         to_send = pickle.dumps(to_send)
 
         self.Actions.append(to_send)
+
+    def get_active_alerts(self) -> list:
+        robot_active_alerts = []
+        if "active_alerts" in self.Status:
+            robot_active_alerts = dict(self.Status).get("active_alerts")
+        return robot_active_alerts
+
+    def add_alert(self, alert: str) -> None:
+        active_alerts = self.get_active_alerts()
+        if alert in active_alerts:
+            return
+        else:
+            active_alerts.append(alert)
+            self.Status["active_alerts"] = active_alerts
+
+    def remove_alert(self, alert: str) -> None:
+        active_alerts = self.get_active_alerts()
+        if alert in active_alerts:
+            active_alerts.remove(alert)
+            status = dict(self.Status)
+            status["active_alerts"] = active_alerts
+            self.Status.update(status)
+            
