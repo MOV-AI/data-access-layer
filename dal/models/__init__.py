@@ -71,28 +71,28 @@ except ImportError:
 __all__ = [
     "ACLManager", 
     "NewACLManager",
-    "Configuration"
-    "AclObject"
-    "Application"
-    "BaseUser"
-    "Callback"
-    "Configuration"
-    "Container"
-    "Flow"
-    "FlowLinks"
-    "Form"
-    "InternalUser"
-    "LdapConfig"
-    "Lock"
-    "Message"
-    "Model"
-    "Node"
-    "NodeInst"
-    "Package"
-    "PackageFile"
-    "Ports"
-    "RemoteUser"
-    "Role"
+    "Configuration",
+    "AclObject",
+    "Application",
+    "BaseUser",
+    "Callback",
+    "Configuration",
+    "Container",
+    "Flow",
+    "FlowLinks",
+    "Form",
+    "InternalUser",
+    "LdapConfig",
+    "Lock",
+    "Message",
+    "Model",
+    "Node",
+    "NodeInst",
+    "Package",
+    "PackageFile",
+    "Ports",
+    "RemoteUser",
+    "Role",
     "scopes",
     "ScopeInstanceVersionNode",
     "ScopePropertyNode",

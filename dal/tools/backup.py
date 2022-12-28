@@ -1817,8 +1817,7 @@ class Remover(Backup):
             self.set_removed(scope, name)
 
 
-if __name__ == "__main__":
-
+def main():
     parser = argparse.ArgumentParser(description="Export/Import/Remove Mov.AI Data")
     parser.add_argument(
         "-a",
@@ -1966,3 +1965,6 @@ if __name__ == "__main__":
 
     # not exited before, means exception
     exit(1)
+
+if __name__ == "__main__":
+    main()
