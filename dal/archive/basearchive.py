@@ -1,4 +1,6 @@
 from abc import abstractmethod
+from movai_core_shared.logger import Log
+from os import getenv
 from pathlib import Path
 from typing import Any
 from dal.exceptions import (
@@ -8,11 +10,15 @@ from dal.exceptions import (
 )
 
 
+DEFAULT_MOVAI_GIT_USER = "MOVAI_TEMP_USER"
+LOGGER = Log.get_logger("Movai.Archive")
+
+
 class BaseArchive:
     active_archive = None
     classes = {}
 
-    def __call__(self, user: str = "MOVAI_USER") -> "BaseArchive":
+    def __call__(self, user: str = None) -> "BaseArchive":
         """whenever an instance of Archive is called this method should run and
            return an instance of the active archive
 
@@ -28,6 +34,10 @@ class BaseArchive:
         Returns:
             BaseArchive: an instance of the Active Archive used in code.
         """
+        if not user:
+            user = getenv("MOVAI_GIT_USERNAME") or DEFAULT_MOVAI_GIT_USER
+        if user == DEFAULT_MOVAI_GIT_USER:
+            LOGGER.debug("user for movai git not provided ($MOVAI_GIT_USERNAME), using 'MOVAI_TEMP_USER' instead")
         if BaseArchive.active_archive is None:
             raise NoActiveArchiveRegistered("")
         return BaseArchive.active_archive.get_client(user)

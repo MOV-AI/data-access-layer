@@ -14,7 +14,7 @@ class GitPlugin(PersistencePlugin):
     archive = Archive()
 
     def validate_data(self, schema, data: dict, out: dict):
-        JsonValidator("2.3")
+        JsonValidator("2.4")
         pass
 
     @Plugin.plugin_name.getter
@@ -29,7 +29,7 @@ class GitPlugin(PersistencePlugin):
         """
         Get current plugin class
         """
-        return "2.3.0"
+        return "2.4.0"
 
     @PersistencePlugin.versioning.getter
     def versioning(self):

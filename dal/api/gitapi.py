@@ -35,9 +35,8 @@ from dal.exceptions import (NoChangesToCommit,
 from dal.classes.filesystem import FileSystem
 from dal.classes.common.gitlink import GitLink
 from dal.archive.basearchive import BaseArchive
-from movai_core_shared.logger import Log
 
-LOGGER = Log.get_logger("Git")
+
 MOVAI_FOLDER_NAME = ".movai"
 MOVAI_BASE_FOLDER = path_join(FileSystem.get_home_folder(), MOVAI_FOLDER_NAME)
 MOVAI_BASE_FOLDER = getenv("MOVAI_USERSPACE", MOVAI_BASE_FOLDER)
@@ -300,6 +299,10 @@ class GitRepo:
             no_checkout (bool): if set, no checkout will be done (empty folder)
                                 without actual files, only .git folder that has
                                 all of the information about the repo.
+            shallow (bool): if set, a shallow clone will be done without cloning
+                            the whole git tree, regular clone will be done if not
+                            set.
+
         Returns:
             git.Repo: Repo object.
 
@@ -308,6 +311,7 @@ class GitRepo:
         """
         repo = None
         FileSystem.create_folder_recursively(self._local_path)
+        # TODO: change in the future and use permission class.
         if not FileSystem.is_exist(expanduser('~/.ssh/id_rsa')):
             raise FileDoesNotExist(expanduser('~/.ssh/id_rsa'))
         try:
@@ -372,7 +376,7 @@ class GitRepo:
         try:
             ret = self._repo_object.git.pull("origin", branch_name)
         except GitCommandError as e:
-            if e.stderr.find("Permission denied") != -1:
+            if "Permission denied" in e.stderr:
                 raise GitPermissionErr(e.stderr)
         self._update_versions()
         return ret
@@ -390,10 +394,15 @@ class GitRepo:
         return self._versions
 
     def list_models(self) -> dict:
+        """read the manifest.txt file and return it's content in a dict
+
+        Returns:
+            dict: keys are types of models (Flow/Node/Callback/...), value
+                  is a list including the ids of the Flows/Nodes/...
+        """
         manifest_path = path_join(self.local_path, "manifest.txt")
         if not FileSystem.is_exist(manifest_path):
-            # TODO raise
-            pass
+            raise FileDoesNotExist("manifest.txt file does not exit in repo")
         content = FileSystem.read(manifest_path)
         models = {}
         for line in content.split("\n"):
@@ -428,7 +437,7 @@ class GitManager(BaseArchive, id="Git"):
             GitManager._repos[mode] = {}
 
     @staticmethod
-    def get_client(username: str = "MOVAI_USER") -> "GitManager":
+    def get_client(username: str) -> "GitManager":
         """will create an instance of GitManager, dynamically choose between
            master/slave according to the current running Robot.
 
@@ -442,17 +451,14 @@ class GitManager(BaseArchive, id="Git"):
             GitUserError: in case there was a problem fetching git username.
         """
         manager_uri = getenv("MOVAI_MANAGER_URI", "localhost")
-        movai_user = getenv("MOVAI_USERNAME") or username
-        if movai_user == username:
-            LOGGER.debug("user for movai git not provided ($MOVAI_USERNAME), using 'MOVAI_USER' instead")
 
         client = None
         if "localhost" in manager_uri.lower().strip() or \
            "127.0.0.1" in manager_uri.lower().strip():
             # this is a manager
-            client = MasterGitManager(movai_user)
+            client = MasterGitManager(username)
         else:
-            client = SlaveGitManager(movai_user)
+            client = SlaveGitManager(username)
 
         return client
 
@@ -512,6 +518,7 @@ class GitManager(BaseArchive, id="Git"):
             repo = GitRepo(remote, self._username,
                            self._get_local_path(remote), "")
             self._register_repo(repo_name, repo)
+        # TODO: maybe we need to activate this in the future
         # else:
         #    repo.fetch()
 

@@ -8,8 +8,8 @@ data_files = ["dal/validation/schema/1.0/" + file
               for file in listdir("dal/validation/schema/1.0")]
 data_files += ["dal/validation/schema/2.0/" + file
                for file in listdir("dal/validation/schema/2.0")]
-data_files += ["dal/validation/schema/2.3/" + file
-               for file in listdir("dal/validation/schema/2.3")]
+data_files += ["dal/validation/schema/2.4/" + file
+               for file in listdir("dal/validation/schema/2.4")]
 
 requirements = [
     "Pillow>=5.1.0",
