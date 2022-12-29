@@ -167,9 +167,7 @@ class SecretKeyTool:
         return command_obj()
         
 
-
-
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(description="Create a secret key for Mov.ai fleet.")
     parser.add_argument("-c", "--command",
                         help="create - creates a new key with the specified name"\
@@ -192,3 +190,6 @@ if __name__ == '__main__':
 
     key = SecretKeyTool()
     exit(key(**vars(args)))
+
+if __name__ == '__main__':
+    main()

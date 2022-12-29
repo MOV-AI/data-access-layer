@@ -110,7 +110,10 @@ class NodeInst(ScopeObjectNode):
     @property
     def is_dummy(self) -> bool:
         """Returns True if the node is configured as Dummy"""
-        return self.Dummy if not None else self.node_template.Dummy
+        if self.Dummy is not None:
+            return self.Dummy
+        else:
+            return self.node_template.Dummy
 
     @property
     def is_nodelet(self) -> bool:
