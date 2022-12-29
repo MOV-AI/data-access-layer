@@ -25,8 +25,8 @@ requirements = [
 
 data_files = [file for file in glob("dal/validation/schema/1.0/*.json")]
 data_files += [file for file in glob("dal/validation/schema/2.0/*.json")]
-data_files += [file for file in glob("dal/validation/schema/2.3/*.json")]
-data_files += [file for file in glob("dal/validation/schema/2.3/common/*.json")]
+data_files += [file for file in glob("dal/validation/schema/2.4/*.json")]
+data_files += [file for file in glob("dal/validation/schema/2.4/common/*.json")]
 
 # TODO Adapt your project configuration to your own project.
 # The name of the package is the one to be used in runtime.

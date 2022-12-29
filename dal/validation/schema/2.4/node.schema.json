@@ -1,7 +1,7 @@
 {
     "$id": "node.schema.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$version": "2.3",
+    "$version": "2.4",
     "title": "Node Schema",
     "definitions": {
         "portfields": {

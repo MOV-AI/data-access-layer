@@ -8,28 +8,38 @@
 
    DAL Exceptions
 """
+from enum import IntEnum
 
-BASE_GIT_ERR = 100
-VERSION_DOES_NOT_EXIST_ERR = BASE_GIT_ERR + 1
-BRANCH_ALREADY_EXIST_ERR = BASE_GIT_ERR + 2
-NO_CHANGES_TO_COMMIT_ERR = BASE_GIT_ERR + 3
-SLAVE_MANAGER_CANNOT_CHANGE_ERR = BASE_GIT_ERR + 4
-TAG_ALREADY_EXIST_ERR = BASE_GIT_ERR + 5
-GIT_USER_ERR = BASE_GIT_ERR + 6
-FILE_DOES_NOT_EXIST = BASE_GIT_ERR + 7
-REPO_DOES_NOT_EXIST = BASE_GIT_ERR + 8
 
-BASE_SCHEMA_ERR = 200
-SCHEMA_VERSION_ERR = BASE_SCHEMA_ERR + 1
-SCHEMA_TYPE_NOT_KNOWN = BASE_SCHEMA_ERR + 2
+class GitErr(IntEnum):
+    BASE_GIT_ERR = 100
+    VERSION_DOES_NOT_EXIST_ERR = 101
+    BRANCH_ALREADY_EXIST_ERR = 102
+    NO_CHANGES_TO_COMMIT_ERR = 103
+    SLAVE_MANAGER_CANNOT_CHANGE_ERR = 104
+    TAG_ALREADY_EXIST_ERR = 105
+    GIT_USER_ERR = 106
+    FILE_DOES_NOT_EXIST = 107
+    REPO_DOES_NOT_EXIST = 108
+    GIT_PERMISSION_ERR = 109
 
-BASE_VALIDATION_ERR = 300
-VALIDATION_ERR = BASE_VALIDATION_ERR + 1
 
-BASE_ARCHIVE_ERR = 400
-NO_ACTIVE_ARCHIVE_REGISTERED = BASE_ARCHIVE_ERR + 1
-ARCHIVE_NOT_REGISTERED = BASE_ARCHIVE_ERR + 2
-ARCHIVE_ALREADY_REGISTERED = BASE_ARCHIVE_ERR + 3
+class SchemaErr(IntEnum):
+    BASE_SCHEMA_ERR = 200
+    SCHEMA_VERSION_ERR = 201
+    SCHEMA_TYPE_NOT_KNOWN = 202
+
+
+class ValidationErr(IntEnum):
+    BASE_VALIDATION_ERR = 300
+    VALIDATION_ERR = 301
+
+
+class ArchiveErr(IntEnum):
+    BASE_ARCHIVE_ERR = 400
+    NO_ACTIVE_ARCHIVE_REGISTERED = 401
+    ARCHIVE_NOT_REGISTERED = 402
+    ARCHIVE_ALREADY_REGISTERED = 403
 
 
 class DalException(Exception):
@@ -50,40 +60,47 @@ class GitException(DalException):
 
 class VersionDoesNotExist(GitException):
     def __init__(self, *args):
-        super().__init__(VERSION_DOES_NOT_EXIST_ERR, *args)
+        super().__init__(GitErr.VERSION_DOES_NOT_EXIST_ERR, *args)
 
 
 class BranchAlreadyExist(GitException):
     def __init__(self, *args):
-        super().__init__(BRANCH_ALREADY_EXIST_ERR, *args)
+        super().__init__(GitErr.BRANCH_ALREADY_EXIST_ERR, *args)
 
 
 class NoChangesToCommit(GitException):
     def __init__(self, *args):
-        super().__init__(NO_CHANGES_TO_COMMIT_ERR, *args)
+        super().__init__(GitErr.NO_CHANGES_TO_COMMIT_ERR, *args)
 
 
 class SlaveManagerCannotChange(GitException):
     def __init__(self, *args: object) -> None:
-        super().__init__(SLAVE_MANAGER_CANNOT_CHANGE_ERR, *args)
+        super().__init__(GitErr.SLAVE_MANAGER_CANNOT_CHANGE_ERR, *args)
 
 
 class TagAlreadyExist(GitException):
     def __init__(self, *args: object) -> None:
-        super().__init__(TAG_ALREADY_EXIST_ERR, *args)
+        super().__init__(GitErr.TAG_ALREADY_EXIST_ERR, *args)
 
 
 class GitUserErr(GitException):
     def __init__(self, *args: object) -> None:
-        super().__init__(GIT_USER_ERR, *args)
+        super().__init__(GitErr.GIT_USER_ERR, *args)
+
 
 class FileDoesNotExist(GitException):
     def __init__(self, *args):
-        super().__init__(FILE_DOES_NOT_EXIST, *args)
+        super().__init__(GitErr.FILE_DOES_NOT_EXIST, *args)
+
 
 class RepositoryDoesNotExist(GitException):
     def __init__(self, *args):
-        super().__init__(REPO_DOES_NOT_EXIST, *args)
+        super().__init__(GitErr.REPO_DOES_NOT_EXIST, *args)
+
+
+class GitPermissionErr(GitException):
+    def __init__(self, *args):
+        super().__init__(GitErr.GIT_PERMISSION_ERR, *args)
 
 
 # Schema Errors
@@ -100,12 +117,12 @@ class SchemaException(DalException):
 
 class SchemaVersionError(SchemaException):
     def __init__(self, *args: object) -> None:
-        super().__init__(SCHEMA_VERSION_ERR, *args)
+        super().__init__(SchemaErr.SCHEMA_VERSION_ERR, *args)
 
 
 class SchemaTypeNotKnown(SchemaException):
     def __init__(self, *args: object) -> None:
-        super().__init__(SCHEMA_TYPE_NOT_KNOWN, *args)
+        super().__init__(SchemaErr.SCHEMA_TYPE_NOT_KNOWN, *args)
 
 
 # Validation Errors
@@ -122,7 +139,7 @@ class ValidationException(DalException):
 
 class ValidationError(ValidationException):
     def __init__(self, *args: object) -> None:
-        super().__init__(VALIDATION_ERR, *args)
+        super().__init__(ValidationErr.VALIDATION_ERR, *args)
 
 
 # Archive Errors
@@ -135,14 +152,14 @@ class ArchiveException(DalException):
 
 class NoActiveArchiveRegistered(ArchiveException):
     def __init__(self, *args: object) -> None:
-        super().__init__(NO_ACTIVE_ARCHIVE_REGISTERED, *args)
+        super().__init__(ArchiveErr.NO_ACTIVE_ARCHIVE_REGISTERED, *args)
 
 
 class ArchiveNotRegistered(ArchiveException):
     def __init__(self, *args: object) -> None:
-        super().__init__(ARCHIVE_NOT_REGISTERED, *args)
+        super().__init__(ArchiveErr.ARCHIVE_NOT_REGISTERED, *args)
 
 
 class ArchiveAlreadyRegistered(ArchiveException):
     def __init__(self, *args: object) -> None:
-        super().__init__(ARCHIVE_ALREADY_REGISTERED, *args)
+        super().__init__(ArchiveErr.ARCHIVE_ALREADY_REGISTERED, *args)

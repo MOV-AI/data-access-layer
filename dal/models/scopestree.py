@@ -140,7 +140,7 @@ class ScopeInstanceVersionNode(
         Write this object to the database
         """
         # We might want to change workspace
-        workspace = kwargs.get("workspace", self.get_first_parent("workspace"))
+        workspace: ScopeWorkspace = kwargs.get("workspace", self.get_first_parent("workspace"))
 
         if workspace is None:
             raise AttributeError("No defined workspace")
@@ -819,13 +819,13 @@ class ScopeWorkspace(WorkspaceNode):
         List all scopes in this workspace
         pass `scope` parameter to filter by scope, default '*' (all)
         """
-        return self.plugin.list_scopes(workspace=self.workspace, **kwargs)
+        return self._plugin.list_scopes(workspace=self.workspace, **kwargs)
 
     def list_versions(self, scope: str, ref: str):
         """
         List all versions of a specific scope
         """
-        return self.plugin.list_versions(workspace=self.workspace, scope=scope, ref=ref)
+        return self._plugin.list_versions(workspace=self.workspace, scope=scope, ref=ref)
 
     def create(
         self, scope: str, ref: str, version="__UNVERSIONED__", overwrite: bool = False
@@ -885,7 +885,7 @@ class ScopeWorkspace(WorkspaceNode):
         Override the default delete method to also
         unload the document from this scopes tree
         """
-        super().delete(data=data, **kwargs)
+        ret = super().delete(data=data, **kwargs)
         try:
             scope = data.scope
             ref = data.ref
@@ -903,6 +903,8 @@ class ScopeWorkspace(WorkspaceNode):
             # not loaded
             pass
 
+        return ret
+
     def rebuild_indexes(self):
         """
         force indexes rebuild inside the workspace
@@ -918,6 +920,7 @@ class ScopesTree(CallableNode):
     A scopes tree is an interface to access the stored
     data in mov.ai
     """
+    _instance = None
 
     reference_regexes = [
         # split pattern 1: git/<scope>(<owner>/<project>)/(<ref>/<ref>/..)/<version>
@@ -983,7 +986,7 @@ class ScopesTree(CallableNode):
         """Read a document from a specified path
 
         Args:
-            path (str): the path to read from 
+            path (str): the path to read from
 
         Raises:
             ValueError: in case invalid path recieved.
@@ -1048,6 +1051,14 @@ class ScopesTree(CallableNode):
             workspace_node = ScopeWorkspace(workspace, plugin)
             self.add_child((workspace, workspace_node))
             return workspace_node
+
+    def __new__(cls, *args, **kwargs):
+        """
+        Singleton mechanism, creates only one instance
+        """
+        if not isinstance(cls._instance, cls):
+            cls._instance = object.__new__(cls, *args, **kwargs)
+        return cls._instance
 
 
 class ScopeAttributeDeserializer(ObjectDeserializer):
