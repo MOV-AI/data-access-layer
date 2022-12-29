@@ -28,7 +28,6 @@ from dal.exceptions import (NoChangesToCommit,
                             TagAlreadyExist,
                             VersionDoesNotExist,
                             BranchAlreadyExist,
-                            GitUserErr,
                             FileDoesNotExist,
                             RepositoryDoesNotExist,
                             GitPermissionErr)
@@ -88,6 +87,12 @@ class GitRepo:
         return True
 
     def prev_version(self) -> str:
+        """search for the previous commit to the current one and return
+           it's hash string.
+
+        Returns:
+            str: the previous commit hash.
+        """
         return self._repo_object.rev_parse("HEAD~1")
 
     @property
@@ -249,12 +254,21 @@ class GitRepo:
         """
         remote_alias = str(self._repo_object.remote())
         commits_log = self._repo_object.git.log(
-                                    f"{remote_alias}/{self._branch}",
-                                    "--oneline")
+            f"{remote_alias}/{self._branch}", "--oneline")
         commit = commits_log.split('\n')[0].split(' ')[0]
         return self._repo_object.git.rev_parse(commit)
 
     def branch_exist(self, branch: str, fetch: bool = False) -> bool:
+        """check if branch exist in remote repository.
+
+        Args:
+            branch (str): the branch we want to search for
+            fetch (bool, optional): if set, run fetch before searching.
+                                    Defaults to False.
+
+        Returns:
+            bool: whether the branch exist or not.
+        """
         if fetch:
             self.fetch()
         for ref in self._repo_object.references:
@@ -263,6 +277,16 @@ class GitRepo:
         return False
 
     def tag_exist(self, tag: str, fetch: bool = False) -> bool:
+        """check if tag exist in remote repository.
+
+        Args:
+            tag (str): the tag we want to search for.
+            fetch (bool, optional): should run fetch before searching.
+                                    Defaults to False.
+
+        Returns:
+            bool: whether the tag exist or not
+        """
         if fetch:
             self.fetch()
         for _tag in self._repo_object.tags:
@@ -361,10 +385,29 @@ class GitRepo:
         return self._repo_object.untracked_files
 
     def diff_file(self, filename: str) -> str:
+        """return git diff string for a specific file in current state of
+           local repo.
+
+        Args:
+            filename (str): the filename path we want to diff for.
+
+        Returns:
+            str: the diff output of git diff
+        """
         return self._repo_object.git.diff(filename)
 
     def push(self, remote_name: str, tag_name: str,
              only_tag: bool) -> PushInfo:
+        """push current repo state to remote repo.
+
+        Args:
+            remote_name (str): the remote alias defined in local repo.
+            tag_name (str): the tag name we want to push.
+            only_tag (bool): push only the newly created tag to remote.
+
+        Returns:
+            PushInfo: PushInfo Object, see git module.
+        """
         remote = self._repo_object.remote(remote_name)
         if only_tag:
             return remote.push(tag_name)
@@ -372,6 +415,18 @@ class GitRepo:
         return remote.push()
 
     def pull(self, branch_name: str):
+        """pull changes and update current branch from remote.
+
+        Args:
+            branch_name (str): the branch name we want to pull changes from.
+
+        Raises:
+            GitPermissionErr: in case current user does not have permission
+                              for the desired repository remotely.
+
+        Returns:
+            str: the pull output.
+        """
         self.checkout(branch_name)
         try:
             ret = self._repo_object.git.pull("origin", branch_name)
@@ -382,6 +437,9 @@ class GitRepo:
         return ret
 
     def _update_versions(self) -> None:
+        """update _version and _branches accordingly from remote repo and save
+           them locally in object.
+        """
         self._versions = sorted(self._repo_object.tags, key=lambda t: t.commit.committed_datetime, reverse=True)
         self._branches = [ref.name for ref in self._repo_object.remote().refs]
 
@@ -511,6 +569,15 @@ class GitManager(BaseArchive, id="Git"):
         return repo
 
     def _get_or_add_repo(self, remote: str) -> GitRepo:
+        """will get the desired repository if exists in local object memory.
+           if not, will create a new one and returns it.
+
+        Args:
+            remote (str): the remote link for the repo.
+
+        Returns:
+            GitRepo: GitRepo object representing the wanted repo.
+        """
         git_link = GitLink(remote)
         repo_name = git_link.repo
         repo = self._get_repo(repo_name)
@@ -561,13 +628,28 @@ class GitManager(BaseArchive, id="Git"):
         return repo.git_client.rev_parse(revision)
 
     def list_versions(self, remote: str, is_branches: bool) -> list:
-        """
+        """return the versions (tags) that exist in the repository given by
+           remote.
 
+        Args:
+            remote (str): the remote repo link.
+            is_branches (bool): should list branches instead of tags.
+
+        Returns:
+            list: list including all of the current versions/tags in repo.
         """
         repo = self._get_or_add_repo(remote)
         return repo.list_versions(is_branches)
 
     def list_models(self, remote: str) -> dict:
+        """reads the manifest.txt file and return it's content as a dict.
+
+        Args:
+            remote (str): the remote repo link.
+
+        Returns:
+            dict: dictionary including the manifest file content.
+        """
         repo = self._get_or_add_repo(remote)
         return repo.list_models()
 
