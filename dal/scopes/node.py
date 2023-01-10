@@ -365,6 +365,9 @@ class Node(Scope):
         # Check if Node has instances on existing Flows
         flows = MovaiDB().get({"Flow": {"*": {"NodeInst": "*"}}})
         node_inst_ref_keys = []
+        if not flows or len(flows.get('Flow')) == 0:
+            return node_inst_ref_keys
+
         for flow_name, node_insts in flows.get("Flow").items():
             for node_inst_name, params in node_insts.get("NodeInst").items():
                 if params.get("Template") == self.name:
