@@ -19,7 +19,7 @@ requirements = [
     "pyros-genmsg==0.5.8",
     "rospkg==1.4.0",
     "py3rosmsgs==1.18.2",
-    "movai_core_shared==2.4.0.*"
+    "movai_core_shared==2.4.1.*"
 ]
 
 
@@ -33,7 +33,7 @@ data_files += [file for file in glob("dal/validation/schema/2.4/common/*.json")]
 # The 'install_requires' is where you specify the package dependencies of your package. They will be automaticly installed, before your package.  # noqa: E501
 setuptools.setup(
     name="data-access-layer",
-    version="2.4.0-4",
+    version="2.4.1-0",
     author="Backend team",
     author_email="backend@mov.ai",
     description="DATA ACCESS LAYER",
