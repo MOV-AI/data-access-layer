@@ -13,7 +13,7 @@ from datetime import datetime
 from influxdb import InfluxDBClient
 
 from movai_core_shared.logger import Log
-from movai_core_shared.consts import INFLUXDB_HOST
+from movai_core_shared.consts import INFLUXDB_HOST, INFLUXDB_DB_NAMES
 
 from .base_db_handler import BaseDBHandler
 
@@ -104,3 +104,5 @@ class TimeSeriesDbHandler(BaseDBHandler):
             result = self._db_clients[db].query(query_clause, epoch="s")
 
         return result
+
+InfluxDBHandler = TimeSeriesDbHandler(INFLUXDB_DB_NAMES)
