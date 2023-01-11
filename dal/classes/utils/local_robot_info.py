@@ -57,6 +57,14 @@ class LocalRobotInfo:
 
     @staticmethod
     def generate_identity_string(component: str) -> str:
+        """A string with with the robot info.
+
+        Args:
+            component (str): The component who needs that identity.
+
+        Returns:
+            str: The identity string.
+        """
         LocalRobotInfo._get_robot_info()
         identity = f"{LocalRobotInfo.robot_name}_{LocalRobotInfo.robot_id}_{component}"
         return identity
