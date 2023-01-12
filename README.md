@@ -48,4 +48,3 @@ The complete build process:
     --index-url="https://artifacts.cloud.mov.ai/repository/pypi-experimental/simple" \
     --extra-index-url https://pypi.org/simple \
     ./dist/*.whl
-
