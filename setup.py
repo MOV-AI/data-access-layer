@@ -19,7 +19,7 @@ requirements = [
     "pyros-genmsg==0.5.8",
     "rospkg==1.4.0",
     "py3rosmsgs==1.18.2",
-    "movai_core_shared==2.4.1.*"
+    "movai-core-shared==2.4.1.*"
 ]
 
 
