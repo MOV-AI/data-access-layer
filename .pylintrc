@@ -4,7 +4,8 @@ disable=print-statement,
         unpacking-in-except,
         old-raise-syntax,
         backtick,
-        no-self-use
+        no-self-use,
+        logging-fstring-interpolation
 ignore=setup.py,
 ignore-patterns=.*_test.*?py,.*test_.*?py,.*test.*?py,.*pb2.*,.*yml, .*toml, .*txt, .*md
 
