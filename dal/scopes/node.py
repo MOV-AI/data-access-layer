@@ -384,6 +384,12 @@ class Node(Scope):
         # Loop through Flows with ExposedPorts to check if the port is exposed
         flow_exposed_ports = MovaiDB().get({"Flow": {"*": {"ExposedPorts": "*"}}})
         exposed_ports_ref_keys = []
+        if (
+            not flow_exposed_ports
+            or flow_exposed_ports.get("Flow") is None
+            or len(flow_exposed_ports.get("Flow")) == 0
+        ):
+            return exposed_ports_ref_keys
         for key, value in flow_exposed_ports.get("Flow").items():
             exposed_ports = value.get("ExposedPorts").get(self.name, [])
             if not exposed_ports:
