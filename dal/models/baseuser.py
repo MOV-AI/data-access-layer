@@ -9,7 +9,7 @@
 from typing import List
 from datetime import datetime
 
-from movai_core_shared.utils.principal_name import create_principal_name
+from movai_core_shared.common.utils import create_principal_name
 from movai_core_shared.exceptions import (
     InvalidStructure,
     UserAlreadyExist,

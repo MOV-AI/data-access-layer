@@ -569,6 +569,17 @@ class MovaiDB:
         await conn.wait_closed()
 
     # ===================  List and Hashes  ===============================
+    def lpush(self, _input: dict, pickl: bool = True):
+        """Push a value to the left of a Redis list"""
+        kvs = self.dict_to_keys(_input, validate=True)
+        for key, value, _ in kvs:
+            if pickl:
+                value = pickle.dumps(value)
+            try:
+                self.db_write.lpush(key, value)
+            except:
+                print('Something went wrong while saving "%s" in Redis' % (key))
+
     def push(self, _input: dict, pickl: bool = True):
         """Push a value to the right of a Redis list"""
         kvs = self.dict_to_keys(_input, validate=True)
@@ -579,6 +590,18 @@ class MovaiDB:
                 self.db_write.rpush(key, value)
             except:
                 print('Something went wrong while saving "%s" in Redis' % (key))
+
+    def rpop(self, _input: dict):
+        """Pop a value from the right of a Redis list"""
+        keys = self.search(_input)
+        pop_value = None
+        for key in keys:
+            pop_value = self.db_write.rpop(key)
+            break
+        if pop_value:
+            pop_value = self.decode_value(pop_value)
+
+        return pop_value
 
     def pop(self, _input: dict):
         """Pop a value from the left of a Redis list"""
