@@ -14,7 +14,7 @@ from miracle import Acl
 
 from movai_core_shared.envvars import REST_SCOPES
 from movai_core_shared.logger import Log
-from .scopestree import scopes
+from dal.models.scopestree import ScopesTree ,scopes
 
 
 class ACLManager:
@@ -34,13 +34,18 @@ class ACLManager:
     }
 
     def __init__(self, user):
+        """This function initializes the object.
+
+        Args:
+            user (BaseUser): the user to manage permissions for.
+        """
         self.user = user
 
     def get_acl(self) -> object:
         """Setup ACL for the current user role and user resources"""
         acl = Acl()
         try:
-            role = scopes.from_path(self.user.Role, scope="Role")
+            role = scopes.from_path(self.user.Roles, scope="Role")
         except Exception as e:
             self.log.warning("Invalid User Role: {}".format(str(e)))
             return acl
@@ -121,13 +126,8 @@ class ACLManager:
 
 
 class NewACLManager(ACLManager):
-    def __init__(self, user):
-        """This function initializes the object.
-
-        Args:
-            user (BaseUser): the user to manage permissions for.
-        """
-        self.user = user
+    """This class is Replacing ACLManger for BaseUser objects.
+    """
 
     def get_acl(self) -> Acl:
         """Setup ACL for the current user role.
@@ -137,12 +137,12 @@ class NewACLManager(ACLManager):
         """
         acl = Acl()
         try:
-            for role_name in self.user.roles:
+            for role_name in self.user.Roles:
                 role_obj = ScopesTree().from_path(role_name, scope="Role")
-
-                # Setup user role resources
                 for (resource_key, resource_value) in role_obj.Resources.items():
                     acl.grants({role_name: {resource_key: resource_value}})
+        except AttributeError as e:
+            self.log.warning(str(e))
         except Exception as e:
             self.log.warning("Invalid User Role: {}".format(str(e)))
             return acl

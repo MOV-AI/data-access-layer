@@ -1,6 +1,6 @@
 from typing import List
 from datetime import datetime
-from movai_core_shared.utils.principal_name import create_principal_name
+from movai_core_shared.common.utils import create_principal_name
 from movai_core_shared.exceptions import (
     AclObjectAlreadyExist,
     AclObjectDoesNotExist,
@@ -10,7 +10,6 @@ from movai_core_shared.exceptions import (
 
 from .model import Model
 from .scopestree import ScopesTree, scopes
-
 
 
 class AclObject(Model):
@@ -89,7 +88,7 @@ class AclObject(Model):
         if id == obj.ID:
             scopes().delete(obj)
             cls.log.info(f"Successfully removed {cls.__name__}:"
-                        f"{obj.principal_name}")
+                         f"{obj.principal_name}")
         else:
             error_msg = f"Failed to remove {obj.principal_name}, the "\
                 f"supplied id does not match object's id"

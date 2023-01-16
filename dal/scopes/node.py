@@ -365,6 +365,9 @@ class Node(Scope):
         # Check if Node has instances on existing Flows
         flows = MovaiDB().get({"Flow": {"*": {"NodeInst": "*"}}})
         node_inst_ref_keys = []
+        if not flows or flows.get("Flow") is None or len(flows.get("Flow")) == 0:
+            return node_inst_ref_keys
+
         for flow_name, node_insts in flows.get("Flow").items():
             for node_inst_name, params in node_insts.get("NodeInst").items():
                 if params.get("Template") == self.name:
@@ -381,6 +384,12 @@ class Node(Scope):
         # Loop through Flows with ExposedPorts to check if the port is exposed
         flow_exposed_ports = MovaiDB().get({"Flow": {"*": {"ExposedPorts": "*"}}})
         exposed_ports_ref_keys = []
+        if (
+            not flow_exposed_ports
+            or flow_exposed_ports.get("Flow") is None
+            or len(flow_exposed_ports.get("Flow")) == 0
+        ):
+            return exposed_ports_ref_keys
         for key, value in flow_exposed_ports.get("Flow").items():
             exposed_ports = value.get("ExposedPorts").get(self.name, [])
             if not exposed_ports:
