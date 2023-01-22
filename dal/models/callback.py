@@ -226,7 +226,6 @@ class Callback(Model):
             # iterate contents of this package
             for x in pkgutil.iter_modules([path]):
                 # ignore '_*' modules
-                logger.debug(f"Adding nested module {x[1]}")
                 if x[1].startswith("_") or x[1] == 'init_local_db' or x[1] == 'tf_monitor':
                     continue
 
