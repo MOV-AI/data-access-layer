@@ -179,7 +179,7 @@ class NodeInst(ScopeObjectNode):
             _value = tpl_value
             output = _parser.parse(key, str(_value), _name, self, _context)
         # the _launch params will need to be calculated only once
-        if output is not None and key == "_launch":
+        if isinstance(output, bool) and key == "_launch":
             self.Parameter[key].Value = output
         return output
 
