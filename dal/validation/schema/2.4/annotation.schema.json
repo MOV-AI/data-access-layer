@@ -1,6 +1,6 @@
 {
     "$id": "annotation.schema.json",
-    "$version": "2.3",
+    "$version": "2.4",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "Annotation Schema",
     "definitions": {

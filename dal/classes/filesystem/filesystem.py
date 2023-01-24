@@ -7,7 +7,7 @@
    - Moawiya Mograbi (moawiya@mov.ai) - 2022
 """
 
-from os import symlink, unlink, rename
+from os import symlink, unlink, rename, remove
 from os.path import isdir, isfile, expanduser, islink, dirname
 from pathlib import Path
 from shutil import rmtree
@@ -87,7 +87,25 @@ class FileSystem:
                 f.write(content)
 
     @staticmethod
-    def create_folder_recursively(folder_path) -> str:
+    def delete(path: str) -> bool:
+        """removes a file/folder from filesystem.
+
+        Args:
+            path (str): the path of the desired file/folder
+
+        Returns:
+            bool: True if succeeded, False otherwise
+        """
+        if not FileSystem.is_exist(path):
+            return False
+        if isdir(path):
+            FileSystem.remove_recursively(path)
+        else:
+            remove(path)
+        return True
+
+    @staticmethod
+    def create_folder_recursively(folder_path: str) -> str:
         """creates a folder recursively with parent if does not exist
 
         Args:

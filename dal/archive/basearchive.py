@@ -1,11 +1,17 @@
 from abc import abstractmethod
+from movai_core_shared.logger import Log
+from os import getenv
 from pathlib import Path
 from typing import Any
 from dal.exceptions import (
     NoActiveArchiveRegistered,
     ArchiveNotRegistered,
-    ArchiveAlreadyRegistered
+    ArchiveAlreadyRegistered,
 )
+
+
+DEFAULT_MOVAI_GIT_USER = "MOVAI_TEMP_USER"
+LOGGER = Log.get_logger("Movai.Archive")
 
 
 class BaseArchive:
@@ -28,9 +34,13 @@ class BaseArchive:
         Returns:
             BaseArchive: an instance of the Active Archive used in code.
         """
+        if not user:
+            user = getenv("MOVAI_GIT_USERNAME") or DEFAULT_MOVAI_GIT_USER
+        if user == DEFAULT_MOVAI_GIT_USER:
+            LOGGER.debug("user for movai git not provided ($MOVAI_GIT_USERNAME), using 'MOVAI_TEMP_USER' instead")
         if BaseArchive.active_archive is None:
             raise NoActiveArchiveRegistered("")
-        return BaseArchive.active_archive.get_client(user=user)
+        return BaseArchive.active_archive.get_client(user)
 
     def __init_subclass__(cls, id=None):
         if id is None:
@@ -48,15 +58,10 @@ class BaseArchive:
 
     @abstractmethod
     def get_client(self, **kwargs) -> "BaseArchive":
-        """instantiate Archive instance and returns it.
-        """
+        """instantiate Archive instance and returns it."""
 
     @abstractmethod
-    def get(self,
-            obj_name: str,
-            remote: str,
-            version: str,
-            **kwargs) -> Path:
+    def get(self, obj_name: str, remote: str, version: str, **kwargs) -> Path:
         """Get an Object from remote Archive, and save it locally.
 
         Args:
@@ -69,10 +74,20 @@ class BaseArchive:
         """
 
     @abstractmethod
-    def commit(self,
-               obj_name: str,
-               remote: str,
-               **kwargs) -> str:
+    def delete(self, remote: str, obj_name: str, version: str, **kwargs) -> str:
+        """deletes an object.
+
+        Args:
+            obj_name (str): Name of the object (path)
+            remote (str): Remote link.
+            version (str): Version desired to remove from.
+
+        Returns:
+            str: new version hash.
+        """
+
+    @abstractmethod
+    def commit(self, obj_name: str, remote: str, **kwargs) -> str:
         """saves changes locally, will create new version if requested.
 
         Args:
@@ -100,11 +115,7 @@ class BaseArchive:
         """
 
     @abstractmethod
-    def create_obj(self,
-                   remote: str,
-                   relative_path: str,
-                   content: str,
-                   **kwargs):
+    def create_obj(self, remote: str, relative_path: str, content: str, **kwargs):
         """will create new obj locally (relative path to local archive)
            of the local repository path.
 
@@ -135,4 +146,33 @@ class BaseArchive:
 
         Returns:
             Path: local path of the desired remote link.
+        """
+
+    @abstractmethod
+    def revert(self, remote: str, ob_name: str, version: str, **kwargs) -> Path:
+        """revert a given version to previous one and return the file path
+           for the reverted version
+
+        Args:
+            remote (str): the remote link of the repository.
+            obj_name (str): Name of the object (path).
+            version (str): the version we want to revert
+
+        Returns:
+            Path: the local path of the requested File.
+        """
+
+    @abstractmethod
+    def create_version(
+        self, remote: str, base_version: str, new_version: str, **kwargs
+    ) -> bool:
+        """create a new version based on another version.
+
+        Args:
+            remote (str): remote Archive link.
+            base_version (str): the base version.
+            new_version (str): the new desired version.
+
+        Returns:
+            bool: True/False whether the creation succeeded or not.
         """

@@ -21,7 +21,8 @@ from .exceptions import (
     ArchiveNotRegistered,
     ArchiveAlreadyRegistered,
     FileDoesNotExist,
-    RepositoryDoesNotExist
+    RepositoryDoesNotExist,
+    GitPermissionErr
 )
 
 __all__ = [
@@ -38,5 +39,6 @@ __all__ = [
     'ArchiveNotRegistered',
     'ArchiveAlreadyRegistered',
     'FileDoesNotExist',
-    'RepositoryDoesNotExist'
+    'RepositoryDoesNotExist',
+    'GitPermissionErr'
 ]

@@ -1,7 +1,7 @@
 {
     "$id": "role.schema.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$version": "2.3",
+    "$version": "2.4",
     "title": "Role Schema",
     "type": "object",
     "properties": {
