@@ -57,7 +57,7 @@ class FleetRobot(Scope):
             alert (dict): The alert dictionary with the keys: info, action and callback.
         """
         alert.pop("status")
-        alert_name = alert.get("alert_name")
+        alert_name = alert.get("name")
         FleetRobot.check_alert_dictionary(alert)
         self.Alerts[alert_name] = alert
 
