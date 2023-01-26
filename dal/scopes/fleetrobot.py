@@ -10,6 +10,7 @@
 
    Module that implements Robot namespace
 """
+import pickle
 from movai_core_shared.logger import Log
 
 from movai_core_shared.core.zmq_client import ZmqClient
@@ -17,9 +18,12 @@ from movai_core_shared.core.zmq_client import ZmqClient
 from .scope import MovaiDB, Scope
 
 logger = Log.get_logger("FleetRobot")
+
+
 class FleetRobot(Scope):
     """Represent the Robot scope in the redis-master.
     """
+
     def __init__(self, name: str, version="latest", new=False, db="global"):
         """constructor
 
@@ -30,7 +34,7 @@ class FleetRobot(Scope):
             db (str, optional): "global/local". Defaults to "global".
         """
         super().__init__(scope="Robot", name=name, version=version, new=new, db=db)
-        db = MovaiDB('global')
+        db = MovaiDB()
         robot_id = None
         for key, val in db.search_by_args(scope='Robot')[0]['Robot'].items():
             if val['RobotName'] == name:
@@ -38,10 +42,7 @@ class FleetRobot(Scope):
                 break
         if robot_id is None:
             logger.error(f"robot {name} not found in DB")
-        ip_key = {'Robot': {robot_id: {'IP': {}}}}
-        self.ip = db.get_value(ip_key)
-        pub_key = db.get_value(pub_key)
-        self.zmq_client = ZmqClient(self.ip, name=name, pub_key=pub_key)
+        self.__dict__["zmq_client"] = None
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot"""
@@ -49,11 +50,11 @@ class FleetRobot(Scope):
         for key, value in locals().items():
             if value is not None and key in ("command", "flow", "node", "port", "data"):
                 to_send.update({key: value})
-        self.zmq_client.send_msg(to_send)
-
-        to_send = pickle.dumps(to_send)
-
-        self.Actions.append(to_send)
+        if self.zmq_client is None:
+            to_send = pickle.dumps(to_send)
+            self.Actions.append(to_send)
+        else:
+            self.zmq_client.send_msg(to_send)
 
     def get_active_alerts(self) -> dict:
         """Gets a dictionary of the active alerts on this specific robot.
@@ -83,7 +84,7 @@ class FleetRobot(Scope):
         """
         active_alerts = self.get_active_alerts()
         if alert in active_alerts:
-            #active_alerts.pop(alert)
+            # active_alerts.pop(alert)
             self.Alerts.pop(alert)
 
     @staticmethod
@@ -96,4 +97,5 @@ class FleetRobot(Scope):
         """
         for field in ("info", "action", "callback"):
             if field not in alert:
-                logger.warning(f"The field: {field} is missing from alert dictionary")
+                logger.warning(
+                    f"The field: {field} is missing from alert dictionary")
