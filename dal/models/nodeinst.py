@@ -180,7 +180,7 @@ class NodeInst(ScopeObjectNode):
             output = _parser.parse(key, str(_value), _name, self, _context)
         # the _launch params will need to be calculated only once
         if isinstance(output, bool) and key == "_launch":
-            self.Parameter[key].Value = output
+            self.Launch = ("override", output)
         return output
 
 
