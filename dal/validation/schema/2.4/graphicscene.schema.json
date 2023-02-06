@@ -284,6 +284,9 @@
                                                                             "items": {
                                                                                 "type": "object",
                                                                                 "properties": {
+                                                                                    "annotationPropOverrides": {
+                                                                                        "type": "object"
+                                                                                    },
                                                                                     "belongsSrc": {
                                                                                         "$ref": "#/definitions/belongsObj"
                                                                                     },
@@ -306,6 +309,23 @@
                                                                                     },
                                                                                     "weight": {
                                                                                         "type": "integer"
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "multigraph": {
+                                                                            "type": "boolean"
+                                                                        },
+                                                                        "nodes": {
+                                                                            "type": "array",
+                                                                            "items": {
+                                                                                "type": "object",
+                                                                                "properties": {
+                                                                                    "id": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "position": {
+                                                                                        "$ref": "#/definitions/3arrayPoint"
                                                                                     }
                                                                                 }
                                                                             }
