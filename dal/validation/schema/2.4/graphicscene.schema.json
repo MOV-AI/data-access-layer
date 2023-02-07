@@ -167,7 +167,14 @@
 												"type": "string"
 											}
 										},
-										"keyValueMap": {},
+                                        "keyValueMap": {
+                                            "type": "object",
+                                            "properties": {
+                                                "behaviour": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
 										"weight": {
 											"type": "integer"
 										}
