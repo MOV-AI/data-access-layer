@@ -504,6 +504,12 @@
                                                                             "items": {
                                                                                 "type": "number"
                                                                             }
+                                                                        },
+                                                                        "weight": {
+                                                                            "type": "integer"
+                                                                        },
+                                                                        "isBidirectional": {
+                                                                            "type": "boolean"
                                                                         }
                                                                     }
                                                                 },
