@@ -187,7 +187,22 @@
 							"items": {
 								"$ref": "#/definitions/3arrayPoint"
 							}
-						}
+						},
+                        "isBidirectional": {
+                            "type": "boolean"
+                        },
+                        "height": {
+                            "type": "integer"
+                        },
+                        "localPolygon": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/3arrayPoint"
+                            }
+                        },
+                        "navigationAllowed": {
+                            "type": "boolean"
+                        }
                     }
                 },
                 "name": {
