@@ -49,6 +49,26 @@
                                 },
                                 "LayoutColors": {
                                     "type": "array"
+                                },
+                                "allLayouts": {
+                                    "type": "object",
+                                    "patternProperties": {
+                                        "^[a-zA-Z0-9]+$": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "patternProperties": {
+                                                    "^(w|h|x|y|i|moved|static)$": {
+                                                        "type": ["integer", "string", "boolean"]
+                                                    }
+                                                },
+                                                "additionalProperties": false
+                                            }
+                                        }
+                                    }
+                                },
+                                "layoutEvents": {
+                                    "type": "object"
                                 }
                             }
                         }
