@@ -26,13 +26,14 @@
         "annotationValue": {
             "type": "object",
             "patternProperties": {
-                "^[a-zA-Z0-9]+$": {
+                "^(behaviour|[0-9]+)$": {
                     "type": "object",
                     "properties": {
                         "Value": {
                             "type": "string"
                         }
-                    }
+                    },
+                    "additionalProperties": false
                 }
             }
         },
