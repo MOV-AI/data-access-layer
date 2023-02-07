@@ -580,6 +580,24 @@
                                                     }
                                                 }
                                             }
+                                        },
+                                        "NodeItem": {
+                                            "type": "object",
+                                            "properties": {
+                                                "AssetName": {
+                                                    "type": "object",
+                                                    "patternProperties": {
+                                                        "^[A-Za-z0-9_-]+$": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "Value": {
+                                                                    "$ref": "#/definitions/position"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
