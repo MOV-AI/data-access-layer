@@ -31,8 +31,9 @@
                                     "type": "string"
                                 },
                                 "WidgetInst": {
+                                    "type": "object",
                                     "patternProperties": {
-                                        "^Button[0-9]*$": {
+                                        "^(Button|Selector|Input|Label|Divider|Joystick|VideoPanel|Toggle|Scene)[0-9]*$": {
                                             "type": "object",
                                             "properties": {
                                                 "Template": {
@@ -43,7 +44,8 @@
                                                 }
                                             }
                                         }
-                                    }
+                                    },
+                                    "additionalProperties": false
                                 },
                                 "LayoutColors": {
                                     "type": "array"
