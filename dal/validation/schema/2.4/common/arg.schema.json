@@ -6,7 +6,7 @@
 
     "type": "object",
     "patternProperties": {
-        "^[a-z0-9A-Z]+$": {
+        "^[@a-z0-9A-Z]+$": {
             "type": "object",
             "properties": {
                 "Description": {
