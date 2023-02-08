@@ -303,6 +303,9 @@
                                                                             "properties": {
                                                                                 "keyValueMap": {
                                                                                     "type": "object"
+                                                                                },
+                                                                                "annotationPropOverrides": {
+                                                                                    "type": "object"
                                                                                 }
                                                                             }
                                                                         },
