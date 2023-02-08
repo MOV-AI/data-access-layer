@@ -203,6 +203,9 @@
                         },
                         "navigationAllowed": {
                             "type": "boolean"
+                        },
+                        "isSubscribedToLogs": {
+                            "type": "boolean"
                         }
                     }
                 },
