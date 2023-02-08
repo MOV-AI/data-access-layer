@@ -3,7 +3,6 @@
     "$version": "2.4",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "Description": "a common schema used to validate Params part of multiple documents",
-
     "type": "object",
     "patternProperties": {
         "^[@a-z0-9A-Z]+$": {
@@ -19,8 +18,10 @@
                     "type": "string"
                 }
             },
-            "required": ["Value"]
+            "required": [
+                "Value"
+            ]
         }
     },
     "minProperties": 1
-} 
+}

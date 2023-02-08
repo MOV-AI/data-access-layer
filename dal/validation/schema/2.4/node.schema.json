@@ -18,14 +18,14 @@
                     "type": "object",
                     "properties": {
                         "Child": {
-                            "type": "string" 
+                            "type": "string"
                         },
                         "Parent": {
                             "type": "string"
                         }
                     }
                 }
-            } 
+            }
         },
         "actionFields": {
             "cancel": {
@@ -45,7 +45,6 @@
             }
         }
     },
-
     "type": "object",
     "properties": {
         "Node": {
@@ -70,10 +69,16 @@
                                     "$ref": "common/arg.schema.json"
                                 },
                                 "Launch": {
-                                    "type": ["boolean", "string"]
+                                    "type": [
+                                        "boolean",
+                                        "string"
+                                    ]
                                 },
                                 "PackageDepends": {
-                                    "type": ["string", "array"]
+                                    "type": [
+                                        "string",
+                                        "array"
+                                    ]
                                 },
                                 "Path": {
                                     "type": "string"
@@ -110,7 +115,7 @@
                                                             "$ref": "#/definitions/actionFields"
                                                         }
                                                     ]
-                                               },
+                                                },
                                                 "In": {
                                                     "allOf": [
                                                         {
@@ -127,7 +132,11 @@
                                                     ]
                                                 }
                                             },
-                                            "required": ["Message", "Package", "Template"]
+                                            "required": [
+                                                "Message",
+                                                "Package",
+                                                "Template"
+                                            ]
                                         }
                                     },
                                     "minProperties": 1
@@ -146,6 +155,8 @@
             "additionalProperties": false
         }
     },
-    "required": ["Node"],
+    "required": [
+        "Node"
+    ],
     "additionalProperties": false
 }
