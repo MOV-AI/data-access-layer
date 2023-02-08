@@ -15,8 +15,8 @@ from re import search
 from os.path import join as path_join
 from os.path import expanduser
 from pathlib import Path
-                 InvalidGitRepositoryError,
 from git import (Repo,
+                 InvalidGitRepositoryError,
                  GitError,
                  GitCommandError)
 from git.index import IndexFile
