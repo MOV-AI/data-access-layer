@@ -12,6 +12,7 @@ from dal.exceptions import (
 )
 from dal.classes.filesystem import FileSystem
 from dal.archive import Archive, BaseArchive
+from dal.api.gitapi import GIT_BASE_FOLDER
 
 
 # ######################## AUX Functions #################################### #
@@ -25,9 +26,8 @@ def _validate_file(archive: BaseArchive, remote, filename, version, expect: dict
 def clean_environment(request):
     used_users = ["TEMP", "TEMP2", "TEMP3", "temp-movai", "TEMP-delete", "TEMP-version"]
 
-    git_folder = path_join(getenv("MOVAI_USERSPACE"), 'database', 'git')
     for user in used_users:
-        path = path_join(git_folder, user)
+        path = path_join(GIT_BASE_FOLDER, user)
         FileSystem.delete(path)
 ###############################################################################
 
