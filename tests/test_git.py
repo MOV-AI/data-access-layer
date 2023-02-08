@@ -31,6 +31,15 @@ def clean_environment(request):
         FileSystem.delete(path)
 ###############################################################################
 
+def should_run_test():
+    """
+    check if the current environment is run github or not.
+    some tests (git related) will be hard to test from inside github because of
+    credentials issues when clonning.
+    """
+    if FileSystem.get_home_folder() == "/github/home":
+        return False
+    return True
 
 def test_basic():
     global archive
@@ -46,6 +55,8 @@ def test_basic():
     (("https://github.com/Mograbi/test-git", "doesnotexist.json", "v0.1", json_loads("{}")), FileDoesNotExist),
 ])
 def test_read_errors(params, expected_error):
+    if not should_run_test():
+        pytest.skip("cannot check this from inside gitub pipeline")
     archive = Archive(user="TEMP")
     with pytest.raises(expected_error):
         _validate_file(archive, *params)
@@ -81,17 +92,23 @@ def test_read_errors(params, expected_error):
                                                                                 }"""))
 ])
 def test_read(params):
+    if not should_run_test():
+        pytest.skip("cannot check this from inside gitub pipeline")
     archive = Archive(user="TEMP")
     _validate_file(archive, *params)
 
 
 def test_commit_errors():
+    if not should_run_test():
+        pytest.skip("cannot check this from inside gitub pipeline")
     archive = Archive(user="TEMP2")
     with pytest.raises(NoChangesToCommit):
         archive.commit("file1", "https://github.com/Mograbi/test-git", base_version="master", message="")
 
 
 def test_commit():
+    if not should_run_test():
+        pytest.skip("cannot check this from inside gitub pipeline")
     archive = Archive(user="TEMP2")
     path = archive.get("file1", "https://github.com/Mograbi/test-git", "master")
     FileSystem.write(path, json_loads(
@@ -105,6 +122,8 @@ def test_commit():
 
 
 def test_revert():
+    if not should_run_test():
+        pytest.skip("cannot check this from inside gitub pipeline")
     archive = Archive(user="TEMP3")
     path = archive.get("file1", "https://github.com/Mograbi/test-git", "master")
     before_commit = json_loads(path.read_text())
@@ -134,6 +153,8 @@ def test_revert():
 
 
 def test_version_errors():
+    if not should_run_test():
+        pytest.skip("cannot check this from inside gitub pipeline")
     archive = Archive(user="TEMP-version")
     remote = "https://github.com/Mograbi/test-git"
     with pytest.raises(RepositoryDoesNotExist):
@@ -143,6 +164,8 @@ def test_version_errors():
 
 
 def test_version():
+    if not should_run_test():
+        pytest.skip("cannot check this from inside gitub pipeline")
     archive = Archive(user="TEMP-version")
     remote = "https://github.com/Mograbi/test-git"
     archive.create_version(remote, "master", "new_tag")
@@ -158,12 +181,16 @@ def test_version():
     (("https://github.com/Mograbi/test-git", "doesnotexist.json", "v0.1"), FileDoesNotExist),
 ])
 def test_delete_errors(params, expected_error):
+    if not should_run_test():
+        pytest.skip("cannot check this from inside gitub pipeline")
     archive = Archive(user="TEMP")
     with pytest.raises(expected_error):
         archive.delete(*params)
 
 
 def test_delete():
+    if not should_run_test():
+        pytest.skip("cannot check this from inside gitub pipeline")
     archive = Archive(user="TEMP-delete")
     remote = "https://github.com/Mograbi/test-git"
     # we remove file1 from master
