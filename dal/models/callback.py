@@ -336,7 +336,7 @@ class Callback(Model):
         # iterate every module found
 
         builtin_modules = [("", name, False) for name in sys.builtin_module_names]
-        for x in list(pkgutil.iter_modules()) + builtin_modules:
+        for x in set(list(pkgutil.iter_modules()) + builtin_modules):
             # now ...
             # x[0] -> FileFinder(path_where_modules_was_found)
             # x[1] -> module/package name
@@ -360,6 +360,8 @@ class Callback(Model):
 
             # i guess always expand module
             v = expand_module(modules[x[1]], x[1])
+            if (x[1] in ["scipy", "twisted"]):
+                continue
 
             # and maybe expand the package, if it's one
             if x[2] and v:
