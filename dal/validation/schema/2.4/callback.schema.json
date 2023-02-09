@@ -3,9 +3,7 @@
     "$version": "2.4",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "Callback Schema",
-    "definitions": {
-    },
-
+    "definitions": {},
     "type": "object",
     "properties": {
         "Callback": {
@@ -34,13 +32,19 @@
                                             "type": "object",
                                             "properties": {
                                                 "Class": {
-                                                    "type": ["string", "boolean"]
+                                                    "type": [
+                                                        "string",
+                                                        "boolean"
+                                                    ]
                                                 },
                                                 "Module": {
                                                     "type": "string"
                                                 }
                                             },
-                                            "required": ["Class", "Module"]
+                                            "required": [
+                                                "Class",
+                                                "Module"
+                                            ]
                                         }
                                     }
                                 }
@@ -52,6 +56,8 @@
             "additionalProperties": false
         }
     },
-    "required": ["Callback"],
+    "required": [
+        "Callback"
+    ],
     "additionalProperties": false
 }

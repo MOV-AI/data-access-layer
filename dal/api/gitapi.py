@@ -34,12 +34,14 @@ from dal.exceptions import (NoChangesToCommit,
 from dal.classes.filesystem import FileSystem
 from dal.classes.common.gitlink import GitLink
 from dal.archive.basearchive import BaseArchive
+from movai_core_shared.logger import Log
 
 
 MOVAI_FOLDER_NAME = ".movai"
 MOVAI_BASE_FOLDER = path_join(FileSystem.get_home_folder(), MOVAI_FOLDER_NAME)
 MOVAI_BASE_FOLDER = getenv("MOVAI_USERSPACE", MOVAI_BASE_FOLDER)
 GIT_BASE_FOLDER = path_join(MOVAI_BASE_FOLDER, 'database', 'git')
+logger = Log.get_logger("movai.git")
 
 
 class GitRepo:
@@ -336,18 +338,21 @@ class GitRepo:
         repo = None
         FileSystem.create_folder_recursively(self._local_path)
         # TODO: change in the future and use permission class.
+        id_rsa = ""
         if not FileSystem.is_exist(expanduser('~/.ssh/id_rsa')):
-            raise FileDoesNotExist(expanduser('~/.ssh/id_rsa'))
+            logger.debug("~/.ssh/id_rsa does not exist")
+        else:
+            id_rsa = expanduser("~/.ssh/id_rsa")
         try:
             repo = Repo(self._local_path)
         except InvalidGitRepositoryError:
             # local Repository does not exist, creating one.
-            git_ssh_cmd = f"ssh -i {expanduser('~/.ssh/id_rsa')}"
             try:
                 args = {
-                    "env": dict(GIT_SSH_COMMAND=git_ssh_cmd),
                     "no_checkout": no_checkout
                 }
+                if id_rsa:
+                    args.update({"env": dict(GIT_SSH_COMMAND=f"ssh -i {id_rsa}")})
                 if shallow:
                     args.update({"depth": 1})
                     # args["filter"] = ["tree:0", "blob:none"]
