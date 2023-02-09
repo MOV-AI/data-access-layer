@@ -3,9 +3,7 @@
     "$version": "2.4",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "Layout Schema",
-    "definitions": {
-    },
-
+    "definitions": {},
     "type": "object",
     "properties": {
         "Layout": {
@@ -31,8 +29,9 @@
                                     "type": "string"
                                 },
                                 "WidgetInst": {
+                                    "type": "object",
                                     "patternProperties": {
-                                        "^Button[0-9]*$": {
+                                        "^(Button|Selector|Input|Label|Divider|Joystick|VideoPanel|Toggle|Scene)[0-9]*$": {
                                             "type": "object",
                                             "properties": {
                                                 "Template": {
@@ -43,10 +42,35 @@
                                                 }
                                             }
                                         }
-                                    }
+                                    },
+                                    "additionalProperties": false
                                 },
                                 "LayoutColors": {
                                     "type": "array"
+                                },
+                                "allLayouts": {
+                                    "type": "object",
+                                    "patternProperties": {
+                                        "^[a-zA-Z0-9]+$": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "patternProperties": {
+                                                    "^(w|h|x|y|i|moved|static)$": {
+                                                        "type": [
+                                                            "integer",
+                                                            "string",
+                                                            "boolean"
+                                                        ]
+                                                    }
+                                                },
+                                                "additionalProperties": false
+                                            }
+                                        }
+                                    }
+                                },
+                                "layoutEvents": {
+                                    "type": "object"
                                 }
                             }
                         }
@@ -56,6 +80,8 @@
             "additionalProperties": false
         }
     },
-    "required": ["Layout"],
+    "required": [
+        "Layout"
+    ],
     "additionalProperties": false
 }

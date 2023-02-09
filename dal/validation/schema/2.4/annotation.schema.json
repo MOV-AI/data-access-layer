@@ -3,9 +3,7 @@
     "$version": "2.4",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "Annotation Schema",
-    "definitions": {
-    },
-
+    "definitions": {},
     "type": "object",
     "properties": {
         "Annotation": {
@@ -29,8 +27,7 @@
                                 },
                                 "Parameter": {
                                     "patternProperties": {
-                                        "^[0-9a-zA-Z_]+$": {
-                                        }
+                                        "^[0-9a-zA-Z_]+$": {}
                                     }
                                 },
                                 "Field": {
@@ -42,7 +39,10 @@
                                                     "type": "string"
                                                 },
                                                 "Value": {
-                                                    "type": ["string", "boolean"]
+                                                    "type": [
+                                                        "string",
+                                                        "boolean"
+                                                    ]
                                                 }
                                             }
                                         }
@@ -56,6 +56,8 @@
             "additionalProperties": false
         }
     },
-    "required": ["Annotation"],
+    "required": [
+        "Annotation"
+    ],
     "additionalProperties": false
 }

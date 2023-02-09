@@ -3,7 +3,6 @@
     "$version": "2.4",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "Base Schema which should be refrenced by another schemas",
-
     "type": "object",
     "properties": {
         "Info": {
@@ -11,7 +10,7 @@
         },
         "Label": {
             "type": "string",
-            "pattern": "^[a-zA-Z0-9_-]+$"
+            "pattern": "^[a-zA-Z\\.0-9_-]+$"
         },
         "Description": {
             "$comment": "this field should be removed in future verisons and use Info instead",
@@ -29,13 +28,18 @@
                         }
                     },
                     "type": "object",
-                    "required": ["user", "date"]
+                    "required": [
+                        "user",
+                        "date"
+                    ]
                 },
                 {
                     "type": "string"
                 }
             ]
-        }  
+        }
     },
-    "required": ["Label", "LastUpdate"]
+    "required": [
+        "Label"
+    ]
 }

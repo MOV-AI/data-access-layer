@@ -25,25 +25,26 @@
         },
         "annotationValue": {
             "type": "object",
-            "properties": {
-                "behaviour": {
+            "patternProperties": {
+                "^(behaviour|[0-9]+)$": {
                     "type": "object",
                     "properties": {
                         "Value": {
                             "type": "string"
                         }
-                    }
+                    },
+                    "additionalProperties": false
                 }
             }
         },
         "3arrayPoint": {
-			"type": "array",
-			"items": {
-				"type": "number"
-			},
-			"minItems": 3,
-			"maxItems": 3
-		},
+            "type": "array",
+            "items": {
+                "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+        },
         "position": {
             "type": "object",
             "properties": {
@@ -81,8 +82,8 @@
                             "type": "array"
                         },
                         "weight": {
-							"type": "integer"
-						},
+                            "type": "integer"
+                        },
                         "keyValueMap": {
                             "type": "object"
                         },
@@ -123,64 +124,89 @@
                             "type": "string"
                         },
                         "isVisible": {
-							"type": "boolean"
-						},
-						"annotationPropOverrides": {},
-						"assetName": {
-							"type": "string"
-						},
-						"size": {
-							"type": "array",
-							"items": {
-								"type": "number"
-							}
-						},
-						"vertices": {
-							"type": "object",
-							"patternProperties": {
-								"^[0-9]+$": {
-									"type": "object",
-									"properties": {
-										"id": {},
-										"position": {
-											"$ref": "#/definitions/3arrayPoint"
-										}
-									}
-								}
-							}
-						},
-						"edges": {
-							"type": "object",
-							"patternProperties": {
-								"^[0-9]+(_[0-9]+)?$": {
-									"type": "object",
-									"properties": {
-										"belongsSrc": {
-											"$ref": "#/definitions/belongsObj"
-										},
-										"belongsTrg": {
-											"$ref": "#/definitions/belongsObj"
-										},
-										"ids": {
-											"type": "array",
-											"items": {
-												"type": "string"
-											}
-										},
-										"keyValueMap": {},
-										"weight": {
-											"type": "integer"
-										}
-									}
-								}
-							}
-						},
-						"corners": {
-							"type": "array",
-							"items": {
-								"$ref": "#/definitions/3arrayPoint"
-							}
-						}
+                            "type": "boolean"
+                        },
+                        "annotationPropOverrides": {},
+                        "assetName": {
+                            "type": "string"
+                        },
+                        "size": {
+                            "type": "array",
+                            "items": {
+                                "type": "number"
+                            }
+                        },
+                        "vertices": {
+                            "type": "object",
+                            "patternProperties": {
+                                "^[0-9]+$": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {},
+                                        "position": {
+                                            "$ref": "#/definitions/3arrayPoint"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "edges": {
+                            "type": "object",
+                            "patternProperties": {
+                                "^[0-9]+(_[0-9]+)?$": {
+                                    "type": "object",
+                                    "properties": {
+                                        "belongsSrc": {
+                                            "$ref": "#/definitions/belongsObj"
+                                        },
+                                        "belongsTrg": {
+                                            "$ref": "#/definitions/belongsObj"
+                                        },
+                                        "ids": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "keyValueMap": {
+                                            "type": "object",
+                                            "properties": {
+                                                "behaviour": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "weight": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "corners": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/3arrayPoint"
+                            }
+                        },
+                        "isBidirectional": {
+                            "type": "boolean"
+                        },
+                        "height": {
+                            "type": "integer"
+                        },
+                        "localPolygon": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/3arrayPoint"
+                            }
+                        },
+                        "navigationAllowed": {
+                            "type": "boolean"
+                        },
+                        "isSubscribedToLogs": {
+                            "type": "boolean"
+                        }
                     }
                 },
                 "name": {
@@ -188,8 +214,7 @@
                 }
             }
         }
-},
-
+    },
     "type": "object",
     "properties": {
         "GraphicScene": {
@@ -232,7 +257,9 @@
                                                                     "$ref": "#/definitions/annotationValue"
                                                                 }
                                                             },
-                                                            "required": ["Value"]
+                                                            "required": [
+                                                                "Value"
+                                                            ]
                                                         }
                                                     }
                                                 }
@@ -276,6 +303,9 @@
                                                                             "properties": {
                                                                                 "keyValueMap": {
                                                                                     "type": "object"
+                                                                                },
+                                                                                "annotationPropOverrides": {
+                                                                                    "type": "object"
                                                                                 }
                                                                             }
                                                                         },
@@ -284,6 +314,9 @@
                                                                             "items": {
                                                                                 "type": "object",
                                                                                 "properties": {
+                                                                                    "annotationPropOverrides": {
+                                                                                        "type": "object"
+                                                                                    },
                                                                                     "belongsSrc": {
                                                                                         "$ref": "#/definitions/belongsObj"
                                                                                     },
@@ -309,6 +342,23 @@
                                                                                     }
                                                                                 }
                                                                             }
+                                                                        },
+                                                                        "multigraph": {
+                                                                            "type": "boolean"
+                                                                        },
+                                                                        "nodes": {
+                                                                            "type": "array",
+                                                                            "items": {
+                                                                                "type": "object",
+                                                                                "properties": {
+                                                                                    "id": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "position": {
+                                                                                        "$ref": "#/definitions/3arrayPoint"
+                                                                                    }
+                                                                                }
+                                                                            }
                                                                         }
                                                                     }
                                                                 }
@@ -324,25 +374,25 @@
                                                 "AssetName": {
                                                     "type": "object",
                                                     "patternProperties": {
-                                                        "^[a-zA-Z0-9]+$": {
+                                                        "^[a-zA-Z0-9_-]+$": {
                                                             "type": "object",
                                                             "properties": {
                                                                 "Value": {
                                                                     "$ref": "#/definitions/position"
                                                                 },
-								"Annotation": {
-								    "type": "object",
-								    "patternProperties": {
-									"^[0-9]+$": {
-									    "type": "object",
-									    "properties": {
-										"Value": {
-										    "type": "string"
-										}
-									    }
-									}
-								    }
-								}
+                                                                "Annotation": {
+                                                                    "type": "object",
+                                                                    "patternProperties": {
+                                                                        "^[0-9]+$": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "Value": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
                                                             }
                                                         }
                                                     }
@@ -355,7 +405,7 @@
                                                 "AssetName": {
                                                     "type": "object",
                                                     "patternProperties": {
-                                                        "^[a-zA-Z0-9_]+([.][a-zA-Z0-9]+)?$": {
+                                                        "^[a-zA-Z0-9_-]+([.][a-zA-Z0-9]+)?$": {
                                                             "type": "object",
                                                             "properties": {
                                                                 "Value": {
@@ -484,6 +534,12 @@
                                                                             "items": {
                                                                                 "type": "number"
                                                                             }
+                                                                        },
+                                                                        "weight": {
+                                                                            "type": "integer"
+                                                                        },
+                                                                        "isBidirectional": {
+                                                                            "type": "boolean"
                                                                         }
                                                                     }
                                                                 },
@@ -532,9 +588,9 @@
                                                                                 "$ref": "#/definitions/coordinate"
                                                                             }
                                                                         },
-									"navigationAllowed": {
-									    "type": "boolean"
-									}
+                                                                        "navigationAllowed": {
+                                                                            "type": "boolean"
+                                                                        }
                                                                     }
                                                                 }
                                                             }
@@ -560,11 +616,31 @@
                                                     }
                                                 }
                                             }
+                                        },
+                                        "NodeItem": {
+                                            "type": "object",
+                                            "properties": {
+                                                "AssetName": {
+                                                    "type": "object",
+                                                    "patternProperties": {
+                                                        "^[A-Za-z0-9_-]+$": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "Value": {
+                                                                    "$ref": "#/definitions/position"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
                             },
-                            "required": ["AssetType"]
+                            "required": [
+                                "AssetType"
+                            ]
                         }
                     ]
                 }
@@ -572,6 +648,8 @@
             "additionalProperties": false
         }
     },
-    "required": ["GraphicScene"],
+    "required": [
+        "GraphicScene"
+    ],
     "additionalProperties": false
 }
