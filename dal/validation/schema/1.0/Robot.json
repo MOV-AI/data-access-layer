@@ -6,6 +6,7 @@
       "RobotName": "&name",
       "IP": "ip_add",
       "Info": "str",
+      "PubKey": "str",
       "Actions": "list",
       "Notifications": "list",
       "Alerts": "hash",

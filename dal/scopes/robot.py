@@ -66,9 +66,10 @@ class Robot(Scope):
     def set_pub_key(self, pub_key: str):
         """Set the public key for zmq encryption"""
         self.PubKey = pub_key
-        self.fleet.PubKey= pub_key
-        self.__dict__["zmq_client"] = ZmqClient(self.IP, name=self.RobotName, pub_key=pub_key)
-        self.fleet.__dict__["zmq_client"] = ZmqClient(self.IP, name=self.RobotName, pub_key=pub_key)
+        self.fleet.PubKey = pub_key
+        zmq_client = ZmqClient(self.IP, name=self.RobotName, pub_key=pub_key)
+        self.__dict__["zmq_client"] = zmq_client
+        self.fleet.__dict__["zmq_client"] = zmq_client
 
     def set_name(self, name: str):
         """Set the Name of the Robot"""

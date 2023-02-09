@@ -34,14 +34,6 @@ class FleetRobot(Scope):
             db (str, optional): "global/local". Defaults to "global".
         """
         super().__init__(scope="Robot", name=name, version=version, new=new, db=db)
-        db = MovaiDB()
-        robot_id = None
-        for key, val in db.search_by_args(scope='Robot')[0]['Robot'].items():
-            if val['RobotName'] == name:
-                robot_id = key
-                break
-        if robot_id is None:
-            logger.error(f"robot {name} not found in DB")
         self.__dict__["zmq_client"] = None
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
