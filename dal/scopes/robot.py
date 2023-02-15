@@ -11,12 +11,16 @@
 """
 import uuid
 import pickle
-from movai_core_shared.exceptions import DoesNotExist
-from dal.scopes.scope import Scope
-from dal.movaidb import MovaiDB
-from dal.scopes.fleetrobot import FleetRobot
-from .configuration import Configuration
 
+from movai_core_shared.envvars import DEVICE_NAME, PUBLIC_IP
+from movai_core_shared.core.secure import create_client_keys
+from movai_core_shared.exceptions import DoesNotExist
+
+from dal.movaidb import MovaiDB
+
+from .configuration import Configuration
+from .fleetrobot import FleetRobot
+from .scope import Scope
 
 class Robot(Scope):
     """Robot class that deals with robot related stuff"""
@@ -34,11 +38,15 @@ class Robot(Scope):
                 )
                 try:
                     self.__dict__["fleet"] = FleetRobot(name)
-                    self.RobotName = self.fleet.RobotName
                 except DoesNotExist:
                     self.__dict__["fleet"] = FleetRobot(name, new=True)
-                    self.fleet.RobotName = self.RobotName
-                break  # only first is used if more exist (by some dark magic)
+            
+                if self.RobotName != self.fleet.RobotName:
+                    self.set_name(self.RobotName)
+                if self.IP != self.fleet.IP:
+                    self.set_ip(self.IP)
+                if self.PublicKey != self.fleet.PublicKey:
+                    self.set_keys()
 
         else:  # no robot exists so lets init one
             unique_id = uuid.uuid4()
@@ -50,10 +58,10 @@ class Robot(Scope):
                 new=True,
                 db="local",
             )
-            self.RobotName = "robot_" + unique_id.hex[0:6]
-
             self.__dict__["fleet"] = FleetRobot(unique_id.hex, new=True)
-            self.fleet.RobotName = "robot_" + unique_id.hex[0:6]
+            self.set_name(DEVICE_NAME)
+            self.set_ip(PUBLIC_IP)
+            self.set_keys()
             # copy all data to the global
 
     def set_ip(self, ip_address: str):
@@ -65,6 +73,12 @@ class Robot(Scope):
         """Set the Name of the Robot"""
         self.RobotName = name
         self.fleet.RobotName = name
+
+    def set_keys(self):
+        public_key, private_key = create_client_keys("/tmp", "key")
+        self.PrivateKey = private_key
+        self.PublicKey = public_key
+        self.fleet.PublicKey = public_key
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot"""
@@ -105,3 +119,23 @@ class Robot(Scope):
             MovaiDB("global").set(to_send)
         if db in ["all", "local"]:
             MovaiDB("local").set(to_send)
+
+    @property
+    def pub_key(self):
+        """Returns the Robot public key as defined in local db.
+
+        Returns:
+            str: The public key.
+        """
+        pub_key = str(self.PublicKey).encode("utf-8")
+        return pub_key
+
+    @property
+    def prv_key(self):
+        """Returns the Robot private key as defined in local db.
+
+        Returns:
+            str: The private key.
+        """
+        private_key = str(self.PrivateKey).encode("utf-8")
+        return private_key

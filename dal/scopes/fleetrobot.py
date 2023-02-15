@@ -16,6 +16,7 @@ from movai_core_shared.logger import Log
 from .scope import Scope
 
 logger = Log.get_logger("FleetRobot")
+
 class FleetRobot(Scope):
     """Represent the Robot scope in the redis-master.
     """
