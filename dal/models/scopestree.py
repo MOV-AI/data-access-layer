@@ -702,6 +702,7 @@ class ScopeNode(DictNode, WorkspaceObject):
                 "BaseUser",
                 "Callback",
                 "Flow",
+                "FleetRobot",
                 "Node",
                 "StateMachine",
                 "GraphicScene",

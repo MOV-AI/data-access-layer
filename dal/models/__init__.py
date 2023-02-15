@@ -16,6 +16,7 @@ from .configuration import Configuration
 from .container import Container
 from .flow import Flow
 from .flowlinks import FlowLinks
+from .fleetrobot import FleetRobot
 from .form import Form
 from .internaluser import InternalUser
 from .ldapconfig import LdapConfig
@@ -80,6 +81,7 @@ __all__ = [
     "Container",
     "Flow",
     "FlowLinks",
+    "FleetRobot",
     "Form",
     "InternalUser",
     "LdapConfig",
