@@ -1,10 +1,11 @@
 import pydantic
 from typing import Union, Optional, Dict
-from pydantic.types import StrictStr
-from redis_om import JsonModel, get_redis_connection, Field, Migrator, HashModel
-from re import search
 from pydantic import constr
+from pydantic.types import StrictStr
+from redis_om import get_redis_connection, Migrator, EmbeddedJsonModel, JsonModel, Field
+from re import search
 import json
+from common import LastUpdate
 
 
 ValidStr = pydantic.constr(regex=r"^[a-zA-Z_]+$")
@@ -16,30 +17,20 @@ class Py3LibValue(pydantic.BaseModel):
     Module: str
 
 
-class LastUpdate(HashModel):
-    date: str
-    user: str = Field(index=True)
-
-
 class Callback(JsonModel):
-    id: str = Field(default="", index=True)
     Code: Optional[str] = None
     Message: Optional[str] = None
     Py3Lib: Dict[ValidStr, Py3LibValue]
+    id: str = Field(default="", index=True)
     Info: Optional[str] = None
-    Label: constr(regex=r"^[a-zA-Z0-9._-]+$") = Field(index=True)
+    Label: constr(regex=r"^[a-zA-Z0-9._-]+$")
     Description: Optional[str] = None
     LastUpdate: LastUpdate
-    Version: str = Field(default="__UNVERSIONED__", index=True)
 
     class Meta:
-        global_key_prefix = "Test"
+        global_key_prefix = "Models"
         model_key_prefix = "Callback"
         database = get_redis_connection(url="redis://172.17.0.2", db=0)
-
-    class Config:
-        # Force Validation in case field value change
-        validate_assignment = True
 
     def __init__(self, *args, **kwargs):
         version = "__UNVERSIONED__"
@@ -67,10 +58,8 @@ class Callback(JsonModel):
             super().__init__(*args, **kwargs)
 
     def dict(self):
-        dic = super().dict()
+        dic = super().dict(exclude_unset=True)
         id = dic.pop('id')
-        dic.pop('pk')
-        dic["LastUpdate"].pop('pk')
         return {"Callback": {id.split(":")[1]: dic}}
 
     def schema_json(self):
@@ -79,9 +68,6 @@ class Callback(JsonModel):
         schema["properties"].pop("id")
         schema["definitions"]["LastUpdate"]["properties"].pop("pk")
         return schema
-
-
-Migrator().run()
 
 callback = Callback(
     **{
@@ -102,9 +88,11 @@ callback = Callback(
         }
     }, version_="v3"
 )
-callback.save()
-
+#print(callback.save())
+Migrator().run()
+print(Callback.find(Callback.LastUpdate.user == "movai").first())
 print(Callback.find(Callback.id == "Callback:annotations_init:v3").first())
+print(callback.schema_json())
 """
 start = time.time()
 #callback.save()
