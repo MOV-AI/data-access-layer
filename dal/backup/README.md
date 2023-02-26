@@ -28,7 +28,7 @@ Currently we implement 4 classes:
 
 ### Using BackupManager
 ```
-from movai.backup import BackupManager
+from dal.backup import BackupManager
 
 # Creates a new backup job
 job_id = BackupManager.create_job(manifest=["global/Flow/mapping/__UNVERSIONED__"])
@@ -47,7 +47,7 @@ with open("/tmp/backup.log", "wb") as f:
   
 ### Using RestoreManager
 ```
-from movai.backup import RestoreManager
+from dal.backup import RestoreManager
 
 # Creates a new restore job
 job_id = RestoreManager.create_job(restore_file='/tmp/backup.zip')

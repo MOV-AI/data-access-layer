@@ -13,8 +13,8 @@ import copy
 import hashlib
 import os
 from dal.movaidb import MovaiDB
-from .scope import Scope
-from .structures import Struct
+from dal.scopes.scope import Scope
+from dal.scopes.structures import Struct
 from dal.helpers import Helpers
 from movai_core_shared.logger import Log
 

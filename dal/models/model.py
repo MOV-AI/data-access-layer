@@ -8,9 +8,14 @@
 """
 from abc import ABC
 from importlib import import_module
-from dal.scopes.scopestree import (
-    ScopeInstanceVersionNode, ScopesTree,
-    ScopeNode, scopes)
+from datetime import datetime
+from movai_core_shared.exceptions import DoesNotExist
+from movai_core_shared.logger import Log
+from .scopestree import (
+    ScopeInstanceVersionNode,
+    ScopesTree,
+    ScopeNode,
+    scopes)
 from dal.data import TreeNode, SchemaPropertyNode
 
 
@@ -34,6 +39,7 @@ class Model(ScopeInstanceVersionNode, ABC):
     """
 
     __FORWARD_RELATIONS__ = {}
+    log = Log.get_logger(__name__)
 
     def __new__(cls, ref_or_path: str, workspace: str = 'global', version: str = '__UNVERSIONED__'):
         return scopes.from_path(ref_or_path, scope=cls.__name__, workspace=workspace, version=version)
@@ -233,3 +239,52 @@ class Model(ScopeInstanceVersionNode, ABC):
         one with is much more expensive and should be avoided
         """
         return Model.get_relations(model=self, depth=depth, search_filter=search_filter)
+
+    @classmethod
+    def list_objects_names(cls) -> list:
+        objects_names = []
+        for obj in scopes().list_scopes(scope=cls.__name__):
+            objects_names.append(str(obj['ref']))
+        return objects_names
+
+    @classmethod
+    def is_exist(cls, obj_name: str) -> bool:
+        if not isinstance(obj_name, str):
+            return False
+        return obj_name in cls.list_objects_names()
+
+    @staticmethod
+    def _current_time() -> str:
+        return datetime.now().strftime("%d/%m/%Y at %H:%M:%S")
+
+    def update_time(self) -> None:
+        """update the LastUpdate field in the Model entry with current time.
+        """
+        self.LastUpdate = {"date": Model._current_time()}
+        self.write()
+    
+    def track_object(self, username: str) -> None:
+        """update the LastUpdate field in the Model entry with current time.
+        """
+        self.LastUpdate = {"date": Model._current_time(),
+                           "user": username}
+        self.write()
+
+    @classmethod
+    def get_object_by_name(cls, name: str) -> any:
+        """returns a reference of an object
+
+        Args:
+        principal_name (str): account@domain format.
+
+
+        Returns:
+            (Model) - the user record with the corresponding account_name
+        """
+        try:
+            obj = ScopesTree().from_path(path=name, scope=cls.__name__)
+            return obj
+        except KeyError:
+            msg = f"Failed to find {cls.__name__} named: {name}"
+            raise DoesNotExist(msg)
+

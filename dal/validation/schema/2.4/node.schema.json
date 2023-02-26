@@ -1,0 +1,162 @@
+{
+    "$id": "node.schema.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$version": "2.4",
+    "title": "Node Schema",
+    "definitions": {
+        "portfields": {
+            "Description": "define the port fields of in/out ports of the Node",
+            "type": "object",
+            "properties": {
+                "Message": {
+                    "type": "string"
+                },
+                "Callback": {
+                    "type": "string"
+                },
+                "Parameter": {
+                    "type": "object",
+                    "properties": {
+                        "Child": {
+                            "type": "string"
+                        },
+                        "Parent": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "actionFields": {
+            "cancel": {
+                "$ref": "#/definitions/portfields"
+            },
+            "feedback": {
+                "$ref": "#/definitions/portfields"
+            },
+            "goal": {
+                "$ref": "#/definitions/portfields"
+            },
+            "status": {
+                "$ref": "#/definitions/portfields"
+            },
+            "result": {
+                "$ref": "#/definitions/portfields"
+            }
+        }
+    },
+    "type": "object",
+    "properties": {
+        "Node": {
+            "type": "object",
+            "patternProperties": {
+                "^[a-zA-Z0-9_]+$": {
+                    "Description": "allOf here will validate instance inside Node to every object in the array",
+                    "allOf": [
+                        {
+                            "$ref": "common/base.schema.json"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "EnvVar": {
+                                    "$ref": "common/arg.schema.json"
+                                },
+                                "CmdLine": {
+                                    "$ref": "common/arg.schema.json"
+                                },
+                                "Parameter": {
+                                    "$ref": "common/arg.schema.json"
+                                },
+                                "Launch": {
+                                    "type": [
+                                        "boolean",
+                                        "string"
+                                    ]
+                                },
+                                "PackageDepends": {
+                                    "type": [
+                                        "string",
+                                        "array"
+                                    ]
+                                },
+                                "Path": {
+                                    "type": "string"
+                                },
+                                "Persistent": {
+                                    "type": "boolean"
+                                },
+                                "PortsInst": {
+                                    "type": "object",
+                                    "patternProperties": {
+                                        "^[a-zA-Z0-9_]+$": {
+                                            "type": "object",
+                                            "properties": {
+                                                "Message": {
+                                                    "type": "string"
+                                                },
+                                                "Package": {
+                                                    "type": "string"
+                                                },
+                                                "Template": {
+                                                    "type": "string"
+                                                },
+                                                "Out": {
+                                                    "allOf": [
+                                                        {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "out": {
+                                                                    "$ref": "#/definitions/portfields"
+                                                                }
+                                                            }
+                                                        },
+                                                        {
+                                                            "$ref": "#/definitions/actionFields"
+                                                        }
+                                                    ]
+                                                },
+                                                "In": {
+                                                    "allOf": [
+                                                        {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "in": {
+                                                                    "$ref": "#/definitions/portfields"
+                                                                }
+                                                            }
+                                                        },
+                                                        {
+                                                            "$ref": "#/definitions/actionFields"
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "Message",
+                                                "Package",
+                                                "Template"
+                                            ]
+                                        }
+                                    },
+                                    "minProperties": 1
+                                },
+                                "Remappable": {
+                                    "type": "boolean"
+                                },
+                                "Type": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "required": [
+        "Node"
+    ],
+    "additionalProperties": false
+}

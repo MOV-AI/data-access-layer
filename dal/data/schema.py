@@ -7,7 +7,7 @@
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
 """
 from os import path
-from dal.plugins import PluginManager, Resource
+from dal.plugins.classes import PluginManager, Resource
 from .tree import TreeNode, DictNode, ObjectNode, PropertyNode, CallableNode
 from .serialization import ObjectDeserializer
 from .version import VersionNode

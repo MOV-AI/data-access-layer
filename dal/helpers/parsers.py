@@ -11,8 +11,8 @@ import ast
 import re
 import os
 from movai_core_shared.logger import Log
-from ..scopes.scopestree import scopes
-from dal.models import Var
+from dal.models.scopestree import scopes
+from dal.models.var import Var
 
 
 class ParamParser:
@@ -206,7 +206,9 @@ class ParamParser:
 
         node_name_arr = node_name.split('__')
 
-        value = instance.flow.get_param(param_name, self.context) or default
+        value = instance.flow.get_param(param_name, self.context) 
+        if value is None:
+            value = default
 
         if len(node_name_arr) > 1:
             # instance is not in the main flow
