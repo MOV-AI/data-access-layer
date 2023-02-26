@@ -70,6 +70,11 @@ class NodeInst(ScopeObjectNode):
     @property
     def is_node_to_launch(self) -> bool:
         """Returns True if it should be launched"""
+        # already been calculated
+        if isinstance(self.Launch, tuple):
+            cmd, res = self.Launch
+            if cmd == "override" and isinstance(res, bool):
+                return res
         # get the value from the node template
         temp = self.node_template.is_node_to_launch
 
@@ -105,7 +110,10 @@ class NodeInst(ScopeObjectNode):
     @property
     def is_dummy(self) -> bool:
         """Returns True if the node is configured as Dummy"""
-        return self.Dummy if not None else self.node_template.Dummy
+        if self.Dummy is not None:
+            return self.Dummy
+        else:
+            return self.node_template.Dummy
 
     @property
     def is_nodelet(self) -> bool:
@@ -129,9 +137,8 @@ class NodeInst(ScopeObjectNode):
         _context = context or self.flow.ref
 
         for key in self.node_template.Parameter.keys():
-            value = self.get_param(key, _name, _context)
-            if value is not None:
-                params.update({key: value})
+
+            params.update({key: self.get_param(key, _name, _context)})
 
         return params
 
@@ -157,9 +164,6 @@ class NodeInst(ScopeObjectNode):
         # get the instance value
         try:
             inst_value = self.Parameter[key].Value
-            if inst_value is None:
-                #param is disabled, and we return None
-                return None
         except KeyError:
             inst_value = None
 
@@ -175,8 +179,8 @@ class NodeInst(ScopeObjectNode):
             _value = tpl_value
             output = _parser.parse(key, str(_value), _name, self, _context)
         # the _launch params will need to be calculated only once
-        if output is not None and key == "_launch":
-            self.Parameter[key].Value = output
+        if isinstance(output, bool) and key == "_launch":
+            self.Launch = ("override", output)
         return output
 
 
