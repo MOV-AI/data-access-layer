@@ -141,6 +141,7 @@ class NodeInst(ScopeObjectNode):
             if value is not None:
                 params.update({key: value})
 
+
         return params
 
     def get_param(
@@ -168,6 +169,7 @@ class NodeInst(ScopeObjectNode):
             if inst_value is None:
                 #param is disabled, and we return None
                 return None
+
         except KeyError:
             inst_value = None
 
