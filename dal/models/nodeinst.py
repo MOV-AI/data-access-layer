@@ -137,8 +137,9 @@ class NodeInst(ScopeObjectNode):
         _context = context or self.flow.ref
 
         for key in self.node_template.Parameter.keys():
-
-            params.update({key: self.get_param(key, _name, _context)})
+            value = self.get_param(key, _name, _context)
+            if value is not None:
+                params.update({key: value})
 
         return params
 
@@ -164,6 +165,9 @@ class NodeInst(ScopeObjectNode):
         # get the instance value
         try:
             inst_value = self.Parameter[key].Value
+            if inst_value is None:
+                #param is disabled, and we return None
+                return None
         except KeyError:
             inst_value = None
 
