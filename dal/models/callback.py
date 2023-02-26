@@ -378,7 +378,7 @@ class Callback(Model):
         return modules
 
     @staticmethod
-    def export_modules(jump_over_modules: List = ["scipy", "twisted"]) -> None:
+    def export_modules(jump_over_modules=None) -> None:
         """Get modules and save them to db (System)
 
         this takes about 4 seconds to run
@@ -389,6 +389,8 @@ class Callback(Model):
         Args:
             jump_over_modules (list): the list of modules not to expand
         """
+        if jump_over_modules is None:
+            jump_over_modules = ["scipy", "twisted"]
 
         data = Callback._get_modules(jump_over_modules)
 
