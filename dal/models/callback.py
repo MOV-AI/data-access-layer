@@ -155,7 +155,7 @@ class Callback(Model):
 
     # ported blindly
     @staticmethod
-    def _get_modules() -> dict:
+    def _get_modules(jump_over_modules) -> dict:
         """new, recursive way to get modules
 
         This kinda looks like:
@@ -191,6 +191,8 @@ class Callback(Model):
                 # again, no modules here
             }
         }
+        Args:
+            jump_over_modules (list): the list of modules not to expand
 
         """
 
@@ -336,7 +338,7 @@ class Callback(Model):
         # iterate every module found
 
         builtin_modules = [("", name, False) for name in sys.builtin_module_names]
-        for x in list(pkgutil.iter_modules()) + builtin_modules:
+        for x in set(list(pkgutil.iter_modules()) + builtin_modules):
             # now ...
             # x[0] -> FileFinder(path_where_modules_was_found)
             # x[1] -> module/package name
@@ -360,6 +362,8 @@ class Callback(Model):
 
             # i guess always expand module
             v = expand_module(modules[x[1]], x[1])
+            if x[1] in jump_over_modules:
+                continue
 
             # and maybe expand the package, if it's one
             if x[2] and v:
@@ -374,7 +378,7 @@ class Callback(Model):
         return modules
 
     @staticmethod
-    def export_modules() -> None:
+    def export_modules(jump_over_modules: List = ["scipy", "twisted"]) -> None:
         """Get modules and save them to db (System)
 
         this takes about 4 seconds to run
@@ -382,9 +386,11 @@ class Callback(Model):
         and prints a LOT of stuff to the terminal
 
         currently (14-10 on spawner) uses about 19kb of memory (?)
+        Args:
+            jump_over_modules (list): the list of modules not to expand
         """
 
-        data = Callback._get_modules()
+        data = Callback._get_modules(jump_over_modules)
 
         try:
             # currently using the old api
