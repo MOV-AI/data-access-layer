@@ -137,8 +137,10 @@ class NodeInst(ScopeObjectNode):
         _context = context or self.flow.ref
 
         for key in self.node_template.Parameter.keys():
+            value = self.get_param(key, _name, _context)
+            if value is not None:
+                params.update({key: value})
 
-            params.update({key: self.get_param(key, _name, _context)})
 
         return params
 
@@ -164,6 +166,10 @@ class NodeInst(ScopeObjectNode):
         # get the instance value
         try:
             inst_value = self.Parameter[key].Value
+            if inst_value is None:
+                #param is disabled, and we return None
+                return None
+
         except KeyError:
             inst_value = None
 
@@ -179,8 +185,8 @@ class NodeInst(ScopeObjectNode):
             _value = tpl_value
             output = _parser.parse(key, str(_value), _name, self, _context)
         # the _launch params will need to be calculated only once
-        if output is not None and key == "_launch":
-            self.Parameter[key].Value = output
+        if isinstance(output, bool) and key == "_launch":
+            self.Launch = ("override", output)
         return output
 
 

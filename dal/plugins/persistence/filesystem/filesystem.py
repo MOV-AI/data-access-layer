@@ -285,10 +285,6 @@ class FilesystemPlugin(PersistencePlugin):
         basepath = os.path.join(
             FilesystemPlugin._ROOT_PATH, workspace, scope, ref)
 
-        # If we did not have to store the files on the filesystem using the
-        # stupid pattern <tag>-<epoch>-<uuid> as proposed by Limor
-        # this process would be much easier
-
         # First time we just check if we have any scope with that version in
         # our archive, otherwise we try to fetch it from a remote archive
         try:
@@ -335,9 +331,6 @@ class FilesystemPlugin(PersistencePlugin):
         except KeyError as e:
             raise KeyError("missing scope, ref, version or archive") from e
 
-        # If we did not have to store the files on the filesystem using the
-        # stupid pattern <tag>-<epoch>-<uuid> as proposed by Limor
-        # this process would be much easier
         archive_files = archive.namelist()
         search_filter = re.compile(f"{workspace}/{scope}/{ref}/{version}-*-*")
 
@@ -634,10 +627,6 @@ class FilesystemPlugin(PersistencePlugin):
         # <ROOT_PATH>/<workspace_id>/<scope>/<ref>/<tag>
         basepath = os.path.join(
             FilesystemPlugin._ROOT_PATH, workspace, scope, ref)
-
-        # If we did not have to store the files on the filesystem using the
-        # stupid pattern <tag>-<epoch>-<uuid> as proposed by Limor
-        # this process would be much easier
 
         # First time we just check if we have any scope with that version in
         # our archive, otherwise we try to fetch it from a remote archive

@@ -24,7 +24,7 @@ from dal.scopes.system import System
 from .model import Model
 
 
-logger = Log.get_logger('')
+logger = Log.get_logger("")
 
 
 class Callback(Model):
@@ -97,8 +97,6 @@ class Callback(Model):
                 else:
                     classes.append((key, value))
 
-            # logger.debug('Classes:\n', [x[0] for x in classes])
-
             funcs = []
             for key, value in inspect.getmembers(object, inspect.isroutine):
                 # if __all__ exists, believe it.  Otherwise use old heuristic.
@@ -112,14 +110,10 @@ class Callback(Model):
                 else:
                     funcs.append((key, value))
 
-            # logger.debug('Functions:\n', [x[0] for x in funcs])
-
             data = []
             for key, value in inspect.getmembers(object, pydoc.isdata):
                 if pydoc.visiblename(key, all, object):
                     data.append((key, value))
-
-            # logger.debug('Data:\n', [x[0] for x in data])
 
             # modpkgs = {}
             modpkgs_names = set()
@@ -128,25 +122,13 @@ class Callback(Model):
                     modpkgs_names.add(modname)
                     # modpkgs[modname] = Callback.get_methods(module+'.'+modname)
 
-            # logger.debug('Modules:\n', list(modpkgs_names))
-
             # Detect submodules as sometimes created by C extensions
-            """
-            submodules = []
-            for key, value in inspect.getmembers(object, inspect.ismodule):
-                if value.__name__.startswith(module + '.') and key not in modpkgs_names:
-                    submodules.append(key)
-            if submodules:
-                submodules.sort()
-
-            logger.debug('Submodules:\n', submodules)
-            """
 
             methods = {
                 "modules": list(modpkgs_names),
                 "classes": [x[0] for x in classes],
                 "functions": [x[0] for x in funcs],
-                "consts": [x[0] for x in data]
+                "consts": [x[0] for x in data],
             }
 
             return methods
@@ -173,7 +155,7 @@ class Callback(Model):
 
     # ported blindly
     @staticmethod
-    def _get_modules() -> dict:
+    def _get_modules(jump_over_modules) -> dict:
         """new, recursive way to get modules
 
         This kinda looks like:
@@ -209,6 +191,8 @@ class Callback(Model):
                 # again, no modules here
             }
         }
+        Args:
+            jump_over_modules (list): the list of modules not to expand
 
         """
 
@@ -226,8 +210,7 @@ class Callback(Model):
             # iterate contents of this package
             for x in pkgutil.iter_modules([path]):
                 # ignore '_*' modules
-                logger.debug(f"Adding nested module {x[1]}")
-                if x[1].startswith("_") or x[1] == 'init_local_db' or x[1] == 'tf_monitor':
+                if x[1].startswith("_") or x[1] == "init_local_db" or x[1] == "tf_monitor":
                     continue
 
                 # shouldn't be python2 for sure
@@ -355,7 +338,7 @@ class Callback(Model):
         # iterate every module found
 
         builtin_modules = [("", name, False) for name in sys.builtin_module_names]
-        for x in list(pkgutil.iter_modules()) + builtin_modules:
+        for x in set(list(pkgutil.iter_modules()) + builtin_modules):
             # now ...
             # x[0] -> FileFinder(path_where_modules_was_found)
             # x[1] -> module/package name
@@ -370,22 +353,21 @@ class Callback(Model):
             #    continue
 
             # ignore _pkgs _starting _with '_'
-            if x[1].startswith("_") or x[1] == 'init_local_db':
+            if x[1].startswith("_") or x[1] == "init_local_db":
                 # nope
-                logger.debug(f"Skipping module {x[1]}")
 
                 continue
-            logger.debug(f"Adding module {x[1]}")
             # create the template dict
             modules[x[1]] = {"isPkg": x[2]}
 
             # i guess always expand module
             v = expand_module(modules[x[1]], x[1])
+            if x[1] in jump_over_modules:
+                continue
 
             # and maybe expand the package, if it's one
             if x[2] and v:
                 # package
-                # logger.debug(f"expanding pack {x[0]},{x[1]}")
                 modules[x[1]]["modules"] = {}
                 expand_package(modules[x[1]]["modules"], x)
 
@@ -393,11 +375,10 @@ class Callback(Model):
                 del modules[x[1]]
 
         # and return it
-        logger.debug(f"Found {len(modules)} modules")
         return modules
 
     @staticmethod
-    def export_modules() -> None:
+    def export_modules(jump_over_modules=None) -> None:
         """Get modules and save them to db (System)
 
         this takes about 4 seconds to run
@@ -405,15 +386,17 @@ class Callback(Model):
         and prints a LOT of stuff to the terminal
 
         currently (14-10 on spawner) uses about 19kb of memory (?)
+        Args:
+            jump_over_modules (list): the list of modules not to expand
         """
+        if jump_over_modules is None:
+            jump_over_modules = ["scipy", "twisted"]
 
-        data = Callback._get_modules()
+        data = Callback._get_modules(jump_over_modules)
 
         try:
             # currently using the old api
-            mods = System(
-                "PyModules", db="local"
-            )  # scopes('local').System['PyModules', 'cache']
+            mods = System("PyModules", db="local")  # scopes('local').System['PyModules', 'cache']
         except Exception:  # pylint: disable=broad-except
             mods = System(
                 "PyModules", new=True, db="local"

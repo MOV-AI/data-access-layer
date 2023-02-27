@@ -14,7 +14,7 @@ from threading import Timer
 from enum import Enum
 from .scope import Scope
 from dal.models.var import Var
-
+from dal.movaidb import MovaiDB
 from movai_core_shared.logger import Log
 
 
@@ -101,7 +101,7 @@ class FleetRobot(Scope):
             alert (dict): The alert dictionary with the keys: info, action and callback.
         """
         alert.pop("status")
-        alert_name = alert.get("alert_name")
+        alert_name = alert.get("name")
         FleetRobot.check_alert_dictionary(alert)
         self.Alerts[alert_name] = alert
 
@@ -127,3 +127,24 @@ class FleetRobot(Scope):
         for field in ("info", "action", "callback"):
             if field not in alert:
                 logger.warning(f"The field: {field} is missing from alert dictionary")
+
+    @staticmethod
+    def get_robot_key_by_ip(ip_address: str, key_name: str) -> bytes:
+        """Finds a key of a robot by the ip address.
+
+        Args:
+            ip_address (str): The ip address of the desired robot.
+            key_name (str): The name of required key.
+
+        Returns:
+            bytes: The public key.
+        """
+        robo_keys = {"IP": "", "PublicKey": ""}
+        db = MovaiDB("global")
+        fleet_robots = db.search_by_args("Robot", Name="*")[0]["Robot"]
+        for robot_id in fleet_robots:
+            robo_dict = {"Robot": {robot_id: robo_keys}}
+            robot = db.get(robo_dict)["Robot"][robot_id]
+            if robot["IP"] == ip_address:
+                return robot[key_name]
+        return None
