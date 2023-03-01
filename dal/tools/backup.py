@@ -1906,30 +1906,42 @@ def main():
 
     project = args.project
     recursive = not args.individual
+    
+    redis_master_host = os.getenv("REDIS_MASTER_HOST", "None")
+    redis_write = (redis_master_host == "redis-master")
+        
     if args.action == "import":
-        tool = Importer(
-            project,
-            force=args.force,
-            dry=args.dry,
-            debug=args.debug,
-            root_path=args.root_path,
-            recursive=recursive,
-            clean_old_data=args.clean_old_data,
-        )
+        if redis_write:
+            tool = Importer(
+                project,
+                force=args.force,
+                dry=args.dry,
+                debug=args.debug,
+                root_path=args.root_path,
+                recursive=recursive,
+                clean_old_data=args.clean_old_data,
+            )
+        else:
+            print("Skipping importer...")
+            exit(0)
     elif args.action == "export":
         tool = Exporter(
             project, debug=args.debug, root_path=args.root_path, recursive=recursive
         )
     elif args.action == "remove":
-        tool = Remover(
-            force=args.force,
-            dry=args.dry,
-            debug=args.debug,
-            root_path=args.root_path,
-            recursive=recursive,
-        )
-        # so the action print is not 'Removeed'
-        args.action = args.action[:-1]
+        if redis_write:
+           tool = Remover(
+               force=args.force,
+               dry=args.dry,
+               debug=args.debug,
+               root_path=args.root_path,
+               recursive=recursive,
+           )
+           # so the action print is not 'Removeed'
+           args.action = args.action[:-1]
+       else:
+           print("Skipping remover...")
+           exit(0)
     else:
         print(f"Unknown action {args.action}")
         exit(1)
