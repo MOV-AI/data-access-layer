@@ -17,6 +17,7 @@ import argparse
 import sys
 import re
 from importlib import import_module
+from movai_core_shared.envvars import REDIS_MASTER_HOST
 
 from dal.movaidb import MovaiDB
 from dal.models.scopestree import scopes
@@ -1907,8 +1908,7 @@ def main():
     project = args.project
     recursive = not args.individual
     
-    redis_master_host = os.getenv("REDIS_MASTER_HOST", "None")
-    redis_write = (redis_master_host == "redis-master")
+    redis_write = (REDIS_MASTER_HOST == "redis-master")
         
     if args.action == "import":
         if redis_write:
