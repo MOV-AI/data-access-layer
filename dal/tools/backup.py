@@ -19,8 +19,7 @@ import re
 from importlib import import_module
 
 from dal.movaidb import MovaiDB
-
-from dal.scopes import scopes
+from dal.models.scopestree import scopes
 
 
 def _from_path(name):
@@ -1818,8 +1817,7 @@ class Remover(Backup):
             self.set_removed(scope, name)
 
 
-if __name__ == "__main__":
-
+def main():
     parser = argparse.ArgumentParser(description="Export/Import/Remove Mov.AI Data")
     parser.add_argument(
         "-a",
@@ -1967,3 +1965,6 @@ if __name__ == "__main__":
 
     # not exited before, means exception
     exit(1)
+
+if __name__ == "__main__":
+    main()

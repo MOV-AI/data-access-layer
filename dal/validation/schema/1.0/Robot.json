@@ -7,6 +7,8 @@
       "IP": "ip_add",
       "Info": "str",
       "Actions": "list",
+      "Notifications": "list",
+      "Alerts": "hash",
       "Status": "hash",
       "Parameter": {
         "$name": {

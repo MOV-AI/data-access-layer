@@ -1,0 +1,11 @@
+{
+    "_version": "1.0",
+    "schema": {
+      "$name": {
+            "Value": "str",
+            "Queue": "any",
+            "Alive": "any"
+          }
+    }
+  }
+  

@@ -101,7 +101,7 @@ To better understand the class behind each node, ```schemas/1.0/Flow/Parameter/D
 ### Code Snippets
 
 ```
-from movai.data import schemas
+from dal.data import schemas
 flow_schema = schemas("Flow")
 print(flow_schema)
 ```

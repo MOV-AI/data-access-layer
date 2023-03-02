@@ -1,0 +1,18 @@
+{
+  "_version": "1.0",
+  "schema": {
+    "$name": {
+      "DomainName": "str",
+      "AccountName": "str",
+      "Password": "str",
+      "CommonName": "str",
+      "Email": "str",
+      "UserType": "str",
+      "Roles": "str",
+      "ReadOnly": "bool",
+      "SuperUser": "bool",
+      "SendReport": "bool",
+      "LastUpdate": "any"
+    }
+  }
+}

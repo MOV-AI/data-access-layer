@@ -7,8 +7,8 @@
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
 """
 from abc import ABC, abstractproperty
-from .persistence import Persistence
-from .tree import DictNode
+from dal.plugins.classes import Persistence
+from dal.data.tree import DictNode
 
 
 class WorkspaceManager:
@@ -147,12 +147,25 @@ class WorkspaceNode(DictNode, WorkspaceObject):
         """
         self._plugin.write(data, **kwargs)
 
+    def pull(self, **kwargs):
+        return self._plugin.pull(**kwargs)
+
+    def prev_version(self, **kwargs):
+        return self._plugin.prev_version(**kwargs)
+
+    def push(self, **kwargs):
+        return self._plugin.push(**kwargs)
+
+    def create_version(self, version_tag, **kwargs):
+        return self._plugin.create_version(**kwargs)
+
     def read(self, **kwargs):
         """
         read object from this workspace
         """
         data = self._plugin.read(**kwargs)
-        del data["schema_version"]
+        if "schema_version" in data:
+            del data["schema_version"]
         return data
 
     def delete(self, data: object = None, **kwargs):

@@ -12,9 +12,9 @@
 import uuid
 import pickle
 from movai_core_shared.exceptions import DoesNotExist
-from .scope import Scope
+from dal.scopes.scope import Scope
 from dal.movaidb import MovaiDB
-from .fleetrobot import FleetRobot
+from dal.scopes.fleetrobot import FleetRobot
 from .configuration import Configuration
 
 

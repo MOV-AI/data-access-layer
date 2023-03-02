@@ -19,10 +19,11 @@ import aioredis
 from redis.client import Pipeline
 from typing import Any, Tuple
 import dal
-from dal.classes import Singleton
-from dal.plugins import Resource
 from movai_core_shared.logger import Log
 from movai_core_shared.exceptions import InvalidStructure
+from dal.classes import Singleton
+from dal.plugins.classes import Resource
+
 
 LOGGER = Log.get_logger("dal.mov.ai")
 
@@ -458,7 +459,6 @@ class MovaiDB:
                             hkey: pickle.dumps(hval) for hkey, hval in value.items()
                         }
                         if value:
-                            db_set.delete(key)
                             db_set.hmset(key, value)
                     elif source == "list":
                         for lval in value:
@@ -568,6 +568,17 @@ class MovaiDB:
         await conn.wait_closed()
 
     # ===================  List and Hashes  ===============================
+    def lpush(self, _input: dict, pickl: bool = True):
+        """Push a value to the left of a Redis list"""
+        kvs = self.dict_to_keys(_input, validate=True)
+        for key, value, _ in kvs:
+            if pickl:
+                value = pickle.dumps(value)
+            try:
+                self.db_write.lpush(key, value)
+            except:
+                print('Something went wrong while saving "%s" in Redis' % (key))
+
     def push(self, _input: dict, pickl: bool = True):
         """Push a value to the right of a Redis list"""
         kvs = self.dict_to_keys(_input, validate=True)
@@ -578,6 +589,18 @@ class MovaiDB:
                 self.db_write.rpush(key, value)
             except:
                 print('Something went wrong while saving "%s" in Redis' % (key))
+
+    def rpop(self, _input: dict):
+        """Pop a value from the right of a Redis list"""
+        keys = self.search(_input)
+        pop_value = None
+        for key in keys:
+            pop_value = self.db_write.rpop(key)
+            break
+        if pop_value:
+            pop_value = self.decode_value(pop_value)
+
+        return pop_value
 
     def pop(self, _input: dict):
         """Pop a value from the left of a Redis list"""
@@ -728,7 +751,9 @@ class MovaiDB:
                         break
 
             if not is_ok:
-                raise Exception("Structure provided does not exist")
+                error_msg = f"Structure provided does not exist: {d}"
+                LOGGER.error(error_msg)
+                raise Exception(error_msg)
             if isinstance(v, dict) and isinstance(temp_api, dict):
                 self.validate(v, temp_api, key, validate, keys)
             else:

@@ -6,61 +6,72 @@
    Developers:
    - Moawiya Mograbi  (moawiya@mov.ai) - 2022
 """
-
-from .configuration import Configuration
+from .application import Application
+from .callback import Callback
+from .configuration import Config, Configuration
 from .fleetrobot import FleetRobot
+from .flow import Flow
+from .form import Form
+from .message import Message
 from .node import Node
-from .nodeinst import NodeInst
 from .package import Package
 from .ports import Ports
 from .robot import Robot
+from .role import Role
 from .scope import Scope
-from .scopestree import (
-    ScopeInstanceNode,
-    ScopeInstanceVersionNode,
-    ScopeDictNode,
-    ScopeObjectNode,
-    ScopePropertyNode,
-    ScopeNode,
-    ScopeWorkspace,
-    ScopesTree,
-    scopes,
-)
-from .structures import Struct, List, Hash
+from .statemachine import StateMachine, SMVars
+from .structures import Struct
 from .system import System
-from .container import Container
-from .flowlinks import FlowLinks
-from .callback import Callback
-from .flow import Flow
-from .form import Form
+from .user import User
 from .widget import Widget
 
 __all__ = [
-    "Configuration",
-    "FleetRobot",
-    "Node",
-    "NodeInst",
-    "Package",
-    "Ports",
-    "Robot",
-    "Scope",
-    "ScopeInstanceNode",
-    "ScopeInstanceVersionNode",
-    "ScopeNode",
-    "ScopeDictNode",
-    "ScopeObjectNode",
-    "scopes",
-    "ScopeWorkspace",
-    "ScopePropertyNode",
-    "ScopesTree",
-    "Struct",
-    "System",
-    "Container",
-    "FlowLinks",
-    "Callback",
-    "Flow",
-    "Form",
-    "Widget",
-    "List",
-    "Hash",
+   "Application",
+   "Callback",
+   "Config",
+   "Configuration",
+   "FleetRobot",
+   "Flow",
+   "Form",
+   "Message",
+   "Node",
+   "Package",
+   "Ports",
+   "Robot",
+   "Role",
+   "Scope",
+   "StateMachine",
+   "SMVars",
+   "Struct",
+   "System",
+   "User",
+   "Widget",
 ]
+
+try:
+   from movai_core_enterprise.scopes import(
+      Annotation,
+      GraphicAsset,
+      GraphicScene,
+      Layout,
+      SharedDataEntry, 
+      SharedDataTemplate,
+      Task,
+      TaskEntry,
+      TaskTemplate,
+    )
+   enterprise_modules = [
+        'Annotation',
+        'GraphicAsset',
+        'GraphicScene',
+        'Layout',
+        'SharedDataEntry',
+        'SharedDataTemplate',
+        "Task",
+        'TaskEntry',
+        'TaskTemplate'
+    ]
+except ImportError:
+   enterprise_modules = []
+
+__all__.extend(enterprise_modules)

@@ -13,7 +13,7 @@ from jsonschema.exceptions import ValidationError
 from json import loads as load_json
 from os.path import abspath, dirname
 from dal.classes.filesystem import FileSystem
-from dal.classes.exceptions import SchemaVersionError
+from dal.exceptions import SchemaVersionError
 
 
 class Schema:
@@ -24,8 +24,8 @@ class Schema:
         self._version = Schema._get_schema_version(self._schema)
         full_path = abspath(schema_path)
         self._resolver = RefResolver(
-                            base_uri=f"file://{dirname(full_path)}/",
-                            referrer=self._schema)
+            base_uri=f"file://{dirname(full_path)}/",
+            referrer=self._schema)
 
     @staticmethod
     def _get_schema_version(schema_obj) -> float:
@@ -40,11 +40,8 @@ class Schema:
         Returns:
             float: the version in float
         """
-        id = schema_obj['$id']
-        if len(id.split('-')) == 1 or len(id.split('-')) > 2:
-            raise SchemaVersionError(f'wrong version string {id}, \
-                                     must be schema-x.x.x')
-        return float(id.split('-')[1])
+        version = schema_obj['$version']
+        return float(version)
 
     @property
     def version(self):

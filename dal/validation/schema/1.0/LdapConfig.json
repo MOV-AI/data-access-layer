@@ -1,0 +1,21 @@
+{
+    "_version": "1.0",
+    "schema": {
+      "$name": {
+        "PrimaryHost": "str",
+        "PrimaryPort": "int",
+        "SecondaryHost": "str",
+        "SecondaryPort": "int",
+        "SSLVersion": "int",
+        "Username": "str",
+        "Password": "str",
+        "DomainName": "str",      
+        "UsersDN": "str",
+        "GroupsDN": "str",
+        "SecretKey": "str",
+        "ValidationStatus": "bool",
+        "LastValidated": "any"
+      }
+    }
+  }
+  

@@ -1,0 +1,87 @@
+{
+    "$id": "layout.schema.json",
+    "$version": "2.4",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Layout Schema",
+    "definitions": {},
+    "type": "object",
+    "properties": {
+        "Layout": {
+            "type": "object",
+            "patternProperties": {
+                "^[a-zA-Z0-9_]+$": {
+                    "Description": "allOf here will validate instance inside Document to every object in the array",
+                    "allOf": [
+                        {
+                            "$ref": "common/base.schema.json"
+                        },
+                        {
+                            "type": "object",
+                            "Description": "all of the other fields (optional fields)",
+                            "properties": {
+                                "Icon": {
+                                    "type": "string"
+                                },
+                                "DashboardTitle": {
+                                    "type": "string"
+                                },
+                                "Styles": {
+                                    "type": "string"
+                                },
+                                "WidgetInst": {
+                                    "type": "object",
+                                    "patternProperties": {
+                                        "^(Button|Selector|Input|Label|Divider|Joystick|VideoPanel|Toggle|Scene)[0-9]*$": {
+                                            "type": "object",
+                                            "properties": {
+                                                "Template": {
+                                                    "type": "string"
+                                                },
+                                                "Parameter": {
+                                                    "$ref": "common/arg.schema.json"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                },
+                                "LayoutColors": {
+                                    "type": "array"
+                                },
+                                "allLayouts": {
+                                    "type": "object",
+                                    "patternProperties": {
+                                        "^[a-zA-Z0-9]+$": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "patternProperties": {
+                                                    "^(w|h|x|y|i|moved|static)$": {
+                                                        "type": [
+                                                            "integer",
+                                                            "string",
+                                                            "boolean"
+                                                        ]
+                                                    }
+                                                },
+                                                "additionalProperties": false
+                                            }
+                                        }
+                                    }
+                                },
+                                "layoutEvents": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "required": [
+        "Layout"
+    ],
+    "additionalProperties": false
+}
