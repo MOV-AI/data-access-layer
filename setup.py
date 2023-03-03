@@ -9,7 +9,7 @@ requirements = [
     "aioredis==1.3.0",
     "aiohttp==3.8.1",
     "deepdiff==4.0.9",
-    "gitpython==3.1.2",
+    "gitpython==3.1.31",
     "jsonschema==3.2.0",
     "miracle-acl==0.0.4.post1",
     "pyjwt==1.7.1",
