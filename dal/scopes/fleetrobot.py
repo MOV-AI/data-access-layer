@@ -10,17 +10,33 @@
    Module that implements Robot namespace
 """
 import pickle
-
+from threading import Timer
+from enum import Enum
+from .scope import Scope
+from dal.models.var import Var
+from dal.movaidb import MovaiDB
 from movai_core_shared.logger import Log
 
-from dal.movaidb import MovaiDB
-
-from .scope import Scope
 
 logger = Log.get_logger("FleetRobot")
+
+RECOVERY_TIMEOUT_IN_SECS = 15
+RECOVERY_STATE_KEY = "recovery_state"
+RECOVERY_RESPONSE_KEY = "recovery_response"
+
+
+class RecoveryStates(Enum):
+    """Class for keeping recovery states. Values are stored in recovery_state fleet variable."""
+    READY: str = "READY"
+    IN_RECOVERY: str = "IN_RECOVERY"
+    PUSHED: str = "PUSHED"
+    NOT_AVAILABLE: str = "NOT_AVAILABLE"
+
+
 class FleetRobot(Scope):
     """Represent the Robot scope in the redis-master.
     """
+
     def __init__(self, name: str, version="latest", new=False, db="global"):
         """constructor
 
@@ -42,6 +58,32 @@ class FleetRobot(Scope):
         to_send = pickle.dumps(to_send)
 
         self.Actions.append(to_send)
+
+    def trigger_recovery(self):
+        """Set Var to trigger Recovery Robot"""
+        var_scope = Var(scope="fleet", _robot_name=self.name)
+
+        # TODO: To be refactored to use shared ENUM for recovery state
+        value = RecoveryStates.PUSHED.value
+
+        setattr(var_scope, RECOVERY_STATE_KEY, value)
+
+        # If the state doesn't change after 15 secs, set a VAR to send a message to the interface
+        timeout = Timer(RECOVERY_TIMEOUT_IN_SECS, self._recovery_timeout)
+        timeout.start()
+
+    def _recovery_timeout(self):
+        """Handle recovery fail on timeout"""
+        var_scope = Var(scope="fleet", _robot_name=self.name)
+        recovery_state = var_scope.get(RECOVERY_STATE_KEY)
+
+        if recovery_state == RecoveryStates.PUSHED.value:
+            response = {
+                "success": False,
+                "message": "Failed to recover robot"
+            }
+            var_scope.set(RECOVERY_RESPONSE_KEY, response)
+            var_scope.set(RECOVERY_STATE_KEY, RecoveryStates.NOT_AVAILABLE.value)
 
     def get_active_alerts(self) -> dict:
         """Gets a dictionary of the active alerts on this specific robot.
@@ -71,7 +113,7 @@ class FleetRobot(Scope):
         """
         active_alerts = self.get_active_alerts()
         if alert in active_alerts:
-            #active_alerts.pop(alert)
+            # active_alerts.pop(alert)
             self.Alerts.pop(alert)
 
     @staticmethod
