@@ -10,7 +10,11 @@
 """
 from typing import Dict
 
-from movai_core_shared.exceptions import RoleAlreadyExist, RoleDoesNotExist
+from movai_core_shared.exceptions import (
+    RoleAlreadyExist,
+    RoleDoesNotExist,
+    RoleError
+)
 from movai_core_shared.envvars import DEFAULT_ROLE_NAME
 
 from dal.models.scopestree import scopes
@@ -69,6 +73,8 @@ class Role(Model):
         Raises:
             RoleDoesNotExist: In case there is no Role with that name.
         """
+        if name == DEFAULT_ROLE_NAME:
+            raise RoleError(f"Deleting the {name} role is forbidden!")
         try:
             RemoteUser.remove_role_from_all_users(name)
             InternalUser.remove_role_from_all_users(name)
