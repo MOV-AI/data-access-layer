@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 requirements = [
-    "aioredis==1.3.0",
+    "aioredis==1.3.1",
     "aiohttp==3.8.1",
     "deepdiff==4.0.9",
     "gitpython==3.1.31",
