@@ -9,18 +9,34 @@
    Backup a.k.a. Import Export tool
 """
 
-import os
-import json
-import pickle
-import hashlib
 import argparse
-import sys
+import hashlib
+import importlib
+import json
+import os
+import pickle
 import re
-from importlib import import_module
-from movai_core_shared.envvars import REDIS_MASTER_HOST
+import sys
 
-from dal.movaidb import MovaiDB
-from dal.models.scopestree import scopes
+from API2.Layer1 import MovaiDB
+from movai.data import scopes
+
+
+def test_reachable(redis_url):
+    """Helper function to test wether a redis_server is reachable or not
+    Args:
+        redis_url (string): URL of redis server to test
+
+    Returns:
+        bool: True if reachable
+    """
+    try:
+        from redis import Redis
+        r = Redis(redis_url, socket_connect_timeout=1)
+        return r.ping()
+    except Exception as exc:
+        print(f"Warning: {exc}")
+        return False
 
 
 def _from_path(name):
@@ -61,26 +77,29 @@ class RemoveException(Exception):
 
 
 class Factory:
-
     # cache
     CLASSES_CACHE = {}
 
+    @staticmethod
     def get_class(scope):
         """
         Get the scope
         """
         if scope not in Factory.CLASSES_CACHE:
-            mod = import_module("dal.scopes")
+            try:
+                mod = importlib.import_module(f"API2.{scope}")
+            except ImportError:
+                mod = importlib.import_module("API2.Scopes")
+
             try:
                 Factory.CLASSES_CACHE[scope] = getattr(mod, scope)
-            except AttributeError:
-                raise BackupException(f"Scope does not exists {scope}")
+            except AttributeError as exc:
+                raise BackupException(f'Scope does not exists {scope}') from exc
 
         return Factory.CLASSES_CACHE[scope]
 
 
 class Backup(object):
-
     #
     # some constants
     #
@@ -107,10 +126,7 @@ class Backup(object):
         "SharedDataEntry",
     ]
 
-    def __init__(
-        self, project, debug: bool = False, root_path=_ROOT_PATH, recursive=True
-    ):
-
+    def __init__(self, project, debug: bool = False, root_path=_ROOT_PATH, recursive=True):
         self.project = project
         self.recursive = recursive
         # in case of None
@@ -133,6 +149,7 @@ class Backup(object):
     # and return a list of items,
     # else, should be a list
     #
+    @staticmethod
     def read_manifest(manifest, all_default=[None]):
         objects = {}
         # let it blow
@@ -145,7 +162,7 @@ class Backup(object):
                 if not _type or not _name:
                     # what?
                     continue
-                if not _type in objects.keys():
+                if _type not in objects.keys():
                     objects[_type] = []
                 if _name != "*":
                     objects[_type] += [_name]
@@ -173,7 +190,6 @@ class Backup(object):
 # implements the import mechanisms
 #
 class Importer(Backup):
-
     #
     # Importer creation
     # given the project name
@@ -195,7 +211,6 @@ class Importer(Backup):
         clean_old_data: bool = False,
         **kwargs,
     ):
-
         super().__init__(project, **kwargs)
 
         self.force = force
@@ -212,9 +227,7 @@ class Importer(Backup):
             # override import_data to not import data
             self._import_data = lambda scope, name, _: self.set_imported(scope, name)
             # remove project root dir from it, plus an extra '/' (+1)
-            self.dry_print = lambda *paths: [
-                print(path[len(self.project_path) + 1 :]) for path in paths
-            ]
+            self.dry_print = lambda *paths: [print(path[len(self.project_path) + 1 :]) for path in paths]
         else:
             self._db = MovaiDB()
             self.dry_print = lambda *paths: None
@@ -310,7 +323,6 @@ class Importer(Backup):
     # (look at code for more info)
     #
     def _list_files(self, scope, extract=None, match=None):
-
         extractor = extract
         if extract is None:
 
@@ -327,9 +339,7 @@ class Importer(Backup):
 
         try:
             return [
-                (extractor(file), os.path.join(scope_path, file))
-                for file in os.listdir(scope_path)
-                if matcher(file)
+                (extractor(file), os.path.join(scope_path, file)) for file in os.listdir(scope_path) if matcher(file)
             ]
         except FileNotFoundError:
             # "ignore" it
@@ -351,7 +361,6 @@ class Importer(Backup):
     # raises a ImportException if match returns false
     #
     def _get_files(self, scope, names, build=None, match=None):
-
         names = [_from_path(n) for n in names]
 
         if len(names) == 0:
@@ -412,7 +421,6 @@ class Importer(Backup):
     # wrapper around movaidb.set
     #
     def _import_data(self, scope, name, data):
-
         # remove unwanted keys
         if self._delete:
             try:
@@ -452,7 +460,6 @@ class Importer(Backup):
     # it finds, given a scope
     #
     def import_default(self, scope, names=None):
-
         # all defaults
         files = self.get_files(scope, names)
 
@@ -509,7 +516,6 @@ class Importer(Backup):
     # with contents found in <name>.py
     #
     def import_callback(self, names=None):
-
         # default lambdas
         files = self.get_files("Callback", names)
 
@@ -542,7 +548,6 @@ class Importer(Backup):
     # recursively look for files of the package
     #
     def import_package(self, names=None):
-
         dirs = self.get_files(
             "Package",
             names,
@@ -601,11 +606,9 @@ class Importer(Backup):
     # imports messages
     #
     def import_message(self, names=None):
-
         files = self.get_files("Message", names)
 
         for name, file_path in files:
-
             if self.imported("Message", name):
                 continue
 
@@ -683,7 +686,6 @@ class Importer(Backup):
     # import tasktemplates
     #
     def import_tasktemplate(self, names=None):
-
         files = self.get_files("TaskTemplate", names)
 
         for name, file_path in files:
@@ -709,7 +711,6 @@ class Importer(Backup):
     # but imports dependencies
     #
     def import_flow(self, names=None):
-
         files = self.get_files("Flow", names)
 
         for name, file_path in files:
@@ -752,7 +753,6 @@ class Importer(Backup):
     # but imports dependencies
     #
     def import_node(self, names=None):
-
         files = self.get_files("Node", names)
 
         for name, file_path in files:
@@ -775,7 +775,6 @@ class Importer(Backup):
     # import shared data entry
     #
     def import_shareddataentry(self, names=None):
-
         files = self.get_files("SharedDataEntry", names)
 
         for name, file_path in files:
@@ -804,7 +803,6 @@ class Importer(Backup):
     # with dependencies
     #
     def import_statemachine(self, names=None):
-
         # all defaults
         files = self.get_files("StateMachine", names)
 
@@ -838,7 +836,6 @@ class Importer(Backup):
     # with dependencies
     #
     def import_graphicscene(self, names=None):
-
         # all defaults
         files = self.get_files("GraphicScene", names)
 
@@ -860,11 +857,7 @@ class Importer(Backup):
                 scene = data["GraphicScene"][name]
                 for asset_type in scene["AssetType"]:
                     for asset in scene["AssetType"][asset_type]:
-                        annotations = list(
-                            scene["AssetType"][asset_type][asset]
-                            .get("Annotation", {})
-                            .keys()
-                        )
+                        annotations = list(scene["AssetType"][asset_type][asset].get("Annotation", {}).keys())
                         try:
                             self.import_annotation(annotations)
                         except AttributeError:
@@ -886,7 +879,6 @@ class Importer(Backup):
                 self.import_default("Message", [ports["Data"]["Package"]])
 
     def dependencies_tasktemplate(self, tasktemplate: dict):
-
         # get importers
         try:
             sdt_importer = self.import_shareddatatemplate
@@ -913,13 +905,13 @@ class Importer(Backup):
                 return ("Callback", names)
 
         try:
-            flow_importer = self.import_flow
+            self.import_flow
 
             def flow_args(names):
                 return (names,)
 
         except AttributeError:
-            flow_importer = self.import_default
+            self.import_default
 
             def flow_args(names):
                 return ("Flow", names)
@@ -941,7 +933,6 @@ class Importer(Backup):
         cb_importer(*cb_args(callbacks))
 
     def dependencies_node(self, node: dict):
-
         try:
             sm_importer = self.import_statemachine
 
@@ -1018,7 +1009,6 @@ class Importer(Backup):
 # implements the export mechanisms
 #
 class Exporter(Backup):
-
     #
     # Exporter creation
     # the project is the project name
@@ -1029,7 +1019,6 @@ class Exporter(Backup):
     # be overriden with 'root_path' param
     #
     def __init__(self, *args, **kwargs):
-
         super().__init__(*args, **kwargs)
 
         # create base directory
@@ -1062,18 +1051,13 @@ class Exporter(Backup):
     # if exists
     #
     def override(self, path):
-
         if self._override != 0:
             return self._override == 1
 
         if not os.path.exists(path):
             return True
 
-        choice = (
-            input(f"'{path}' already exists, replace it?\n[Y/n/[A]ll/[K]eep all]")
-            .strip()
-            .upper()
-        )
+        choice = input(f"'{path}' already exists, replace it?\n[Y/n/[A]ll/[K]eep all]").strip().upper()
 
         if not choice:
             # default
@@ -1169,7 +1153,6 @@ class Exporter(Backup):
     #
 
     def export_callback(self, name):
-
         name = _from_path(name)
 
         if self.exported("Callback", name):
@@ -1508,7 +1491,7 @@ class Exporter(Backup):
         # if Dummy is true, it must be replaced with
         # Remappable = false and Launch = false
         try:
-            if b["Dummy"] == True:
+            if b["Dummy"] is True:
                 b["Remappable"] = False
                 b["Launch"] = False
 
@@ -1528,7 +1511,6 @@ class Exporter(Backup):
             file.write(_data)
 
     def ports2file(self, data, path):
-
         try:
             with open(path) as file:
                 current = json.load(file)
@@ -1564,7 +1546,6 @@ class Exporter(Backup):
     #
 
     def dependencies_tasktemplate(self, tasktemplate):
-
         try:
             sdt_exporter = self.export_shareddatatemplate
 
@@ -1596,7 +1577,6 @@ class Exporter(Backup):
             sdt_exporter(*sdt_args(key))
 
     def dependencies_node(self, node):
-
         try:
             sm_exporter = self.export_statemachine
 
@@ -1751,7 +1731,7 @@ class Remover(Backup):
 
         # iterate over Nodes, Flows, ...
         for scope_name in Backup.SCOPES:
-            if not scope_name in objects:
+            if scope_name not in objects:
                 continue
 
             object_names = None if None in objects[scope_name] else objects[scope_name]
@@ -1797,7 +1777,7 @@ class Remover(Backup):
             self._db.delete_by_args(scope, Name=obj.name)
             self.log(f"Removed {scope}:{name}")
         except Exception as e:
-            print(f"Item {scope}:{name} not present in database")
+            print(f"Item {scope}:{name} not present in database ({e})")
             pass
 
     def remove_default(self, scope, names):
@@ -1818,7 +1798,7 @@ class Remover(Backup):
             self.set_removed(scope, name)
 
 
-def main():
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Export/Import/Remove Mov.AI Data")
     parser.add_argument(
         "-a",
@@ -1852,13 +1832,9 @@ def main():
         metavar="",
         default=None,
     )
-    parser.add_argument(
-        "-n", "--name", help="Object name", type=str, metavar="", default=None
-    )
+    parser.add_argument("-n", "--name", help="Object name", type=str, metavar="", default=None)
 
-    parser.add_argument(
-        "-r", "--root-path", help="Database path", type=str, metavar="", default=None
-    )
+    parser.add_argument("-r", "--root-path", help="Database path", type=str, metavar="", default=None)
 
     parser.add_argument(
         "-f",
@@ -1907,9 +1883,9 @@ def main():
 
     project = args.project
     recursive = not args.individual
-    
-    redis_write = (REDIS_MASTER_HOST == "redis-master")
-        
+
+    redis_write = test_reachable("redis-master")
+
     if args.action == "import":
         if redis_write:
             tool = Importer(
@@ -1925,23 +1901,21 @@ def main():
             print("Skipping importer...")
             exit(0)
     elif args.action == "export":
-        tool = Exporter(
-            project, debug=args.debug, root_path=args.root_path, recursive=recursive
-        )
+        tool = Exporter(project, debug=args.debug, root_path=args.root_path, recursive=recursive)
     elif args.action == "remove":
         if redis_write:
-           tool = Remover(
-               force=args.force,
-               dry=args.dry,
-               debug=args.debug,
-               root_path=args.root_path,
-               recursive=recursive,
-           )
-           # so the action print is not 'Removeed'
-           args.action = args.action[:-1]
-       else:
-           print("Skipping remover...")
-           exit(0)
+            tool = Remover(
+                force=args.force,
+                dry=args.dry,
+                debug=args.debug,
+                root_path=args.root_path,
+                recursive=recursive,
+            )
+            # so the action print is not 'Removeed'
+        else:
+            print("Skipping remover...")
+            exit(0)
+        args.action = args.action[:-1]
     else:
         print(f"Unknown action {args.action}")
         exit(1)
@@ -1950,8 +1924,8 @@ def main():
         objects = tool.read_manifest(args.manifest)
     else:
         objects = {}
-        if args.type != None:
-            if args.name == None or args.name == "*":
+        if args.type is not None:
+            if args.name is None or args.name == "*":
                 objects[args.type] = tool.get_objs(args.type)
             else:
                 objects[args.type] = [args.name]
@@ -1977,6 +1951,3 @@ def main():
 
     # not exited before, means exception
     exit(1)
-
-if __name__ == "__main__":
-    main()
