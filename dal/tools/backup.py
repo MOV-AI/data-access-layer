@@ -18,8 +18,8 @@ import pickle
 import re
 import sys
 
-from API2.Layer1 import MovaiDB
-from movai.data import scopes
+from dal.movaidb.database import MovaiDB
+from dal.models.scopestree import scopes
 
 
 def test_reachable(redis_url):
