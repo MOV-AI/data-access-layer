@@ -459,6 +459,7 @@ class MovaiDB:
                             hkey: pickle.dumps(hval) for hkey, hval in value.items()
                         }
                         if value:
+                            db_set.delete(key)
                             db_set.hmset(key, value)
                     elif source == "list":
                         for lval in value:
