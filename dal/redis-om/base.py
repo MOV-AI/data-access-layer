@@ -1,25 +1,28 @@
-import enum
 from typing import Optional, Union
-from pydantic import BaseModel, constr
-from pydantic.config import BaseConfig
+import pydantic
+from redis_om import Field, get_redis_connection, JsonModel
 
 
-class LastUpdate(BaseModel):
+class LastUpdate(pydantic.BaseModel):
     date: str
     user: str
 
 
-class BaseSchema(BaseModel):
-    class Config(BaseConfig):
-        exclude = ["Version"]
+LABEL_REGEX = r"^[a-zA-Z0-9._-]+$"
 
+
+class MovaiBaseModel(JsonModel):
     Info: Optional[str] = None
-    Label: constr(regex=r"^[a-zA-Z0-9._-]+$")
+    Label: pydantic.constr(regex=LABEL_REGEX)
     Description: Optional[str] = None
     LastUpdate: Union[LastUpdate, str]
-    Version: str = "__UNVERSIONED__"  # added for tests
+    Version: str = "__UNVERSIONED__"
+    id: str = Field(default="", index=True)
 
+    class Meta:
+        global_key_prefix = "Models"
+        database = get_redis_connection(url="redis://172.17.0.2", db=0)
 
-class CSVColumns(enum.Enum):
-    LastUpdate_date = "LastUpdate.date"
-    LastUpdate_user = "LastUpdate.user"
+    class Config:
+        # Force Validation in case field value change
+        validate_assignment = True

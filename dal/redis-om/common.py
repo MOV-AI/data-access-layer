@@ -1,13 +1,8 @@
-from redis_om import EmbeddedJsonModel, Field
+from redis_om import HashModel
 from typing import Optional
 
 
-class LastUpdate(EmbeddedJsonModel):
-    date: str
-    user: str = Field(index=True)
-
-
-class Arg(EmbeddedJsonModel):
+class Arg(HashModel):
     Description: Optional[str] = None
     Value: object
     Type: Optional[str] = None

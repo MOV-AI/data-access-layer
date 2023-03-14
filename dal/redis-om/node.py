@@ -1,23 +1,28 @@
 from typing import Optional, Dict, List, Any, Union
-from pydantic import constr
-from redis_om import EmbeddedJsonModel, JsonModel, Migrator, get_redis_connection, Field
-from common import LastUpdate, Arg
+from pydantic import constr, BaseModel
+from redis_om import Migrator, Field
+from common import Arg
+from base import MovaiBaseModel
 from re import search
 import json
 
 
-class Parameter1(EmbeddedJsonModel):
+KEY_REGEX = constr(regex=r"^[a-zA-Z0-9_]+$")
+PORT_NAME = constr(regex="^[a-zA-Z0-9_]+")
+
+
+class Parameter1(BaseModel):
     Child: Optional[str] = None
     Parent: Optional[str] = None
 
 
-class Portfields(EmbeddedJsonModel):
+class Portfields(BaseModel):
     Message: Optional[str] = None
     Callback: Optional[str] = None
     Parameter: Optional[Parameter1] = None
 
 
-class ActionFields(EmbeddedJsonModel):
+class ActionFields(BaseModel):
     cancel: Optional[Portfields] = None
     feedback: Optional[Portfields] = None
     goal: Optional[Portfields] = None
@@ -30,43 +35,31 @@ class OutValue(ActionFields):
 
 
 class InValue(ActionFields):
-    in_: Optional[Portfields] = Field(None, alias="in")
+    in_: Optional[Portfields] = Field(default=None, alias="in")
 
 
-class PortsInstValue(EmbeddedJsonModel):
-    Message: str
-    Package: str
+class PortsInstValue(BaseModel):
+    Message: Optional[str] = ""
+    Package: Optional[str] = ""
     Template: str
     Out: Optional[OutValue] = None
     In: Optional[InValue] = None
 
 
-class Node(JsonModel):
-    id: str = Field(default="", index=True)
-    Info: Optional[str] = None
-    Label: constr(regex=r"^[a-zA-Z0-9._-]+$")
-    Description: Optional[str] = None
-    LastUpdate: LastUpdate
-    Version: str = Field(default="__UNVERSIONED__", index=True)
-    EnvVar: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), Arg]] = None
-    CmdLine: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), Arg]] = None
-    Parameter: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), Arg]] = None
+class Node(MovaiBaseModel):
+    EnvVar: Optional[Dict[KEY_REGEX, Arg]] = None
+    CmdLine: Optional[Dict[KEY_REGEX, Arg]] = None
+    Parameter: Optional[Dict[KEY_REGEX, Arg]] = None
     Launch: Optional[Union[bool, str]] = None
     PackageDepends: Optional[Union[str, List[Any]]] = None
     Path: Optional[str] = None
     Persistent: Optional[bool] = None
-    PortsInst: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), PortsInstValue]] = None
+    PortsInst: Dict[str, PortsInstValue]
     Remappable: Optional[bool] = None
     Type: Optional[str] = None
 
     class Meta:
-        global_key_prefix = "Models"
         model_key_prefix = "Node"
-        database = get_redis_connection(url="redis://172.17.0.2", db=0)
-
-    class Config:
-        # Force Validation in case field value change
-        validate_assignment = True
 
     def __init__(self, *args, **kwargs):
         version = "__UNVERSIONED__"
@@ -104,163 +97,48 @@ class Node(JsonModel):
         return schema
 
 
+Migrator().run()
 n = Node(
     **{
         "Node": {
-            "GoTo": {
-                "Info": "Main node to perform robot navigation. The GoTo node sends to the main navigation stack via Redis, the information on the navigation type, the goal and annotations to use.",
-                "Label": "GoTo",
-                "LastUpdate": {"date": "03/01/2023 at 12:16:14", "user": "movai"},
-                "Launch": True,
+            "Countto10": {
+                "Info": "A state that transitions to the done oport a set maximum number of counts (param: max_count) after which the state transitions to the max_count oport. The counter name can be set using the counter_name and the reset param can be used to reset the counter value to zero count, given counter name. ",
+                "Label": "CounterYYYY",
+                "LastUpdate": {"date": "02/07/2021 at 16:18:09", "user": "movai"},
+                "Launch": False,
                 "PackageDepends": "",
                 "Parameter": {
-                    "actuators": {
-                        "Description": "(Dict) Actuators to be performed by robot before sending the command to navigation stack, alerting the environment that the robot is going to move. List of possible values are described in the Actuator Stack for the Robot.",
-                        "Type": "any",
-                        "Value": "{'leds' : 'fade_green', 'buzzer': False}",
+                    "counter_name": {
+                        "Description": "[string] Name of the redis variable in which the node saves the current count or iterations. When using the reset functionality of this node, this redis variable is reset to zero",
+                        "Value": '"count_cycles"',
                     },
-                    "annotation": {
-                        "Description": "(Str) Name of the annotation to include. Use None to not include any",
-                        "Type": "any",
-                        "Value": "None",
+                    "max_count": {
+                        "Description": '[integer] Number of times this node will transition to the "done" oport, once exceeded the node will transition to the "max_count" out port',
+                        "Value": "2",
                     },
-                    "error_log": {
-                        "Description": "(Str) (Str) Log to be displayed when the node fails to achieve the given navigation command",
-                        "Type": "any",
-                        "Value": "",
-                    },
-                    "goal": {
-                        "Description": "(Float/Str) This can be a distance (m) or, angle (deg) or, a trajectory or, a keypoint name from the Scene, depending on the nav_type parameter. If None, default value is from Var('Robot').goal_id. ",
-                        "Type": "any",
-                        "Value": "None",
-                    },
-                    "info_log": {
-                        "Description": "(Str) Log to be displayed when the node successfully achieve the given navigation command",
-                        "Type": "any",
-                        "Value": "",
-                    },
-                    "localization": {
-                        "Description": "(dict) Localization sources to use for the current movement",
-                        "Type": "any",
-                        "Value": "$(config localization.default)",
-                    },
-                    "nav_type": {
-                        "Description": "(Str) Type of navigation to use. e.g: move_distance, rotate, dock, graph_nav, traj_nav, free_nav.\n The list of all possible values is described in https://movai.readme.io/docs/types",
-                        "Type": "any",
-                        "Value": "rotate",
-                    },
-                    "params": {
-                        "Description": "(dict) Any parameters sent here will overwrite the ones in the annotation",
-                        "Type": "any",
-                        "Value": "{}",
-                    },
-                    "timeout_log": {
-                        "Description": "(Str) Log to be displayed when the node timed out to achieve the given navigation command",
-                        "Type": "any",
-                        "Value": "",
-                    },
-                    "use_task_manager": {
-                        "Description": "(Bool) Enable/Disable task manager features in the node ",
-                        "Type": "any",
-                        "Value": "$(config project.use_task_manager)",
+                    "reset": {
+                        "Description": "[bool] Reset the counter state, stored in the redis flow variable mentioned in the counter_name parameter, to zero.",
+                        "Value": "False",
                     },
                 },
                 "Path": "",
                 "Persistent": False,
                 "PortsInst": {
-                    "actuators_stack": {
-                        "In": {
-                            "in": {
-                                "Callback": "place_holder",
-                                "Message": "movai_msgs/Context",
-                                "Parameter": {"Namespace": "actuators"},
-                            }
-                        },
-                        "Message": "Context",
-                        "Out": {
-                            "out": {
-                                "Message": "movai_msgs/Context",
-                                "Parameter": {"Namespace": "actuators"},
-                            }
-                        },
-                        "Package": "movai_msgs",
-                        "Template": "MovAI/ContextClient",
-                    },
-                    "end": {
+                    "done": {
                         "Message": "Transition",
                         "Out": {"out": {"Message": "movai_msgs/Transition"}},
                         "Package": "movai_msgs",
                         "Template": "MovAI/TransitionFor",
                     },
-                    "failed": {
-                        "Message": "Transition",
-                        "Out": {"out": {"Message": "movai_msgs/Transition"}},
-                        "Package": "movai_msgs",
-                        "Template": "MovAI/TransitionFor",
-                    },
-                    "localization_stack": {
+                    "entry": {
                         "In": {
-                            "in": {
-                                "Callback": "place_holder",
-                                "Message": "movai_msgs/Context",
-                                "Parameter": {"Namespace": "localization"},
-                            }
-                        },
-                        "Message": "Context",
-                        "Out": {
-                            "out": {
-                                "Message": "movai_msgs/Context",
-                                "Parameter": {"Namespace": "localization"},
-                            }
-                        },
-                        "Package": "movai_msgs",
-                        "Template": "MovAI/ContextClient",
-                    },
-                    "navigation_stack": {
-                        "In": {
-                            "in": {
-                                "Callback": "goto_navigation_stack",
-                                "Message": "movai_msgs/Context",
-                                "Parameter": {"Namespace": "navigation"},
-                            }
-                        },
-                        "Message": "Context",
-                        "Out": {
-                            "out": {
-                                "Message": "movai_msgs/Context",
-                                "Parameter": {"Namespace": "navigation"},
-                            }
-                        },
-                        "Package": "movai_msgs",
-                        "Template": "MovAI/ContextClient",
-                    },
-                    "safety_stack": {
-                        "In": {
-                            "in": {
-                                "Callback": "place_holder",
-                                "Message": "movai_msgs/Context",
-                                "Parameter": {"Namespace": "risk_prevention"},
-                            }
-                        },
-                        "Message": "Context",
-                        "Out": {
-                            "out": {
-                                "Message": "movai_msgs/Context",
-                                "Parameter": {"Namespace": "risk_prevention"},
-                            }
-                        },
-                        "Package": "movai_msgs",
-                        "Template": "MovAI/ContextClient",
-                    },
-                    "start": {
-                        "In": {
-                            "in": {"Callback": "goto_start", "Message": "movai_msgs/Transition"}
+                            "in": {"Callback": "Counter_CB", "Message": "movai_msgs/Transition"}
                         },
                         "Message": "Transition",
                         "Package": "movai_msgs",
                         "Template": "MovAI/TransitionTo",
                     },
-                    "timeout": {
+                    "max_count": {
                         "Message": "Transition",
                         "Out": {"out": {"Message": "movai_msgs/Transition"}},
                         "Package": "movai_msgs",
@@ -277,4 +155,6 @@ n = Node(
     }
 )
 
-print(n.save())
+n.save()
+
+print(Node.find(Node.id == "Node:Counter:__UNVERSIONED__").all())
