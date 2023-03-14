@@ -1,11 +1,10 @@
 import pydantic
 from typing import Union, Optional, Dict
-from pydantic import constr
 from pydantic.types import StrictStr
-from redis_om import get_redis_connection, Migrator, EmbeddedJsonModel, JsonModel, Field
+from redis_om import Migrator
 from re import search
 import json
-from common import LastUpdate
+from base import MovaiBaseModel
 
 
 ValidStr = pydantic.constr(regex=r"^[a-zA-Z_]+$")
@@ -17,20 +16,13 @@ class Py3LibValue(pydantic.BaseModel):
     Module: str
 
 
-class Callback(JsonModel):
+class Callback(MovaiBaseModel):
     Code: Optional[str] = None
     Message: Optional[str] = None
     Py3Lib: Dict[ValidStr, Py3LibValue]
-    id: str = Field(default="", index=True)
-    Info: Optional[str] = None
-    Label: constr(regex=r"^[a-zA-Z0-9._-]+$")
-    Description: Optional[str] = None
-    LastUpdate: LastUpdate
 
     class Meta:
-        global_key_prefix = "Models"
         model_key_prefix = "Callback"
-        database = get_redis_connection(url="redis://172.17.0.2", db=0)
 
     def __init__(self, *args, **kwargs):
         version = "__UNVERSIONED__"
@@ -69,10 +61,11 @@ class Callback(JsonModel):
         schema["definitions"]["LastUpdate"]["properties"].pop("pk")
         return schema
 
+
 callback = Callback(
     **{
         "Callback": {
-            "annotations_init": {
+            "annotations_initxxxx": {
                 "Code": 1,
                 "Info": "asglksdjlkdsjf",
                 "Label": "annotations_init",
@@ -86,13 +79,13 @@ callback = Callback(
                 "VersionDelta": {},
             }
         }
-    }, version_="v3"
+    }, version_="v4"
 )
-#print(callback.save())
 Migrator().run()
-print(Callback.find(Callback.LastUpdate.user == "movai").first())
-print(Callback.find(Callback.id == "Callback:annotations_init:v3").first())
-print(callback.schema_json())
+#print(Callback.find(Callback.LastUpdate.user == "movai").first())
+print(callback.save())
+print(Callback.find(Callback.id == "Callback:annotations_initxxxx:v4").first())
+#print(callback.schema_json())
 """
 start = time.time()
 #callback.save()
