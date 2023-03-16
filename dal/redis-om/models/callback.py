@@ -2,8 +2,6 @@ import pydantic
 from typing import Union, Optional, Dict
 from pydantic.types import StrictStr
 from redis_om import Migrator
-from re import search
-import json
 from base import MovaiBaseModel
 
 
@@ -24,43 +22,6 @@ class Callback(MovaiBaseModel):
     class Meta:
         model_key_prefix = "Callback"
 
-    def __init__(self, *args, **kwargs):
-        version = "__UNVERSIONED__"
-        if "version_" in kwargs:
-            version = kwargs["version_"]
-        if list(kwargs.keys())[0] == "Callback":
-            if kwargs is None or not isinstance(kwargs, dict):
-                return
-            type, struct_ = list(kwargs.items())[0]
-            # TODO validate types
-            if type != "Callback":
-                # TODO
-                raise ValueError("")
-
-            name = list(struct_.keys())[0]
-            # TODO change the id in future
-            id = f"Callback:{name}:{version}"
-            if search(r"^[a-zA-Z0-9_]+$", name) is None:
-                raise ValueError(
-                    f"Validation Error for {type} name:({name}), data:{kwargs}"
-                )
-
-            super().__init__(**struct_[name], id=id)
-        else:
-            super().__init__(*args, **kwargs)
-
-    def dict(self):
-        dic = super().dict(exclude_unset=True)
-        id = dic.pop('id')
-        return {"Callback": {id.split(":")[1]: dic}}
-
-    def schema_json(self):
-        schema = json.loads(super().schema_json())
-        schema["properties"].pop("pk")
-        schema["properties"].pop("id")
-        schema["definitions"]["LastUpdate"]["properties"].pop("pk")
-        return schema
-
 
 callback = Callback(
     **{
@@ -75,17 +36,17 @@ callback = Callback(
                     "Annotation": {"Class": "Annotation", "Module": "movai.models"}
                 },
                 "User": "",
-                "Version": "v4",
+                "Version": "v5",
                 "VersionDelta": {},
             }
         }
-    }, version_="v4"
+    }, version_="v5"
 )
 Migrator().run()
 #print(Callback.find(Callback.LastUpdate.user == "movai").first())
 print(callback.save())
-print(Callback.find(Callback.id == "Callback:annotations_initxxxx:v4").first())
-#print(callback.schema_json())
+print(Callback.find(Callback.id == "Callback:annotations_initxxxx:v5").first())
+print(callback.schema_json())
 """
 start = time.time()
 #callback.save()

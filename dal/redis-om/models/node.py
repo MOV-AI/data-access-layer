@@ -8,7 +8,7 @@ import json
 
 
 KEY_REGEX = constr(regex=r"^[a-zA-Z0-9_]+$")
-PORT_NAME = constr(regex="^[a-zA-Z0-9_]+")
+PORT_NAME = constr(regex=r"^[a-zA-Z0-9_]+")
 
 
 class Parameter1(BaseModel):
