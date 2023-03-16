@@ -79,7 +79,6 @@ class TimeSeriesDbHandler(BaseDBHandler):
             creation_time = time.time_ns()
 
         if self._db_clients is not None and db_name in self._db_clients:
-            validate_timestamp(creation_time)
             measurement_data = [
                 {
                     "measurement": measurement,
