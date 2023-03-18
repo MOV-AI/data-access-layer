@@ -15,7 +15,8 @@ valid_models = [
     "Flow",
     "Node",
     "Callback",
-    "Annotation"
+    "Annotation",
+    "GraphicScene"
 ]
 
 
