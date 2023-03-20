@@ -9,10 +9,11 @@
    An interface class for accessing a time series DB
    Currently the class is just for accessing InfluxDB and therefore it is directly accessing the influxDB APIs
 """
-from datetime import datetime
+import time
 from influxdb import InfluxDBClient
 
 from movai_core_shared.logger import Log
+from movai_core_shared.common.time import validate_timestamp
 from movai_core_shared.consts import INFLUXDB_HOST, INFLUXDB_DB_NAMES
 
 from .base_db_handler import BaseDBHandler
@@ -53,8 +54,6 @@ class TimeSeriesDbHandler(BaseDBHandler):
                 # If Database does not exist create
                 if db_name not in client.get_list_database():
                     client.create_database(db_name)
-                #if not [db for db in client.get_list_database() if db["name"] == db_name]:
-                #    client.create_database(db_name)
 
                 self._db_clients[db_name] = client
                 self._logger.info(f'Client for db {db_name} was registered')
@@ -62,24 +61,29 @@ class TimeSeriesDbHandler(BaseDBHandler):
                 self._logger.info(f'Failed to access InfluxDB in attempt to {db_name}')
                 self._db_exist = False
 
-    def insert_measurement(self, db_name: str, measurement: str, creation_time: float, tags: dict, data: dict):
-        """
-        Add the request measurement to the DB
-        Args:
-            request: The measurement to be added
+    def insert_measurement(self, db_name: str, measurement: str, creation_time: int, tags: dict, data: dict):
+        """Add the request measurement to the DB.
 
+        Args:
+            db_name (str): The name of the db where the measurement exist or will be created.
+            measurement (str): The name of the measurement to record the data.
+            creation_time (int): The time in nanosecs  of the record.
+            tags (dict): Tag keys for the record
+            data (dict): Fields keys for the record
         """
         if not self._db_exist:
-            # Local time series DB was not set
+            self._logger.error(f"The requested db: {db_name} was not set.")
             return
 
+        if creation_time is None:
+            creation_time = time.time_ns()
+
         if self._db_clients is not None and db_name in self._db_clients:
-            metric_time = datetime.fromtimestamp(creation_time)
             measurement_data = [
                 {
                     "measurement": measurement,
                     "tags": tags,
-                    "time": metric_time.strftime("%Y-%m-%dT%H:%M:%S"),
+                    "time": creation_time,
                     "fields": data
                 }
             ]
