@@ -17,7 +17,7 @@ import os
 import pickle
 import re
 import sys
-
+from importlib import import_module
 from dal.movaidb.database import MovaiDB
 from dal.models.scopestree import scopes
 
@@ -86,15 +86,12 @@ class Factory:
         Get the scope
         """
         if scope not in Factory.CLASSES_CACHE:
-            try:
-                mod = importlib.import_module(f"API2.{scope}")
-            except ImportError:
-                mod = importlib.import_module("API2.Scopes")
+            mod = import_module("dal.scopes")
 
             try:
                 Factory.CLASSES_CACHE[scope] = getattr(mod, scope)
             except AttributeError as exc:
-                raise BackupException(f'Scope does not exists {scope}') from exc
+                raise BackupException(f"Scope does not exists {scope}") from exc
 
         return Factory.CLASSES_CACHE[scope]
 
@@ -227,7 +224,9 @@ class Importer(Backup):
             # override import_data to not import data
             self._import_data = lambda scope, name, _: self.set_imported(scope, name)
             # remove project root dir from it, plus an extra '/' (+1)
-            self.dry_print = lambda *paths: [print(path[len(self.project_path) + 1 :]) for path in paths]
+            self.dry_print = lambda *paths: [
+                print(path[len(self.project_path) + 1 :]) for path in paths
+            ]
         else:
             self._db = MovaiDB()
             self.dry_print = lambda *paths: None
@@ -339,7 +338,9 @@ class Importer(Backup):
 
         try:
             return [
-                (extractor(file), os.path.join(scope_path, file)) for file in os.listdir(scope_path) if matcher(file)
+                (extractor(file), os.path.join(scope_path, file))
+                for file in os.listdir(scope_path)
+                if matcher(file)
             ]
         except FileNotFoundError:
             # "ignore" it
@@ -857,7 +858,9 @@ class Importer(Backup):
                 scene = data["GraphicScene"][name]
                 for asset_type in scene["AssetType"]:
                     for asset in scene["AssetType"][asset_type]:
-                        annotations = list(scene["AssetType"][asset_type][asset].get("Annotation", {}).keys())
+                        annotations = list(
+                            scene["AssetType"][asset_type][asset].get("Annotation", {}).keys()
+                        )
                         try:
                             self.import_annotation(annotations)
                         except AttributeError:
@@ -1057,7 +1060,9 @@ class Exporter(Backup):
         if not os.path.exists(path):
             return True
 
-        choice = input(f"'{path}' already exists, replace it?\n[Y/n/[A]ll/[K]eep all]").strip().upper()
+        choice = (
+            input(f"'{path}' already exists, replace it?\n[Y/n/[A]ll/[K]eep all]").strip().upper()
+        )
 
         if not choice:
             # default
@@ -1834,7 +1839,9 @@ if __name__ == "__main__":
     )
     parser.add_argument("-n", "--name", help="Object name", type=str, metavar="", default=None)
 
-    parser.add_argument("-r", "--root-path", help="Database path", type=str, metavar="", default=None)
+    parser.add_argument(
+        "-r", "--root-path", help="Database path", type=str, metavar="", default=None
+    )
 
     parser.add_argument(
         "-f",

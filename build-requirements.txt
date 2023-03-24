@@ -1,15 +1,11 @@
 # requirements for the execution of tests and packaging. Not runtime requirements.
-pytest
-mock
-bump2version
-flake8
-pylint
-pyyaml
-
-
-
-
-
-
-
-
+pytest==7.2.0
+mock==4.0.3
+bump2version==1.0.1
+flake8==5.0.4
+pylint==2.15.6
+black==22.10.0
+pytest-cov==4.0.0
+tox==3.27.1
+tox_DEBIAN==0.3
+PyYAML==6.0
