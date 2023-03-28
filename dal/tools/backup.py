@@ -1144,8 +1144,7 @@ class Exporter(Backup):
         try:
             obj = Factory.get_class(scope)(name)
         except:
-            self.log(f"Can't find {scope}:{name}")
-            return
+            raise ExportException(f"Can't find {scope}:{name}")
 
         json_path = os.path.join(scope, f"{name}.json")
         self.dict2file(obj.get_dict(), json_path)
@@ -1331,7 +1330,7 @@ class Exporter(Backup):
         try:
             node = Node(name)
         except Exception:
-            self.log(f"Can't find Node:{name}")
+            raise ExportException(f"Can't find Node:{name}")
             return
 
         # export dependencies
