@@ -1144,8 +1144,7 @@ class Exporter(Backup):
         try:
             obj = Factory.get_class(scope)(name)
         except:
-            self.log(f"Can't find {scope}:{name}")
-            return
+            raise ExportException(f"Can't find {scope}:{name}")
 
         json_path = os.path.join(scope, f"{name}.json")
         self.dict2file(obj.get_dict(), json_path)
@@ -1186,8 +1185,7 @@ class Exporter(Backup):
         try:
             package = Package(name)
         except:
-            self.log(f"Can't find Package:{name}")
-            return
+            raise ExportException(f"Can't find Package:{name}")
 
         for key in package.File:
             file_path = os.path.join(package_path, key)
@@ -1220,8 +1218,7 @@ class Exporter(Backup):
         try:
             obj = Message(name)
         except:
-            self.log(f"Can't find Message:{name}")
-            return
+            raise ExportException(f"Can't find Message:{name}")
 
         message_path = os.path.join(self.project_path, "Message", name)
         files = [("Msg", k) for k in obj.Msg.keys()]
@@ -1255,8 +1252,7 @@ class Exporter(Backup):
         try:
             flow = Flow(name)
         except:
-            self.log(f"Can't find Flow:{name}")
-            return
+            raise ExportException(f"Can't find Flow:{name}")
 
         # export dependencies
         # nodes
@@ -1291,8 +1287,8 @@ class Exporter(Backup):
         try:
             tasktemplate = TaskTemplate(name)
         except Exception:
-            self.log(f"Can't find TaskTemplate:{name}")
-            return
+            raise ExportException(f"Can't find TaskTemplate:{name}")
+
         if self.recursive:
             self.dependencies_tasktemplate(tasktemplate)
         self.export_default("TaskTemplate", name)
@@ -1308,8 +1304,7 @@ class Exporter(Backup):
         try:
             sde = SharedDataEntry(name)
         except Exception:
-            self.log(f"Can't find SharedDataEntry:{name}")
-            return
+            raise ExportException(f"Can't find SharedDataEntry:{name}")
 
         # dependencies
         if self.recursive:
@@ -1331,8 +1326,7 @@ class Exporter(Backup):
         try:
             node = Node(name)
         except Exception:
-            self.log(f"Can't find Node:{name}")
-            return
+            raise ExportException(f"Can't find Node:{name}")
 
         # export dependencies
         if self.recursive:
@@ -1354,8 +1348,8 @@ class Exporter(Backup):
             try:
                 sm = StateMachine(name)
             except:
-                self.log(f"Can't find StateMachine:{name}")
-                return
+                raise ExportException(f"Can't find StateMachine:{name}")
+
             for state in sm.State:
                 callback = sm.State[state].Callback
                 if callback:
@@ -1377,8 +1371,8 @@ class Exporter(Backup):
         try:
             ports = Ports(name)
         except:
-            self.log(f"Can't find Ports:{name}")
-            return
+            raise ExportException(f"Can't find Ports:{name}")
+
         if self.recursive:
             if "Package" in ports.Data:
                 try:
@@ -1414,8 +1408,7 @@ class Exporter(Backup):
             try:
                 scene = GraphicScene(name)
             except:
-                self.log(f"Can't find GraphicScene:{name}")
-                return
+                raise ExportException(f"Can't find GraphicScene:{name}")
 
             try:
                 self.export_package("maps")
@@ -1453,8 +1446,7 @@ class Exporter(Backup):
         try:
             config = Configuration(name)
         except:
-            self.log(f"Can't find Configuration:{name}")
-            return
+            raise ExportException(f"Can't find Configuration:{name}")
 
         self.export_default("Configuration", name)
 
