@@ -14,8 +14,20 @@ from threading import Timer
 from enum import Enum
 from .scope import Scope
 from dal.movaidb import MovaiDB
+from dal.models.var import Var
 from movai_core_shared.logger import Log
 
+RECOVERY_TIMEOUT_IN_SECS = 15
+RECOVERY_STATE_KEY = "recovery_state"
+RECOVERY_RESPONSE_KEY = "recovery_response"
+
+
+class RecoveryStates(Enum):
+    """Class for keeping recovery states. Values are stored in recovery_state fleet variable."""
+    READY: str = "READY"
+    IN_RECOVERY: str = "IN_RECOVERY"
+    PUSHED: str = "PUSHED"
+    NOT_AVAILABLE: str = "NOT_AVAILABLE"
 
 logger = Log.get_logger("FleetRobot")
 
@@ -108,3 +120,38 @@ class FleetRobot(Scope):
             if robot["IP"] == ip_address:
                 return robot[key_name]
         return None
+
+    def trigger_recovery_aux(self):
+        """Set Var to trigger Recovery Robot.
+
+        Args:
+            robot_id (str): The id of the robot to trigger recovery.
+
+        Raises:
+            Exception: In case Var could not be found.
+        """
+        try:
+            var_scope = Var(scope="fleet", _robot_name=self.name)
+            var_scope.set(RECOVERY_STATE_KEY, RecoveryStates.PUSHED.value)
+            # If the state doesn't change after 15 secs, set a VAR to send a message to the interface
+            timeout = Timer(RECOVERY_TIMEOUT_IN_SECS, lambda: self.recovery_timeout())
+            timeout.start()
+        except Exception as exc:
+            raise Exception("Caught exception in trigger recovery aux", exc)
+
+    def recovery_timeout(self):
+        """Handle recovery fail on timeout"""
+        try:
+            var_scope = Var(scope="fleet", _robot_name=self.name)
+            recovery_state = var_scope.get(RECOVERY_STATE_KEY)
+
+            if recovery_state == RecoveryStates.PUSHED.value:
+                response = {
+                    "success": False,
+                    "message": "Failed to recover robot"
+                }
+                var_scope.set(RECOVERY_RESPONSE_KEY, response)
+                var_scope.set(RECOVERY_STATE_KEY, RecoveryStates.NOT_AVAILABLE.value)
+        except Exception as exc:
+            raise Exception("Caught exception in recovery timeout", exc)
+
