@@ -11,7 +11,6 @@
 
 from abc import abstractmethod
 from os import getenv
-from re import search
 from os.path import join as path_join
 from os.path import expanduser
 from pathlib import Path
