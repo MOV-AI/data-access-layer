@@ -26,8 +26,9 @@ class Callback(MovaiBaseModel):
         for name in names:
             id = Callback._generate_id("Callback", name, version)
             obj = cls.db().json().get(id)
+            print(obj)
             if obj is not None:
-                ret.append(Callback({"Callback": {name: ret}}, version))
+                ret.append(Callback(**obj), version)
         return ret
 
 
@@ -53,9 +54,10 @@ r.save()
 r.Label = 5
 
 start = time.time()
-callbacks = Callback.select("annotations_init")
+callbacks = Callback.select(names=["annotations_init"])
+print(callbacks)
 if callbacks:
-    callback = callbacks[0]
+    callback: Callback = callbacks[0]
     end = time.time()
     print(f"Searching and Object Creation took {(end-start)*1000}ms")
 
