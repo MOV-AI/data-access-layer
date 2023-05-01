@@ -11,7 +11,6 @@
 
 from abc import abstractmethod
 from os import getenv
-from re import search
 from os.path import join as path_join
 from os.path import expanduser
 from pathlib import Path
@@ -469,13 +468,14 @@ class GitRepo:
         content = FileSystem.read(manifest_path)
         models = {}
         for line in content.split("\n"):
-            m = search(r"(\w+):([0-9a-zA-z-_]+)", line)
-            if m is not None:
-                model_type, model_name = m.group(1), m.group(2)
-                if model_type not in models:
-                    models[model_type] = []
-                if model_name not in models[model_type]:
-                    models[model_type].append(model_name)
+            res = line.split()[0].split(":")
+            if line[0] == "#" or len(res) != 2:
+                continue
+            model_type, model_name = res
+            if model_type not in models:
+                models[model_type] = []
+            if model_name not in models[model_type]:
+                models[model_type].append(model_name)
 
         return models
 
