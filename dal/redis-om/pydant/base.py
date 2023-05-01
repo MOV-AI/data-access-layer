@@ -52,11 +52,16 @@ class MovaiBaseModel(RedisModel):
             else:
                 raise ValueError(f"wrong Data type, should be {cls}, instead got: {list(kwargs.keys())[0]}")
 
-    def dict(self):
-        dic = super().dict()
-        return {self.__class__.__name__: {self.name: dic}}
-
     def schema_json(self):
         schema = json.loads(super().schema_json())
-        schema["properties"].pop("pk")
         return schema
+
+    @classmethod
+    def select(cls, names: list = None, version: str = DEFAULT_VERSION) -> list:
+        ret = []
+        for name in names:
+            id = cls._generate_id(cls.__name__, name, version)
+            obj = cls.db().json().get(id)
+            if obj is not None:
+                ret.append(cls(**obj, version=version))
+        return ret

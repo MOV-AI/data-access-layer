@@ -44,7 +44,12 @@ class RedisModel(BaseModel):
         """
 
     def dict(self):
-        return {self.__class__.__name__: {self.name: super().dict()}}
+        dic = super().dict()
+        if "name" in dic:
+            dic.pop("name")
+        if "id_" in dic:
+            dic.pop("id_")
+        return {self.__class__.__name__: {self.name: dic}}
 
     def __str__(self) -> str:
         return f"{self.dict()}"
