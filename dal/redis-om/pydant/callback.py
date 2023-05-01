@@ -1,7 +1,6 @@
 import pydantic
 from typing import Union, Optional, Dict
-from base import BaseSchema
-from redis_model import RedisModel
+from base import MovaiBaseModel, DEFAULT_VERSION
 from pydantic.types import StrictStr
 import time
 
@@ -15,36 +14,25 @@ class Py3LibValue(pydantic.BaseModel):
     Module: str
 
 
-class CallbackSchema(BaseSchema):
+class Callback(MovaiBaseModel):
+    name: str = None
     Code: Optional[str] = None
     Message: Optional[str] = None
     Py3Lib: Optional[Dict[ValidStr, Py3LibValue]] = None
 
-
-class Callback(RedisModel):
-    name: str = None
-    struct: CallbackSchema
-
-    def __init__(self, value: dict, version: str = "v1") -> None:
-        super().__init__(value, version)
-
-    def create_validate_dict(self, val: dict):
-        self.struct = CallbackSchema(**val)
-        return self.struct
-
     @classmethod
-    def get(cls, name: str, version: str = "v1"):
-        id = Callback._generate_id("Callback", name, version)
-        ret = cls.db().json().get(id)
-        return Callback({"Callback": {name: ret}}, version)
-
-    class Config:
-        # Force Validation in case field value change
-        validate_assignment = True
+    def select(cls, names: list = None, version: str = DEFAULT_VERSION) -> list:
+        ret = []
+        for name in names:
+            id = Callback._generate_id("Callback", name, version)
+            obj = cls.db().json().get(id)
+            if obj is not None:
+                ret.append(Callback({"Callback": {name: ret}}, version))
+        return ret
 
 
 r = Callback(
-    {
+    **{
         "Callback": {
             "annotations_init": {
                 "Info": "asglksdjlkdsjf",
@@ -61,28 +49,30 @@ r = Callback(
         }
     }
 )
-
 r.save()
-r.struct.Label = 5
+r.Label = 5
 
 start = time.time()
-callback: Callback = Callback.get("annotations_init")
-end = time.time()
-print(f"Searching and Object Creation took {(end-start)*1000}ms")
+callbacks = Callback.select("annotations_init")
+if callbacks:
+    callback = callbacks[0]
+    end = time.time()
+    print(f"Searching and Object Creation took {(end-start)*1000}ms")
 
-start = time.time()
-print("Fetching Data")
-print(
-    callback.struct.Code,
-    callback.struct.Info,
-    callback.struct.Label,
-    callback.struct.Message,
-    callback.struct.LastUpdate,
-    callback.struct.Version,
-    callback.struct.Py3Lib,
-)
-end = time.time()
-print(f"Fetching Fields (after object Creation) took {(end - start) * 1000}ms")
+    start = time.time()
+    print("Fetching Data")
+    print(
+        callback.Code,
+        callback.Info,
+        callback.Label,
+        callback.Message,
+        callback.LastUpdate,
+        callback.Version,
+        callback.Py3Lib,
+    )
+    end = time.time()
+    print(f"Fetching Fields (after object Creation) took {(end - start) * 1000}ms")
+
 """
 print("====================================================")
 print("the old ugly Scopes\n")
