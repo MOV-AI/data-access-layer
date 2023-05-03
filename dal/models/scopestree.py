@@ -718,6 +718,7 @@ class ScopeNode(DictNode, WorkspaceObject):
                 "System",
                 "Configuration",
                 "TaskTemplate",
+                "TaskEntry",
                 "SharedDataTemplate",
                 "SharedDataEntry",
                 "Role",
