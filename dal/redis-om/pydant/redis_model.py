@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod, abstractclassmethod
+from typing import List
 from pydantic import BaseModel
 import re
 import redis
@@ -14,17 +15,13 @@ valid_models = [
 ]
 
 class RedisModel(BaseModel):
+    pk: str
     class Config:
         orm_mode = True
         validate_assignment = True
 
-    @staticmethod
-    def _generate_id(type: str, name: str, version: str):
-        return f"{type}:{name}:{version}"
-
-    @property
-    def id(self):
-        return RedisModel._generate_id(self.__class__.__name__, self.name, self.Version)
+    class Meta:
+        model_key_prefix = "Movai"
 
     @classmethod
     def db(cls) -> redis.Redis:
@@ -32,15 +29,15 @@ class RedisModel(BaseModel):
         return redis.Redis(connection_pool=pool)
 
     def save(self) -> str:
-        self.db().json().set(self.id, "$", self.dict())
+        self.db().json().set(f"{self.__class__.__name__}:{self.pk}:", "$", self.dict())
+        return self.pk
 
     @abstractclassmethod
-    def select(cls, names: list, version: str):
+    def select(cls, ids: List[str] = None):
         """_summary_
 
         Args:
-            name (str): _description_
-            version (str): _description_
+            ids (List[str]): list of ids to search for
         """
 
     def dict(self):
