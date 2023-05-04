@@ -1,7 +1,6 @@
-from abc import ABC, abstractmethod, abstractclassmethod
+from abc import abstractclassmethod
 from typing import List
 from pydantic import BaseModel
-import re
 import redis
 
 
@@ -29,7 +28,7 @@ class RedisModel(BaseModel):
         return redis.Redis(connection_pool=pool)
 
     def save(self) -> str:
-        self.db().json().set(f"{self.__class__.__name__}:{self.pk}:", "$", self.dict())
+        self.db().json().set(f"{self.Meta.model_key_prefix}:{self.pk}:", "$", self.dict())
         return self.pk
 
     @abstractclassmethod
