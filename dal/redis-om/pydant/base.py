@@ -1,8 +1,9 @@
 from typing import Optional, Union
 import pydantic
 import json
-from re import search
 from redis_model import RedisModel
+from common import PrimaryKey
+from re import search
 
 
 DEFAULT_VERSION = "__UNVERSIONED__"
@@ -29,10 +30,10 @@ class MovaiBaseModel(RedisModel):
     Description: Optional[str] = None
     LastUpdate: Union[LastUpdate, str]
     Version: str = DEFAULT_VERSION
-    id_: str = pydantic.Field(alias="id")
+    name: str = ""
 
     def __init__(self, *args, **kwargs):
-        version = "__UNVERSIONED__"
+        version = DEFAULT_VERSION
         if "version" in kwargs:
             version = kwargs["version"]
         cls = self.__class__.__name__
@@ -42,13 +43,15 @@ class MovaiBaseModel(RedisModel):
                     return
                 type, struct_ = list(kwargs.items())[0]
                 name = list(struct_.keys())[0]
-                self._generate_id(cls, name, version)
-                id = self._generate_id(cls, name, version)
+                params = {name:name}
+                if "pk" not in struct_[name]:
+                    pk = PrimaryKey.create_pk(id=name, version=version)
+                    params.update({"pk": pk})
                 if search(r"^[a-zA-Z0-9_]+$", name) is None:
                     raise ValueError(f"Validation Error for {type} name:({name}), data:{kwargs}")
 
                 struct_[name]["Version"] = version
-                super().__init__(**struct_[name], id=id, name=name)
+                super().__init__(**struct_[name], **params)
             else:
                 raise ValueError(f"wrong Data type, should be {cls}, instead got: {list(kwargs.keys())[0]}")
 
@@ -57,11 +60,13 @@ class MovaiBaseModel(RedisModel):
         return schema
 
     @classmethod
-    def select(cls, names: list = None, version: str = DEFAULT_VERSION) -> list:
+    def select(cls, ids: list = None) -> list:
         ret = []
-        for name in names:
-            id = cls._generate_id(cls.__name__, name, version)
+        if not ids:
+            # get all objects of type cls
+            ids = cls.db().keys(f"{cls.__name__}:*")
+        for id in ids:
             obj = cls.db().json().get(id)
             if obj is not None:
-                ret.append(cls(**obj, version=version))
+                ret.append(cls(**obj))
         return ret

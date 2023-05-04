@@ -20,6 +20,9 @@ class Callback(MovaiBaseModel):
     Message: Optional[str] = None
     Py3Lib: Optional[Dict[ValidStr, Py3LibValue]] = None
 
+    class Meta:
+        model_key_prefix = "Callback"
+
 
 if __name__ == "__main__":
     r = Callback(
@@ -41,14 +44,17 @@ if __name__ == "__main__":
         }
     )
     r.dict()
-    r.save()
+    pk = r.save()
     # because Label is string, the 5 will be converted automatically to string "5"
     r.Label = 5
-    r.save()
+    pk = r.save()
 
     start = time.time()
-    callbacks = Callback.select(names=["annotations_init"])
+    callbacks = Callback.select(ids=[pk])
     print(callbacks)
+    cs = Callback.select()
+    print("$$$$$$$$$$$$$$$$$$$")
+    print(cs)
     if callbacks:
         callback: Callback = callbacks[0]
         print(callback.dict())
