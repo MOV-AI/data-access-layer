@@ -39,7 +39,7 @@ class FleetRobot(Scope):
         if is_enteprise():
             server = f"tcp://{self.IP}:{MESSAGE_SERVER_PORT}"
         else:
-            server = f"tcp://{self.IP}:{MOVAI_FLOW_PORT}"
+            server = f"tcp://spawner:{MOVAI_FLOW_PORT}"
         self.__dict__["zmq_client"] = ZMQClient(server=server, identity=self.RobotName)
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
