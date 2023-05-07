@@ -42,3 +42,5 @@ if __name__ == "__main__":
 
     A.save()
     print(Annotation.select())
+    print("##############")
+    print(Annotation.select(ids=[A.pk]))

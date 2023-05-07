@@ -25,7 +25,7 @@ class RedisModel(BaseModel):
 
     def save(self) -> str:
         self.db().json().set(
-            self.pk,
+            f"{GLOBAL_KEY_PREFIX}:{self.Meta.model_key_prefix}:{self.pk}",
             "$",
             self.dict(),
         )
@@ -43,6 +43,8 @@ class RedisModel(BaseModel):
             # get all objects of type cls
             ids = cls.db().keys(f"{GLOBAL_KEY_PREFIX}:{cls.Meta.model_key_prefix}:*")
         for id in ids:
+            if cls.Meta.model_key_prefix not in str(id):
+                id = f"{GLOBAL_KEY_PREFIX}:{cls.Meta.model_key_prefix}:{id}"
             obj = cls.db().json().get(id)
             if obj is not None:
                 ret.append(cls(**obj))

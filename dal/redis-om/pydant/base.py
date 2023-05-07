@@ -40,7 +40,7 @@ class MovaiBaseModel(RedisModel):
                 params = {"name": name}
                 if "pk" not in struct_[name]:
                     pk = PrimaryKey.create_pk(id=name, version=version)
-                    params.update({"pk": f"{GLOBAL_KEY_PREFIX}:{self.__class__.__name__}:{pk}"})
+                    params.update({"pk": pk})
                 if search(r"^[a-zA-Z0-9_]+$", name) is None:
                     raise ValueError(f"Validation Error for {type} name:({name}), data:{kwargs}")
 
