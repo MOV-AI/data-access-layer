@@ -116,10 +116,10 @@ n = Node(
     }
 )
 
-print(n.dict())
 pk = n.save()
 
-print(Node.select())
+print(pk)
+#print(Node.select())
 print("#########")
 print(Node.select(ids=[pk]))
 

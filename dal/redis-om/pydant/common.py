@@ -17,12 +17,6 @@ class AbstractPrimaryKey(ABC):
         """ A primary key generator"""
 
 
-class MovaiPrimaryKey(AbstractPrimaryKey):
-    @classmethod
-    def create_pk(*args, id: str = "", version: str = ""):
-        return f"{id}:{version}"
-
-
 class UlidPrimaryKey(AbstractPrimaryKey):
     """
     A client-side generated primary key that follows the ULID spec.
@@ -32,5 +26,11 @@ class UlidPrimaryKey(AbstractPrimaryKey):
     def create_pk(*args, **kwargs) -> str:
         return str(ULID())
 
-PrimaryKey = MovaiPrimaryKey
 
+class MovaiPrimaryKey(AbstractPrimaryKey):
+    @classmethod
+    def create_pk(*args, id: str = "", version: str = ""):
+        return f"{id}:{version}:{UlidPrimaryKey.create_pk()}"
+
+
+PrimaryKey = MovaiPrimaryKey

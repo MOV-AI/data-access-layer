@@ -15,13 +15,7 @@ class LastUpdate(pydantic.BaseModel):
 
 
 LABEL_REGEX = r"^[a-zA-Z0-9._-]+$"
-valid_models = [
-    "Flow",
-    "Node",
-    "Callback",
-    "Annotation",
-    "GraphicScene"
-]
+valid_models = ["Flow", "Node", "Callback", "Annotation", "GraphicScene"]
 
 
 class MovaiBaseModel(RedisModel):
@@ -43,7 +37,7 @@ class MovaiBaseModel(RedisModel):
                     return
                 type, struct_ = list(kwargs.items())[0]
                 name = list(struct_.keys())[0]
-                params = {name:name}
+                params = {"name": name}
                 if "pk" not in struct_[name]:
                     pk = PrimaryKey.create_pk(id=name, version=version)
                     params.update({"pk": pk})
@@ -53,20 +47,11 @@ class MovaiBaseModel(RedisModel):
                 struct_[name]["Version"] = version
                 super().__init__(**struct_[name], **params)
             else:
-                raise ValueError(f"wrong Data type, should be {cls}, instead got: {list(kwargs.keys())[0]}")
+                raise ValueError(
+                    f"wrong Data type, should be {cls}, instead got: {list(kwargs.keys())[0]}"
+                )
 
     def schema_json(self):
         schema = json.loads(super().schema_json())
         return schema
 
-    @classmethod
-    def select(cls, ids: list = None) -> list:
-        ret = []
-        if not ids:
-            # get all objects of type cls
-            ids = cls.db().keys(f"{cls.__name__}:*")
-        for id in ids:
-            obj = cls.db().json().get(id)
-            if obj is not None:
-                ret.append(cls(**obj))
-        return ret
