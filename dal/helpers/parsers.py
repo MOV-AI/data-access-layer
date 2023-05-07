@@ -13,6 +13,7 @@ import os
 from movai_core_shared.logger import Log
 from dal.models.scopestree import scopes
 from dal.models.var import Var
+from dal.movaidb import MovaiDB
 
 
 class ParamParser:
@@ -181,7 +182,11 @@ class ParamParser:
         '''
 
         context, param_name, *__ = reference.split(".")
-        output = Var(context).get(param_name)
+        if context == "fleet":
+            robot_id = list(MovaiDB("local").get({"Robot": "*"})["Robot"].keys())[0]
+            output = Var(context, robot_id).get(param_name)
+        else:
+            output = Var(context).get(param_name)
 
         if not output:
             raise ValueError(
