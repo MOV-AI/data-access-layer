@@ -182,11 +182,11 @@ class ParamParser:
         '''
 
         context, param_name, *__ = reference.split(".")
+        robot_name = ""
         if context == "fleet":
-            robot_id = list(MovaiDB("local").get({"Robot": "*"})["Robot"].keys())[0]
-            output = Var(context, robot_id).get(param_name)
-        else:
-            output = Var(context).get(param_name)
+            robot_name = list(MovaiDB("local").get({"Robot": "*"})["Robot"].keys())[0]
+
+        output = Var(context, robot_name).get(param_name)
 
         if not output:
             raise ValueError(
