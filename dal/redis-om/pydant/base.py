@@ -1,7 +1,7 @@
 from typing import Optional, Union
 import pydantic
 import json
-from redis_model import RedisModel
+from redis_model import RedisModel, GLOBAL_KEY_PREFIX
 from common import PrimaryKey
 from re import search
 
@@ -40,7 +40,7 @@ class MovaiBaseModel(RedisModel):
                 params = {"name": name}
                 if "pk" not in struct_[name]:
                     pk = PrimaryKey.create_pk(id=name, version=version)
-                    params.update({"pk": pk})
+                    params.update({"pk": f"{GLOBAL_KEY_PREFIX}:{self.__class__.__name__}:{pk}"})
                 if search(r"^[a-zA-Z0-9_]+$", name) is None:
                     raise ValueError(f"Validation Error for {type} name:({name}), data:{kwargs}")
 
@@ -53,5 +53,12 @@ class MovaiBaseModel(RedisModel):
 
     def schema_json(self):
         schema = json.loads(super().schema_json())
+        schema["properties"].pop("pk")
+        schema["properties"].pop("name")
         return schema
 
+    def dict(self):
+        dic = super().dict()
+        dic.pop("pk")
+        dic.pop("name")
+        return {self.__class__.__name__: {self.name: dic}}
