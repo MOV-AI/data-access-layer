@@ -52,7 +52,7 @@ class FleetRobot(Scope):
             to_send = pickle.dumps(to_send)
             self.Actions.append(to_send)
         else:
-            self.zmq_client.send_msg(to_send)
+            self.zmq_client.send(to_send)
 
     def get_active_alerts(self) -> dict:
         """Gets a dictionary of the active alerts on this specific robot.
