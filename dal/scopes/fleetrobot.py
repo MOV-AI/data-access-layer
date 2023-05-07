@@ -6,18 +6,21 @@
    Developers:
    - Manuel Silva (manuel.silva@mov.ai) - 2020
    - Tiago Paulino (tiago@mov.ai) - 2020
+   - Dor Marcous (dor@mov.ai) - 2022
 
    Module that implements Robot namespace
 """
 import pickle
-from threading import Timer
-from enum import Enum
 from .scope import Scope
 from dal.movaidb import MovaiDB
 from movai_core_shared.logger import Log
+from movai_core_shared.envvars import MOVAI_FLOW_PORT, MESSAGE_SERVER_PORT
+from movai_core_shared.common.utils import is_enteprise
+from movai_core_shared.core.zmq_client import ZMQClient
 
 
 logger = Log.get_logger("FleetRobot")
+
 
 class FleetRobot(Scope):
     """Represent the Robot scope in the redis-master.
@@ -33,6 +36,11 @@ class FleetRobot(Scope):
             db (str, optional): "global/local". Defaults to "global".
         """
         super().__init__(scope="Robot", name=name, version=version, new=new, db=db)
+        if is_enteprise():
+            server = f"tcp://{self.IP}:{MESSAGE_SERVER_PORT}"
+        else:
+            server = f"tcp://{self.IP}:{MOVAI_FLOW_PORT}"
+        self.__dict__["zmq_client"] = ZMQClient(server=server, identity=self.RobotName)
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot"""
@@ -40,10 +48,11 @@ class FleetRobot(Scope):
         for key, value in locals().items():
             if value is not None and key in ("command", "flow", "node", "port", "data"):
                 to_send.update({key: value})
-
-        to_send = pickle.dumps(to_send)
-
-        self.Actions.append(to_send)
+        if self.zmq_client is None:
+            to_send = pickle.dumps(to_send)
+            self.Actions.append(to_send)
+        else:
+            self.zmq_client.send_msg(to_send)
 
     def get_active_alerts(self) -> dict:
         """Gets a dictionary of the active alerts on this specific robot.

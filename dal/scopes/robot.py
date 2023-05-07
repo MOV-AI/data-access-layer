@@ -12,6 +12,8 @@
 import uuid
 import pickle
 from movai_core_shared.exceptions import DoesNotExist
+from movai_core_shared.envvars import MOVAI_FLOW_PORT
+from movai_core_shared.core.zmq_client import ZMQClient
 from dal.scopes.scope import Scope
 from dal.movaidb import MovaiDB
 from dal.scopes.fleetrobot import FleetRobot
@@ -54,12 +56,14 @@ class Robot(Scope):
 
             self.__dict__["fleet"] = FleetRobot(unique_id.hex, new=True)
             self.fleet.RobotName = "robot_" + unique_id.hex[0:6]
-            # copy all data to the global
+        server = f"tcp://{self.IP}:{MOVAI_FLOW_PORT}"
+        self.__dict__["zmq_client"] = ZMQClient(server=server, identity=self.RobotName)
 
     def set_ip(self, ip_address: str):
         """Set the IP Adress of the Robot"""
         self.IP = ip_address
         self.fleet.IP = ip_address
+
 
     def set_name(self, name: str):
         """Set the Name of the Robot"""
@@ -72,10 +76,11 @@ class Robot(Scope):
         for key, value in locals().items():
             if value is not None and key in ("command", "flow", "node", "port", "data"):
                 to_send.update({key: value})
-
-        to_send = pickle.dumps(to_send)
-
-        self.Actions.append(to_send)
+        if self.zmq_client is None:
+            to_send = pickle.dumps(to_send)
+            self.Actions.append(to_send)
+        else:
+            self.zmq_client.send_msg(to_send)
 
     def update_status(self, status: dict, db: str = "all"):
         """Update the Robot status in the database"""
