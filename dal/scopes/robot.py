@@ -80,7 +80,7 @@ class Robot(Scope):
             to_send = pickle.dumps(to_send)
             self.Actions.append(to_send)
         else:
-            self.zmq_client.send_msg(to_send)
+            self.zmq_client.send(to_send)
 
     def update_status(self, status: dict, db: str = "all"):
         """Update the Robot status in the database"""
