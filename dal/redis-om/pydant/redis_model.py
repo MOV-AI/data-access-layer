@@ -1,4 +1,3 @@
-from abc import abstractclassmethod
 from typing import List
 from pydantic import BaseModel
 import redis
@@ -26,7 +25,7 @@ class RedisModel(BaseModel):
 
     def save(self) -> str:
         self.db().json().set(
-            f"{GLOBAL_KEY_PREFIX}:{self.Meta.model_key_prefix}:{self.pk}",
+            self.pk,
             "$",
             self.dict(),
         )
@@ -44,18 +43,7 @@ class RedisModel(BaseModel):
             # get all objects of type cls
             ids = cls.db().keys(f"{GLOBAL_KEY_PREFIX}:{cls.Meta.model_key_prefix}:*")
         for id in ids:
-            obj = cls.db().json().get(f"{GLOBAL_KEY_PREFIX}:{cls.Meta.model_key_prefix}:{id}")
+            obj = cls.db().json().get(id)
             if obj is not None:
                 ret.append(cls(**obj))
         return ret
-
-    def dict(self):
-        dic = super().dict()
-        if "name" in dic:
-            dic.pop("name")
-        if "id_" in dic:
-            dic.pop("id_")
-        return {self.__class__.__name__: {self.name: dic}}
-
-    def __str__(self) -> str:
-        return f"{self.dict()}"
