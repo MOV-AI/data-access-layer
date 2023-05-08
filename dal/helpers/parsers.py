@@ -87,7 +87,9 @@ class ParamParser:
 
         return expression
 
-    def eval_reference(self, key: str, expression: str, instance: any, node_name: str) -> str:
+    def eval_reference(
+        self, key: str, expression: str, instance: any, node_name: str
+    ) -> str:
         """
         Calls a specific function to evaluate the expression
 
@@ -107,7 +109,9 @@ class ParamParser:
         try:
             # $(<context> <parameter reference>)
             # ex.: $(flow var_A)
-            pattern = re.compile(r"\$\((.*)\s(.*)\)")
+            pattern = re.compile(
+                rf"\$\(({'|'.join(self.mapping.keys())})\s+([\w\.]+)\)"
+            )
             result = pattern.search(expression)
 
             # get the function to call from the mapping dict
@@ -120,9 +124,7 @@ class ParamParser:
             extra_info = f'in flow "{self.flow.ref}"'
 
             if self.context != self.flow.ref:
-                extra_info = (
-                    f'in subflow "{self.context}" in the context' f' of the flow "{self.flow.ref}"'
-                )
+                extra_info = f'in subflow "{self.context}" in the context of the flow "{self.flow.ref}"'
 
             info = (
                 f'Error evaluating "{key}" with value "{expression}"'
@@ -159,7 +161,9 @@ class ParamParser:
 
         return output
 
-    def eval_param(self, param_name: str, default: str, instance: any, node_name: str) -> any:
+    def eval_param(
+        self, param_name: str, default: str, instance: any, node_name: str
+    ) -> any:
         """
         Returns the param expression evaluated or default
             ex.: $(param name)
@@ -249,45 +253,6 @@ class ParamParser:
 
         return value
 
-        """
-        #params = self.__dict__["cache_container_params"].get(node_name, None)
-        params = None
-
-        if not params:
-
-            #container = self.Container.get(node_name)
-            container = flow.Container[node_name]
-
-            params = {}
-
-            try:
-                # get the parameter from the container parameters
-                _params = {key: value.Value for key,
-                           value in container.Parameter.items()}
-
-                # Parameters are saved as strings so they need to be evaluated into its original type
-                for key, value in _params.items():
-                    try:
-                        params[key] = ast.literal_eval(value)
-                    except:
-                        # If literal eval failed we check if the String has references
-                        try:
-                            params[key] = self.parse(
-                                _params[key], _params, node_name, key)
-                        except:
-                            # In older versions params were not stored as Strings
-                            ParamParser.logger.warning(
-                                "Parameter %s of node %s is not saved correctly!", key, node_name)
-                            params[key] = _params[key]
-
-                #self.__dict__["cache_container_params"].update({node_name: params})
-
-            except Exception as error:
-                ParamParser.logger.error(error)
-
-        return params
-        """
-
 
 def get_string_from_template(template: str, task_entry: object) -> str:
     """Applies a task entry into a template"""
@@ -299,7 +264,10 @@ def get_string_from_template(template: str, task_entry: object) -> str:
         try:
             template, enum = match[1].split(".")
             return str(
-                scopes().SharedDataEntry[task_entry.SharedData[template].ID].Field[enum].Value
+                scopes()
+                .SharedDataEntry[task_entry.SharedData[template].ID]
+                .Field[enum]
+                .Value
             )
         except Exception:  # pylint: disable=broad-except
             # ValueError from split/unpack
