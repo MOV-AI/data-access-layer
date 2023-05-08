@@ -15,7 +15,7 @@ class LastUpdate(pydantic.BaseModel):
 
 
 LABEL_REGEX = r"^[a-zA-Z0-9._-]+$"
-valid_models = ["Flow", "Node", "Callback", "Annotation", "GraphicScene"]
+valid_models = ["Flow", "Node", "Callback", "Annotation", "GraphicScene", "Layout"]
 
 
 class MovaiBaseModel(RedisModel):
