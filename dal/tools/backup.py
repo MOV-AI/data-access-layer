@@ -11,15 +11,12 @@
 
 import argparse
 import hashlib
-import importlib
 import json
 import os
 import pickle
 import re
 import sys
 from importlib import import_module
-from dal.movaidb.database import MovaiDB
-from dal.models.scopestree import scopes
 
 
 def test_reachable(redis_url):
@@ -41,6 +38,7 @@ def test_reachable(redis_url):
 
 def _from_path(name):
     try:
+        from dal.models.scopestree import scopes
         return scopes.extract_reference(name)[2]
     except KeyError:
         # not a path and `scope` wasn't passed
@@ -228,6 +226,7 @@ class Importer(Backup):
                 print(path[len(self.project_path) + 1 :]) for path in paths
             ]
         else:
+            from dal.movaidb.database import MovaiDB
             self._db = MovaiDB()
             self.dry_print = lambda *paths: None
 
@@ -1684,6 +1683,7 @@ class Remover(Backup):
             # remove project root dir from it, plus an extra '/' (+1)
             self.dry_print = lambda *paths: [print(path) for path in paths]
         else:
+            from dal.movaidb.database import MovaiDB
             self._db = MovaiDB()
             self.dry_print = lambda *paths: None
 
