@@ -18,14 +18,20 @@ class RedisModel(BaseModel):
     class Meta:
         model_key_prefix = "Redis"
 
+    def _additional_keys(self) -> List[str]:
+        return ["pk"]
+
     @classmethod
     def db(cls) -> redis.Redis:
         global pool
         return redis.Redis(connection_pool=pool)
 
     def save(self) -> str:
+        main_key = f"{GLOBAL_KEY_PREFIX}:{self.Meta.model_key_prefix}:{self.pk}"
+        if self.project != "":
+            main_key = f"{self.project}:{self.Meta.model_key_prefix}:{self.name}"
         self.db().json().set(
-            f"{GLOBAL_KEY_PREFIX}:{self.Meta.model_key_prefix}:{self.pk}",
+            main_key,
             "$",
             self.dict(),
         )
@@ -41,8 +47,16 @@ class RedisModel(BaseModel):
         ret = []
         if not ids:
             # get all objects of type cls
-            ids = cls.db().keys(f"{GLOBAL_KEY_PREFIX}:{cls.Meta.model_key_prefix}:*")
+            ids = [
+                key.decode()
+                for key in cls.db().keys(
+                    f"{GLOBAL_KEY_PREFIX}:{cls.Meta.model_key_prefix}:*"
+                )
+            ]
         for id in ids:
+            if len(id.split(":")) == 1:
+                # no version in id
+                id = f"{id}:__UNVERSIONED__"
             if cls.Meta.model_key_prefix not in str(id):
                 id = f"{GLOBAL_KEY_PREFIX}:{cls.Meta.model_key_prefix}:{id}"
             obj = cls.db().json().get(id)

@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import List, Optional, Union
 import pydantic
 import json
 from redis_model import RedisModel, GLOBAL_KEY_PREFIX
@@ -15,7 +15,15 @@ class LastUpdate(pydantic.BaseModel):
 
 
 LABEL_REGEX = r"^[a-zA-Z0-9._-]+$"
-valid_models = ["Flow", "Node", "Callback", "Annotation", "GraphicScene", "Layout", "Application"]
+valid_models = [
+    "Flow",
+    "Node",
+    "Callback",
+    "Annotation",
+    "GraphicScene",
+    "Layout",
+    "Application",
+]
 
 
 class MovaiBaseModel(RedisModel):
@@ -25,8 +33,24 @@ class MovaiBaseModel(RedisModel):
     LastUpdate: Union[LastUpdate, str]
     Version: str = DEFAULT_VERSION
     name: str = ""
+    project: str = ""
 
-    def __init__(self, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):
+        if not kwargs:
+            if not args:
+                raise Exception("No arguments provided")
+            obj = cls.select(ids=[args[0]])
+            if not obj:
+                raise Exception(f"Model {args[0]} not found!")
+            return obj[0]
+        return super().__new__(cls)
+
+    def _additional_keys(self) -> List[str]:
+        return super()._additional_keys() + ["name", "project"]
+
+    def __init__(self, *args, project: str = "", **kwargs):
+        if not kwargs:
+            return
         version = DEFAULT_VERSION
         if "version" in kwargs:
             version = kwargs["version"]
@@ -37,12 +61,14 @@ class MovaiBaseModel(RedisModel):
                     return
                 type, struct_ = list(kwargs.items())[0]
                 name = list(struct_.keys())[0]
-                params = {"name": name}
+                params = {"name": name, "project": project}
                 if "pk" not in struct_[name]:
                     pk = PrimaryKey.create_pk(id=name, version=version)
                     params.update({"pk": pk})
                 if search(r"^[a-zA-Z0-9_]+$", name) is None:
-                    raise ValueError(f"Validation Error for {type} name:({name}), data:{kwargs}")
+                    raise ValueError(
+                        f"Validation Error for {type} name:({name}), data:{kwargs}"
+                    )
 
                 struct_[name]["Version"] = version
                 super().__init__(**struct_[name], **params)
@@ -53,12 +79,10 @@ class MovaiBaseModel(RedisModel):
 
     def schema_json(self):
         schema = json.loads(super().schema_json())
-        schema["properties"].pop("pk")
-        schema["properties"].pop("name")
+        [schema["properties"].pop(key) for key in self._additional_keys()]
         return schema
 
     def dict(self):
         dic = super().dict()
-        dic.pop("pk")
-        dic.pop("name")
+        [dic.pop(key) for key in self._additional_keys()]
         return {self.__class__.__name__: {self.name: dic}}

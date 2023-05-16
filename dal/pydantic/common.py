@@ -30,7 +30,8 @@ class UlidPrimaryKey(AbstractPrimaryKey):
 class MovaiPrimaryKey(AbstractPrimaryKey):
     @classmethod
     def create_pk(*args, id: str = "", version: str = ""):
-        return f"{id}:{version}:{UlidPrimaryKey.create_pk()}"
+        # return f"{id}:{version}:{UlidPrimaryKey.create_pk()}"
+        return f"{id}:{version}"
 
 
 PrimaryKey = MovaiPrimaryKey
