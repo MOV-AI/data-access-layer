@@ -75,7 +75,8 @@ if __name__ == "__main__":
         end = time.time()
         print(f"Fetching Fields (after object Creation) took {(end - start) * 1000}ms")
 
-        
+
+    print(Callback("annotations_init"))
     """
     print("====================================================")
     print("the old ugly Scopes\n")
