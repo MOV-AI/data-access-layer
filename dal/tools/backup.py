@@ -68,6 +68,10 @@ class Factory:
         """
         Get the scope
         """
+        if scope.lower() == "callback":
+            from dal.pydantic import Callback
+            # return pydantic callback
+            return Callback
         if scope not in Factory.CLASSES_CACHE:
             mod = import_module("dal.scopes")
             try:
