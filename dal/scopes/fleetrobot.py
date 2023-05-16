@@ -10,15 +10,19 @@
    Module that implements Robot namespace
 """
 import pickle
-
+from threading import Timer
+from enum import Enum
+from .scope import Scope
+from dal.movaidb import MovaiDB
 from movai_core_shared.logger import Log
 
-from .scope import Scope
 
 logger = Log.get_logger("FleetRobot")
+
 class FleetRobot(Scope):
     """Represent the Robot scope in the redis-master.
     """
+
     def __init__(self, name: str, version="latest", new=False, db="global"):
         """constructor
 
@@ -69,7 +73,7 @@ class FleetRobot(Scope):
         """
         active_alerts = self.get_active_alerts()
         if alert in active_alerts:
-            #active_alerts.pop(alert)
+            # active_alerts.pop(alert)
             self.Alerts.pop(alert)
 
     @staticmethod
@@ -83,3 +87,24 @@ class FleetRobot(Scope):
         for field in ("info", "action", "callback"):
             if field not in alert:
                 logger.warning(f"The field: {field} is missing from alert dictionary")
+
+    @staticmethod
+    def get_robot_key_by_ip(ip_address: str, key_name: str) -> bytes:
+        """Finds a key of a robot by the ip address.
+
+        Args:
+            ip_address (str): The ip address of the desired robot.
+            key_name (str): The name of required key.
+
+        Returns:
+            bytes: The public key.
+        """
+        robo_keys = {"IP": "", "PublicKey": ""}
+        db = MovaiDB("global")
+        fleet_robots = db.search_by_args("Robot", Name="*")[0]["Robot"]
+        for robot_id in fleet_robots:
+            robo_dict = {"Robot": {robot_id: robo_keys}}
+            robot = db.get(robo_dict)["Robot"][robot_id]
+            if robot["IP"] == ip_address:
+                return robot[key_name]
+        return None

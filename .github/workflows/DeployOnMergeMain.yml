@@ -16,6 +16,7 @@ jobs:
     secrets:
       auto_commit_user: ${{ secrets.RAISE_BOT_COMMIT_USER }}
       auto_commit_mail: ${{ secrets.RAISE_BOT_COMMIT_MAIL }}
+      auto_commit_password: ${{ secrets.RAISE_BOT_COMMIT_PASSWORD }}
       registry_user: ${{ secrets.PORTUS_APP_USER }}
       registry_password: ${{ secrets.PORTUS_APP_TOKEN }}
       nexus_publisher_user: ${{ secrets.NEXUS_PUBLISHER_USR }}

@@ -6,10 +6,10 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 requirements = [
-    "aioredis==1.3.0",
+    "aioredis==1.3.1",
     "aiohttp==3.8.1",
     "deepdiff==4.0.9",
-    "gitpython==3.1.2",
+    "gitpython==3.1.30",
     "jsonschema==3.2.0",
     "miracle-acl==0.0.4.post1",
     "pyjwt==1.7.1",
@@ -33,7 +33,7 @@ data_files += [file for file in glob("dal/validation/schema/2.4/common/*.json")]
 # The 'install_requires' is where you specify the package dependencies of your package. They will be automaticly installed, before your package.  # noqa: E501
 setuptools.setup(
     name="data-access-layer",
-    version="2.4.1-1",
+    version="2.4.1-16",
     author="Backend team",
     author_email="backend@mov.ai",
     description="DATA ACCESS LAYER",
