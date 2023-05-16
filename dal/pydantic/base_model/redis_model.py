@@ -27,9 +27,16 @@ class RedisModel(BaseModel):
         return redis.Redis(connection_pool=pool)
 
     def save(self) -> str:
-        main_key = f"{GLOBAL_KEY_PREFIX}:{self.Meta.model_key_prefix}:{self.pk}"
+        """_summary_
+
+        Returns:
+            str: _description_
+        """
+        project = GLOBAL_KEY_PREFIX
         if self.project != "":
-            main_key = f"{self.project}:{self.Meta.model_key_prefix}:{self.name}"
+            project = self.project
+        main_key = f"{project}:{self.Meta.model_key_prefix}:{self.pk}"
+
         self.db().json().set(
             main_key,
             "$",
@@ -38,7 +45,7 @@ class RedisModel(BaseModel):
         return self.pk
 
     @classmethod
-    def select(cls, ids: List[str] = None) -> list:
+    def select(cls, ids: List[str] = None, project=GLOBAL_KEY_PREFIX) -> list:
         """_summary_
 
         Args:
@@ -50,7 +57,7 @@ class RedisModel(BaseModel):
             ids = [
                 key.decode()
                 for key in cls.db().keys(
-                    f"{GLOBAL_KEY_PREFIX}:{cls.Meta.model_key_prefix}:*"
+                    f"{project}:{cls.Meta.model_key_prefix}:*"
                 )
             ]
         for id in ids:
@@ -58,7 +65,7 @@ class RedisModel(BaseModel):
                 # no version in id
                 id = f"{id}:__UNVERSIONED__"
             if cls.Meta.model_key_prefix not in str(id):
-                id = f"{GLOBAL_KEY_PREFIX}:{cls.Meta.model_key_prefix}:{id}"
+                id = f"{project}:{cls.Meta.model_key_prefix}:{id}"
             obj = cls.db().json().get(id)
             if obj is not None:
                 ret.append(cls(**obj))

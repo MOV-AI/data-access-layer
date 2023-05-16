@@ -1,6 +1,6 @@
 import pydantic
 from typing import Union, Optional, Dict
-from .base import MovaiBaseModel
+from .base_model import MovaiBaseModel
 from pydantic.types import StrictStr
 import time
 

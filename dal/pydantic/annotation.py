@@ -1,6 +1,6 @@
 from typing import Dict, Optional, Any, Union
 import pydantic
-from base import MovaiBaseModel
+from .base_model import MovaiBaseModel
 
 PARAMETER_KEY_REGEX = pydantic.constr(regex=r"^[0-9a-zA-Z_]+$")
 FIELD_KEY_REGEX = pydantic.constr(regex=r"^[0-9a-zA-Z_!@?-]+$")

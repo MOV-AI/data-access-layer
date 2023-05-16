@@ -1,8 +1,8 @@
 from typing import List, Optional, Union
 import pydantic
 import json
-from redis_model import RedisModel, GLOBAL_KEY_PREFIX
-from common import PrimaryKey
+from .redis_model import RedisModel
+from .common import PrimaryKey
 from re import search
 
 
