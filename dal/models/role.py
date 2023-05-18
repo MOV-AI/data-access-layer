@@ -10,11 +10,7 @@
 """
 from typing import Dict
 
-from movai_core_shared.exceptions import (
-    RoleAlreadyExist,
-    RoleDoesNotExist,
-    RoleError
-)
+from movai_core_shared.exceptions import RoleAlreadyExist, RoleDoesNotExist, RoleError
 from movai_core_shared.envvars import DEFAULT_ROLE_NAME
 
 from dal.models.scopestree import scopes
@@ -42,7 +38,8 @@ class Role(Model):
         try:
             role = scopes().create(Role.__name__, name)
             role.Label = name
-            role.update(resources)
+            role.Resources = resources
+            role.write()
             return role
         except ValueError:
             error_msg = "The requested Role already exist"
@@ -57,6 +54,47 @@ class Role(Model):
         else:
             default_role = Role(DEFAULT_ROLE_NAME)
         return default_role
+
+    @classmethod
+    def create_operator_role(cls):
+        if not Role.is_exist("Operator"):
+            resources = {
+                "EmailsAlertsConfig": ["read"],
+                "EmailsAlertsRecipients": ["read", "update"],
+                "Configuration": ["read"],
+            }
+            resources["Applications"] = [
+                item["ref"]
+                for item in scopes().list_scopes(scope="Application")
+            ]
+            operator_role = cls.create("Operator", resources)
+        else:
+            operator_role = Role("Operator")
+        return operator_role
+
+    @classmethod
+    def create_deployer_role(cls):
+        if not Role.is_exist("Deployer"):
+            resources = {
+                "EmailsAlertsConfig": ["read", "update"],
+                "EmailsAlertsRecipients": ["read"],
+                "Configuration": ["read"],
+            }
+            resources["Applications"] = [
+                item["ref"]
+                for item in scopes().list_scopes(scope="Application")
+            ]
+            deployer_role = cls.create("Deployer", resources)
+        else:
+            deployer_role = Role("Deployer")
+
+        return deployer_role
+
+    @classmethod
+    def create_default_roles(cls):
+        cls.create_default_role()
+        cls.create_deployer_role()
+        cls.create_operator_role()
 
     def update(self, resources: Dict) -> None:
         """Update role data"""
@@ -100,4 +138,5 @@ class Role(Model):
         return roles_names
 
 
+Role.create_default_roles()
 Model.register_model_class("Role", Role)
