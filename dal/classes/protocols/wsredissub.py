@@ -419,4 +419,4 @@ class WSRedisSub:
             if not conn.closed:
                 await conn.send_json(data)
         except Exception as e:
-            LOGGER.error(e)
+            LOGGER.error(str(e))
