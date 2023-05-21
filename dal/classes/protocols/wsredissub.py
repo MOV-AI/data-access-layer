@@ -68,6 +68,7 @@ class WSRedisSub:
         if retries == 0:
             return _conn
         try:
+            await self.connect()
             _conn = await self.databases.slave_pubsub.acquire()
         except Exception as e:
             LOGGER.error(e)
@@ -419,4 +420,4 @@ class WSRedisSub:
             if not conn.closed:
                 await conn.send_json(data)
         except Exception as e:
-            LOGGER.error(e)
+            LOGGER.error(str(e))
