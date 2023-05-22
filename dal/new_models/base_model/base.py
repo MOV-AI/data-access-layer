@@ -39,7 +39,11 @@ class MovaiBaseModel(RedisModel):
         if not kwargs:
             if not args:
                 raise Exception("No arguments provided")
-            obj = cls.select(ids=[args[0]])
+            id = args[0]
+            version = DEFAULT_VERSION
+            if len(args > 1):
+                version = args[1]
+            obj = cls.select(ids=[f"{id}:{version}"])
             if not obj:
                 raise Exception(f"Model {args[0]} not found!")
             return obj[0]
@@ -65,7 +69,7 @@ class MovaiBaseModel(RedisModel):
                 if "pk" not in struct_[name]:
                     pk = PrimaryKey.create_pk(id=name, version=version)
                     params.update({"pk": pk})
-                if search(r"^[a-zA-Z0-9_]+$", name) is None:
+                if search(LABEL_REGEX, name) is None:
                     raise ValueError(
                         f"Validation Error for {type} name:({name}), data:{kwargs}"
                     )
@@ -86,3 +90,4 @@ class MovaiBaseModel(RedisModel):
         dic = super().dict()
         [dic.pop(key) for key in self._additional_keys()]
         return {self.__class__.__name__: {self.name: dic}}
+

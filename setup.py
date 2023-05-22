@@ -14,7 +14,7 @@ requirements = [
     "miracle-acl==0.0.4.post1",
     "pyjwt==1.7.1",
     "python-box==4.0.4",
-    "redis==3.3.11",
+    "redis==4.5.5",
     "yarl>=1.7.2",
     "pyros-genmsg==0.5.8",
     "rospkg==1.4.0",
