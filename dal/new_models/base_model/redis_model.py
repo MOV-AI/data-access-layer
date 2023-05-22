@@ -1,9 +1,9 @@
 from typing import List
 from pydantic import BaseModel
 import redis
+from dal.movaidb import MovaiDB
 
 
-pool = redis.ConnectionPool(host="172.17.0.2", port=6379, db=1)
 valid_models = ["Flow", "Node", "Callback", "Annotation", "GraphicScene"]
 GLOBAL_KEY_PREFIX = "Movai"
 
@@ -23,8 +23,7 @@ class RedisModel(BaseModel):
 
     @classmethod
     def db(cls) -> redis.Redis:
-        global pool
-        return redis.Redis(connection_pool=pool)
+        return MovaiDB().db_write
 
     def save(self) -> str:
         """_summary_

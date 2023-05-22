@@ -1,7 +1,6 @@
 import pydantic
 from typing import Union, Optional, Dict
 from .base_model import MovaiBaseModel
-from pydantic.types import StrictStr
 import time
 
 
@@ -10,7 +9,7 @@ ValidStrNums = pydantic.constr(regex=r"^[a-zA-Z0-9_]+$")
 
 
 class Py3LibValue(pydantic.BaseModel):
-    Class: Union[StrictStr, bool] = None
+    Class: Union[pydantic.types.StrictStr, bool] = None
     Module: str
 
 

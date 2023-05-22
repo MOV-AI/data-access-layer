@@ -11,7 +11,6 @@
 
 import argparse
 import hashlib
-import importlib
 import json
 import os
 import pickle
@@ -86,7 +85,7 @@ class Factory:
         Get the scope
         """
         if scope.lower() == "callback":
-            from dal.pydantic import Callback
+            from dal.new_models import Callback
             # return pydantic callback
             return Callback
         if scope not in Factory.CLASSES_CACHE:

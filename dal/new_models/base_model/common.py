@@ -1,7 +1,7 @@
 from typing import Optional
 import pydantic
 from abc import abstractmethod, ABC
-from ulid import ULID
+#from ulid import ULID
 
 
 class Arg(pydantic.BaseModel):
@@ -24,7 +24,7 @@ class UlidPrimaryKey(AbstractPrimaryKey):
     """
     @classmethod
     def create_pk(*args, **kwargs) -> str:
-        return str(ULID())
+        return str("")#ULID())
 
 
 class MovaiPrimaryKey(AbstractPrimaryKey):
