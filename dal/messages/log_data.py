@@ -85,6 +85,7 @@ class SyslogTags(BaseModel):
                 hostname: {self.hostname}
                 severity: {self.severity}
                 """
+        return text
 
 
 class SyslogFields(BaseModel):
@@ -110,6 +111,7 @@ class SyslogFields(BaseModel):
                 timestamp: {self.timestamp}
                 version: {self.version}
                 """
+        return text
 
 
 class SyslogData(BaseModel):
