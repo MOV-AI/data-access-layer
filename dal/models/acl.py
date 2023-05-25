@@ -153,7 +153,15 @@ class NewACLManager(ACLManager):
 
         resources = ACLManager.get_resources()
         resources.extend(
-            ["Role", "InternalUser", "RemoteUser", "AclObject", "LdapConfig", "EmailsAlertsConfig", "EmailsAlertsRecipients"]
+            [
+                "Role",
+                "InternalUser",
+                "RemoteUser",
+                "AclObject",
+                "LdapConfig",
+                "EmailsAlertsConfig",
+                "EmailsAlertsRecipients",
+            ]
         )
         return resources
 
