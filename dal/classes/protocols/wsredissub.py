@@ -91,8 +91,8 @@ class WSRedisSub:
         try:
             _conn = await self.acquire()
             conn = aioredis.Redis(_conn)
-        except Exception as e:
-            LOGGER.error(e)
+        except Exception as error:
+            LOGGER.error(error)
             await self.send_json(ws_resp, {"event":"", "patterns": None, "error": str(error)})
 
         #self.app["sub_connections"].add(ws_resp)
