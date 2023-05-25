@@ -41,8 +41,7 @@ class Scope(Struct):
         else:
             if not MovaiDB(self.db).exists_by_args(scope=scope, Name=name):
                 raise DoesNotExist(
-                    f"{name} does not exist yet. If you wish to create \
-                        please use 'new=True'")
+                    f"{name} does not exist yet. If you wish to create please use 'new=True'")
 
     def calc_scope_update(self, old_dict, new_dict):
         """ Calc the objects differences and returns list with dict keys to delete/set """
