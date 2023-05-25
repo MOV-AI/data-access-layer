@@ -151,4 +151,5 @@ class Role(Model):
         return roles_names
 
 
+Role.create_default_roles()
 Model.register_model_class("Role", Role)
