@@ -47,7 +47,7 @@ class Role(Model):
             raise RoleAlreadyExist(error_msg)
 
     @classmethod
-    def create_default_role(cls):
+    def create_admin_role(cls):
         if not Role.is_exist(DEFAULT_ROLE_NAME):
             resources = NewACLManager.get_permissions()
             default_role = cls.create(DEFAULT_ROLE_NAME, resources)
@@ -92,7 +92,7 @@ class Role(Model):
 
     @classmethod
     def create_default_roles(cls):
-        cls.create_default_role()
+        cls.create_admin_role()
         cls.create_deployer_role()
         cls.create_operator_role()
 
