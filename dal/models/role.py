@@ -48,6 +48,9 @@ class Role(Model):
 
     @classmethod
     def create_admin_role(cls):
+        """
+        creates default admin Role
+        """
         if not Role.is_exist(DEFAULT_ROLE_NAME):
             resources = NewACLManager.get_permissions()
             default_role = cls.create(DEFAULT_ROLE_NAME, resources)
@@ -57,6 +60,9 @@ class Role(Model):
 
     @classmethod
     def create_operator_role(cls):
+        """
+        creates default operator Role
+        """
         if not Role.is_exist("Operator"):
             resources = {
                 "EmailsAlertsConfig": ["read"],
@@ -74,6 +80,9 @@ class Role(Model):
 
     @classmethod
     def create_deployer_role(cls):
+        """
+        creates default deployer role
+        """
         if not Role.is_exist("Deployer"):
             resources = {
                 "EmailsAlertsConfig": ["read", "update"],
@@ -92,6 +101,10 @@ class Role(Model):
 
     @classmethod
     def create_default_roles(cls):
+        """
+        will create the default Roles for system
+        Admin, Deployer, Operator
+        """
         cls.create_admin_role()
         cls.create_deployer_role()
         cls.create_operator_role()
