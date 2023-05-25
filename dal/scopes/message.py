@@ -13,18 +13,11 @@
 
 import os
 import sys
-
 import rospkg
 import genmsg
 import rosmsg
-
 from dal.scopes.scope import Scope
 from dal.movaidb import MovaiDB
-
-
-
-sys.stderr = open(os.devnull, "w")  # just to ignore stupid print
-sys.stderr = sys.__stderr__
 
 
 class Message(Scope):
@@ -34,10 +27,16 @@ class Message(Scope):
 
     def __init__(self, name, version="latest", new=False, db="global"):
         super().__init__(scope="Message", name=name, version=version, new=new, db=db)
+        devnull = open(os.devnull, "w")
+        self.__dict__["devnull"] = devnull
+        sys.stderr = devnull
 
     def is_valid(self):
         # what is in db is valid to run
         return True
+
+    def __del__(self):
+        self.devnull.close()
 
     @classmethod
     def get_packages(cls, msg_type="all", db="global") -> list:
