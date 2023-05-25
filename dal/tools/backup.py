@@ -1775,7 +1775,7 @@ class Remover(Backup):
             self.log(f"Removed {scope}:{name}")
         except Exception as e:
             error_msg = f"Item {scope}:{name} not present in database ({e})"
-            raise RemoveException(error_msg)
+            raise RemoveException(error_msg) from e
 
     def remove_default(self, scope, names):
         """Deletes a series of scope:name pairs from the database.
