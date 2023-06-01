@@ -17,8 +17,6 @@ import pickle
 import re
 import sys
 from importlib import import_module
-from dal.movaidb.database import MovaiDB
-from dal.models.scopestree import scopes
 
 
 def test_reachable(redis_url):
@@ -40,6 +38,7 @@ def test_reachable(redis_url):
 
 def _from_path(name):
     try:
+        from dal.models.scopestree import scopes
         return scopes.extract_reference(name)[2]
     except KeyError:
         # not a path and `scope` wasn't passed
@@ -231,6 +230,7 @@ class Importer(Backup):
                 print(path[len(self.project_path) + 1 :]) for path in paths
             ]
         else:
+            from dal.movaidb.database import MovaiDB
             self._db = MovaiDB()
             self.dry_print = lambda *paths: None
 
@@ -1687,6 +1687,7 @@ class Remover(Backup):
             # remove project root dir from it, plus an extra '/' (+1)
             self.dry_print = lambda *paths: [print(path) for path in paths]
         else:
+            from dal.movaidb.database import MovaiDB
             self._db = MovaiDB()
             self.dry_print = lambda *paths: None
 
@@ -1777,8 +1778,8 @@ class Remover(Backup):
             self._db.delete_by_args(scope, Name=obj.name)
             self.log(f"Removed {scope}:{name}")
         except Exception as e:
-            print(f"Item {scope}:{name} not present in database ({e})")
-            pass
+            error_msg = f"Item {scope}:{name} not present in database ({e})"
+            raise RemoveException(error_msg) from e
 
     def remove_default(self, scope, names):
         """Deletes a series of scope:name pairs from the database.
