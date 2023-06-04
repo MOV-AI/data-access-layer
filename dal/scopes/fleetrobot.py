@@ -16,7 +16,7 @@ from dal.movaidb import MovaiDB
 from movai_core_shared.logger import Log
 from movai_core_shared.envvars import MOVAI_FLOW_PORT, MESSAGE_SERVER_PORT
 from movai_core_shared.common.utils import is_enteprise
-from movai_core_shared.core.zmq_client import ZMQClient
+from movai_core_shared.core.message_client import MessageClient 
 
 
 logger = Log.get_logger("FleetRobot")
@@ -40,7 +40,7 @@ class FleetRobot(Scope):
             server = f"tcp://{self.IP}:{MESSAGE_SERVER_PORT}"
         else:
             server = f"tcp://spawner:{MOVAI_FLOW_PORT}"
-        self.__dict__["zmq_client"] = ZMQClient(server=server, identity=self.RobotName)
+        self.__dict__["zmq_client"] = MessageClient(server_addr=server,robot_id=self.RobotName)
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot"""
@@ -52,7 +52,7 @@ class FleetRobot(Scope):
             to_send = pickle.dumps(to_send)
             self.Actions.append(to_send)
         else:
-            self.zmq_client.send(to_send)
+            self.zmq_client.send_request(to_send)
 
     def get_active_alerts(self) -> dict:
         """Gets a dictionary of the active alerts on this specific robot.
