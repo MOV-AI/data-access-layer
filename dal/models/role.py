@@ -25,12 +25,14 @@ class Role(Model):
     """Role Model (only of name)"""
 
     @classmethod
-    def create(cls, name: str, resources: Dict) -> type(cls):
+    def create(cls, name: str, resources: Dict):
         """create a new Role object in DB
 
         Args:
             name (str): The name of the Role
             resources (Dict): resources permissions map
+        Returns:
+            Role: The created Role object
 
         Raises:
             RoleAlreadyExist: in case a Role with that name already exist.
