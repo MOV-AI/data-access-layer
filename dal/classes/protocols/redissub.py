@@ -24,7 +24,8 @@ except ImportError:
     gdnode_modules = {}
 
 
-class Var_Subscriber(gdnode_modules["BaseIport"]):
+from gd_node.protocols.base import BaseIport
+class Var_Subscriber(BaseIport):
 
     """
     Redis Var Event Subscriber. Implementention of redis pubsub

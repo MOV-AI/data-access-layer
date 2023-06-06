@@ -1,6 +1,17 @@
 from typing import Optional, Dict, List, Any, Union
-from pydantic import constr, BaseModel, Field
+from pydantic import constr, BaseModel, Field, validator
 from .base_model import Arg, MovaiBaseModel
+from movai_core_shared.consts import (
+    MOVAI_NODE,
+    MOVAI_SERVER,
+    MOVAI_STATE,
+    MOVAI_TRANSITIONFOR,
+    MOVAI_TRANSITIONTO,
+    ROS1_NODE,
+    ROS1_NODELET,
+    ROS1_PLUGIN,
+)
+from ..models.scopestree import scopes
 
 
 KEY_REGEX = constr(regex=r"^[a-zA-Z0-9_]+$")
@@ -33,29 +44,66 @@ class OutValue(ActionFields):
 class InValue(ActionFields):
     in_: Optional[Portfields] = Field(default=None, alias="in")
 
+    def dict(
+        self,
+        *,
+        include=None,
+        exclude=None,
+        by_alias: bool = False,
+        skip_defaults: Optional[bool] = None,
+        exclude_unset: bool = False,
+        exclude_defaults: bool = False,
+        exclude_none: bool = False,
+    ):
+        return super().dict(
+            include=include,
+            exclude=exclude,
+            by_alias=True,
+            skip_defaults=skip_defaults,
+            exclude_unset=exclude_unset,
+            exclude_defaults=exclude_defaults,
+            exclude_none=exclude_none,
+        )
+
 
 class PortsInstValue(BaseModel):
     Message: Optional[str] = ""
     Package: Optional[str] = ""
-    Template: str
+    Template: Optional[str] = ""
     Out: Optional[OutValue] = None
     In: Optional[InValue] = None
 
 
 class Node(MovaiBaseModel):
-    EnvVar: Optional[Dict[KEY_REGEX, Arg]] = None
-    CmdLine: Optional[Dict[KEY_REGEX, Arg]] = None
-    Parameter: Optional[Dict[KEY_REGEX, Arg]] = None
+    EnvVar: Optional[Dict[KEY_REGEX, Arg]] = Field(default_factory=dict)
+    CmdLine: Optional[Dict[KEY_REGEX, Arg]] = Field(default_factory=dict)
+    Parameter: Optional[Dict[constr(regex=r"^[@a-zA-Z0-9_/]+$"), Arg]] = None
     Launch: Optional[Union[bool, str]] = None
     PackageDepends: Optional[Union[str, List[Any]]] = None
     Path: Optional[str] = None
-    Persistent: Optional[bool] = None
-    PortsInst: Dict[str, PortsInstValue]
-    Remappable: Optional[bool] = None
+    Persistent: Optional[bool] = False
+    PortsInst: Dict[str, PortsInstValue] = Field(default_factory=dict)
+    Remappable: Optional[bool] = False
     Type: Optional[str] = None
 
     class Meta:
         model_key_prefix = "Node"
+
+    @validator("Parameter", pre=True, always=True)
+    def validate_parameter(cls, v):
+        try:
+            return v
+        except ValueError as e:
+            field, error = e.errors()[0]["loc"], e.errors()[0]["msg"]
+            raise ValueError(f"{field}: {v} - {error}")
+
+    @validator("Remappable", pre=True, always=True)
+    def validate_remappable(cls, v):
+        return v if v not in [None, ""] else False
+
+    @validator("Persistent", pre=True, always=True)
+    def validate_persistent(cls, v):
+        return v if v not in [None, ""] else False
 
     @property
     def is_remappable(self) -> bool:
@@ -66,10 +114,12 @@ class Node(MovaiBaseModel):
 
         # get the value from the parameter _remappable
         # parameter takes precedence over attribute
+        param = None
         try:
-            param = self.Parameter["_remappable"].Value
+            if self.Parameter:
+                param = self.Parameter["_remappable"].Value
         except KeyError:
-            param = None
+            pass
 
         return prop if param in [None, ""] else param
 
@@ -82,10 +132,12 @@ class Node(MovaiBaseModel):
 
         # get the value from the parameter _launch
         # parameter takes precedence over attribute
+        param = None
         try:
-            param = self.Parameter["_launch"].Value
+            if self.Parameter:
+                param = self.Parameter["_launch"].Value
         except KeyError:
-            param = None
+            pass
 
         return prop if param in [None, ""] else param
 
@@ -98,10 +150,12 @@ class Node(MovaiBaseModel):
 
         # get the value from the parameter _persistent
         # parameter takes precedence over attribute
+        param = None
         try:
-            param = self.Parameter["_persistent"].Value
+            if self.Parameter:
+                param = self.Parameter["_persistent"].Value
         except KeyError:
-            param = None
+            pass
 
         return prop if param in [None, ""] else param
 
@@ -125,19 +179,47 @@ class Node(MovaiBaseModel):
         Return a dict with all parameters in the format <parameter name>: <Parameter.Value>
         (Parameter format is {key:{Value: <value>, Description: <value>}})
         """
-        params = self.Parameter.serialize()
-        output = {key: value["Value"] for key, value in params.items()}
+        output = {}
+        if self.Parameter:
+            output = {key: val.Value for key, val in self.Parameter.items()}
         return output
 
     def get_port(self, port_inst: str):
         """Returns an instance (Ports) of the port instance template"""
 
+        if port_inst not in self.PortsInst:
+            # TODO: raise exception
+            return None
         tpl = self.PortsInst[port_inst].Template
 
         # return Ports(tpl)
+        # TODO change this
         return scopes.from_path(tpl, scope="Ports")
 
+    def set_type(self):
+        type_to_set = MOVAI_NODE
+        templs = []
+        if self.PortsInst:
+            for _, temp in self.PortsInst.items():
+                templs.append(temp.Template)
+        if self.Path:
+            if any("ROS1" in templ for templ in templs):
+                type_to_set = ROS1_NODE
 
+            if any("ROS1/PluginClient" in templ for templ in templs):
+                type_to_set = ROS1_PLUGIN
+
+        if any("ROS1/Nodelet" in templ for templ in templs):
+            type_to_set = ROS1_NODELET
+
+        if any("Http" in templ for templ in templs):
+            type_to_set = MOVAI_SERVER
+
+        if any(templ in (MOVAI_TRANSITIONFOR, MOVAI_TRANSITIONTO) for templ in templs):
+            type_to_set = MOVAI_STATE
+
+        self.Type = type_to_set
+        self.save()
 
 
 if __name__ == "__main__":
@@ -175,7 +257,10 @@ if __name__ == "__main__":
                         },
                         "entry": {
                             "In": {
-                                "in": {"Callback": "Counter_CB", "Message": "movai_msgs/Transition"}
+                                "in": {
+                                    "Callback": "Counter_CB",
+                                    "Message": "movai_msgs/Transition",
+                                }
                             },
                             "Message": "Transition",
                             "Package": "movai_msgs",
@@ -201,9 +286,8 @@ if __name__ == "__main__":
     pk = n.save()
 
     print(pk)
-    #print(Node.select())
+    # print(Node.select())
     print("#########")
     print(Node.select(ids=[pk]))
 
-    #print(Node.find(Node.id == "Node:Counter:__UNVERSIONED__").all())
-
+    # print(Node.find(Node.id == "Node:Counter:__UNVERSIONED__").all())

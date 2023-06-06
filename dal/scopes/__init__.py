@@ -7,7 +7,8 @@
    - Moawiya Mograbi  (moawiya@mov.ai) - 2022
 """
 from .application import Application
-from .callback import Callback
+# from .callback import Callback
+from dal.new_models import Callback
 from .configuration import Config, Configuration
 from .fleetrobot import FleetRobot
 from .flow import Flow

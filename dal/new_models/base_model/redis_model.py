@@ -36,6 +36,7 @@ class RedisModel(BaseModel):
             project = self.project
         main_key = f"{project}:{self.Meta.model_key_prefix}:{self.pk}"
 
+        self.db().json().delete(main_key)
         self.db().json().set(
             main_key,
             "$",

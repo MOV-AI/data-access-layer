@@ -31,7 +31,6 @@ from movai_core_shared.consts import (
 from dal.movaidb import MovaiDB
 from dal.scopes.scope import Scope
 from dal.scopes.ports import Ports
-from dal.scopes.node import Node
 from dal.models.var import Var
 from movai_core_shared.exceptions import DoesNotExist
 from .configuration import Configuration
@@ -898,7 +897,9 @@ class Flow(Scope):
     def get_node_port(self, node_name: str, port_inst: str) -> Ports:
         """Deprecated, still here because of tests/data/test_Callback_data.py"""
         node_template_name = self.get_node_template_name(node_name)
-        node_template = Node(node_template_name, db=self.db)
+        #node_template = Node(node_template_name, db=self.db)
+        from dal.new_models import Node
+        node_template = Node(node_template_name)
         port_template_name = node_template.PortsInst[port_inst].Template
         return Ports(port_template_name, db=self.db)
 

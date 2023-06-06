@@ -38,7 +38,7 @@ def test_reachable(redis_url):
 
 def _from_path(name):
     try:
-        from dal.models.scopestree import scopes
+        from ..models.scopestree import scopes
         return scopes.extract_reference(name)[2]
     except KeyError:
         # not a path and `scope` wasn't passed
@@ -73,6 +73,7 @@ class RemoveException(Exception):
 # Base class for commonality
 #
 
+my_models = ["callback", "node"]
 
 class Factory:
     # cache
@@ -83,10 +84,11 @@ class Factory:
         """
         Get the scope
         """
-        if scope.lower() == "callback":
-            from dal.new_models import Callback
-            # return pydantic callback
-            return Callback
+        if scope.lower() in my_models:
+            from dal.new_models import Callback, Node
+            if scope.lower() == "callback":
+                return Callback
+            return Node
         if scope not in Factory.CLASSES_CACHE:
             mod = import_module("dal.scopes")
 
@@ -443,7 +445,14 @@ class Importer(Backup):
             except Exception:
                 pass
         try:
-            self._db.set(data, validate=self.validate)
+            if scope.lower() in my_models:
+                print(f"using new models import, {scope}")
+                # pydantic callback
+                obj = Factory.get_class(scope)(**data)
+                print("saving ....")
+                obj.save()
+            else:
+                self._db.set(data, validate=self.validate)
             self.set_imported(scope, name)
         except Exception:
             _msg = f"Failed to import '{scope}:{name}'"
