@@ -11,8 +11,8 @@ from .configuration import Configuration
 from .aclobject import AclObject
 from .application import Application
 from .baseuser import BaseUser
-from .callback import Callback
-from .configuration import Configuration
+# from .callback import Callback
+from dal.new_models import Callback
 from .container import Container
 from .flow import Flow
 from .flowlinks import FlowLinks
