@@ -16,14 +16,13 @@ import uuid
 import aioredis
 import yaml
 from aiohttp import WSMsgType, web
-import gd_node
 from movai_core_shared.logger import Log
 from dal.movaidb import MovaiDB, RedisClient
+
 try:
     from gd_node.callback import GD_Callback
-    gdnode_modules = {
-        "GD_Callback": GD_Callback
-    }
+
+    gdnode_modules = {"GD_Callback": GD_Callback}
 except ImportError:
     gdnode_modules = {}
 
@@ -31,11 +30,11 @@ LOGGER = Log.get_logger("WSRedisSub")
 
 
 class WSRedisSub:
-    """ API for dynamic subscriber to redis """
+    """API for dynamic subscriber to redis"""
 
     def __init__(self, app: web.Application, _node_name: str, **_ignore):
         self.topic = "/ws/subscriber"
-        self.http_endpoint = '/subscriber'
+        self.http_endpoint = "/subscriber"
         self.node_name = _node_name
         self.app = app
 
@@ -48,12 +47,11 @@ class WSRedisSub:
             "subscribe": self.add_pattern,
             "unsubscribe": self.remove_pattern,
             "list": self.get_patterns,
-            "execute": self.execute
+            "execute": self.execute,
         }
 
         # Add API endpoint
         # <http/ws.py>
-        #self.app.add_routes([web.get(self.topic, self.handler)])
 
         # create database client
         asyncio.create_task(self.connect())
@@ -72,7 +70,7 @@ class WSRedisSub:
         except Exception as e:
             LOGGER.error(e)
             await self.connect()
-            _conn = await self.acquire(retries -1)
+            _conn = await self.acquire(retries - 1)
         return _conn
 
     async def release(self, conn_id):
@@ -93,15 +91,12 @@ class WSRedisSub:
             conn = aioredis.Redis(_conn)
         except Exception as error:
             LOGGER.error(str(error))
-            await self.send_json(ws_resp, {"event":"", "patterns": None, "error": str(error)})
+            await self.send_json(ws_resp, {"event": "", "patterns": None, "error": str(error)})
 
-        #self.app["sub_connections"].add(ws_resp)
-
-        # create uuid for the connection
         conn_id = uuid.uuid4().hex
 
         # add connection
-        self.connections.update({conn_id: {'conn': ws_resp, 'subs': conn, 'patterns':[]}})
+        self.connections.update({conn_id: {"conn": ws_resp, "subs": conn, "patterns": []}})
 
         # wait for messages
         async for ws_msg in ws_resp:
@@ -115,12 +110,17 @@ class WSRedisSub:
                     if "event" in data:
                         if data.get("event") == "execute":
                             _config = {
-                                "conn_id": conn_id, "conn": conn, "callback": data.get("callback", None),
-                                "func": data.get("func", None), "data": data.get("data", None)
+                                "conn_id": conn_id,
+                                "conn": conn,
+                                "callback": data.get("callback", None),
+                                "func": data.get("func", None),
+                                "data": data.get("data", None),
                             }
                         else:
                             _config = {
-                                "conn_id": conn_id, "conn": conn, "_pattern": data.get("pattern", None)
+                                "conn_id": conn_id,
+                                "conn": conn,
+                                "_pattern": data.get("pattern", None),
                             }
                         await self.actions[data["event"]](**_config)
                     else:
@@ -133,17 +133,15 @@ class WSRedisSub:
                     await self.send_json(ws_resp, output)
 
             elif ws_msg.type == WSMsgType.ERROR:
-                LOGGER.error('ws connection closed with exception %s' % ws_resp.exception())
+                LOGGER.error("ws connection closed with exception %s" % ws_resp.exception())
 
         await self.release(conn_id)
-        #self.app["sub_connections"].remove(ws_resp)
-        #del self.connections[conn_id]
         return ws_resp
 
-    def convert_pattern(self, _pattern: dict)->str:
+    def convert_pattern(self, _pattern: dict) -> str:
         try:
             pattern = _pattern.copy()
-            scope = pattern.pop('Scope')
+            scope = pattern.pop("Scope")
             search_dict = self.movaidb.get_search_dict(scope, **pattern)
 
             keys = []
@@ -154,16 +152,12 @@ class WSRedisSub:
         except Exception as e:
             LOGGER.error(e)
             return None
-            #error = "Pattern format unknown"
-            #output = {"event": None, "pattern": None, "error": error}
-            #await ws_resp.send_json(output)
 
     async def add_pattern(self, conn_id, conn, _pattern, **ignore):
-        """ Add pattern to subscriber """
+        """Add pattern to subscriber"""
         LOGGER.info(f"add_pattern{_pattern}")
-        #t_start = time.time()
 
-        self.connections[conn_id]['patterns'].append(_pattern)
+        self.connections[conn_id]["patterns"].append(_pattern)
         key_patterns = []
         if isinstance(_pattern, list):
             for patt in _pattern:
@@ -173,7 +167,7 @@ class WSRedisSub:
         keys = []
         tasks = []
         for key_pattern in key_patterns:
-            pattern = '__keyspace@*__:%s' %(key_pattern)
+            pattern = "__keyspace@*__:%s" % (key_pattern)
             channel = await conn.psubscribe(pattern)
             asyncio.create_task(self.wait_message(conn_id, channel[0]))
 
@@ -190,74 +184,69 @@ class WSRedisSub:
         # get all values
         values = await self.mget(keys)
 
-        ws = self.connections[conn_id]['conn']
+        ws = self.connections[conn_id]["conn"]
         await self.send_json(ws, {"event": "subscribe", "patterns": [_pattern], "value": values})
 
     async def remove_pattern(self, conn_id, conn, _pattern, **ignore):
-        """ Remove pattern from subscriber """
+        """Remove pattern from subscriber"""
         LOGGER.debug(f"removing pattern {_pattern} {conn}")
-        if _pattern in self.connections[conn_id]['patterns']:
-            self.connections[conn_id]['patterns'].remove(_pattern)
+        if _pattern in self.connections[conn_id]["patterns"]:
+            self.connections[conn_id]["patterns"].remove(_pattern)
 
         key_patterns = self.convert_pattern(_pattern)
         for key_pattern in key_patterns:
-            pattern = '__keyspace@*__:%s' % (key_pattern)
+            pattern = "__keyspace@*__:%s" % (key_pattern)
             await conn.punsubscribe(pattern)
 
-        ws = self.connections[conn_id]['conn']
+        ws = self.connections[conn_id]["conn"]
         await self.send_json(ws, {"event": "unsubscribe", "patterns": [_pattern]})
 
     async def get_patterns(self, conn_id, conn, **ignore):
-        """ Get list of patterns """
+        """Get list of patterns"""
 
-        output = {"event": "list",
-                  "patterns": self.connections[conn_id]['patterns']}
+        output = {"event": "list", "patterns": self.connections[conn_id]["patterns"]}
 
-        await self.send_json(self.connections[conn_id]['conn'], output)
+        await self.send_json(self.connections[conn_id]["conn"], output)
 
     async def wait_message(self, conn_id, channel):
-        """ Receive messages from redis subscriber """
+        """Receive messages from redis subscriber"""
         output = {"event": "unknown"}
         while await channel.wait_message():
-            ws = self.connections[conn_id]['conn']
-            msg = await channel.get(encoding='utf-8')
+            ws = self.connections[conn_id]["conn"]
+            msg = await channel.get(encoding="utf-8")
             value = ""
             key = msg[0].decode("utf-8").split(":", 1)[1]
-            #match the key triggerd with any patterns
+            # match the key triggerd with any patterns
             match_patterns = []
-            for dict_pattern in self.connections[conn_id]['patterns']:
+            for dict_pattern in self.connections[conn_id]["patterns"]:
                 patterns = self.convert_pattern(dict_pattern)
                 for pattern in patterns:
-                    if all(piece in key for piece in pattern.split('*')):
+                    if all(piece in key for piece in pattern.split("*")):
                         match_patterns.append(dict_pattern)
             if msg[1] in ("set", "hset", "hdel"):
                 key_in_dict = await self.get_value(key)
             else:
                 key_in_dict = self.movaidb.keys_to_dict([(key, value)])
             output.update(
-                {"event": msg[1],
-                 "patterns": match_patterns,
-                 "key": key_in_dict,
-                 "value": value}
-                )
+                {"event": msg[1], "patterns": match_patterns, "key": key_in_dict, "value": value}
+            )
 
             await self.send_json(ws, output)
 
-
     async def get_keys(self, pattern: str) -> list:
-        """ Get all redis keys in pattern """
+        """Get all redis keys in pattern"""
         _conn = self.databases.db_slave
         keys = await _conn.keys(pattern)
 
         # sort keys
-        keys = [key.decode('utf-8') for key in keys]
+        keys = [key.decode("utf-8") for key in keys]
         keys.sort(key=str.lower)
-        keys = [key.encode('utf-8') for key in keys]
+        keys = [key.encode("utf-8") for key in keys]
 
         return keys
 
     async def get_value(self, keys):
-        """ Get key value """
+        """Get key value"""
         # TODO DEPRECATED NOT YET
         output = {}
         _conn = self.databases.db_slave
@@ -270,7 +259,7 @@ class WSRedisSub:
         values = await asyncio.gather(*tasks)
         for key, value in values:
             if isinstance(key, bytes):
-                key_values.append((key.decode('utf-8'), value))
+                key_values.append((key.decode("utf-8"), value))
             else:
                 key_values.append((key, value))
         output = self.movaidb.keys_to_dict(key_values)
@@ -279,17 +268,17 @@ class WSRedisSub:
     async def fetch_value(self, _conn, key):
         # DEPRECATED
         type_ = await _conn.type(key)
-        type_ = type_.decode('utf-8')
-        if type_ == 'string':
+        type_ = type_.decode("utf-8")
+        if type_ == "string":
             value = await _conn.get(key)
             value = self.movaidb.decode_value(value)
-        if type_ == 'list':
+        if type_ == "list":
             value = await _conn.lrange(key, 0, -1)
             value = self.movaidb.decode_list(value)
-        if type_ == 'hash':
+        if type_ == "hash":
             value = await _conn.hgetall(key)
             value = self.movaidb.decode_hash(value)
-        try:  #Json cannot dump ROS Messages
+        try:  # Json cannot dump ROS Messages
             json.dumps(value)
         except:
             try:
@@ -299,7 +288,7 @@ class WSRedisSub:
         return (key, value)
 
     async def mget(self, keys):
-        """ get values using redis mget """
+        """get values using redis mget"""
         _conn = self.databases.db_slave
         output = []
         values = []
@@ -313,12 +302,12 @@ class WSRedisSub:
         for key, value in zip(keys, values):
             try:
                 if isinstance(key, bytes):
-                    key = key.decode('utf-8')
+                    key = key.decode("utf-8")
                 if not value:
                     # not a string
                     value = await self.get_key_val(_conn, key)
                 else:
-                    value = self.__decode_value('string', value)
+                    value = self.__decode_value("string", value)
 
             except ValueError:
                 value = None
@@ -328,19 +317,19 @@ class WSRedisSub:
         return self.movaidb.keys_to_dict(output)
 
     async def get_key_val(self, _conn, key):
-        """ get value by type """
+        """get value by type"""
 
         type_ = await _conn.type(key)
 
         # get redis type
-        type_ = type_.decode('utf-8')
+        type_ = type_.decode("utf-8")
 
         # get value by redis type
-        if type_ == 'string':
+        if type_ == "string":
             value = await _conn.get(key)
-        elif type_ == 'list':
+        elif type_ == "list":
             value = await _conn.lrange(key, 0, -1)
-        elif type_ == 'hash':
+        elif type_ == "hash":
             value = await _conn.hgetall(key)
         else:
             raise ValueError(f"Unexpected type: {type_} for key: {key}")
@@ -349,12 +338,12 @@ class WSRedisSub:
         return self.__decode_value(type_, value)
 
     def __decode_value(self, type_, value):
-        """ decode value by type """
-        if type_ == 'string':
+        """decode value by type"""
+        if type_ == "string":
             value = self.movaidb.decode_value(value)
-        elif type_ == 'list':
+        elif type_ == "list":
             value = self.movaidb.decode_list(value)
-        elif type_ == 'hash':
+        elif type_ == "hash":
             value = self.movaidb.sort_dict(self.movaidb.decode_hash(value))
         else:
             raise ValueError(f"Unexpected type: {type_} for value: {value}")
@@ -371,17 +360,18 @@ class WSRedisSub:
 
     async def execute(self, conn_id, conn, callback, data=None, **ignore):
         """
-            event: execute
-            execute specific callback
-            Request implemented in Database.js
+        event: execute
+        execute specific callback
+        Request implemented in Database.js
         """
 
-        ws = self.connections[conn_id]['conn']
+        ws = self.connections[conn_id]["conn"]
 
         try:
             # get callback
             callback = gdnode_modules["GD_Callback"](
-                callback, self.node_name, 'cloud', _update=False)
+                callback, self.node_name, "cloud", _update=False
+            )
 
             # update callback with request data
             callback.user.globals.update({"msg": data, "response": {}})
@@ -389,10 +379,8 @@ class WSRedisSub:
             callback.execute(data)
 
             # create response
-            response = {"event": "execute",
-                        "result": None,
-                        "patterns": ["execute"]}
-            _response = callback.updated_globals['response']
+            response = {"event": "execute", "result": None, "patterns": ["execute"]}
+            _response = callback.updated_globals["response"]
 
             if isinstance(_response, dict):
                 response.update(_response)
@@ -404,15 +392,12 @@ class WSRedisSub:
 
         except Exception:
             error = f"{str(sys.exc_info()[1])} {sys.exc_info()}"
-            await self.send_json(ws,
-                {"event": "execute",
-                 "callback": callback,
-                 "result": None,
-                 "error": error})
-
+            await self.send_json(
+                ws, {"event": "execute", "callback": callback, "result": None, "error": error}
+            )
 
     async def send_json(self, conn, data):
-        """ send json data """
+        """send json data"""
         try:
             if not conn.closed:
                 await conn.send_json(data)

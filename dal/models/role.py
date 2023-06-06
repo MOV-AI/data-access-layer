@@ -70,7 +70,7 @@ class Role(Model):
             "EmailsAlertsRecipients": ["read", "update"],
             "Configuration": ["read"],
         }
-        resources["Applications"] = ["FleetBoard", "Launcher"]
+        resources["Applications"] = ["FleetBoard", "mov-fe-app-launcher"]
         if not Role.is_exist("Operator"):
             operator_role = cls.create("Operator", resources)
         else:
