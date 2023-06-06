@@ -42,7 +42,6 @@ class WSRedisSub:
         self.databases = None
         self.connections = {}
         self.movaidb = MovaiDB()
-        self.loop = asyncio.get_event_loop()
 
         # API available actions
         self.actions = {
@@ -57,7 +56,7 @@ class WSRedisSub:
         #self.app.add_routes([web.get(self.topic, self.handler)])
 
         # create database client
-        self.loop.create_task(self.connect())
+        asyncio.create_task(self.connect())
 
     async def connect(self):
         # create database client
@@ -92,8 +91,8 @@ class WSRedisSub:
         try:
             _conn = await self.acquire()
             conn = aioredis.Redis(_conn)
-        except Exception as e:
-            LOGGER.error(e)
+        except Exception as error:
+            LOGGER.error(str(error))
             await self.send_json(ws_resp, {"event":"", "patterns": None, "error": str(error)})
 
         #self.app["sub_connections"].add(ws_resp)
@@ -173,12 +172,10 @@ class WSRedisSub:
             key_patterns = self.convert_pattern(_pattern)
         keys = []
         tasks = []
-        if not self.loop.is_running():
-            self.loop = asyncio.get_event_loop()        
         for key_pattern in key_patterns:
             pattern = '__keyspace@*__:%s' %(key_pattern)
             channel = await conn.psubscribe(pattern)
-            self.loop.create_task(self.wait_message(conn_id, channel[0]))
+            asyncio.create_task(self.wait_message(conn_id, channel[0]))
 
             # add a new get_keys task
             tasks.append(self.get_keys(key_pattern))
