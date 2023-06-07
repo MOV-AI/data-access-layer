@@ -25,12 +25,14 @@ class Role(Model):
     """Role Model (only of name)"""
 
     @classmethod
-    def create(cls, name: str, resources: Dict) -> None:
+    def create(cls, name: str, resources: Dict):
         """create a new Role object in DB
 
         Args:
             name (str): The name of the Role
             resources (Dict): resources permissions map
+        Returns:
+            Role: The created Role object
 
         Raises:
             RoleAlreadyExist: in case a Role with that name already exist.
@@ -51,11 +53,13 @@ class Role(Model):
         """
         creates default admin Role
         """
+        resources = NewACLManager.get_permissions()
         if not Role.is_exist(DEFAULT_ROLE_NAME):
-            resources = NewACLManager.get_permissions()
             default_role = cls.create(DEFAULT_ROLE_NAME, resources)
         else:
             default_role = Role(DEFAULT_ROLE_NAME)
+            for key, item in resources.items():
+                default_role.Resources[key] = item
         return default_role
 
     @classmethod
@@ -63,19 +67,17 @@ class Role(Model):
         """
         creates default operator Role
         """
+        resources = {
+            "EmailsAlertsConfig": ["read"],
+            "EmailsAlertsRecipients": ["read", "update"],
+            "Configuration": ["read"],
+        }
+        resources["Applications"] = ["FleetBoard", "mov-fe-app-launcher"]
         if not Role.is_exist("Operator"):
-            resources = {
-                "EmailsAlertsConfig": ["read"],
-                "EmailsAlertsRecipients": ["read", "update"],
-                "Configuration": ["read"],
-            }
-            resources["Applications"] = [
-                item["ref"]
-                for item in scopes().list_scopes(scope="Application")
-            ]
             operator_role = cls.create("Operator", resources)
         else:
             operator_role = Role("Operator")
+            operator_role.Resources = resources
         return operator_role
 
     @classmethod
@@ -90,8 +92,7 @@ class Role(Model):
                 "Configuration": ["read"],
             }
             resources["Applications"] = [
-                item["ref"]
-                for item in scopes().list_scopes(scope="Application")
+                item["ref"] for item in scopes().list_scopes(scope="Application")
             ]
             deployer_role = cls.create("Deployer", resources)
         else:
