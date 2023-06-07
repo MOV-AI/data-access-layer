@@ -41,6 +41,7 @@ class WSRedisSub:
         self.databases = None
         self.connections = {}
         self.movaidb = MovaiDB()
+        self.loop = asyncio.get_event_loop()
 
         # API available actions
         self.actions = {
@@ -54,7 +55,7 @@ class WSRedisSub:
         # <http/ws.py>
 
         # create database client
-        asyncio.create_task(self.connect())
+        self.loop.create_task(self.connect())
 
     async def connect(self):
         # create database client
@@ -86,19 +87,39 @@ class WSRedisSub:
 
         # acquire db connection
         conn = None
+        connection_queue = asyncio.Queue()
         try:
             _conn = await self.acquire()
             conn = aioredis.Redis(_conn)
         except Exception as error:
             LOGGER.error(str(error))
-            await self.send_json(ws_resp, {"event": "", "patterns": None, "error": str(error)})
+            await self.send_json(connection_queue, {"event": "", "patterns": None, "error": str(error)})
 
         conn_id = uuid.uuid4().hex
 
         # add connection
-        self.connections.update({conn_id: {"conn": ws_resp, "subs": conn, "patterns": []}})
+        self.connections.update({conn_id: {"conn": connection_queue, "subs": conn, "patterns": []}})
 
         # wait for messages
+        asyncio.create_task(self.read_websocket_loop(ws_resp, conn_id, conn, connection_queue))
+        while not ws_resp.closed:
+            msg = await connection_queue.get()
+            try:
+                await ws_resp.send_json(msg)
+            except Exception as e:
+                LOGGER.error(str(e))
+
+        await self.release(conn_id)
+        return ws_resp
+
+    async def read_websocket_loop(self, ws_resp: web.WebSocketResponse, conn_id: str, conn: aioredis.Redis, connection_queue: asyncio.Queue):
+        """wait and read messages from websocket
+            Args:
+                ws_resp (web.WebSocketResponse): websocket _response
+                conn_id (str): connection id
+                conn (aioredis.Redis): redis connection
+                connection_queue (asyncio.Queue): queue to send messages
+        """
         async for ws_msg in ws_resp:
             # check if redis connection is active
             if not conn or conn.closed:
@@ -130,13 +151,10 @@ class WSRedisSub:
                     LOGGER.error(e)
                     output = {"event": None, "patterns": None, "error": str(e)}
 
-                    await self.send_json(ws_resp, output)
+                    await self.send_json(connection_queue, output)
 
             elif ws_msg.type == WSMsgType.ERROR:
                 LOGGER.error("ws connection closed with exception %s" % ws_resp.exception())
-
-        await self.release(conn_id)
-        return ws_resp
 
     def convert_pattern(self, _pattern: dict) -> str:
         try:
@@ -396,10 +414,9 @@ class WSRedisSub:
                 ws, {"event": "execute", "callback": callback, "result": None, "error": error}
             )
 
-    async def send_json(self, conn, data):
+    async def send_json(self, conn: asyncio.Queue, data):
         """send json data"""
         try:
-            if not conn.closed:
-                await conn.send_json(data)
+            await conn.put(data)
         except Exception as e:
             LOGGER.error(str(e))
