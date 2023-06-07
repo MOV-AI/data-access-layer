@@ -93,7 +93,9 @@ class WSRedisSub:
             conn = aioredis.Redis(_conn)
         except Exception as error:
             LOGGER.error(str(error))
-            await self.send_json(connection_queue, {"event": "", "patterns": None, "error": str(error)})
+            await self.send_json(
+                connection_queue, {"event": "", "patterns": None, "error": str(error)}
+            )
 
         conn_id = uuid.uuid4().hex
 
@@ -112,13 +114,19 @@ class WSRedisSub:
         await self.release(conn_id)
         return ws_resp
 
-    async def read_websocket_loop(self, ws_resp: web.WebSocketResponse, conn_id: str, conn: aioredis.Redis, connection_queue: asyncio.Queue):
+    async def read_websocket_loop(
+        self,
+        ws_resp: web.WebSocketResponse,
+        conn_id: str,
+        conn: aioredis.Redis,
+        connection_queue: asyncio.Queue,
+    ):
         """wait and read messages from websocket
-            Args:
-                ws_resp (web.WebSocketResponse): websocket _response
-                conn_id (str): connection id
-                conn (aioredis.Redis): redis connection
-                connection_queue (asyncio.Queue): queue to send messages
+        Args:
+            ws_resp (web.WebSocketResponse): websocket _response
+            conn_id (str): connection id
+            conn (aioredis.Redis): redis connection
+            connection_queue (asyncio.Queue): queue to send messages
         """
         async for ws_msg in ws_resp:
             # check if redis connection is active
