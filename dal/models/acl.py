@@ -179,8 +179,8 @@ class NewACLManager(ACLManager):
                 resources_permissions[scope] = NewACLManager._DEFAULT_PERMISSIONS
 
         # Applications
-        apps = [item["ref"] for item in scopes().list_scopes(scope="Application")]
-
-        resources_permissions["Applications"] += apps
+        resources_permissions["Applications"] = [
+            item["ref"] for item in scopes().list_scopes(scope="Application")
+        ]
 
         return resources_permissions
