@@ -4,12 +4,10 @@ import json
 from .redis_model import RedisModel, GLOBAL_KEY_PREFIX
 from .common import PrimaryKey
 from re import search
-from movai_core_shared.logger import Log
 from cachetools import TTLCache
 
 
 DEFAULT_VERSION = "__UNVERSIONED__"
-LOGGER = Log.get_logger("NEW Models")
 cache = TTLCache(maxsize=100, ttl=1200)
 
 
@@ -63,7 +61,6 @@ class MovaiBaseModel(RedisModel):
                 project = GLOBAL_KEY_PREFIX
             key = f"{project}:{cls.__name__}:{id}:{version}"
             if key in cache:
-                LOGGER.warning(f"using cached models!!!!!!!!!!!, {key}")
                 return cache[key]
 
             obj = cls.select(ids=[f"{id}:{version}"])
@@ -89,7 +86,6 @@ class MovaiBaseModel(RedisModel):
         return ""
 
     def __init__(self, *args, project: str = GLOBAL_KEY_PREFIX, **kwargs):
-        LOGGER.warning(f"using new models, {self.scope}")
         if not kwargs:
             return
         version = DEFAULT_VERSION

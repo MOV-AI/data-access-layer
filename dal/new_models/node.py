@@ -26,7 +26,7 @@ class Parameter1(BaseModel):
 class Portfields(BaseModel):
     Message: Optional[str] = None
     Callback: Optional[str] = None
-    Parameter: Optional[Parameter1] = None
+    Parameter: Optional[Parameter1] = Field(default_factory=dict)
 
 
 class ActionFields(BaseModel):
@@ -39,6 +39,27 @@ class ActionFields(BaseModel):
 
 class OutValue(ActionFields):
     out: Optional[Portfields] = None
+
+    def dict(
+        self,
+        *,
+        include=None,
+        exclude=None,
+        by_alias: bool = False,
+        skip_defaults: Optional[bool] = None,
+        exclude_unset: bool = False,
+        exclude_defaults: bool = False,
+        exclude_none: bool = True,
+    ):
+        return super().dict(
+            include=include,
+            exclude=exclude,
+            by_alias=by_alias,
+            skip_defaults=skip_defaults,
+            exclude_unset=exclude_unset,
+            exclude_defaults=exclude_defaults,
+            exclude_none=exclude_none,
+        )
 
 
 class InValue(ActionFields):
@@ -70,14 +91,16 @@ class PortsInstValue(BaseModel):
     Message: Optional[str] = ""
     Package: Optional[str] = ""
     Template: Optional[str] = ""
-    Out: Optional[OutValue] = None
-    In: Optional[InValue] = None
+    Out: Optional[OutValue] = Field(default_factory=dict)
+    In: Optional[InValue] = Field(default_factory=dict)
 
 
 class Node(MovaiBaseModel):
     EnvVar: Optional[Dict[KEY_REGEX, Arg]] = Field(default_factory=dict)
     CmdLine: Optional[Dict[KEY_REGEX, Arg]] = Field(default_factory=dict)
-    Parameter: Optional[Dict[constr(regex=r"^[@a-zA-Z0-9_/]+$"), Arg]] = None
+    Parameter: Optional[Dict[constr(regex=r"^[@a-zA-Z0-9_/]+$"), Arg]] = Field(
+        default_factory=dict
+    )
     Launch: Optional[Union[bool, str]] = None
     PackageDepends: Optional[Union[str, List[Any]]] = None
     Path: Optional[str] = None
@@ -290,4 +313,4 @@ if __name__ == "__main__":
     print("#########")
     print(Node.select(ids=[pk]))
 
-    # print(Node.find(Node.id == "Node:Counter:__UNVERSIONED__").all())
+    # print(Node.find(Node.id == "Node:Counter:__UNVERSIONED__").all())'
