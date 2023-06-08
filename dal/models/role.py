@@ -10,8 +10,15 @@
 """
 from typing import Dict
 
+from movai_core_shared.consts import (
+    ADMIN_ROLE,
+    OPERATOR_ROLE,
+    DEPLOYER_ROLE,
+    READ_PERMISSION,
+    UPDATE_PERMISSION
+)
 from movai_core_shared.exceptions import RoleAlreadyExist, RoleDoesNotExist, RoleError
-from movai_core_shared.envvars import DEFAULT_ROLE_NAME
+
 
 from dal.models.scopestree import scopes
 from dal.models.model import Model
@@ -54,13 +61,15 @@ class Role(Model):
         creates default admin Role
         """
         resources = NewACLManager.get_permissions()
-        if not Role.is_exist(DEFAULT_ROLE_NAME):
-            default_role = cls.create(DEFAULT_ROLE_NAME, resources)
+        if not Role.is_exist(ADMIN_ROLE):
+            admin_role = cls.create(ADMIN_ROLE, resources)
         else:
-            default_role = Role(DEFAULT_ROLE_NAME)
+            admin_role = Role(ADMIN_ROLE)
             for key, item in resources.items():
-                default_role.Resources[key] = item
-        return default_role
+                admin_role.Resources[key] = item
+                admin_role.write()
+
+        return admin_role
 
     @classmethod
     def create_operator_role(cls):
@@ -68,16 +77,19 @@ class Role(Model):
         creates default operator Role
         """
         resources = {
-            "EmailsAlertsConfig": ["read"],
-            "EmailsAlertsRecipients": ["read", "update"],
-            "Configuration": ["read"],
+            "EmailsAlertsConfig": [READ_PERMISSION],
+            "EmailsAlertsRecipients": [READ_PERMISSION, UPDATE_PERMISSION],
+            "Configuration": [READ_PERMISSION],
         }
         resources["Applications"] = ["FleetBoard", "mov-fe-app-launcher"]
-        if not Role.is_exist("Operator"):
-            operator_role = cls.create("Operator", resources)
+        if not Role.is_exist(OPERATOR_ROLE):
+            operator_role = cls.create(OPERATOR_ROLE, resources)
         else:
-            operator_role = Role("Operator")
-            operator_role.Resources = resources
+            operator_role = Role(OPERATOR_ROLE)
+            for key, item in resources.items():
+                operator_role.Resources[key] = item
+                operator_role.write()
+
         return operator_role
 
     @classmethod
@@ -85,18 +97,24 @@ class Role(Model):
         """
         creates default deployer role
         """
-        if not Role.is_exist("Deployer"):
-            resources = {
-                "EmailsAlertsConfig": ["read", "update"],
-                "EmailsAlertsRecipients": ["read"],
-                "Configuration": ["read"],
-            }
-            resources["Applications"] = [
-                item["ref"] for item in scopes().list_scopes(scope="Application")
-            ]
-            deployer_role = cls.create("Deployer", resources)
+        resources = {
+            "EmailsAlertsConfig": [READ_PERMISSION, UPDATE_PERMISSION],
+            "EmailsAlertsRecipients": [READ_PERMISSION],
+            "Configuration": [READ_PERMISSION],
+            "InternalUser": [READ_PERMISSION],
+            "Role": [READ_PERMISSION],
+            "AclObject": [READ_PERMISSION],
+        }
+        resources["Applications"] = [
+            item["ref"] for item in scopes().list_scopes(scope="Application")
+        ]
+        if not Role.is_exist(DEPLOYER_ROLE):
+            deployer_role = cls.create(DEPLOYER_ROLE, resources)
         else:
-            deployer_role = Role("Deployer")
+            deployer_role = Role(DEPLOYER_ROLE)
+            for key, item in resources.items():
+                deployer_role.Resources[key] = item
+                deployer_role.write()
 
         return deployer_role
 

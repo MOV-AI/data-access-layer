@@ -12,6 +12,14 @@ from typing import List, Dict
 
 from miracle import Acl
 
+from movai_core_shared.consts import (
+    READ_PERMISSION,
+    UPDATE_PERMISSION, 
+    CREATE_PERMISSION, 
+    DELETE_PERMISSION, 
+    EXECUTE_PERMISSION,
+    RESET_PERMISSION,
+)
 from movai_core_shared.envvars import REST_SCOPES
 from movai_core_shared.logger import Log
 from dal.models.scopestree import ScopesTree, scopes
@@ -23,16 +31,16 @@ class ACLManager:
     """
 
     log = Log.get_logger("ACLManager")
-    _DEFAULT_PERMISSIONS = ["create", "read", "update", "delete"]
-    _EXECUTE_PERMISSIONS = _DEFAULT_PERMISSIONS + ["execute"]
-    _USER_PERMISSIONS = _DEFAULT_PERMISSIONS + ["reset"]
+    _DEFAULT_PERMISSIONS = [CREATE_PERMISSION, READ_PERMISSION, UPDATE_PERMISSION, DELETE_PERMISSION]
+    _EXECUTE_PERMISSIONS = _DEFAULT_PERMISSIONS + [EXECUTE_PERMISSION]
+    _USER_PERMISSIONS = _DEFAULT_PERMISSIONS + [RESET_PERMISSION]
     _SPECIAL_PERMISSIONS_MAP = {
         "Application": _EXECUTE_PERMISSIONS,
         "Callback": _EXECUTE_PERMISSIONS,
         "User": ["read"],
         "InternalUser": _USER_PERMISSIONS,
-        "EmailsAlertsConfig": ["read", "update"],
-        "EmailsAlertsRecipients": ["read", "update"],
+        "EmailsAlertsConfig": [READ_PERMISSION, UPDATE_PERMISSION],
+        "EmailsAlertsRecipients": [READ_PERMISSION, UPDATE_PERMISSION],
     }
 
     def __init__(self, user):
