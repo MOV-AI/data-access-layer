@@ -15,8 +15,10 @@ from movai_core_shared.consts import (
     OPERATOR_ROLE,
     DEPLOYER_ROLE,
     READ_PERMISSION,
-    UPDATE_PERMISSION
+    UPDATE_PERMISSION,
 )
+from movai_core_shared.envvars import DEFAULT_ROLE_NAME
+
 from movai_core_shared.exceptions import RoleAlreadyExist, RoleDoesNotExist, RoleError
 
 
