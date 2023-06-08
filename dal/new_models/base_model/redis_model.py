@@ -1,10 +1,9 @@
 from typing import List
 from pydantic import BaseModel
 import redis
-from dal.movaidb import MovaiDB
+from dal.movaidb import Redis
 
 
-valid_models = ["Flow", "Node", "Callback", "Annotation", "GraphicScene"]
 GLOBAL_KEY_PREFIX = "Movai"
 
 
@@ -23,7 +22,7 @@ class RedisModel(BaseModel):
 
     @classmethod
     def db(cls) -> redis.Redis:
-        return MovaiDB().db_write
+        return Redis().db_global
 
     def save(self) -> str:
         """_summary_
@@ -31,14 +30,9 @@ class RedisModel(BaseModel):
         Returns:
             str: _description_
         """
-        project = GLOBAL_KEY_PREFIX
-        if self.project != "":
-            project = self.project
-        main_key = f"{project}:{self.Meta.model_key_prefix}:{self.pk}"
-
-        self.db().json().delete(main_key)
+        self.db().json().delete(self.pk)
         self.db().json().set(
-            main_key,
+            self.pk,
             "$",
             self.dict(),
         )
@@ -56,9 +50,7 @@ class RedisModel(BaseModel):
             # get all objects of type cls
             ids = [
                 key.decode()
-                for key in cls.db().keys(
-                    f"{project}:{cls.Meta.model_key_prefix}:*"
-                )
+                for key in cls.db().keys(f"{project}:{cls.Meta.model_key_prefix}:*")
             ]
         for id in ids:
             if len(id.split(":")) == 1:
