@@ -29,9 +29,9 @@ class UlidPrimaryKey(AbstractPrimaryKey):
 
 class MovaiPrimaryKey(AbstractPrimaryKey):
     @classmethod
-    def create_pk(*args, id: str = "", version: str = ""):
+    def create_pk(*args, project: str = "", scope: str = "", id: str = "", version: str = ""):
         # return f"{id}:{version}:{UlidPrimaryKey.create_pk()}"
-        return f"{id}:{version}"
+        return f"{project}:{scope}:{id}:{version}"
 
 
 PrimaryKey = MovaiPrimaryKey

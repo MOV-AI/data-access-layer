@@ -5,10 +5,12 @@ from .redis_model import RedisModel, GLOBAL_KEY_PREFIX
 from .common import PrimaryKey
 from re import search
 from cachetools import TTLCache
+from movai_core_shared.logger import Log
 
 
+LOGGER = Log.get_logger("BaseModel.mov.ai")
 DEFAULT_VERSION = "__UNVERSIONED__"
-cache = TTLCache(maxsize=100, ttl=1200)
+cache = TTLCache(maxsize=1000, ttl=1800)
 
 
 class LastUpdate(pydantic.BaseModel):
@@ -66,7 +68,6 @@ class MovaiBaseModel(RedisModel):
             obj = cls.select(ids=[f"{id}:{version}"])
             if not obj:
                 raise Exception(f"{cls.__name__} {args[0]} not found!")
-            cache[key] = obj[0]
             return obj[0]
         return super().__new__(cls)
 
@@ -91,28 +92,30 @@ class MovaiBaseModel(RedisModel):
         version = DEFAULT_VERSION
         if "version" in kwargs:
             version = kwargs["version"]
-        if list(kwargs.keys())[0] in valid_models:
-            if list(kwargs.keys())[0] == self.scope:
-                if kwargs is None or not isinstance(kwargs, dict):
-                    return
-                type, struct_ = list(kwargs.items())[0]
-                name = list(struct_.keys())[0]
+        scope = next(iter(kwargs))
+        if scope in valid_models:
+            if scope == self.scope:
+                struct_ = kwargs[scope]
+                name = next(iter(struct_))
                 params = {"name": name, "project": project}
                 if "pk" not in struct_[name]:
-                    pk = PrimaryKey.create_pk(id=name, version=version)
+                    pk = PrimaryKey.create_pk(
+                        project=project, scope=self.scope, id=name, version=version
+                    )
                     params.update({"pk": pk})
                 if search(LABEL_REGEX, name) is None:
                     raise ValueError(
-                        f"Validation Error for {type} name:({name}), data:{kwargs}"
+                        f"Validation Error for {scope} name:({name}), data:{kwargs}"
                     )
 
                 struct_[name]["Version"] = version
                 if "LastUpdate" not in struct_[name]:
                     struct_[name]["LastUpdate"] = {"date": "", "user": ""}
                 super().__init__(**struct_[name], **params)
+                cache[pk] = self
             else:
                 raise ValueError(
-                    f"wrong Data type, should be {self.scope}, instead got: {list(kwargs.keys())[0]}"
+                    f"wrong Data type, should be {self.scope}, recieved: {scope}, instead got: {list(kwargs.keys())[0]}"
                 )
 
     @property
@@ -120,7 +123,7 @@ class MovaiBaseModel(RedisModel):
         return self.__class__.__name__
 
     def schema_json(self):
-        schema = json.loads(super().schema_json())
+        schema = json.loads(super().schema_json(by_alias=True))
         [schema["properties"].pop(key) for key in self._additional_keys()]
         return schema
 

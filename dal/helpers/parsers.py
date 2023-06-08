@@ -113,6 +113,8 @@ class ParamParser:
                 rf"\$\(({'|'.join(self.mapping.keys())})\s+([\w\.-]+)\)"
             )
             result = pattern.search(expression)
+            if result is None:
+                raise ValueError(f'Invalid expression "{expression}"')
 
             if result is None:
                 raise ValueError(f"Invalid expression, {expression}")
