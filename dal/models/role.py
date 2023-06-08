@@ -18,6 +18,7 @@ from movai_core_shared.consts import (
     UPDATE_PERMISSION,
 )
 from movai_core_shared.envvars import DEFAULT_ROLE_NAME
+
 from movai_core_shared.exceptions import RoleAlreadyExist, RoleDoesNotExist, RoleError
 
 
