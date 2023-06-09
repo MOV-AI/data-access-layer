@@ -4,13 +4,12 @@ import json
 from .redis_model import RedisModel, GLOBAL_KEY_PREFIX
 from .common import PrimaryKey
 from re import search
-from cachetools import TTLCache
 from movai_core_shared.logger import Log
+from .cache import ThreadSafeCache
 
 
 LOGGER = Log.get_logger("BaseModel.mov.ai")
 DEFAULT_VERSION = "__UNVERSIONED__"
-cache = TTLCache(maxsize=1000, ttl=1800)
 
 
 class LastUpdate(pydantic.BaseModel):
@@ -47,7 +46,15 @@ class MovaiBaseModel(RedisModel):
     Dummy: Optional[bool] = False
 
     @pydantic.validator("LastUpdate", pre=True)
-    def _validate_last_update(cls, v):
+    def _validate_last_update(cls, v) -> LastUpdate:
+        """validate last update field
+
+        Args:
+            v (str/dict): last update field
+
+        Returns:
+            LastUpdate: LastUpdate Model
+        """
         if v is None or isinstance(v, str):
             return LastUpdate(date="", user="")
         return LastUpdate(**v)
@@ -62,6 +69,7 @@ class MovaiBaseModel(RedisModel):
                 version = DEFAULT_VERSION
                 project = GLOBAL_KEY_PREFIX
             key = f"{project}:{cls.__name__}:{id}:{version}"
+            cache = ThreadSafeCache()
             if key in cache:
                 return cache[key]
 
@@ -72,19 +80,17 @@ class MovaiBaseModel(RedisModel):
         return super().__new__(cls)
 
     def _additional_keys(self) -> List[str]:
+        """additional keys to be removed from the dictionary representation of the model
+        used only for innear use
+
+        Returns:
+            List[str]: list of keys
+        """
         return super()._additional_keys() + ["name", "project", "Dummy"]
 
     @pydantic.validator("Dummy", pre=True)
     def _validate_dummy(cls, v):
         return v if v not in [None, ""] else False
-
-    @staticmethod
-    def _get_data_key(data: dict) -> str:
-        if data and list(data.items()):
-            _, struct_ = list(data.items())[0]
-            name = list(struct_.keys())[0]
-            return name
-        return ""
 
     def __init__(self, *args, project: str = GLOBAL_KEY_PREFIX, **kwargs):
         if not kwargs:
@@ -112,22 +118,42 @@ class MovaiBaseModel(RedisModel):
                 if "LastUpdate" not in struct_[name]:
                     struct_[name]["LastUpdate"] = {"date": "", "user": ""}
                 super().__init__(**struct_[name], **params)
+                cache = ThreadSafeCache()
                 cache[pk] = self
             else:
                 raise ValueError(
                     f"wrong Data type, should be {self.scope}, recieved: {scope}, instead got: {list(kwargs.keys())[0]}"
                 )
+        else:
+            raise ValueError(
+                f"scope not supported ({scope}), should be one of {valid_models}"
+            )
 
     @property
-    def scope(self):
+    def scope(self) -> str:
+        """return the scope of the model (Class name)
+
+        Returns:
+            str: scope of the model
+        """
         return self.__class__.__name__
 
-    def schema_json(self):
+    def schema_json(self) -> dict:
+        """Generate a JSON Schema for the model
+
+        Returns:
+            dict: JSON Schema
+        """
         schema = json.loads(super().schema_json(by_alias=True))
         [schema["properties"].pop(key) for key in self._additional_keys()]
         return schema
 
-    def dict(self):
+    def dict(self) -> dict:
+        """Generate a dictionary representation of the model
+
+        Returns:
+            dict: dictionary representation of the model
+        """
         dic = super().dict(exclude_none=True)
         [dic.pop(key) for key in self._additional_keys()]
         return {self.scope: {self.name: dic}}
