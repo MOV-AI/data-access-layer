@@ -6,6 +6,7 @@ from .common import PrimaryKey
 from re import search
 from movai_core_shared.logger import Log
 from .cache import ThreadSafeCache
+from datetime import datetime
 
 
 LOGGER = Log.get_logger("BaseModel.mov.ai")
@@ -13,14 +14,29 @@ DEFAULT_VERSION = "__UNVERSIONED__"
 
 
 class LastUpdate(pydantic.BaseModel):
-    date: str
+    date: datetime
     user: str
 
-    @pydantic.validator("date", pre=True)
+    @pydantic.validator("date", pre=True, always=True)
     def _validate_date(cls, v):
-        if not isinstance(v, str):
-            return ""
-        return v
+        if not isinstance(v, str) or not v:
+            return datetime.now().replace(microsecond=0)
+        if "at" not in v:
+            return datetime.strptime(v, "%d/%m/%Y %H:%M:%S")
+        return datetime.strptime(v, "%d/%m/%Y at %H:%M:%S")
+
+    def dict(
+        self,
+        *,
+        include=None,
+        exclude=None,
+        by_alias: bool = False,
+        skip_defaults: Optional[bool] = None,
+        exclude_unset: bool = False,
+        exclude_defaults: bool = False,
+        exclude_none: bool = True,
+    ) -> dict:
+        return {"user": self.user, "date": str(self.date)}
 
 
 LABEL_REGEX = r"^[a-zA-Z0-9._-]+$"
