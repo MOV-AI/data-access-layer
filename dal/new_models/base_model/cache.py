@@ -3,17 +3,17 @@ from threading import Lock
 
 
 CACHE_SIZE_MB = 500
-
 cache_size_in_bytes = CACHE_SIZE_MB * 1024 * 1024  # 500 MB in bytes
 average_object_size = 48  # Size of each object in bytes, calculated using sys.getsizeof
 max_entries = cache_size_in_bytes // average_object_size
+TTL_SECONDS = 3600  # (1 hour)
 
 
 class ThreadSafeCache:
     _instance = None
     _lock = Lock()
 
-    def __new__(cls, maxsize=max_entries, ttl=3600):
+    def __new__(cls, maxsize=max_entries, ttl=TTL_SECONDS):
         if not cls._instance:
             with cls._lock:
                 cls._instance = super().__new__(cls)
