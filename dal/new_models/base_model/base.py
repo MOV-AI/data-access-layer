@@ -15,7 +15,7 @@ DEFAULT_VERSION = "__UNVERSIONED__"
 
 class LastUpdate(pydantic.BaseModel):
     date: datetime
-    user: str
+    user: str = "movai"
 
     @pydantic.validator("date", pre=True, always=True)
     def _validate_date(cls, v):
@@ -36,7 +36,7 @@ class LastUpdate(pydantic.BaseModel):
         exclude_defaults: bool = False,
         exclude_none: bool = True,
     ) -> dict:
-        return {"user": self.user, "date": str(self.date)}
+        return {"user": self.user, "date": self.date.strftime("%d/%m/%Y at %H:%M:%S")}
 
 
 LABEL_REGEX = r"^[a-zA-Z0-9._-]+$"
@@ -48,6 +48,7 @@ valid_models = [
     "GraphicScene",
     "Layout",
     "Application",
+    "Configuration",
 ]
 
 
@@ -94,6 +95,9 @@ class MovaiBaseModel(RedisModel):
                 raise Exception(f"{cls.__name__} {args[0]} not found!")
             return obj[0]
         return super().__new__(cls)
+
+    def _original_keys(self) -> List[str]:
+        return super()._original_keys() + ["Info", "Label", "Description", "LastUpdate", "Version"]
 
     def _additional_keys(self) -> List[str]:
         """additional keys to be removed from the dictionary representation of the model
@@ -161,7 +165,11 @@ class MovaiBaseModel(RedisModel):
             dict: JSON Schema
         """
         schema = json.loads(super().schema_json(by_alias=True))
-        [schema["properties"].pop(key) for key in self._additional_keys()]
+        to_remove = []
+        for key in schema["properties"]:
+            if key not in self._original_keys():
+                to_remove.append(key)
+        [schema["properties"].pop(key) for key in to_remove]
         return schema
 
     def dict(self) -> dict:
@@ -171,7 +179,11 @@ class MovaiBaseModel(RedisModel):
             dict: dictionary representation of the model
         """
         dic = super().dict(exclude_none=True)
-        [dic.pop(key) for key in self._additional_keys()]
+        to_remove = []
+        for key in dic:
+            if key not in self._original_keys():
+                to_remove.append(key)
+        [dic.pop(key) for key in to_remove]
         return {self.scope: {self.name: dic}}
 
     def has_scope_permission(self, user, permission) -> bool:

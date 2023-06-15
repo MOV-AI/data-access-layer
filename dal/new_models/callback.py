@@ -1,5 +1,5 @@
 import pydantic
-from typing import Union, Optional, Dict
+from typing import Union, Optional, Dict, List
 from .base_model import MovaiBaseModel
 import time
 import importlib
@@ -21,6 +21,9 @@ class Callback(MovaiBaseModel):
     Code: Optional[str] = None
     Message: Optional[str] = None
     Py3Lib: Optional[Dict[ValidStrNums, Py3LibValue]] = {}
+
+    def _original_keys(self) -> List[str]:
+        return super()._original_keys() + ["Code", "Message", "Py3Lib"]
 
     class Meta:
         model_key_prefix = "Callback"
