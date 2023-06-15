@@ -1,5 +1,5 @@
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, Extra
 import redis
 from dal.movaidb import Redis
 
@@ -16,6 +16,9 @@ class RedisModel(BaseModel):
 
     class Meta:
         model_key_prefix = "Redis"
+
+    def _original_keys(self) -> List[str]:
+        return []
 
     def _additional_keys(self) -> List[str]:
         return ["pk"]

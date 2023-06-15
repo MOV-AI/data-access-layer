@@ -109,6 +109,9 @@ class Node(MovaiBaseModel):
     Remappable: Optional[bool] = False
     Type: Optional[str] = None
 
+    def _original_keys(self) -> List[str]:
+        return super()._original_keys() + ["EnvVar", "CmdLine", "Parameter", "Launch", "PackageDepends", "Path", "Persistent", "PortsInst", "Remappable", "Type"]
+
     class Meta:
         model_key_prefix = "Node"
 

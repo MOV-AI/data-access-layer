@@ -1,5 +1,5 @@
 from typing import Optional, Dict, List, Any, Union
-from pydantic import constr, BaseModel, validator, ValidationError
+from pydantic import constr, BaseModel, validator, ValidationError, Extra
 from .base_model import Arg, MovaiBaseModel
 import re
 
@@ -85,7 +85,7 @@ class NodeInstValue(BaseModel):
         return value
 
 
-class Flow(MovaiBaseModel):
+class Flow(MovaiBaseModel, extra=Extra.allow):
     Parameter: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), Arg]] = None
     Container: Optional[Dict[constr(regex=r"^[a-zA-Z_0-9]+$"), ContainerValue]] = None
     ExposedPorts: Optional[
@@ -101,8 +101,22 @@ class Flow(MovaiBaseModel):
     Links: Optional[Dict[constr(regex=r"^[0-9a-z-]+$"), Link]] = None
     NodeInst: Optional[Dict[constr(regex=r"^[a-zA-Z_0-9]+$"), NodeInstValue]] = None
 
+    def _original_keys(self) -> List[str]:
+        return super()._original_keys() + ["Parameter", "Container", "ExposedPorts", "Layers", "Links", "NodeInst"]
+
     class Meta:
         model_key_prefix = "Flow"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cache_calc_remaps = None
+        self.cache_dict = None
+        self.cache_node_insts = {}
+        self.cache_node_template = {}
+        self.cache_ports_templates = {}
+        self.cache_node_params = {}
+        self.cache_container_params = {}
+        self.parent_parameters = {}
 
 if __name__ == "__main__":
     f = Flow(
@@ -143,8 +157,7 @@ if __name__ == "__main__":
                         "9d531a8c-0be8-44d2-8e3e-de0824db7b14": {
                             "From": "tf_camera_front/tf_static/out",
                             "To": "ign_bridge_image/empty/in",
-                        },
-                        "ab2b122c-16c7-42f4-bfd8-ebf8a430bbf0": {
+                        }, "ab2b122c-16c7-42f4-bfd8-ebf8a430bbf0": {
                             "From": "dependency/depends/out",
                             "To": "ign_bridge_point_cloud/dependency/in",
                         },
