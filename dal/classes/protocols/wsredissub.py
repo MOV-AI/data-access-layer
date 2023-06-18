@@ -6,6 +6,7 @@
    Developers:
    - Manuel Silva (manuel.silva@mov.ai) - 2020
    - Tiago Paulino (tiago@mov.ai) - 2020
+   - Dor Marcus (dor@mov.ai) - 2023
   
    Websocket to Redis Subscriber
 """
@@ -103,31 +104,7 @@ class WSRedisSub:
         self.connections.update({conn_id: {"conn": connection_queue, "subs": conn, "patterns": []}})
 
         # wait for messages
-        asyncio.create_task(self.read_websocket_loop(ws_resp, conn_id, conn, connection_queue))
-        while not ws_resp.closed:
-            msg = await connection_queue.get()
-            try:
-                await ws_resp.send_json(msg)
-            except Exception as e:
-                LOGGER.error(str(e))
-
-        await self.release(conn_id)
-        return ws_resp
-
-    async def read_websocket_loop(
-        self,
-        ws_resp: web.WebSocketResponse,
-        conn_id: str,
-        conn: aioredis.Redis,
-        connection_queue: asyncio.Queue,
-    ):
-        """wait and read messages from websocket
-        Args:
-            ws_resp (web.WebSocketResponse): websocket _response
-            conn_id (str): connection id
-            conn (aioredis.Redis): redis connection
-            connection_queue (asyncio.Queue): queue to send messages
-        """
+        asyncio.create_task(self.write_websocket_loop(ws_resp, connection_queue))
         async for ws_msg in ws_resp:
             # check if redis connection is active
             if not conn or conn.closed:
@@ -163,6 +140,30 @@ class WSRedisSub:
 
             elif ws_msg.type == WSMsgType.ERROR:
                 LOGGER.error("ws connection closed with exception %s" % ws_resp.exception())
+
+        await self.release(conn_id)
+        return ws_resp
+
+    async def write_websocket_loop(
+        self,
+        ws_resp: web.WebSocketResponse,
+        connection_queue: asyncio.Queue,
+    ):
+        """Write messages to websocket
+        args: 
+            ws_resp: websocket _response
+            connection_queue: queue to write messages to Websocket
+        """
+        while True:
+            msg = await connection_queue.get()
+            try:
+                if ws_resp is not None and not ws_resp.closed and not ws_resp._closing:
+                    await ws_resp.send_json(msg)
+                else:
+                    del connection_queue
+                    break
+            except Exception as e:
+                LOGGER.error(str(e))
 
     def convert_pattern(self, _pattern: dict) -> str:
         try:
