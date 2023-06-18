@@ -160,6 +160,7 @@ class WSRedisSub:
                 if ws_resp is not None and not ws_resp.closed and not ws_resp._closing:
                     await ws_resp.send_json(msg)
                 else:
+                    del connection_queue
                     break
             except Exception as e:
                 LOGGER.error(str(e))
@@ -195,8 +196,7 @@ class WSRedisSub:
         for key_pattern in key_patterns:
             pattern = "__keyspace@*__:%s" % (key_pattern)
             channel = await conn.psubscribe(pattern)
-            task = asyncio.create_task(self.wait_message(conn_id, channel[0]))
-            self.tasks[conn_id].append(task)
+            asyncio.create_task(self.wait_message(conn_id, channel[0]))
 
             # add a new get_keys task
             tasks.append(self.get_keys(key_pattern))
