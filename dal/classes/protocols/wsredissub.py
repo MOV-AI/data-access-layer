@@ -82,7 +82,12 @@ class WSRedisSub:
         del self.connections[conn_id]
 
     async def close_and_release(self, ws: web.WebSocketResponse, conn_id: str):
-        """"""
+        """Closes the socket, cancels active tasks and release db connections.
+
+        Args:
+            ws (web.WebSocketResponse): The websocket to close
+            conn_id (str): the connection id.
+        """
         LOGGER.debug(f"closing websocket.")
         await ws.close()
         LOGGER.debug(f"Canceling active tasks.")
@@ -166,7 +171,7 @@ class WSRedisSub:
         connection_queue: asyncio.Queue,
         lock: asyncio.Lock
     ):
-        """Write messages to websocket
+        """Write messages to websocket.
         args: 
             ws_resp: websocket _response
             connection_queue: queue to write messages to Websocket
@@ -174,7 +179,7 @@ class WSRedisSub:
         try:
             while True:
                 msg = await connection_queue.get()
-                if ws_resp is not None and not ws_resp.closed and not ws_resp._closing and ws_resp.:
+                if ws_resp is not None and not ws_resp.closed and not ws_resp._closing:
                     async with lock:
                         await ws_resp.send_json(msg)
                 else:
