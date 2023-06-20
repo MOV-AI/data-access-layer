@@ -94,7 +94,10 @@ class WSRedisSub:
         for task in self.tasks[conn_id]:
             if not task.done():
                 task.cancel()
-        self.tasks.pop(conn_id)
+
+        if conn_id in self.tasks:
+            self.tasks.pop(conn_id)
+
         await self.release(conn_id)
 
     async def handler(self, request: web.Request) -> web.WebSocketResponse:
