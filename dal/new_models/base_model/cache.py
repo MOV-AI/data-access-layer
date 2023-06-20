@@ -1,16 +1,19 @@
+"""
+# Size of each object in bytes, calculated using pympler asizeof
+│ Node avg size: 18088
+│ Callback avg size: 5004
+│ Flow avg size: 31280
+│ Configuration avg size: 18493
+│ Ports avg size: 4619
+"""
+
 from cachetools import TTLCache
 from threading import Lock
 
 
 CACHE_SIZE_MB = 500
 cache_size_in_bytes = CACHE_SIZE_MB * 1024 * 1024  # 500 MB in bytes
-"""
-# Size of each object in bytes, calculated using pympler asizeof
-│ Node avg size: 18088
-│ Callback avg size: 5004
-│ Flow avg size: 31280
-"""
-average_object_size = 31280  # Size of each object in bytes, calculated using sys.getsizeof
+average_object_size = 31280  # Size of each object in bytes
 max_entries = cache_size_in_bytes // average_object_size  # ~16760
 TTL_SECONDS = 3600  # (1 hour)
 
@@ -49,3 +52,4 @@ class ThreadSafeCache:
     def __len__(self):
         with self._lock:
             return len(self.cache)
+

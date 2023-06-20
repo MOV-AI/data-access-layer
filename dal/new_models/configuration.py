@@ -3,13 +3,14 @@ from .base_model import MovaiBaseModel
 from pydantic import Field, validator
 import yaml
 import json
-from typing import List, Union
+from typing import List, Union, Any
 import xmltodict
 
 
 class Configuration(MovaiBaseModel):
     Type: str = "yaml"
-    Yaml: dict = Field(default_factory=dict)
+    Yaml: str = ""
+    data: dict = Field(default_factory=dict) # runtime parameter
 
     def _original_keys(self) -> List[str]:
         return super()._original_keys() + ["Type", "Yaml"]
@@ -19,25 +20,29 @@ class Configuration(MovaiBaseModel):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._convert_yaml_dict()
 
-    @validator("Yaml", pre=True, always=True)
-    def _validate_data(cls, v):
-        if isinstance(v, str):
-            res = yaml.load(v, Loader=yaml.FullLoader)
-            if isinstance(res, dict):
-                return res
-            if isinstance(res, str):
-                return xmltodict.parse(v)
-        if not isinstance(v, dict):
-            return {}
-        return v
+    def _convert_yaml_dict(self):
+        data = yaml.load(self.Yaml, Loader=yaml.FullLoader)
+        if isinstance(data, dict):
+            self.data = data
+            self.Type = "yaml"
+        else:
+            self.Type = "xml"
+            self.data = xmltodict.parse(self.Yaml)
+
+    def __setattr__(self, __name: str, __value: Any) -> None:
+        ret = super().__setattr__(__name, __value)
+        if __name == "Yaml":
+            self._convert_yaml_dict()
+        return ret
 
     def get_param(self, param: str) -> any:
         """ Returns the configuration value of a key in the format param.subparam.subsubparam """
         value = None
         fields = param.split('.')
         try:
-            temp_dict = self.Yaml
+            temp_dict = self.data
             for elem in fields:
                 temp_dict = temp_dict[elem] if elem in temp_dict else None 
                 if temp_dict is None:

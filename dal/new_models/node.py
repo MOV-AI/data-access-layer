@@ -1,6 +1,7 @@
 from typing import Optional, Dict, List, Any, Union
 from pydantic import constr, BaseModel, Field, validator
 from .base_model import Arg, MovaiBaseModel
+from .ports import Ports
 from movai_core_shared.consts import (
     MOVAI_NODE,
     MOVAI_SERVER,
@@ -11,7 +12,6 @@ from movai_core_shared.consts import (
     ROS1_NODELET,
     ROS1_PLUGIN,
 )
-from ..models.scopestree import scopes
 
 
 KEY_REGEX = constr(regex=r"^[a-zA-Z0-9_]+$")
@@ -218,9 +218,7 @@ class Node(MovaiBaseModel):
             return None
         tpl = self.PortsInst[port_inst].Template
 
-        # return Ports(tpl)
-        # TODO change this
-        return scopes.from_path(tpl, scope="Ports")
+        return Ports(tpl)
 
     def set_type(self):
         type_to_set = MOVAI_NODE
@@ -247,73 +245,3 @@ class Node(MovaiBaseModel):
         self.Type = type_to_set
         self.save()
 
-
-if __name__ == "__main__":
-    n = Node(
-        **{
-            "Node": {
-                "Countto10": {
-                    "Info": "A state that transitions to the done oport a set maximum number of counts (param: max_count) after which the state transitions to the max_count oport. The counter name can be set using the counter_name and the reset param can be used to reset the counter value to zero count, given counter name. ",
-                    "Label": "CounterYYYY",
-                    "LastUpdate": {"date": "02/07/2021 at 16:18:09", "user": "movai"},
-                    "Launch": False,
-                    "PackageDepends": "",
-                    "Parameter": {
-                        "counter_name": {
-                            "Description": "[string] Name of the redis variable in which the node saves the current count or iterations. When using the reset functionality of this node, this redis variable is reset to zero",
-                            "Value": '"count_cycles"',
-                        },
-                        "max_count": {
-                            "Description": '[integer] Number of times this node will transition to the "done" oport, once exceeded the node will transition to the "max_count" out port',
-                            "Value": "2",
-                        },
-                        "reset": {
-                            "Description": "[bool] Reset the counter state, stored in the redis flow variable mentioned in the counter_name parameter, to zero.",
-                            "Value": "False",
-                        },
-                    },
-                    "Path": "",
-                    "Persistent": False,
-                    "PortsInst": {
-                        "done": {
-                            "Message": "Transition",
-                            "Out": {"out": {"Message": "movai_msgs/Transition"}},
-                            "Package": "movai_msgs",
-                            "Template": "MovAI/TransitionFor",
-                        },
-                        "entry": {
-                            "In": {
-                                "in": {
-                                    "Callback": "Counter_CB",
-                                    "Message": "movai_msgs/Transition",
-                                }
-                            },
-                            "Message": "Transition",
-                            "Package": "movai_msgs",
-                            "Template": "MovAI/TransitionTo",
-                        },
-                        "max_count": {
-                            "Message": "Transition",
-                            "Out": {"out": {"Message": "movai_msgs/Transition"}},
-                            "Package": "movai_msgs",
-                            "Template": "MovAI/TransitionFor",
-                        },
-                    },
-                    "Remappable": True,
-                    "Type": "MovAI/State",
-                    "User": "",
-                    "Version": "",
-                    "VersionDelta": {},
-                }
-            }
-        }
-    )
-
-    pk = n.save()
-
-    print(pk)
-    # print(Node.select())
-    print("#########")
-    print(Node.select(ids=[pk]))
-
-    # print(Node.find(Node.id == "Node:Counter:__UNVERSIONED__").all())'
