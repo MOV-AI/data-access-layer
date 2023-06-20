@@ -14,6 +14,7 @@ from movai_core_shared.logger import Log
 from dal.models.scopestree import scopes
 from dal.models.var import Var
 from dal.movaidb import MovaiDB
+from ..new_models import Configuration
 
 
 class ParamParser:
@@ -155,11 +156,7 @@ class ParamParser:
         """
 
         _config_name, _config_param = _config.split(".", 1)
-        try:
-            obj = scopes.from_path(_config_name, scope="Configuration")
-
-        except KeyError as e:
-            raise Exception(f"Configuration {_config_name} does not exist") from e
+        obj = Configuration(_config_name)
 
         output = obj.get_param(_config_param)
 

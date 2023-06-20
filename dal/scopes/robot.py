@@ -15,7 +15,7 @@ from movai_core_shared.exceptions import DoesNotExist
 from dal.scopes.scope import Scope
 from dal.movaidb import MovaiDB
 from dal.scopes.fleetrobot import FleetRobot
-from .configuration import Configuration
+from dal.new_models import Configuration
 
 
 class Robot(Scope):
@@ -84,10 +84,10 @@ class Robot(Scope):
     def get_states(self):
         """Gets the states of the robot from its own configuration.
         When Robot groups are implemented it should merge with the group configuration"""
-        try:
-            states = Configuration(self.RobotName).get_param("states")
-        except:
+        states = Configuration(self.RobotName).get_param("states")
+        if not states:
             states = {}
+
         return states
 
     def set_param(self, param: str, value, db: str = "all"):

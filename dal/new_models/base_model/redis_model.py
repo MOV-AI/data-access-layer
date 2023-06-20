@@ -2,6 +2,7 @@ from typing import List
 from pydantic import BaseModel, Extra
 import redis
 from dal.movaidb import Redis
+from .cache import ThreadSafeCache
 
 
 GLOBAL_KEY_PREFIX = "Movai"
@@ -39,6 +40,8 @@ class RedisModel(BaseModel):
             "$",
             self.dict(),
         )
+        cache = ThreadSafeCache()
+        cache[self.pk] = self
         return self.pk
 
     @classmethod

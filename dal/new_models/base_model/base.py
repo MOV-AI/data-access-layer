@@ -39,7 +39,7 @@ class LastUpdate(pydantic.BaseModel):
         return {"user": self.user, "date": self.date.strftime("%d/%m/%Y at %H:%M:%S")}
 
 
-LABEL_REGEX = r"^[a-zA-Z0-9._-]+$"
+LABEL_REGEX = r"^[a-zA-Z0-9._-]+(/[a-zA-Z0-9._-]+){0,}$"
 valid_models = [
     "Flow",
     "Node",
@@ -49,6 +49,7 @@ valid_models = [
     "Layout",
     "Application",
     "Configuration",
+    "Ports",
 ]
 
 
@@ -79,12 +80,8 @@ class MovaiBaseModel(RedisModel):
     def __new__(cls, *args, **kwargs):
         if args:
             id = args[0]
-            if kwargs:
-                version = kwargs.get("version", DEFAULT_VERSION)
-                project = kwargs.get("project", GLOBAL_KEY_PREFIX)
-            else:
-                version = DEFAULT_VERSION
-                project = GLOBAL_KEY_PREFIX
+            version = kwargs.get("version", DEFAULT_VERSION) if kwargs else DEFAULT_VERSION
+            project = kwargs.get("project", GLOBAL_KEY_PREFIX) if kwargs else GLOBAL_KEY_PREFIX
             key = f"{project}:{cls.__name__}:{id}:{version}"
             cache = ThreadSafeCache()
             if key in cache:
