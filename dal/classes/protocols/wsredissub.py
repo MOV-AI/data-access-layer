@@ -41,6 +41,7 @@ class WSRedisSub:
 
         self.databases = None
         self.connections = {}
+        self.tasks = {}
         self.movaidb = MovaiDB()
         self.loop = asyncio.get_event_loop()
 
@@ -80,6 +81,25 @@ class WSRedisSub:
         self.databases.slave_pubsub.release(conn.connection)
         del self.connections[conn_id]
 
+    async def close_and_release(self, ws: web.WebSocketResponse, conn_id: str):
+        """Closes the socket, cancels active tasks and release db connections.
+
+        Args:
+            ws (web.WebSocketResponse): The websocket to close
+            conn_id (str): the connection id.
+        """
+        LOGGER.debug(f"closing websocket.")
+        await ws.close()
+        LOGGER.debug(f"Canceling active tasks.")
+        for task in self.tasks[conn_id]:
+            if not task.done():
+                task.cancel()
+
+        if conn_id in self.tasks:
+            self.tasks.pop(conn_id)
+
+        await self.release(conn_id)
+
     async def handler(self, request: web.Request) -> web.WebSocketResponse:
         """handle websocket connections"""
 
@@ -89,22 +109,28 @@ class WSRedisSub:
         # acquire db connection
         conn = None
         connection_queue = asyncio.Queue()
+        lock = asyncio.Lock()
         try:
             _conn = await self.acquire()
             conn = aioredis.Redis(_conn)
         except Exception as error:
             LOGGER.error(str(error))
-            await self.send_json(
+            await self.push_to_queue(
                 connection_queue, {"event": "", "patterns": None, "error": str(error)}
             )
 
         conn_id = uuid.uuid4().hex
 
         # add connection
-        self.connections.update({conn_id: {"conn": connection_queue, "subs": conn, "patterns": []}})
+        self.connections.update(
+            {conn_id: {"conn": connection_queue, "subs": conn, "patterns": []}}
+        )
 
         # wait for messages
-        asyncio.create_task(self.write_websocket_loop(ws_resp, connection_queue))
+        write_task = asyncio.create_task(
+            self.write_websocket_loop(ws_resp, connection_queue, lock)
+        )
+        self.tasks[conn_id] = [write_task]
         async for ws_msg in ws_resp:
             # check if redis connection is active
             if not conn or conn.closed:
@@ -112,6 +138,8 @@ class WSRedisSub:
             if ws_msg.type == WSMsgType.TEXT:
                 # message should be json
                 try:
+                    if ws_msg.data == "close":
+                        break
                     data = ws_msg.json()
                     if "event" in data:
                         if data.get("event") == "execute":
@@ -136,34 +164,35 @@ class WSRedisSub:
                     LOGGER.error(e)
                     output = {"event": None, "patterns": None, "error": str(e)}
 
-                    await self.send_json(connection_queue, output)
+                    await self.push_to_queue(connection_queue, output)
 
             elif ws_msg.type == WSMsgType.ERROR:
                 LOGGER.error("ws connection closed with exception %s" % ws_resp.exception())
-
-        await self.release(conn_id)
+        async with lock:
+            await self.close_and_release(ws_resp, conn_id)
         return ws_resp
 
     async def write_websocket_loop(
-        self,
-        ws_resp: web.WebSocketResponse,
-        connection_queue: asyncio.Queue,
+        self, ws_resp: web.WebSocketResponse, connection_queue: asyncio.Queue, lock: asyncio.Lock
     ):
-        """Write messages to websocket
-        args: 
+        """Write messages to websocket.
+        args:
             ws_resp: websocket _response
             connection_queue: queue to write messages to Websocket
         """
-        while True:
-            msg = await connection_queue.get()
-            try:
-                if ws_resp is not None and not ws_resp.closed and not ws_resp._closing:
-                    await ws_resp.send_json(msg)
-                else:
-                    del connection_queue
-                    break
-            except Exception as e:
-                LOGGER.error(str(e))
+        try:
+            while True:
+                msg = await connection_queue.get()
+                async with lock:
+                    if ws_resp is not None and not ws_resp.closed and not ws_resp._closing:
+                        await ws_resp.send_json(msg)
+                    else:
+                        break
+        except asyncio.CancelledError:
+            LOGGER.debug("Write task is canceled, socket is closing")
+
+        except Exception as err:
+            LOGGER.error(str(err))
 
     def convert_pattern(self, _pattern: dict) -> str:
         try:
@@ -196,7 +225,8 @@ class WSRedisSub:
         for key_pattern in key_patterns:
             pattern = "__keyspace@*__:%s" % (key_pattern)
             channel = await conn.psubscribe(pattern)
-            asyncio.create_task(self.wait_message(conn_id, channel[0]))
+            read_task = asyncio.create_task(self.wait_message(conn_id, channel[0]))
+            self.tasks[conn_id].append(read_task)
 
             # add a new get_keys task
             tasks.append(self.get_keys(key_pattern))
@@ -212,7 +242,9 @@ class WSRedisSub:
         values = await self.mget(keys)
 
         ws = self.connections[conn_id]["conn"]
-        await self.send_json(ws, {"event": "subscribe", "patterns": [_pattern], "value": values})
+        await self.push_to_queue(
+            ws, {"event": "subscribe", "patterns": [_pattern], "value": values}
+        )
 
     async def remove_pattern(self, conn_id, conn, _pattern, **ignore):
         """Remove pattern from subscriber"""
@@ -226,39 +258,50 @@ class WSRedisSub:
             await conn.punsubscribe(pattern)
 
         ws = self.connections[conn_id]["conn"]
-        await self.send_json(ws, {"event": "unsubscribe", "patterns": [_pattern]})
+        await self.push_to_queue(ws, {"event": "unsubscribe", "patterns": [_pattern]})
 
     async def get_patterns(self, conn_id, conn, **ignore):
         """Get list of patterns"""
 
         output = {"event": "list", "patterns": self.connections[conn_id]["patterns"]}
 
-        await self.send_json(self.connections[conn_id]["conn"], output)
+        await self.push_to_queue(self.connections[conn_id]["conn"], output)
 
     async def wait_message(self, conn_id, channel):
         """Receive messages from redis subscriber"""
         output = {"event": "unknown"}
-        while await channel.wait_message():
-            ws = self.connections[conn_id]["conn"]
-            msg = await channel.get(encoding="utf-8")
-            value = ""
-            key = msg[0].decode("utf-8").split(":", 1)[1]
-            # match the key triggerd with any patterns
-            match_patterns = []
-            for dict_pattern in self.connections[conn_id]["patterns"]:
-                patterns = self.convert_pattern(dict_pattern)
-                for pattern in patterns:
-                    if all(piece in key for piece in pattern.split("*")):
-                        match_patterns.append(dict_pattern)
-            if msg[1] in ("set", "hset", "hdel"):
-                key_in_dict = await self.get_value(key)
-            else:
-                key_in_dict = self.movaidb.keys_to_dict([(key, value)])
-            output.update(
-                {"event": msg[1], "patterns": match_patterns, "key": key_in_dict, "value": value}
-            )
+        try:
+            while await channel.wait_message():
+                ws = self.connections[conn_id]["conn"]
+                msg = await channel.get(encoding="utf-8")
+                value = ""
+                key = msg[0].decode("utf-8").split(":", 1)[1]
+                # match the key triggerd with any patterns
+                match_patterns = []
+                for dict_pattern in self.connections[conn_id]["patterns"]:
+                    patterns = self.convert_pattern(dict_pattern)
+                    for pattern in patterns:
+                        if all(piece in key for piece in pattern.split("*")):
+                            match_patterns.append(dict_pattern)
+                if msg[1] in ("set", "hset", "hdel"):
+                    key_in_dict = await self.get_value(key)
+                else:
+                    key_in_dict = self.movaidb.keys_to_dict([(key, value)])
+                output.update(
+                    {
+                        "event": msg[1],
+                        "patterns": match_patterns,
+                        "key": key_in_dict,
+                        "value": value,
+                    }
+                )
 
-            await self.send_json(ws, output)
+                await self.push_to_queue(ws, output)
+        except asyncio.CancelledError:
+            LOGGER.debug("Wait task was cancelled, socket is closing!")
+
+        except Exception as err:
+            LOGGER.error(str(err))
 
     async def get_keys(self, pattern: str) -> list:
         """Get all redis keys in pattern"""
@@ -415,15 +458,15 @@ class WSRedisSub:
                 response["result"] = _response
 
             # send response
-            await self.send_json(ws, response)
+            await self.push_to_queue(ws, response)
 
         except Exception:
             error = f"{str(sys.exc_info()[1])} {sys.exc_info()}"
-            await self.send_json(
+            await self.push_to_queue(
                 ws, {"event": "execute", "callback": callback, "result": None, "error": error}
             )
 
-    async def send_json(self, conn: asyncio.Queue, data):
+    async def push_to_queue(self, conn: asyncio.Queue, data):
         """send json data"""
         try:
             await conn.put(data)
