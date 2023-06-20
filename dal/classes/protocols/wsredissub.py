@@ -179,11 +179,11 @@ class WSRedisSub:
         try:
             while True:
                 msg = await connection_queue.get()
-                if ws_resp is not None and not ws_resp.closed and not ws_resp._closing:
-                    async with lock:
+                async with lock:
+                    if ws_resp is not None and not ws_resp.closed and not ws_resp._closing:
                         await ws_resp.send_json(msg)
-                else:
-                    break
+                    else:
+                        break
         except asyncio.CancelledError:
            LOGGER.info("Write task is canceled, socket is closing")
 
