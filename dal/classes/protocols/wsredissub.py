@@ -119,10 +119,14 @@ class WSRedisSub:
         conn_id = uuid.uuid4().hex
 
         # add connection
-        self.connections.update({conn_id: {"conn": connection_queue, "subs": conn, "patterns": []}})
+        self.connections.update(
+            {conn_id: {"conn": connection_queue, "subs": conn, "patterns": []}}
+        )
 
         # wait for messages
-        write_task = asyncio.create_task(self.write_websocket_loop(ws_resp, connection_queue, lock))
+        write_task = asyncio.create_task(
+            self.write_websocket_loop(ws_resp, connection_queue, lock)
+        )
         self.tasks[conn_id] = [write_task]
         async for ws_msg in ws_resp:
             # check if redis connection is active
@@ -166,13 +170,10 @@ class WSRedisSub:
         return ws_resp
 
     async def write_websocket_loop(
-        self,
-        ws_resp: web.WebSocketResponse,
-        connection_queue: asyncio.Queue,
-        lock: asyncio.Lock
+        self, ws_resp: web.WebSocketResponse, connection_queue: asyncio.Queue, lock: asyncio.Lock
     ):
         """Write messages to websocket.
-        args: 
+        args:
             ws_resp: websocket _response
             connection_queue: queue to write messages to Websocket
         """
@@ -185,10 +186,10 @@ class WSRedisSub:
                     else:
                         break
         except asyncio.CancelledError:
-           LOGGER.debug("Write task is canceled, socket is closing")
+            LOGGER.debug("Write task is canceled, socket is closing")
 
         except Exception as err:
-                LOGGER.error(str(err))
+            LOGGER.error(str(err))
 
     def convert_pattern(self, _pattern: dict) -> str:
         try:
@@ -238,7 +239,9 @@ class WSRedisSub:
         values = await self.mget(keys)
 
         ws = self.connections[conn_id]["conn"]
-        await self.push_to_queue(ws, {"event": "subscribe", "patterns": [_pattern], "value": values})
+        await self.push_to_queue(
+            ws, {"event": "subscribe", "patterns": [_pattern], "value": values}
+        )
 
     async def remove_pattern(self, conn_id, conn, _pattern, **ignore):
         """Remove pattern from subscriber"""
@@ -282,7 +285,12 @@ class WSRedisSub:
                 else:
                     key_in_dict = self.movaidb.keys_to_dict([(key, value)])
                 output.update(
-                    {"event": msg[1], "patterns": match_patterns, "key": key_in_dict, "value": value}
+                    {
+                        "event": msg[1],
+                        "patterns": match_patterns,
+                        "key": key_in_dict,
+                        "value": value,
+                    }
                 )
 
                 await self.push_to_queue(ws, output)
