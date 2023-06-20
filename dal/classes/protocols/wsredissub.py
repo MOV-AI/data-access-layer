@@ -185,7 +185,7 @@ class WSRedisSub:
                     else:
                         break
         except asyncio.CancelledError:
-           LOGGER.info("Write task is canceled, socket is closing")
+           LOGGER.debug("Write task is canceled, socket is closing")
 
         except Exception as err:
                 LOGGER.error(str(err))
@@ -287,7 +287,7 @@ class WSRedisSub:
 
                 await self.push_to_queue(ws, output)
         except asyncio.CancelledError:
-            LOGGER.info("Wait task was cancelled, socket is closing!")
+            LOGGER.debug("Wait task was cancelled, socket is closing!")
 
         except Exception as err:
             LOGGER.error(str(err))
