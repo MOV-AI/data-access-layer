@@ -11,10 +11,9 @@ import ast
 import re
 import os
 from movai_core_shared.logger import Log
-from ..models.scopestree import scopes
-from ..models.var import Var
-from ..movaidb import MovaiDB
-from ..new_models.configuration import Configuration
+from dal.models.var import Var
+from dal.movaidb import MovaiDB
+from ..configuration import Configuration
 
 
 class ParamParser:

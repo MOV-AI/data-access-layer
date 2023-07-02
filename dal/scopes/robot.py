@@ -15,7 +15,7 @@ from movai_core_shared.exceptions import DoesNotExist
 from dal.scopes.scope import Scope
 from dal.movaidb import MovaiDB
 from dal.scopes.fleetrobot import FleetRobot
-from dal.new_models import Configuration
+from dal.new_models.configuration import Configuration
 
 
 class Robot(Scope):

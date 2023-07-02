@@ -30,11 +30,11 @@ from movai_core_shared.consts import (
 )
 from dal.movaidb import MovaiDB
 from dal.scopes.scope import Scope
-#from dal.scopes.ports import Ports
-from dal.new_models import Ports, Node
+from dal.scopes.ports import Ports
 from dal.models.var import Var
+from dal.scopes.node import Node
 from movai_core_shared.exceptions import DoesNotExist
-from dal.new_models import Configuration
+from dal.scopes.configuration import Configuration
 from movai_core_shared.logger import Log
 
 LOGGER = Log.get_logger("Flow")
@@ -780,23 +780,23 @@ class Flow(Scope):
         return template_name
 
     # ported -> NodeInst.node_template (instance of Node)
-    def get_node(self, node_inst_name: str) -> Node:
+    def get_node(self, node_inst_name: str):
         """Return the node dict from cache or from DB"""
         template_name = self.get_node_template_name(node_inst_name)
 
         node_template = self.cache_node_templates.get(template_name)
         if not node_template:
-            node_template = Node(node_template)
+            node_template = scopes.from_path("Node", node_template)
             self.cache_node_templates.update({template_name: node_template})
 
         return node_template
 
     # ported - Node.get_port(<port template>)
-    def get_port(self, port_template: str) -> Ports:
+    def get_port(self, port_template: str):
         """Return ports dict from cache or from DB"""
         ports = self.cache_ports_templates.get(port_template, None)
         if not ports:
-            ports = Ports(port_template)
+            ports = scopes.from_path("Ports", port_template)
             self.cache_ports_templates.update({port_template: ports})
         return ports
 
@@ -893,9 +893,7 @@ class Flow(Scope):
     def get_node_port(self, node_name: str, port_inst: str) -> Ports:
         """Deprecated, still here because of tests/data/test_Callback_data.py"""
         node_template_name = self.get_node_template_name(node_name)
-        #node_template = Node(node_template_name, db=self.db)
-        from dal.new_models import Node
-        node_template = Node(node_template_name)
+        node_template = Node(node_template_name, db=self.db)
         port_template_name = node_template.PortsInst[port_inst].Template
         return Ports(port_template_name, db=self.db)
 
