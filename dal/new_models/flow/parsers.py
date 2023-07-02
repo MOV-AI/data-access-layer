@@ -11,10 +11,9 @@ import ast
 import re
 import os
 from movai_core_shared.logger import Log
-from ..models.scopestree import scopes
-from ..models.var import Var
-from ..movaidb import MovaiDB
-from ..new_models.configuration import Configuration
+from dal.models.var import Var
+from dal.movaidb import MovaiDB
+from ..configuration import Configuration
 
 
 class ParamParser:
@@ -111,14 +110,12 @@ class ParamParser:
             # $(<context> <parameter reference>)
             # ex.: $(flow var_A)
             pattern = re.compile(
-                rf"\$\(({'|'.join(self.mapping.keys())})\s+([\w\.-]+)\)"
+                rf"\$\(({'|'.join(self.mapping.keys())})\s+([\w\.]+)\)"
             )
             result = pattern.search(expression)
             if result is None:
                 raise ValueError(f'Invalid expression "{expression}"')
 
-            if result is None:
-                raise ValueError(f"Invalid expression, {expression}")
             # get the function to call from the mapping dict
             func = self.mapping.get(result.group(1))
 

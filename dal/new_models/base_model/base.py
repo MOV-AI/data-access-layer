@@ -80,9 +80,17 @@ class MovaiBaseModel(RedisModel):
     def __new__(cls, *args, **kwargs):
         if args:
             id = args[0]
+            # {workspace}/{scope}/{ref}/{version}
+            m = search(r"([^\/]+)\/([^\/]+)\/(.*)", id)
             version = kwargs.get("version", DEFAULT_VERSION) if kwargs else DEFAULT_VERSION
+            if m is not None:
+                workspace = m.group(1)
+                scope = m.group(2)
+                id = m.group(3)
+            else:
+                scope = cls.__name__
             project = kwargs.get("project", GLOBAL_KEY_PREFIX) if kwargs else GLOBAL_KEY_PREFIX
-            key = f"{project}:{cls.__name__}:{id}:{version}"
+            key = f"{project}:{scope}:{id}:{version}"
             cache = ThreadSafeCache()
             if key in cache:
                 return cache[key]
@@ -169,18 +177,30 @@ class MovaiBaseModel(RedisModel):
         [schema["properties"].pop(key) for key in to_remove]
         return schema
 
-    def dict(self) -> dict:
+    def dict(
+        self,
+        *,
+        include=None,
+        exclude=None,
+        by_alias: bool = True,
+        skip_defaults: Optional[bool] = None,
+        exclude_unset: bool = False,
+        exclude_defaults: bool = False,
+        exclude_none: bool = True,
+    ):
         """Generate a dictionary representation of the model
 
         Returns:
             dict: dictionary representation of the model
         """
-        dic = super().dict(exclude_none=True)
+        dic = super().dict(
+            exclude_none=exclude_none
+        )
         to_remove = []
         for key in dic:
             if key not in self._original_keys():
                 to_remove.append(key)
-        [dic.pop(key) for key in to_remove]
+        dic = {key: value for key, value in dic.items() if key not in to_remove}
         return {self.scope: {self.name: dic}}
 
     def has_scope_permission(self, user, permission) -> bool:

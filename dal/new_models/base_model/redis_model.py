@@ -1,5 +1,5 @@
 from typing import List
-from pydantic import BaseModel, Extra
+from pydantic import BaseModel
 import redis
 from dal.movaidb import Redis
 from .cache import ThreadSafeCache

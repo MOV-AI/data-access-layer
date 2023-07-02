@@ -20,7 +20,8 @@ class Configuration(MovaiBaseModel):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._convert_yaml_dict()
+        if not self.data:
+            self._convert_yaml_dict()
 
     def _convert_yaml_dict(self):
         data = yaml.load(self.Yaml, Loader=yaml.FullLoader)

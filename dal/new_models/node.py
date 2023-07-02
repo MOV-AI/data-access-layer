@@ -210,7 +210,7 @@ class Node(MovaiBaseModel):
             output = {key: val.Value for key, val in self.Parameter.items()}
         return output
 
-    def get_port(self, port_inst: str):
+    def get_port(self, port_inst: str) -> Ports:
         """Returns an instance (Ports) of the port instance template"""
 
         if port_inst not in self.PortsInst:
