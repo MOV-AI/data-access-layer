@@ -88,17 +88,13 @@ class WSRedisSub:
             ws (web.WebSocketResponse): The websocket to close
             conn_id (str): the connection id.
         """
-        LOGGER.debug(f"closing websocket.")
         await ws.close()
-        LOGGER.debug(f"Canceling active tasks.")
         for task in self.tasks[conn_id]:
             if not task.done():
                 task.cancel()
 
         if conn_id in self.tasks:
             self.tasks.pop(conn_id)
-
-        await self.release(conn_id)
 
     async def handler(self, request: web.Request) -> web.WebSocketResponse:
         """handle websocket connections"""
@@ -122,14 +118,10 @@ class WSRedisSub:
         conn_id = uuid.uuid4().hex
 
         # add connection
-        self.connections.update(
-            {conn_id: {"conn": connection_queue, "subs": conn, "patterns": []}}
-        )
+        self.connections.update({conn_id: {"conn": connection_queue, "subs": conn, "patterns": []}})
 
         # wait for messages
-        write_task = asyncio.create_task(
-            self.write_websocket_loop(ws_resp, connection_queue, lock)
-        )
+        write_task = asyncio.create_task(self.write_websocket_loop(ws_resp, connection_queue, lock))
         self.tasks[conn_id] = [write_task]
         async for ws_msg in ws_resp:
             # check if redis connection is active
@@ -170,6 +162,7 @@ class WSRedisSub:
                 LOGGER.error("ws connection closed with exception %s" % ws_resp.exception())
         async with lock:
             await self.close_and_release(ws_resp, conn_id)
+        await self.release(conn_id)
         return ws_resp
 
     async def write_websocket_loop(
