@@ -96,7 +96,6 @@ class WSRedisSub:
         if conn_id in self.tasks:
             self.tasks.pop(conn_id)
 
-
     async def handler(self, request: web.Request) -> web.WebSocketResponse:
         """handle websocket connections"""
 
@@ -119,14 +118,10 @@ class WSRedisSub:
         conn_id = uuid.uuid4().hex
 
         # add connection
-        self.connections.update(
-            {conn_id: {"conn": connection_queue, "subs": conn, "patterns": []}}
-        )
+        self.connections.update({conn_id: {"conn": connection_queue, "subs": conn, "patterns": []}})
 
         # wait for messages
-        write_task = asyncio.create_task(
-            self.write_websocket_loop(ws_resp, connection_queue, lock)
-        )
+        write_task = asyncio.create_task(self.write_websocket_loop(ws_resp, connection_queue, lock))
         self.tasks[conn_id] = [write_task]
         async for ws_msg in ws_resp:
             # check if redis connection is active
