@@ -23,6 +23,10 @@ class Configuration(MovaiBaseModel):
         if not self.data:
             self._convert_yaml_dict()
 
+    def get_value(self) -> dict:
+        """Returns a dictionary with the configuration values"""
+        return self.data
+
     def _convert_yaml_dict(self):
         data = yaml.load(self.Yaml, Loader=yaml.FullLoader)
         if isinstance(data, dict):

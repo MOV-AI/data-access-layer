@@ -3,7 +3,7 @@ import pydantic
 import json
 from .redis_model import RedisModel, GLOBAL_KEY_PREFIX
 from .common import PrimaryKey
-from re import search
+import re
 from movai_core_shared.logger import Log
 from .cache import ThreadSafeCache
 from datetime import datetime
@@ -11,6 +11,7 @@ from datetime import datetime
 
 LOGGER = Log.get_logger("BaseModel.mov.ai")
 DEFAULT_VERSION = "__UNVERSIONED__"
+cache = ThreadSafeCache()
 
 
 class LastUpdate(pydantic.BaseModel):
@@ -51,6 +52,8 @@ valid_models = [
     "Configuration",
     "Ports",
 ]
+path_regex = re.compile(r"([^\/]+)\/([^\/]+)\/(.*)")
+label_regex = re.compile(LABEL_REGEX)
 
 
 class MovaiBaseModel(RedisModel):
@@ -81,17 +84,18 @@ class MovaiBaseModel(RedisModel):
         if args:
             id = args[0]
             # {workspace}/{scope}/{ref}/{version}
-            m = search(r"([^\/]+)\/([^\/]+)\/(.*)", id)
+            m = path_regex.search(id)
             version = kwargs.get("version", DEFAULT_VERSION) if kwargs else DEFAULT_VERSION
             if m is not None:
                 workspace = m.group(1)
                 scope = m.group(2)
                 id = m.group(3)
+                if "/" in id:
+                    id, version = id.split("/")
             else:
                 scope = cls.__name__
             project = kwargs.get("project", GLOBAL_KEY_PREFIX) if kwargs else GLOBAL_KEY_PREFIX
             key = f"{project}:{scope}:{id}:{version}"
-            cache = ThreadSafeCache()
             if key in cache:
                 return cache[key]
 
@@ -100,6 +104,14 @@ class MovaiBaseModel(RedisModel):
                 raise Exception(f"{cls.__name__} {args[0]} not found!")
             return obj[0]
         return super().__new__(cls)
+
+    @property
+    def path(self):
+        return f"global/{self.scope}/{self.name}/{self.Version}"
+
+    @property
+    def ref(self) -> str:
+        return self.name
 
     def _original_keys(self) -> List[str]:
         return super()._original_keys() + ["Info", "Label", "Description", "LastUpdate", "Version"]
@@ -134,7 +146,7 @@ class MovaiBaseModel(RedisModel):
                         project=project, scope=self.scope, id=name, version=version
                     )
                     params.update({"pk": pk})
-                if search(LABEL_REGEX, name) is None:
+                if label_regex.search(name) is None:
                     raise ValueError(
                         f"Validation Error for {scope} name:({name}), data:{kwargs}"
                     )
@@ -143,7 +155,6 @@ class MovaiBaseModel(RedisModel):
                 if "LastUpdate" not in struct_[name]:
                     struct_[name]["LastUpdate"] = {"date": "", "user": ""}
                 super().__init__(**struct_[name], **params)
-                cache = ThreadSafeCache()
                 cache[pk] = self
             else:
                 raise ValueError(
