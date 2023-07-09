@@ -19,10 +19,10 @@ class EnvVarValue(BaseModel):
 
 class NodeInst(BaseModel):
     NodeLabel: Optional[ValidName] = None
-    Parameter: Optional[Dict[str, Arg]] = None
+    Parameter: Optional[Dict[str, Arg]] = Field(default_factory=dict)
     Template: Optional[ValidName] = None
-    CmdLine: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), CmdLineValue]] = None
-    EnvVar: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), EnvVarValue]] = None
+    CmdLine: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), CmdLineValue]] = Field(default_factory=dict)
+    EnvVar: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), EnvVarValue]] = Field(default_factory=dict)
     NodeLayers: Optional[Any] = None
 
     def __init__(self, *args, **kwargs):
@@ -173,7 +173,7 @@ class NodeInst(BaseModel):
     @property
     def is_dummy(self) -> bool:
         """Returns True if the node is configured as Dummy"""
-        if self.Dummy is not [None, ""]:
+        if self.Dummy not in [None, ""]:
             return self.Dummy
         else:
             return self.node_template.Dummy

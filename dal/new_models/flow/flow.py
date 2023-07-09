@@ -1,14 +1,15 @@
 from typing import Optional, Dict, List, Any, Union, ClassVar, Set
-from pydantic import constr, BaseModel, Extra
+from pydantic import Field, constr, BaseModel, Extra
 from ..base_model import Arg, MovaiBaseModel
 from ..configuration import Configuration
 from .parsers import ParamParser
 from ...helpers.flow import GFlow
 from types import SimpleNamespace
 from .nodeinst import NodeInst as NodeInstClass
+from .container import Container as ContainerClas
 from .flowlinks import FlowLink
 from ..node import Node
-from cachetools import func
+from cachetools import LRUCache
 from movai_core_shared.consts import ROS1_NODELETSERVER
 
 
@@ -17,45 +18,9 @@ class Layer(BaseModel):
     on: Optional[bool] = None
 
 
-class Parameter(BaseModel):
-    Child: Optional[str] = None
-    Parent: Optional[str] = None
-
-
-class Portfields(BaseModel):
-    Message: Optional[str] = None
-    Callback: Optional[str] = None
-    Parameter: Optional[Parameter] = None
-
-
-class X(BaseModel):
-    Value: float
-
-
-class Y(BaseModel):
-    Value: float
-
-
-class Visualization(BaseModel):
-    x: X
-    y: Y
-
-
-class Visual(BaseModel):
-    # __root__: Union[VisualItem, VisualItem1]
-    Visualization: Union[List[float], Visualization]
-
-
-class ContainerValue(BaseModel):
-    ContainerFlow: Optional[str] = None
-    ConktainerLabel: Optional[str] = None
-    # Parameter: Optional[ArgSchema] = None
-    Parameter: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), Arg]] = None
-
-
 class Flow(MovaiBaseModel, extra=Extra.allow):
     Parameter: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), Arg]] = None
-    Container: Optional[Dict[constr(regex=r"^[a-zA-Z_0-9]+$"), ContainerValue]] = None
+    Container: Optional[Dict[constr(regex=r"^[a-zA-Z_0-9]+$"), ContainerClas]] = Field(default_factory=dict)
     ExposedPorts: Optional[
         Dict[
             constr(regex=r"^(__)?[a-zA-Z0-9_]+$"),
@@ -66,8 +31,8 @@ class Flow(MovaiBaseModel, extra=Extra.allow):
         ]
     ] = None
     Layers: Optional[Dict[constr(regex=r"^[0-9]+$"), Layer]] = None
-    Links: Optional[Dict[constr(regex=r"^[0-9a-z-]+$"), FlowLink]] = None
-    NodeInst: Optional[Dict[constr(regex=r"^[a-zA-Z_0-9]+$"), NodeInstClass]] = None
+    Links: Optional[Dict[constr(regex=r"^[0-9a-z-]+$"), FlowLink]] = Field(default_factory=dict)
+    NodeInst: Optional[Dict[constr(regex=r"^[a-zA-Z_0-9]+$"), NodeInstClass]] = Field(default_factory=dict)
     __START__: ClassVar[str] = "START/START/START"
     __END__: ClassVar[str] = "END/END/END"
 
@@ -86,48 +51,43 @@ class Flow(MovaiBaseModel, extra=Extra.allow):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.cache_calc_remaps = None
-        self.cache_dict = None
-        self.cache_node_insts = {}
-        self.cache_node_template = {}
-        self.cache_ports_templates = {}
-        self.cache_node_params = {}
-        self.cache_container_params = {}
-        self.parent_parameters = {}
-        self._full = None
-        self._parser = ParamParser(self)
-        self._graph = GFlow(self)
-        if self.NodeInst:
-            for _, node_inst in self.NodeInst.items():
-                node_inst._parser = self._parser
-                node_inst._flow_ref = self.name
-        if self.Links:
-            for _, link in self.Links.items():
-                link._parser = self._parser
+        if kwargs:
+            self._parser = ParamParser(self)
+            self._graph = GFlow(self)
+            self._full = None
+            self._links_cache = LRUCache(maxsize=100)
+            if self.NodeInst:
+                for _, node_inst in self.NodeInst.items():
+                    node_inst._parser = self._parser
+                    node_inst._flow_ref = self.name
+            if self.Links:
+                for _, link in self.Links.items():
+                    link._parser = self._parser
+            if self.Container:
+                for _, container in self.Container.items():
+                    container._parser = self._parser
+                    container._flow_class = Flow
 
     @property
     def full(self) -> dict:
         """Returns the data from the main flow and all subflows"""
-
         self._full = self._full or self.get_dict()
         return self._full
 
     @property
     def parser(self) -> ParamParser:
         """Get or create and instance of the parser"""
-
         return self._parser
 
     @property
     def graph(self) -> GFlow:
         """Get or create an instance of the graph generator"""
-
         return self._graph
 
     @property
     def remaps(self) -> dict:
         """Get remaps from the graph instance"""
-        return self.graph.get_remaps()
+        return self._graph.get_remaps()
 
     def eval_config(self, _config: str, *__) -> any:
         """
@@ -173,15 +133,15 @@ class Flow(MovaiBaseModel, extra=Extra.allow):
             pref_id = f"{prefix}{_id}"
 
             _value["From"] = (
-                f"{prefix}{value.From}"
-                if value.From.upper() != Flow.__START__
-                else value.From
+                f"{prefix}{value.From.str}"
+                if value.From.str.upper() != Flow.__START__
+                else value.From.str
             )
-            _value["To"] = f"{prefix}{value.To}"
+            _value["To"] = f"{prefix}{value.To.str}"
             _value["Dependency"] = value.Dependency
 
             # required for legacy compatibility
-            output.Links.update({pref_id: _value})
+            output.Links.update({pref_id: FlowLink(**_value)})
 
         return output
 
@@ -300,8 +260,8 @@ class Flow(MovaiBaseModel, extra=Extra.allow):
 
         output = []
 
-        for link_id in self.Links.full.keys():
-            link = self.Links[link_id]
+        for link_id in self.full.Links.keys():
+            link = self.full.Links[link_id]
 
             # node is connected to the start block
             if link.From.str.upper() == Flow.__START__:
@@ -346,20 +306,25 @@ class Flow(MovaiBaseModel, extra=Extra.allow):
 
         return output
 
-    @func.lru_cache()
     def get_node_links(self, node_name: str) -> list:
         """Returns the node instance links in the flow and subflows"""
-        # TODO add cache
+        links_key = f"{self.path}::links::{node_name}"
+        if links_key in self._links_cache:
+            return self._links_cache[links_key]
         links = []
 
+        """
+        {<link id w/ parents prefix>: {"From": <link w/ prefix>, "To": <link w/ prefix>}} 
+        """
         for key in self.full.Links:
-            link = self.Links[key]
+            link = self.full.Links[key]
 
             if node_name in [link.From.node_inst, link.To.node_inst]:
                 _type = "From" if node_name == link.From.node_inst else "To"
                 _link = {"Type": _type, "ref": link, "id": key}
 
                 links.append(_link)
+        self._links_cache[links_key] = links
         return links
 
     def get_node_transitions(self, node_name: str, port_name: str = None) -> Set[str]:

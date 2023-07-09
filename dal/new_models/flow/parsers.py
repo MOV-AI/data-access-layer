@@ -15,17 +15,18 @@ from dal.models.var import Var
 from dal.movaidb import MovaiDB
 from ..configuration import Configuration
 
+__REGEX__ = r"\$\((param|config|var|flow)[^$)]+\)"
+pattern = re.compile(__REGEX__)
+EVAL_REGEX = r"\$\((param|config|var|flow)\s+([\w\.-]+)\)"
+eval_pattern = re.compile(EVAL_REGEX)
+logger = Log.get_logger("ParamParser.mov.ai")
+
 
 class ParamParser:
     """
     Parser for the node instance, container and flow parameters
     Supports configuration. parameters, var, flow and env variables
     """
-
-    logger = Log.get_logger("ParamParser.mov.ai")
-
-    __REGEX__ = r"\$\((param|config|var|flow)[^$)]+\)"
-
     def __init__(self, flow):
         self.mapping = {
             "config": self.eval_config,
@@ -71,8 +72,7 @@ class ParamParser:
         while 1:
             temp_param = expression
 
-            expression = re.sub(
-                self.__REGEX__,
+            expression = pattern.sub(
                 lambda m: self.eval_reference(key, m.group(), instance, node_name),
                 expression,
             )
@@ -109,10 +109,7 @@ class ParamParser:
         try:
             # $(<context> <parameter reference>)
             # ex.: $(flow var_A)
-            pattern = re.compile(
-                rf"\$\(({'|'.join(self.mapping.keys())})\s+([\w\.]+)\)"
-            )
-            result = pattern.search(expression)
+            result = eval_pattern.search(expression)
             if result is None:
                 raise ValueError(f'Invalid expression "{expression}"')
 
@@ -135,7 +132,7 @@ class ParamParser:
 
             msg = f"{info}; {error}"
 
-            self.logger.error(msg)
+            logger.error(msg)
 
         return str(output)
 

@@ -13,6 +13,7 @@ class LinkConfigTemplate(BaseModel):
 
 
 LINK_REGEX = r"^([~@a-zA-Z_0-9-]+)([\/])([\/~@a-zA-Z_0-9]+)+([\/])([~@a-zA-Z_0-9]+)$"
+regex = re.compile(LINK_REGEX)
 
 
 class FlowLink(BaseModel):
@@ -21,23 +22,23 @@ class FlowLink(BaseModel):
     Dependency: int = DEFAULT_DEPENDENCY
     __DEFAULT_DEPENDENCY__: ClassVar[int] = DEFAULT_DEPENDENCY
 
-    @validator("From", "To", pre=True, always=True)
+    @validator("From", "To", pre=True)
     def validate_regex(cls, value, field):
-        if not re.match(LINK_REGEX, value):
+        try:
+            l = value.split("/")
+            node_inst, port_name, port_type = l[0], "/".join(l[1:len(l)-1]), l[-1]
+            output = {
+                "node_inst": node_inst,
+                "port_name": port_name,
+                "port_type": port_type,
+                "str": value,
+            }
+
+            return output
+        except Exception:
             raise ValueError(
                 f"Field '{field.alias}' with value '{value}' does not match the required pattern '{LINK_REGEX}'."
             )
-        # split <node inst>/<port name 1><port name n>/<port type>
-        node_inst, _, port_name, _, port_type = re.findall(LINK_REGEX, value)[0]
-
-        output = {
-            "node_inst": node_inst,
-            "port_name": port_name,
-            "port_type": port_type,
-            "str": value,
-        }
-
-        return output
 
     class Config:
         exclude = {"__DEFAULT_DEPENDENCY__"}
