@@ -1,10 +1,20 @@
 import os
 from redis import asyncio as redis
+from .redis_config import RedisConfig
 
-URL = os.environ.get("REDIS_URL", None)
+URL = os.environ.get("REDIS_URL", RedisConfig().redis_url)
 
 
 def get_redis_connection(**kwargs) -> redis.Redis:
+    """return an Asyncio based redis connection
+
+    kwargs:
+        decode_responses (bool): decode responses from redis
+        url: a redis url to connect to
+
+    Returns:
+        redis.Redis: _description_
+    """
     # Decode from UTF-8 by default
     if "decode_responses" not in kwargs:
         kwargs["decode_responses"] = True

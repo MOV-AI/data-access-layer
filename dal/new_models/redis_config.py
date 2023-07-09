@@ -1,5 +1,6 @@
 from typing import Optional
 from dataclasses import dataclass, asdict
+from redis import asyncio as redis
 
 
 @dataclass
@@ -22,10 +23,3 @@ class RedisConfig:
 
     def dict(self):
         return asdict(self)
-
-conf = RedisConfig()
-print(conf)
-
-from redis import asyncio as redis
-
-conn = redis.Redis(**conf.dict())
