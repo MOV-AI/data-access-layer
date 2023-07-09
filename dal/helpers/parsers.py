@@ -111,12 +111,14 @@ class ParamParser:
             # $(<context> <parameter reference>)
             # ex.: $(flow var_A)
             pattern = re.compile(
-                rf"\$\(({'|'.join(self.mapping.keys())})\s+([\w\.]+)\)"
+                rf"\$\(({'|'.join(self.mapping.keys())})\s+([\w\.-]+)\)"
             )
             result = pattern.search(expression)
             if result is None:
                 raise ValueError(f'Invalid expression "{expression}"')
 
+            if result is None:
+                raise ValueError(f"Invalid expression, {expression}")
             # get the function to call from the mapping dict
             func = self.mapping.get(result.group(1))
 
