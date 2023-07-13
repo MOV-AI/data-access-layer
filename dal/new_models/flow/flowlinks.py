@@ -1,6 +1,7 @@
 from pydantic import BaseModel, validator, Extra
 from typing import ClassVar, Optional
 import re
+import uuid
 
 DEFAULT_DEPENDENCY = 0
 

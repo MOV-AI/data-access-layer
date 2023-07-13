@@ -1,4 +1,4 @@
-from base import MovaiBaseModel
+from .base_model import MovaiBaseModel
 from typing import Any
 
 
