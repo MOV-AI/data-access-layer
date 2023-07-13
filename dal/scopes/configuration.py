@@ -24,13 +24,16 @@ class Configuration(Scope):
         super().__init__(
             scope="Configuration", name=name, version=version, new=new, db=db
         )
+        self.__dict__['_data'] = {}
 
     # ported
     def get_value(self) -> dict:
         """Returns a dictionary with the configuration values"""
         if self.Type == "xml":
             return self.Yaml
-        return yaml.load(self.Yaml, Loader=yaml.FullLoader)
+        if not self._data:
+            self.__dict__['_data'] = yaml.load(self.Yaml, Loader=yaml.FullLoader)
+        return self._data
 
     # ported
     def get_param(self, param: str):
