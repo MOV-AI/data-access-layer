@@ -3,7 +3,9 @@ from types import SimpleNamespace
 import pydantic
 from .base_model import MovaiBaseModel
 from .configuration import Configuration
+from movai_core_shared.logger import Log
 
+logger = Log.get_logger(__name__)
 PARAMETER_KEY_REGEX = pydantic.constr(regex=r"^[0-9a-zA-Z_]+$")
 FIELD_KEY_REGEX = pydantic.constr(regex=r"^[0-9a-zA-Z_!@?-]+$")
 
@@ -16,8 +18,8 @@ class FieldValue(pydantic.BaseModel):
 class Annotation(MovaiBaseModel):
     Type: Optional[str] = None
     Policy: Optional[str] = None
-    Parameter: Optional[Dict[PARAMETER_KEY_REGEX, Any]] = None
-    Field: Optional[Dict[FIELD_KEY_REGEX, FieldValue]] = None
+    Parameter: Optional[Dict[PARAMETER_KEY_REGEX, Any]] = pydantic.Field(default_factory=dict)
+    Field: Optional[Dict[FIELD_KEY_REGEX, FieldValue]] = pydantic.Field(default_factory=dict)
 
     class Meta:
         model_key_prefix = "Annotation"
@@ -30,14 +32,9 @@ class Annotation(MovaiBaseModel):
         """
 
         res_dict = {}
-        if "Field" in self:
-            fields = self.Field
-        else:
-            fields = self.parameter_to_field(
-                self.Parameter
-            )  # populate computed_annotations_dict
+        fields = self.Field or self.parameter_to_field(self.Parameter)
         for key in fields:
-            computed = generate_computed(key, fields[key], self.ref)
+            computed = self.generate_computed(key, fields[key], self.ref)
             res_dict[key] = computed
         return res_dict
 
@@ -68,7 +65,7 @@ class Annotation(MovaiBaseModel):
         # return data type
         return [x for x in predicates_to_value if x["predicate"]][0]["value"]
 
-    def generate_computed(property_name, annotation_property, annotation_path):
+    def generate_computed(self, property_name, annotation_property, annotation_path):
         """Helper function to generate computed annotation key based on annotation property"""
         prop_value = annotation_property["Value"].value
         prop_type = annotation_property["Type"].value
@@ -81,12 +78,12 @@ class Annotation(MovaiBaseModel):
                 "type": prop_type,
                 "value": prop_value,
             },
-            "value": get_configuration_value(configuration_name)
+            "value": self.get_configuration_value(configuration_name)
             if configuration_name
             else prop_value,
         }
 
-    def get_configuration_value(configuration_path):
+    def get_configuration_value(self, configuration_path):
         """Helper function to get a configuration value from a config path"""
         if not configuration_path:
             return {}
@@ -95,10 +92,7 @@ class Annotation(MovaiBaseModel):
             config_name = config_key_path[0]
             config_key_path.pop(0)
             config = Configuration(config_name)
-            val = config.get_value()
-            for key in config_key_path:
-                val = val[key]
-            return val
+            return config.get_param(config_key_path)
         except Exception as e:  # pylint: disable=broad-except
             logger.error(e)
             return {}

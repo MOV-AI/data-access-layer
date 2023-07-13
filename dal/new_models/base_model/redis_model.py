@@ -6,6 +6,7 @@ from .cache import ThreadSafeCache
 
 
 GLOBAL_KEY_PREFIX = "Movai"
+cache = ThreadSafeCache()
 
 
 class RedisModel(BaseModel):
@@ -25,22 +26,28 @@ class RedisModel(BaseModel):
         return ["pk"]
 
     @classmethod
-    def db(cls) -> redis.Redis:
-        return Redis().db_global
+    def db(cls, type: str) -> redis.Redis:
+        if type == "global":
+            return Redis().db_global
+        elif type == "local":
+            return Redis().db_local
 
-    def save(self) -> str:
+    @property
+    def keyspace_pattern(self) -> str:
+        return f"__keyspace@0__:{self.pk}"
+
+    def save(self, db_type="global") -> str:
         """_summary_
 
         Returns:
             str: _description_
         """
-        self.db().json().delete(self.pk)
-        self.db().json().set(
+        self.db(db_type).json().delete(self.pk)
+        self.db(db_type).json().set(
             self.pk,
             "$",
             self.dict(),
         )
-        cache = ThreadSafeCache()
         cache[self.pk] = self
         return self.pk
 
