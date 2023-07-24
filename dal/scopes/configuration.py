@@ -8,10 +8,12 @@
    - Tiago Paulino (tiago@mov.ai) - 2020
 Module that implements Configuration scope class
 """
+import pickle
 import yaml
 from box import Box
 from movai_core_shared.exceptions import DoesNotExist
 from dal.movaidb import MovaiDB
+from dal.helpers.cache import ThreadSafeCache
 from .scope import Scope
 
 
@@ -21,27 +23,41 @@ class Configuration(Scope):
     scope = "Configuration"
 
     def __init__(self, name, version="latest", new=False, db="global"):
-        super().__init__(
-            scope="Configuration", name=name, version=version, new=new, db=db
-        )
-        self.__dict__['_data'] = {}
+        super().__init__(scope="Configuration", name=name, version=version, new=new, db=db)
+        self.__dict__["_db_read"] = MovaiDB(db).db_read
+        self.__dict__["_data"] = {}
+        self.__dict__["_cache"] = ThreadSafeCache()
+        self.__dict__["_ref"] = f"Scopes:Configuration:{name}:{version}"
+        self.__dict__["_str"] = self._get_db_yaml()
 
-    # ported
+    def _get_db_yaml(self) -> str:
+        """will read the Yaml string value from db and returns it
+
+        Returns:
+            str: the Yaml string returned from db
+        """
+        return pickle.loads(self._db_read.get(f"Configuration:{self.name},Yaml:"))
+
     def get_value(self) -> dict:
         """Returns a dictionary with the configuration values"""
         if self.Type == "xml":
-            return self.Yaml
-        if not self._data:
-            self.__dict__['_data'] = yaml.load(self.Yaml, Loader=yaml.FullLoader)
-        return self._data
+            # Yaml is the name of the field
+            return self._get_db_yaml()
+
+        db_yaml = self._get_db_yaml()
+        if db_yaml != self._str or self._ref not in self._cache:
+            # we need to update it because of the scopes caching system
+            _data = yaml.load(db_yaml, Loader=yaml.FullLoader)
+            self._cache[self._ref] = _data
+            self.__dict__["_str"] = db_yaml
+
+        return self._cache[self._ref]
 
     # ported
     def get_param(self, param: str):
         """Returns the configuration value of a key in the format param.subparam.subsubparam"""
         value = None
-
         dict_value = self.get_value()
-
         fields = param.split(".")
         try:
             temp_dict = dict_value
@@ -50,8 +66,7 @@ class Configuration(Scope):
             value = temp_dict
         except Exception:
             raise Exception(
-                '"%s" is not a valid parameter in configuration "%s"'
-                % (param, self.name)
+                '"%s" is not a valid parameter in configuration "%s"' % (param, self.name)
             )
         return value
 
@@ -60,8 +75,6 @@ class Config(Box):
     """Config with dot accessible elements"""
 
     def __init__(self, name):
-        config = MovaiDB().get_value({"Configuration": {name: {"Yaml": ""}}})
-        if not config:
-            raise DoesNotExist("Configuration %s was not found" % config)
-        config = yaml.load(config, Loader=yaml.FullLoader)
+        # raises DoesNotExist in case Configuration name does not exist
+        config = Configuration(name).get_value()
         super().__init__(Box(config))
