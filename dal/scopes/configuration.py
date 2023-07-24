@@ -20,12 +20,12 @@ from .scope import Scope
 class Configuration(Scope):
     """Configuration class"""
 
-    scope = 'Configuration'
+    scope = "Configuration"
 
-    def __init__(self, name, version='latest', new=False, db='global'):
+    def __init__(self, name, version="latest", new=False, db="global"):
         super().__init__(scope="Configuration", name=name, version=version, new=new, db=db)
         self.__dict__["_db_read"] = MovaiDB(db).db_read
-        self.__dict__['_data'] = {}
+        self.__dict__["_data"] = {}
         self.__dict__["_cache"] = ThreadSafeCache()
         self.__dict__["_ref"] = f"Scopes:Configuration:{name}:{version}"
         self.__dict__["_str"] = self._get_db_yaml()
@@ -55,10 +55,10 @@ class Configuration(Scope):
 
     # ported
     def get_param(self, param: str):
-        """ Returns the configuration value of a key in the format param.subparam.subsubparam"""
+        """Returns the configuration value of a key in the format param.subparam.subsubparam"""
         value = None
         dict_value = self.get_value()
-        fields = param.split('.')
+        fields = param.split(".")
         try:
             temp_dict = dict_value
             for elem in fields:
@@ -66,7 +66,8 @@ class Configuration(Scope):
             value = temp_dict
         except Exception:
             raise Exception(
-                '"%s" is not a valid parameter in configuration "%s"' % (param, self.name))
+                '"%s" is not a valid parameter in configuration "%s"' % (param, self.name)
+            )
         return value
 
 
@@ -77,4 +78,3 @@ class Config(Box):
         # raises DoesNotExist in case Configuration name does not exist
         config = Configuration(name).get_value()
         super().__init__(Box(config))
-
