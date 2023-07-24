@@ -36,7 +36,10 @@ class Configuration(Scope):
         Returns:
             str: the Yaml string returned from db
         """
-        return pickle.loads(self._db_read.get(f"Configuration:{self.name},Yaml:"))
+        yaml_str = self._db_read.get(f"Configuration:{self.name},Yaml:")
+        if yaml_str is not None:
+            return pickle.loads(yaml_str)
+        return yaml_str
 
     def get_value(self) -> dict:
         """Returns a dictionary with the configuration values"""
