@@ -38,7 +38,7 @@ class Configuration(Scope):
         """
         yaml_str = self._db_read.get(f"Configuration:{self.name},Yaml:")
         if yaml_str is not None:
-            return pickle.loads(self._db_read.get(f"Configuration:{self.name},Yaml:"))
+            return pickle.loads(yaml_str)
         return yaml_str
 
     def get_value(self) -> dict:
