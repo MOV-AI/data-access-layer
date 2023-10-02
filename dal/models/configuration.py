@@ -9,7 +9,6 @@
 """
 import pickle
 import yaml
-from datetime import datetime
 from dal.movaidb import MovaiDB
 from .model import Model
 from dal.helpers.cache import ThreadSafeCache
@@ -39,12 +38,14 @@ class Configuration(Model):
             # Yaml is the name of the field
             return self.Yaml
 
-        last_date_str = self.LastUpdate["date"]
-        timestampe = datetime.strptime(last_date_str, "%d/%m/%Y at %H:%M:%S")
-        if self.cache.last_parsed < timestampe or self.ref not in self.cache:
+        # self.Yaml will be set once we load configuration and remain the same
+        # until we update the self.Yaml explicitly unlike Configuration(Scope)
+        db_yaml = self._get_db_yaml()
+        if db_yaml != self.Yaml or self.ref not in self.cache:
             # we need to update it because of the scopes caching system
-            _data = yaml.load(self.Yaml, Loader=yaml.FullLoader)
+            _data = yaml.load(db_yaml, Loader=yaml.FullLoader)
             self.cache[self.ref] = _data
+            self.Yaml = db_yaml
 
         return self.cache[self.ref]
 
