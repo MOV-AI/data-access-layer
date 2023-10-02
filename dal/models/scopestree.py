@@ -254,7 +254,6 @@ class ScopeInstanceVersionNode(
             except KeyError:
                 a_cls = ScopePropertyNode
                 i_value = None
-            print(a_cls, attr_schema.path)
             attr = a_cls(
                 name, i_value
             )  # FIXME Properties should probably raise an exception or something
