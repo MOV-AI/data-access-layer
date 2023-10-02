@@ -16,7 +16,6 @@ _________________________________
 
 from cachetools import TTLCache
 from threading import Lock
-from datetime import datetime
 
 
 CACHE_SIZE_MB = 1000
@@ -34,7 +33,6 @@ class ThreadSafeCache:
             with cls._lock:
                 cls._instance = super().__new__(cls)
                 cls._instance.cache = TTLCache(maxsize=maxsize, ttl=ttl)
-                cls.last_parsed = datetime.min
         return cls._instance
 
     def get(self, key, default=None):
@@ -48,7 +46,6 @@ class ThreadSafeCache:
     def __setitem__(self, key, value):
         with self._lock:
             self.cache[key] = value
-            self.last_parsed = datetime.now()
 
     def __delitem__(self, key):
         with self._lock:

@@ -9,7 +9,6 @@
 """
 import pickle
 import yaml
-from datetime import datetime
 from dal.movaidb import MovaiDB
 from .model import Model
 from dal.helpers.cache import ThreadSafeCache
