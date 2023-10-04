@@ -38,6 +38,8 @@ class Configuration(Model):
             # Yaml is the name of the field
             return self.Yaml
 
+        # self.Yaml will be set once we load configuration and remain the same
+        # until we update the self.Yaml explicitly unlike Configuration(Scope)
         db_yaml = self._get_db_yaml()
         if db_yaml != self.Yaml or self.ref not in self.cache:
             # we need to update it because of the scopes caching system
