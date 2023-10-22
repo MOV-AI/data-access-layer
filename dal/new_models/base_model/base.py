@@ -77,6 +77,7 @@ class MovaiBaseModel(RedisModel):
             LastUpdate: LastUpdate Model
         """
         if v is None or isinstance(v, str):
+            # TODO: changed default values.
             return LastUpdate(date="", user="")
         return LastUpdate(**v)
 
@@ -101,6 +102,7 @@ class MovaiBaseModel(RedisModel):
 
             obj = cls.select(ids=[f"{id}:{version}"])
             if not obj:
+                #TODO: change to better exception class.
                 raise Exception(f"{cls.__name__} {args[0]} not found!")
             return obj[0]
         return super().__new__(cls)

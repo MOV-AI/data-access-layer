@@ -13,6 +13,7 @@ class RedisModel(BaseModel):
     pk: str
 
     class Config:
+        # https://stackoverflow.com/questions/75211183/what-does-pydantic-orm-mode-exactly-do
         orm_mode = True
         validate_assignment = True
 

@@ -46,6 +46,7 @@ class Callback(MovaiBaseModel):
         data = Callback._get_modules(jump_over_modules)
 
         try:
+            #TODO change old system
             from dal.scopes.system import System
 
             # currently using the old api
@@ -309,8 +310,8 @@ if __name__ == "__main__":
         }
     )
     r.dict()
-    """
     pk = r.save()
+    """
     # because Label is string, the 5 will be converted automatically to string "5"
     r.Label = 5
     pk = r.save()
