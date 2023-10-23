@@ -115,17 +115,14 @@ class MovaiBaseModel(RedisModel):
     def ref(self) -> str:
         return self.name
 
-    def _original_keys(self) -> List[str]:
-        return super()._original_keys() + ["Info", "Label", "Description", "LastUpdate", "Version"]
-
-    def _additional_keys(self) -> List[str]:
-        """additional keys to be removed from the dictionary representation of the model
-        used only for innear use
+    @classmethod
+    def _original_keys(cls) -> List[str]:
+        """keys that are originally defined part of the model
 
         Returns:
-            List[str]: list of keys
+            List[str]: list including the original keys
         """
-        return super()._additional_keys() + ["name", "project", "Dummy"]
+        return super()._original_keys() + ["Info", "Label", "Description", "LastUpdate", "Version"]
 
     @pydantic.validator("Dummy", pre=True)
     def _validate_dummy(cls, v):

@@ -20,11 +20,9 @@ class RedisModel(BaseModel):
     class Meta:
         model_key_prefix = "Redis"
 
-    def _original_keys(self) -> List[str]:
+    @classmethod
+    def _original_keys(cls) -> List[str]:
         return []
-
-    def _additional_keys(self) -> List[str]:
-        return ["pk"]
 
     @classmethod
     def db(cls, type: str) -> redis.Redis:
@@ -54,7 +52,8 @@ class RedisModel(BaseModel):
 
     @classmethod
     def select(cls, ids: List[str] = None, project=GLOBAL_KEY_PREFIX) -> list:
-        """_summary_
+        """query objects from redis by id and project
+        if id is not provided, all objects of type cls will be returned
 
         Args:
             ids (List[str]): list of ids to search for
@@ -64,7 +63,7 @@ class RedisModel(BaseModel):
             # get all objects of type cls
             ids = [
                 key.decode()
-                for key in cls.db().keys(f"{project}:{cls.Meta.model_key_prefix}:*")
+                for key in cls.db("global").keys(f"{project}:{cls.Meta.model_key_prefix}:*")
             ]
         for id in ids:
             if len(id.split(":")) == 1:

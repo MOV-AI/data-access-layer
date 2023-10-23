@@ -1,5 +1,4 @@
-from typing import Dict, Optional, Any, Union
-from types import SimpleNamespace
+from typing import Dict, Optional, Any, Union, List
 import pydantic
 from .base_model import MovaiBaseModel
 from .configuration import Configuration
@@ -24,6 +23,10 @@ class Annotation(MovaiBaseModel):
     class Meta:
         model_key_prefix = "Annotation"
 
+    @classmethod
+    def _original_keys(cls) -> List[str]:
+        return super()._original_keys() + ["Type", "Policy", "Parameter", "Field"]
+
     def get_computed_annotation(self) -> Dict:
         """Get computed annotation keys
 
@@ -32,23 +35,15 @@ class Annotation(MovaiBaseModel):
         """
 
         res_dict = {}
-        fields = self.Field or self.parameter_to_field(self.Parameter)
+        fields = self.Field or {
+            x[0]: FieldValue(Type=self._get_data_type(x[1]), Value=x[1]) for x in self.Parameter.items()
+        }
         for key in fields:
-            computed = self.generate_computed(key, fields[key], self.ref)
+            computed = self._generate_computed(key, fields[key], self.ref)
             res_dict[key] = computed
         return res_dict
 
-    def parameter_to_field(self, param):
-        """Helper function to transform Annotation parameter into the same format as Field"""
-        return {
-            x[0]: {
-                "Value": SimpleNamespace(**{"value": x[1]}),
-                "Type": SimpleNamespace(**{"value": self.get_data_type(x[1])}),
-            }
-            for x in param.items()
-        }
-
-    def get_data_type(self, data):
+    def _get_data_type(self, data):
         """Helper function to get data type of a given value (in same format of front-end)"""
         predicates_to_value = [
             {"predicate": isinstance(data, str), "value": "string"},
@@ -65,10 +60,10 @@ class Annotation(MovaiBaseModel):
         # return data type
         return [x for x in predicates_to_value if x["predicate"]][0]["value"]
 
-    def generate_computed(self, property_name, annotation_property, annotation_path):
+    def _generate_computed(self, property_name, annotation_property, annotation_path):
         """Helper function to generate computed annotation key based on annotation property"""
-        prop_value = annotation_property["Value"].value
-        prop_type = annotation_property["Type"].value
+        prop_value = annotation_property.Value
+        prop_type = annotation_property.Type
         configuration_name = prop_value if prop_type == "config" else None
         return {
             "key": property_name,
@@ -78,12 +73,12 @@ class Annotation(MovaiBaseModel):
                 "type": prop_type,
                 "value": prop_value,
             },
-            "value": self.get_configuration_value(configuration_name)
+            "value": self._get_configuration_value(configuration_name)
             if configuration_name
             else prop_value,
         }
 
-    def get_configuration_value(self, configuration_path):
+    def _get_configuration_value(self, configuration_path):
         """Helper function to get a configuration value from a config path"""
         if not configuration_path:
             return {}
