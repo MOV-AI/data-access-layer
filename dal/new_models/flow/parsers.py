@@ -27,6 +27,7 @@ class ParamParser:
     Parser for the node instance, container and flow parameters
     Supports configuration. parameters, var, flow and env variables
     """
+
     def __init__(self, flow):
         self.mapping = {
             "config": self.eval_config,
@@ -87,9 +88,7 @@ class ParamParser:
 
         return expression
 
-    def eval_reference(
-        self, key: str, expression: str, instance: any, node_name: str
-    ) -> str:
+    def eval_reference(self, key: str, expression: str, instance: any, node_name: str) -> str:
         """
         Calls a specific function to evaluate the expression
 
@@ -123,7 +122,9 @@ class ParamParser:
             extra_info = f'in flow "{self.flow.ref}"'
 
             if self.context != self.flow.ref:
-                extra_info = f'in subflow "{self.context}" in the context of the flow "{self.flow.ref}"'
+                extra_info = (
+                    f'in subflow "{self.context}" in the context of the flow "{self.flow.ref}"'
+                )
 
             info = (
                 f'Error evaluating "{key}" with value "{expression}"'
@@ -156,9 +157,7 @@ class ParamParser:
 
         return output
 
-    def eval_param(
-        self, param_name: str, default: str, instance: any, node_name: str
-    ) -> any:
+    def eval_param(self, param_name: str, default: str, instance: any, node_name: str) -> any:
         """
         Returns the param expression evaluated or default
             ex.: $(param name)
@@ -259,10 +258,7 @@ def get_string_from_template(template: str, task_entry: object) -> str:
         try:
             template, enum = match[1].split(".")
             return str(
-                scopes()
-                .SharedDataEntry[task_entry.SharedData[template].ID]
-                .Field[enum]
-                .Value
+                scopes().SharedDataEntry[task_entry.SharedData[template].ID].Field[enum].Value
             )
         except Exception:  # pylint: disable=broad-except
             # ValueError from split/unpack

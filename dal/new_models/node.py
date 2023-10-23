@@ -98,9 +98,7 @@ class PortsInstValue(BaseModel):
 class Node(MovaiBaseModel):
     EnvVar: Optional[Dict[KEY_REGEX, Arg]] = Field(default_factory=dict)
     CmdLine: Optional[Dict[KEY_REGEX, Arg]] = Field(default_factory=dict)
-    Parameter: Optional[Dict[constr(regex=r"^[@a-zA-Z0-9_/]+$"), Arg]] = Field(
-        default_factory=dict
-    )
+    Parameter: Optional[Dict[constr(regex=r"^[@a-zA-Z0-9_/]+$"), Arg]] = Field(default_factory=dict)
     Launch: Optional[Union[bool, str]] = None
     PackageDepends: Optional[Union[str, List[Any]]] = None
     Path: Optional[str] = None
@@ -110,7 +108,18 @@ class Node(MovaiBaseModel):
     Type: Optional[str] = None
 
     def _original_keys(self) -> List[str]:
-        return super()._original_keys() + ["EnvVar", "CmdLine", "Parameter", "Launch", "PackageDepends", "Path", "Persistent", "PortsInst", "Remappable", "Type"]
+        return super()._original_keys() + [
+            "EnvVar",
+            "CmdLine",
+            "Parameter",
+            "Launch",
+            "PackageDepends",
+            "Path",
+            "Persistent",
+            "PortsInst",
+            "Remappable",
+            "Type",
+        ]
 
     class Meta:
         model_key_prefix = "Node"
@@ -244,4 +253,3 @@ class Node(MovaiBaseModel):
 
         self.Type = type_to_set
         self.save()
-

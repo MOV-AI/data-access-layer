@@ -21,8 +21,12 @@ class NodeInst(BaseModel):
     NodeLabel: Optional[ValidName] = None
     Parameter: Optional[Dict[str, Arg]] = Field(default_factory=dict)
     Template: Optional[ValidName] = None
-    CmdLine: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), CmdLineValue]] = Field(default_factory=dict)
-    EnvVar: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), EnvVarValue]] = Field(default_factory=dict)
+    CmdLine: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), CmdLineValue]] = Field(
+        default_factory=dict
+    )
+    EnvVar: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), EnvVarValue]] = Field(
+        default_factory=dict
+    )
     NodeLayers: Optional[Any] = None
 
     def __init__(self, *args, **kwargs):
@@ -64,7 +68,8 @@ class NodeInst(BaseModel):
             skip_defaults=skip_defaults,
             exclude_unset=exclude_unset,
             exclude_defaults=exclude_defaults,
-            exclude_none=exclude_none)
+            exclude_none=exclude_none,
+        )
         dic.pop("_parser")
         dic.pop("_flow_ref")
         return dic
@@ -225,9 +230,7 @@ class NodeInst(BaseModel):
         _context = context or self._flow_ref
 
         # get the template value
-        tpl_value = self.node_template.get_params().get(
-            key, None
-        )  # Parameter[key].Value
+        tpl_value = self.node_template.get_params().get(key, None)  # Parameter[key].Value
 
         # get the instance value
         try:

@@ -52,4 +52,3 @@ class ThreadSafeCache:
     def __len__(self):
         with self._lock:
             return len(self.cache)
-

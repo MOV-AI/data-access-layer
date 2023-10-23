@@ -4,7 +4,9 @@ from pydantic import BaseModel, constr
 from .base_model import MovaiBaseModel, Arg
 
 
-WIDGET_REGEX = r"^(Button|Selector|Input|Label|Divider|Joystick|VideoPanel|Toggle|Scene|StartFlow)[0-9]*$"
+WIDGET_REGEX = (
+    r"^(Button|Selector|Input|Label|Divider|Joystick|VideoPanel|Toggle|Scene|StartFlow)[0-9]*$"
+)
 
 
 class WidgetInst(BaseModel):

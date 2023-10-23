@@ -58,9 +58,9 @@ class Robot(RedisModel, extra=pydantic.Extra.allow):
                 # no robot exist so we create one
                 unique_id = uuid.uuid4()
                 pk = PrimaryKey.create_pk(
-                        project="Movai", scope="Robot", id=unique_id.hex, version=""
-                    )
-                robot_name = f"robot_{unique_id.hex[0:6]}" 
+                    project="Movai", scope="Robot", id=unique_id.hex, version=""
+                )
+                robot_name = f"robot_{unique_id.hex[0:6]}"
                 super().__init__(pk=pk, RobotName=robot_name)
                 self.save("local")
                 self.save("global")

@@ -1,4 +1,3 @@
-
 from .base_model import MovaiBaseModel
 from pydantic import Field, validator
 import yaml
@@ -10,7 +9,7 @@ import xmltodict
 class Configuration(MovaiBaseModel):
     Type: str = "yaml"
     Yaml: str = ""
-    data: dict = Field(default_factory=dict) # runtime parameter
+    data: dict = Field(default_factory=dict)  # runtime parameter
 
     def _original_keys(self) -> List[str]:
         return super()._original_keys() + ["Type", "Yaml"]
@@ -43,13 +42,13 @@ class Configuration(MovaiBaseModel):
         return ret
 
     def get_param(self, param: str) -> any:
-        """ Returns the configuration value of a key in the format param.subparam.subsubparam """
+        """Returns the configuration value of a key in the format param.subparam.subsubparam"""
         value = None
-        fields = param.split('.')
+        fields = param.split(".")
         try:
             temp_dict = self.data
             for elem in fields:
-                temp_dict = temp_dict[elem] if elem in temp_dict else None 
+                temp_dict = temp_dict[elem] if elem in temp_dict else None
                 if temp_dict is None:
                     # this means either temp_dict returned None (happens when key: _empty_) or missing key
                     break
@@ -57,6 +56,7 @@ class Configuration(MovaiBaseModel):
 
         except Exception as exc:
             raise Exception(
-                f'"{param}" is not a valid parameter in Configuration "{self.name}"') from exc
+                f'"{param}" is not a valid parameter in Configuration "{self.name}"'
+            ) from exc
 
         return value
