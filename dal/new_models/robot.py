@@ -1,7 +1,7 @@
 import pickle
 import uuid
 import pydantic
-from .base_model import MovaiBaseModel
+from .base_model.redis_model import RedisModel
 from .configuration import Configuration
 from .base_model.common import PrimaryKey
 
@@ -27,6 +27,7 @@ from .base_model.common import PrimaryKey
         _type_: _description_
     """
 
+
 class RobotStatus(pydantic.BaseModel):
     active_flow: str = None
     active_scene: str = None
@@ -38,10 +39,10 @@ class RobotStatus(pydantic.BaseModel):
     timestamp: float = None
 
 
-class Robot(MovaiBaseModel, extra=pydantic.Extra.allow):
+class Robot(RedisModel, extra=pydantic.Extra.allow):
     IP: str = "127.0.0.1"
     RobotName: str
-    Status: RobotStatus
+    Status: RobotStatus = RobotStatus()
     Actions: list = pydantic.Field(default_factory=list)
     Notifications: list = pydantic.Field(default_factory=list)
     Alerts: dict = pydantic.Field(default_factory=dict)
@@ -50,56 +51,26 @@ class Robot(MovaiBaseModel, extra=pydantic.Extra.allow):
     class Meta:
         model_key_prefix = "Robot"
 
-    def __new__(cls, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         if not args and not kwargs:
-            robots = cls.db("local").keys("*:Robot:*")
+            robots = self.db("local").keys("*:Robot:*")
             if not robots:
                 # no robot exist so we create one
                 unique_id = uuid.uuid4()
-                robot = super().__new__(cls, **{"Robot": {unique_id.hex: {}}})
-                robot.save("local")
-                robot.save("global")
-                robot.fleet = cls(**cls.db("global").json().get(robot_pk))
+                pk = PrimaryKey.create_pk(
+                        project="Movai", scope="Robot", id=unique_id.hex, version=""
+                    )
+                robot_name = f"robot_{unique_id.hex[0:6]}" 
+                super().__init__(pk=pk, RobotName=robot_name)
+                self.save("local")
+                self.save("global")
             else:
-                robot_pk = cls.db("local").keys("*:Robot:*")[0].decode()
-                obj = cls.db("local").json().get(robot_pk)
-                robot = cls(**obj)
-                robot.fleet = cls(**cls.db("global").json().get(robot_pk))
-                return robot
+                pk = self.db("local").keys("*:Robot:*")[0].decode()
+                obj = self.db("local").json().get(pk)
+                super().__init__(**obj)
 
-        if args:
-            id = args[0]
-            fleet_robot = None
-            found = False
-            for key in cls.db("global").keys("*:Robot:*"):
-                if id in key.decode():
-                    id = key.decode()
-                    found = True
-                    break
-            if not found:
-                for key in cls.db("global").keys("*:Robot:*"):
-                    fleet_robot = cls(**cls.db("global").json().get(id))
-                    if robot.RobotName == id:
-                        break
-            
-            local_obj = cls.db("local").json().get(id)
-            if not fleet_robot:
-                fleet_obj = cls.db("global").json().get(id)
-                fleet_robot = cls(**fleet_obj)
-            
-            robot = cls(**local_obj)
-            robot.fleet = fleet_robot
-            return robot
-        return super().__new__(cls)
-
-    def __init__(self, *args, **kwargs):
-        if kwargs:
-            id = list(kwargs["Robot"].keys())[0]
-            robot_struct = kwargs["Robot"][id]
-            pk = PrimaryKey.create_pk(
-                project="Movai", scope="Robot", id=id, version=""
-            )
-            super().__init__(RobotName=f"robot_{id[0:6]}", pk=pk, **robot_struct)
+            # TODO need to be tested
+            self.fleet = Robot(**self.dict())
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot"""
