@@ -72,7 +72,7 @@ class RedisModel(BaseModel):
                 id = f"{id}:__UNVERSIONED__"
             if cls.Meta.model_key_prefix not in str(id):
                 id = f"{project}:{cls.Meta.model_key_prefix}:{id}"
-            obj = cls.db().json().get(id)
+            obj = cls.db("global").json().get(id)
             if obj is not None:
                 ret.append(cls(**obj))
         return ret
