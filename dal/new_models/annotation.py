@@ -36,7 +36,8 @@ class Annotation(MovaiBaseModel):
 
         res_dict = {}
         fields = self.Field or {
-            x[0]: FieldValue(Type=self._get_data_type(x[1]), Value=x[1]) for x in self.Parameter.items()
+            x[0]: FieldValue(Type=self._get_data_type(x[1]), Value=x[1])
+            for x in self.Parameter.items()
         }
         for key in fields:
             computed = self._generate_computed(key, fields[key], self.ref)

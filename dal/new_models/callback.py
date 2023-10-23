@@ -46,13 +46,11 @@ class Callback(MovaiBaseModel):
         data = Callback._get_modules(jump_over_modules)
 
         try:
-            #TODO change old system
+            # TODO change old system
             from dal.scopes.system import System
 
             # currently using the old api
-            mods = System(
-                "PyModules", db="local"
-            )  # scopes('local').System['PyModules', 'cache']
+            mods = System("PyModules", db="local")  # scopes('local').System['PyModules', 'cache']
         except Exception:  # pylint: disable=broad-except
             mods = System(
                 "PyModules", new=True, db="local"
@@ -119,11 +117,7 @@ class Callback(MovaiBaseModel):
             # iterate contents of this package
             for x in pkgutil.iter_modules([path]):
                 # ignore '_*' modules
-                if (
-                    x[1].startswith("_")
-                    or x[1] == "init_local_db"
-                    or x[1] == "tf_monitor"
-                ):
+                if x[1].startswith("_") or x[1] == "init_local_db" or x[1] == "tf_monitor":
                     continue
 
                 # shouldn't be python2 for sure

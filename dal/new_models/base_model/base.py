@@ -102,7 +102,7 @@ class MovaiBaseModel(RedisModel):
 
             obj = cls.select(ids=[f"{id}:{version}"])
             if not obj:
-                #TODO: change to better exception class.
+                # TODO: change to better exception class.
                 raise Exception(f"{cls.__name__} {args[0]} not found!")
             return obj[0]
         return super().__new__(cls)
@@ -146,9 +146,7 @@ class MovaiBaseModel(RedisModel):
                     )
                     params.update({"pk": pk})
                 if label_regex.search(name) is None:
-                    raise ValueError(
-                        f"Validation Error for {scope} name:({name}), data:{kwargs}"
-                    )
+                    raise ValueError(f"Validation Error for {scope} name:({name}), data:{kwargs}")
 
                 struct_[name]["Version"] = version
                 if "LastUpdate" not in struct_[name]:
@@ -160,9 +158,7 @@ class MovaiBaseModel(RedisModel):
                     f"wrong Data type, should be {self.scope}, recieved: {scope}, instead got: {list(kwargs.keys())[0]}"
                 )
         else:
-            raise ValueError(
-                f"scope not supported ({scope}), should be one of {valid_models}"
-            )
+            raise ValueError(f"scope not supported ({scope}), should be one of {valid_models}")
 
     @property
     def scope(self) -> str:
@@ -203,9 +199,7 @@ class MovaiBaseModel(RedisModel):
         Returns:
             dict: dictionary representation of the model
         """
-        dic = super().dict(
-            exclude_none=exclude_none
-        )
+        dic = super().dict(exclude_none=exclude_none)
         to_remove = []
         for key in dic:
             if key not in self._original_keys():

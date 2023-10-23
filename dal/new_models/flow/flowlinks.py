@@ -27,7 +27,7 @@ class FlowLink(BaseModel):
     def validate_regex(cls, value, field):
         try:
             l = value.split("/")
-            node_inst, port_name, port_type = l[0], "/".join(l[1:len(l)-1]), l[-1]
+            node_inst, port_name, port_type = l[0], "/".join(l[1 : len(l) - 1]), l[-1]
             output = {
                 "node_inst": node_inst,
                 "port_name": port_name,
@@ -89,9 +89,7 @@ class FlowLink(BaseModel):
         try:
             for direction in ["From", "To"]:
                 # split <node inst>/<port name 1><port name n>/<port type>
-                node_inst, _, port_name, _, port_type = re.findall(
-                    LINK_REGEX, link[direction]
-                )[0]
+                node_inst, _, port_name, _, port_type = re.findall(LINK_REGEX, link[direction])[0]
 
                 output[direction] = {
                     "node_inst": node_inst,

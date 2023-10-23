@@ -45,10 +45,10 @@ class Container(BaseModel):
             skip_defaults=skip_defaults,
             exclude_unset=exclude_unset,
             exclude_defaults=exclude_defaults,
-            exclude_none=exclude_none
+            exclude_none=exclude_none,
         )
         dic.pop("_parser")
-        dic.pop("_flow_class") 
+        dic.pop("_flow_class")
         return dic
 
     class Config:
@@ -85,9 +85,7 @@ class Container(BaseModel):
 
         return params
 
-    def get_param(
-        self, key: str, name: str = None, context=None, custom_parser: any = None
-    ) -> any:
+    def get_param(self, key: str, name: str = None, context=None, custom_parser: any = None) -> any:
         """
         Returns a specific parameter of the container after
         parsing it

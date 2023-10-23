@@ -17,7 +17,7 @@ class InOutValue(BaseModel):
     Message: Optional[str] = None
     Callback: Optional[str] = None
     Parameter: Optional[dict] = Field(default_factory=dict)
-    LinkEnabled: bool 
+    LinkEnabled: bool
 
 
 class Ports(MovaiBaseModel):
@@ -43,5 +43,3 @@ class Ports(MovaiBaseModel):
 
     class Meta:
         model_key_prefix = "Ports"
-
-

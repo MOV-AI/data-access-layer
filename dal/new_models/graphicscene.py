@@ -51,9 +51,7 @@ class Assets(BaseModel):
     #         Dict[constr(regex=r'^[a-zA-Z0-9_]+$'), Value2],
     #     ]
     # ] = None
-    Value: Optional[
-        Dict[constr(regex=r"^[a-zA-Z0-9_]+[.]png$|^[a-zA-Z0-9_]+$"), Value2]
-    ] = None
+    Value: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+[.]png$|^[a-zA-Z0-9_]+$"), Value2]] = None
 
 
 class Value3(BaseModel):
@@ -305,9 +303,7 @@ class GraphicScene(MovaiBaseModel):
         if not asset_type:
             return []
         else:
-            trajectory_points = (
-                asset_type.AssetName[trajectory_name].Value.value.keypoints
-            )
+            trajectory_points = asset_type.AssetName[trajectory_name].Value.value.keypoints
             return [float(point) for point in trajectory_points]
 
     def get_trajectory_waypoints_list(self, trajectory_name: str) -> List:
@@ -341,9 +337,7 @@ class GraphicScene(MovaiBaseModel):
         """Get the initial yaw of a trajectory"""
         try:
             return float(
-                getattr(self.AssetType, PATH)
-                .AssetName[trajectory_name]
-                .Value.value.trajectory[2]
+                getattr(self.AssetType, PATH).AssetName[trajectory_name].Value.value.trajectory[2]
             )
         except (KeyError, IndexError, ValueError):
             # dicts, lists of float conversion errors
@@ -352,11 +346,7 @@ class GraphicScene(MovaiBaseModel):
     def get_trajectory_yaw(self, trajectory_name: str) -> float:
         """Get the final yaw of a trajectory"""
         try:
-            return float(
-                self.AssetType[PATH]
-                .AssetName[trajectory_name]
-                .Value.value.trajectory[-1]
-            )
+            return float(self.AssetType[PATH].AssetName[trajectory_name].Value.value.trajectory[-1])
         except (KeyError, IndexError, ValueError):
             # dicts, lists of float conversion errors
             return None
@@ -403,9 +393,7 @@ class GraphicScene(MovaiBaseModel):
     ) -> Union[bool, None]:  # pylint: disable=invalid-name
         """Check if point (x,y) is inside area"""
         try:
-            return Path(np.array(self.get_area_points(area_name))).contains_point(
-                (x, y)
-            )
+            return Path(np.array(self.get_area_points(area_name))).contains_point((x, y))
         except ValueError:  # 'vertices' must be a 2D list or array with shape Nx2
             # when get_area_points() return empty list
             return None
@@ -455,9 +443,7 @@ class GraphicScene(MovaiBaseModel):
         # else, not found
         return []
 
-    def get_annotation(
-        self, asset_name: str, annotation_type: str = "all"
-    ) -> Union[Dict, None]:
+    def get_annotation(self, asset_name: str, annotation_type: str = "all") -> Union[Dict, None]:
         """Get a dict with the annotation(s) of an asset
 
         pass `annotation_type` to filter
@@ -499,9 +485,7 @@ class GraphicScene(MovaiBaseModel):
             pattern = "([^-]*)-([^,]+),([^,]*)"
             edge_data = re.search(pattern, edge_name)
             if not edge_data:
-                logger.error(
-                    "received edge_name is not of the right pattern", edge_name
-                )
+                logger.error("received edge_name is not of the right pattern", edge_name)
                 return default_value
             source, target = edge_data.group(2), edge_data.group(3)
             logic_graph = None
@@ -519,9 +503,7 @@ class GraphicScene(MovaiBaseModel):
             return default_value
         # get logic graph edges
         logic_graph_links = logic_graph["links"]
-        filtered_edges = [
-            ed for ed in logic_graph_links if find_edge(ed, source, target)
-        ]
+        filtered_edges = [ed for ed in logic_graph_links if find_edge(ed, source, target)]
         if not filtered_edges:
             return default_value
         # return edge annotations and overrides
@@ -537,9 +519,7 @@ class GraphicScene(MovaiBaseModel):
             "annotation_overrides": overrides_dict_to_object(edge_overrides),
         }
 
-    def get_computed_annotations(
-        self, asset_name: str, is_logic_graph_edge: bool = False
-    ) -> List:
+    def get_computed_annotations(self, asset_name: str, is_logic_graph_edge: bool = False) -> List:
         """Get computed annotation keys of an asset
 
         Parameters:
@@ -579,9 +559,7 @@ class GraphicScene(MovaiBaseModel):
             try:
                 computed_annotations_dict[annotation_prop_key]["overwritten"] = True
                 if len(override_path) == 1:
-                    computed_annotations_dict[annotation_prop_key][
-                        "value"
-                    ] = override_value
+                    computed_annotations_dict[annotation_prop_key]["value"] = override_value
                     computed_annotations_dict[annotation_prop_key]["annotation"][
                         "name"
                     ] = "__overwritten__"
@@ -590,9 +568,7 @@ class GraphicScene(MovaiBaseModel):
                     ] = get_data_type(override_value)
                 # When config is not an object
                 elif len(override_path) == 2 and override_path[1] == "":
-                    computed_annotations_dict[annotation_prop_key][
-                        "value"
-                    ] = override_value
+                    computed_annotations_dict[annotation_prop_key]["value"] = override_value
                 else:
                     override_path.pop(0)
                     acc = computed_annotations_dict[annotation_prop_key]["value"]
@@ -621,9 +597,7 @@ class GraphicScene(MovaiBaseModel):
 
     def get_trajectory_spline(self, trajectory_name: str) -> Union[List, int]:
         try:
-            points = (
-                self.AssetType[PATH].AssetName[trajectory_name].Value.value["keypoints"]
-            )
+            points = self.AssetType[PATH].AssetName[trajectory_name].Value.value["keypoints"]
             waypoints = [(x, y) for x, y in zip(points[::2], points[1::2])]
         except KeyError:
             return 0

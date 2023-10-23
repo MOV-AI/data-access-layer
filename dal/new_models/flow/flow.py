@@ -20,7 +20,9 @@ class Layer(BaseModel):
 
 class Flow(MovaiBaseModel, extra=Extra.allow):
     Parameter: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), Arg]] = None
-    Container: Optional[Dict[constr(regex=r"^[a-zA-Z_0-9]+$"), ContainerClas]] = Field(default_factory=dict)
+    Container: Optional[Dict[constr(regex=r"^[a-zA-Z_0-9]+$"), ContainerClas]] = Field(
+        default_factory=dict
+    )
     ExposedPorts: Optional[
         Dict[
             constr(regex=r"^(__)?[a-zA-Z0-9_]+$"),
@@ -32,7 +34,9 @@ class Flow(MovaiBaseModel, extra=Extra.allow):
     ] = None
     Layers: Optional[Dict[constr(regex=r"^[0-9]+$"), Layer]] = None
     Links: Optional[Dict[constr(regex=r"^[0-9a-z-]+$"), FlowLink]] = Field(default_factory=dict)
-    NodeInst: Optional[Dict[constr(regex=r"^[a-zA-Z_0-9]+$"), NodeInstClass]] = Field(default_factory=dict)
+    NodeInst: Optional[Dict[constr(regex=r"^[a-zA-Z_0-9]+$"), NodeInstClass]] = Field(
+        default_factory=dict
+    )
     __START__: ClassVar[str] = "START/START/START"
     __END__: ClassVar[str] = "END/END/END"
 
@@ -145,9 +149,7 @@ class Flow(MovaiBaseModel, extra=Extra.allow):
 
         return output
 
-    def get_dict(
-        self, data: dict = None, prefix: str = None, prev_flows: list = None
-    ) -> dict:
+    def get_dict(self, data: dict = None, prefix: str = None, prev_flows: list = None) -> dict:
         """
         Aggregate data from the main flow and subflows
         Returns a dictionary with the following format
@@ -164,14 +166,10 @@ class Flow(MovaiBaseModel, extra=Extra.allow):
         prev_flows = prev_flows or []
 
         if self.pk in prev_flows:
-            raise RecursionError(
-                "Flow already in use, this will lead to infinite recursion"
-            )
+            raise RecursionError("Flow already in use, this will lead to infinite recursion")
 
         # start creating the dict
-        output = data or self._with_prefix(
-            "", self.NodeInst.items(), self.Links.items()
-        )
+        output = data or self._with_prefix("", self.NodeInst.items(), self.Links.items())
 
         for _, container in self.Container.items():
             # container.ContainerFlow is expected to have the full path of the doc
@@ -182,9 +180,7 @@ class Flow(MovaiBaseModel, extra=Extra.allow):
             label = f"{_prefix}{container.ContainerLabel}"
 
             # extract subflow data
-            wprefix = subflow._with_prefix(
-                label, subflow.NodeInst.items(), subflow.Links.items()
-            )
+            wprefix = subflow._with_prefix(label, subflow.NodeInst.items(), subflow.Links.items())
 
             # update main dict
             output.NodeInst.update(wprefix.NodeInst)
@@ -218,9 +214,7 @@ class Flow(MovaiBaseModel, extra=Extra.allow):
             return self.full.NodeInst[name]
 
         except KeyError as e:
-            raise KeyError(
-                f"Node instance '{name}' does not exist in '{self.pk}'"
-            ) from e
+            raise KeyError(f"Node instance '{name}' does not exist in '{self.pk}'") from e
 
     def get_container(self, name: str, context: str = None):
         """Returns an instance of Container"""
@@ -446,10 +440,7 @@ class Flow(MovaiBaseModel, extra=Extra.allow):
             dependency_name = None
 
             # start is not a dependency
-            if (
-                Flow.__START__ == port_from.str.upper()
-                or Flow.__END__ == port_to.str.upper()
-            ):
+            if Flow.__START__ == port_from.str.upper() or Flow.__END__ == port_to.str.upper():
                 links_to_skip.append(link["id"])
                 continue
 
@@ -484,9 +475,7 @@ class Flow(MovaiBaseModel, extra=Extra.allow):
         output = set()
 
         # get first level node dependencies
-        dependencies = self.get_node_dependencies(
-            node_name=node_inst, first_level_only=True
-        )
+        dependencies = self.get_node_dependencies(node_name=node_inst, first_level_only=True)
 
         for dependency in dependencies:
             # get the node instance

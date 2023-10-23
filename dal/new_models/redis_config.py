@@ -6,6 +6,7 @@ from redis import asyncio as redis
 @dataclass
 class RedisConfig:
     """A config object for connecting to redis"""
+
     host: str = "localhost"
     port: int = 6379
     db: int = 0
