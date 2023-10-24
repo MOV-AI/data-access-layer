@@ -1,7 +1,8 @@
 from __future__ import annotations
 from typing import Dict, List, Optional
-from pydantic import BaseModel, constr
+from pydantic import StringConstraints, BaseModel
 from .base_model import MovaiBaseModel, Arg
+from typing_extensions import Annotated
 
 
 WIDGET_REGEX = (
@@ -12,7 +13,7 @@ WIDGET_REGEX = (
 class WidgetInst(BaseModel):
     Template: Optional[str] = None
     # Parameter: Optional[ArgSchema] = None
-    Parameter: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), Arg]] = None
+    Parameter: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")], Arg]] = None
 
 
 class Layout(MovaiBaseModel):
@@ -25,7 +26,7 @@ class Layout(MovaiBaseModel):
     Styles: Optional[str] = None
     WidgetInst: Optional[
         Dict[
-            constr(regex=WIDGET_REGEX),
+            Annotated[str, StringConstraints(pattern=WIDGET_REGEX)],
             WidgetInst,
         ]
     ] = None

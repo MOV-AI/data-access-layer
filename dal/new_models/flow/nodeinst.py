@@ -1,32 +1,33 @@
-from pydantic import BaseModel, Field, constr, validator, Extra
+from pydantic import StringConstraints, ConfigDict, BaseModel, Field, field_validator
 from typing import Optional, Dict, Any
 from ..base_model.common import Arg
 from re import match
 from ..node import Node
+from typing_extensions import Annotated
 
 
-ValidName = constr(regex=r"^[a-zA-Z0-9_]+$")
+ValidName = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")]
 PARAMETER_REGEX = r"^(/?[a-zA-Z0-9_@]+)+$"
 
 
 class CmdLineValue(BaseModel):
-    Value: Any
+    Value: Any = None
 
 
 class EnvVarValue(BaseModel):
-    Value: Any
+    Value: Any = None
 
 
 class NodeInst(BaseModel):
     NodeLabel: Optional[ValidName] = None
     Parameter: Optional[Dict[str, Arg]] = Field(default_factory=dict)
     Template: Optional[ValidName] = None
-    CmdLine: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), CmdLineValue]] = Field(
-        default_factory=dict
-    )
-    EnvVar: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), EnvVarValue]] = Field(
-        default_factory=dict
-    )
+    CmdLine: Optional[
+        Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")], CmdLineValue]
+    ] = Field(default_factory=dict)
+    EnvVar: Optional[
+        Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")], EnvVarValue]
+    ] = Field(default_factory=dict)
     NodeLayers: Optional[Any] = None
 
     def __init__(self, *args, **kwargs):
@@ -39,16 +40,17 @@ class NodeInst(BaseModel):
         self._flow_ref = None
         self._parser = None
 
-    class Config:
-        exclude = {
+    model_config = ConfigDict(
+        exclude={
             "Launch",
             "Dummy",
             "Remappable",
             "Persistent",
             "_flow_ref",
             "_parser",
-        }
-        extra = Extra.allow
+        },
+        extra="allow",
+    )
 
     def dict(
         self,
@@ -74,7 +76,7 @@ class NodeInst(BaseModel):
         dic.pop("_flow_ref")
         return dic
 
-    @validator("Parameter", pre=True, always=True)
+    @field_validator("Parameter", pre=True)
     def validate_regex(cls, value):
         if isinstance(value, dict):
             for key in value:

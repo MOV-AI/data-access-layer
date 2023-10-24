@@ -7,6 +7,8 @@ import re
 from movai_core_shared.logger import Log
 from .cache import ThreadSafeCache
 from datetime import datetime
+from pydantic import StringConstraints
+from typing_extensions import Annotated
 
 
 LOGGER = Log.get_logger("BaseModel.mov.ai")
@@ -58,7 +60,7 @@ label_regex = re.compile(LABEL_REGEX)
 
 class MovaiBaseModel(RedisModel):
     Info: Optional[str] = None
-    Label: pydantic.constr(regex=LABEL_REGEX)
+    Label: Annotated[str, StringConstraints(pattern=LABEL_REGEX)]
     Description: Optional[str] = None
     LastUpdate: Union[LastUpdate, str]
     Version: str = DEFAULT_VERSION

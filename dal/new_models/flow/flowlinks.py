@@ -1,4 +1,4 @@
-from pydantic import BaseModel, validator, Extra
+from pydantic import ConfigDict, BaseModel, field_validator
 from typing import ClassVar, Optional
 import re
 import uuid
@@ -23,7 +23,7 @@ class FlowLink(BaseModel):
     Dependency: int = DEFAULT_DEPENDENCY
     __DEFAULT_DEPENDENCY__: ClassVar[int] = DEFAULT_DEPENDENCY
 
-    @validator("From", "To", pre=True)
+    @field_validator("From", "To", pre=True)
     def validate_regex(cls, value, field):
         try:
             l = value.split("/")
@@ -40,10 +40,7 @@ class FlowLink(BaseModel):
             raise ValueError(
                 f"Field '{field.alias}' with value '{value}' does not match the required pattern '{LINK_REGEX}'."
             )
-
-    class Config:
-        exclude = {"__DEFAULT_DEPENDENCY__"}
-        extra = Extra.allow
+    model_config = ConfigDict(exclude={"__DEFAULT_DEPENDENCY__"}, extra="allow")
 
     def dict(
         self,

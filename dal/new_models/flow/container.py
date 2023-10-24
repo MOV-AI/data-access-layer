@@ -1,6 +1,7 @@
-from pydantic import Field, BaseModel, constr, Extra
+from pydantic import StringConstraints, ConfigDict, Field, BaseModel
 from typing import Optional, Dict, Any, Union, List
 from ..base_model import Arg
+from typing_extensions import Annotated
 
 
 class X(BaseModel):
@@ -19,7 +20,7 @@ class Visualization(BaseModel):
 class Container(BaseModel):
     ContainerFlow: str = ""
     ContainerLabel: str = ""
-    Parameter: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), Arg]] = Field(default_factory=dict)
+    Parameter: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")], Arg]] = Field(default_factory=dict)
     Visualization: Union[List[float], Visualization]
 
     def __init__(self, *args, **kwargs):
@@ -50,9 +51,7 @@ class Container(BaseModel):
         dic.pop("_parser")
         dic.pop("_flow_class")
         return dic
-
-    class Config:
-        extra = Extra.allow
+    model_config = ConfigDict(extra="allow")
 
     @property
     def flow(self):

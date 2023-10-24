@@ -1,15 +1,16 @@
 import pydantic
-from typing import Union, Optional, Dict, List
-from .base_model import MovaiBaseModel
-import time
 import importlib
 import inspect
 import pkgutil
 import sys
 import rospkg
+from typing import Union, Optional, Dict, List
+from .base_model import MovaiBaseModel
+from pydantic import StringConstraints
+from typing_extensions import Annotated
 
-ValidStr = pydantic.constr(regex=r"^[a-zA-Z_]+$")
-ValidStrNums = pydantic.constr(regex=r"^[a-zA-Z0-9_]+$")
+ValidStr = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z_]+$")]
+ValidStrNums = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")]
 
 
 class Py3LibValue(pydantic.BaseModel):

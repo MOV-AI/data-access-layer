@@ -1,14 +1,15 @@
 from typing import Optional, Dict, List, Any, Union
-from pydantic import constr, BaseModel, Field
+from pydantic import StringConstraints, BaseModel, Field
 from .base_model import MovaiBaseModel
 from movai_core_shared.consts import (
     TRANSITION_TYPE,
     ROS1_NODELETCLIENT,
     ROS1_NODELETSERVER,
 )
+from typing_extensions import Annotated
 
 
-PORT_NAME_REGEX = constr(regex=r"^[a-zA-Z0-9_]+$")
+PORT_NAME_REGEX = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")]
 
 
 class InOutValue(BaseModel):

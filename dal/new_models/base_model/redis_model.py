@@ -1,5 +1,5 @@
 from typing import List
-from pydantic import BaseModel
+from pydantic import ConfigDict, BaseModel
 import redis
 from dal.movaidb import Redis
 from .cache import ThreadSafeCache
@@ -11,11 +11,7 @@ cache = ThreadSafeCache()
 
 class RedisModel(BaseModel):
     pk: str
-
-    class Config:
-        # https://stackoverflow.com/questions/75211183/what-does-pydantic-orm-mode-exactly-do
-        orm_mode = True
-        validate_assignment = True
+    model_config = ConfigDict(from_attributes=True, validate_assignment=True)
 
     class Meta:
         model_key_prefix = "Redis"

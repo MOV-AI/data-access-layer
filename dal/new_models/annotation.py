@@ -3,10 +3,12 @@ import pydantic
 from .base_model import MovaiBaseModel
 from .configuration import Configuration
 from movai_core_shared.logger import Log
+from pydantic import StringConstraints
+from typing_extensions import Annotated
 
 logger = Log.get_logger(__name__)
-PARAMETER_KEY_REGEX = pydantic.constr(regex=r"^[0-9a-zA-Z_]+$")
-FIELD_KEY_REGEX = pydantic.constr(regex=r"^[0-9a-zA-Z_!@?-]+$")
+PARAMETER_KEY_REGEX = Annotated[str, StringConstraints(pattern=r"^[0-9a-zA-Z_]+$")]
+FIELD_KEY_REGEX = Annotated[str, StringConstraints(pattern=r"^[0-9a-zA-Z_!@?-]+$")]
 
 
 class FieldValue(pydantic.BaseModel):

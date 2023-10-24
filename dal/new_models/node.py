@@ -1,5 +1,5 @@
 from typing import Optional, Dict, List, Any, Union
-from pydantic import constr, BaseModel, Field, validator
+from pydantic import StringConstraints, BaseModel, Field, field_validator
 from .base_model import Arg, MovaiBaseModel
 from .ports import Ports
 from movai_core_shared.consts import (
@@ -12,10 +12,11 @@ from movai_core_shared.consts import (
     ROS1_NODELET,
     ROS1_PLUGIN,
 )
+from typing_extensions import Annotated
 
 
-KEY_REGEX = constr(regex=r"^[a-zA-Z0-9_]+$")
-PORT_NAME = constr(regex=r"^[a-zA-Z0-9_]+$")
+KEY_REGEX = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")]
+PORT_NAME = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")]
 
 
 class Parameter1(BaseModel):
@@ -98,7 +99,7 @@ class PortsInstValue(BaseModel):
 class Node(MovaiBaseModel):
     EnvVar: Optional[Dict[KEY_REGEX, Arg]] = Field(default_factory=dict)
     CmdLine: Optional[Dict[KEY_REGEX, Arg]] = Field(default_factory=dict)
-    Parameter: Optional[Dict[constr(regex=r"^[@a-zA-Z0-9_/]+$"), Arg]] = Field(default_factory=dict)
+    Parameter: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[@a-zA-Z0-9_/]+$")], Arg]] = Field(default_factory=dict)
     Launch: Optional[Union[bool, str]] = None
     PackageDepends: Optional[Union[str, List[Any]]] = None
     Path: Optional[str] = None
@@ -124,7 +125,7 @@ class Node(MovaiBaseModel):
     class Meta:
         model_key_prefix = "Node"
 
-    @validator("Parameter", pre=True, always=True)
+    @field_validator("Parameter", pre=True, always=True)
     def validate_parameter(cls, v):
         try:
             return v
@@ -132,11 +133,11 @@ class Node(MovaiBaseModel):
             field, error = e.errors()[0]["loc"], e.errors()[0]["msg"]
             raise ValueError(f"{field}: {v} - {error}")
 
-    @validator("Remappable", pre=True, always=True)
+    @field_validator("Remappable", pre=True, always=True)
     def validate_remappable(cls, v):
         return v if v not in [None, ""] else False
 
-    @validator("Persistent", pre=True, always=True)
+    @field_validator("Persistent", pre=True, always=True)
     def validate_persistent(cls, v):
         return v if v not in [None, ""] else False
 

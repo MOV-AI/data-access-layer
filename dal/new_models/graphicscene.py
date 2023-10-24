@@ -1,9 +1,10 @@
 from typing import Any, Dict, List, Optional, Union
-from pydantic import BaseModel, Field, constr
+from pydantic import StringConstraints, BaseModel, Field, ConfigDict
 from pydantic.config import BaseConfig
 from base import MovaiBaseModel
 from movai_core_shared.logger import Log
 import numpy as np
+from typing_extensions import Annotated
 
 
 logger = Log.get_logger(__name__)
@@ -24,8 +25,8 @@ class Annotation1(BaseModel):
 
 
 class Position(BaseModel):
-    orientation: Optional[Dict[constr(regex=r"^[xyzw]$"), float]] = None
-    position: Optional[Dict[constr(regex=r"^[xyz]$"), float]] = None
+    orientation: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[xyzw]$")], float]] = None
+    position: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[xyz]$")], float]] = None
 
 
 class RobotTreeValue(Position):
@@ -51,7 +52,7 @@ class Assets(BaseModel):
     #         Dict[constr(regex=r'^[a-zA-Z0-9_]+$'), Value2],
     #     ]
     # ] = None
-    Value: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+[.]png$|^[a-zA-Z0-9_]+$"), Value2]] = None
+    Value: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+[.]png$|^[a-zA-Z0-9_]+$")], Value2]] = None
 
 
 class Value3(BaseModel):
@@ -60,7 +61,7 @@ class Value3(BaseModel):
 
 
 class Coordinate(BaseModel):
-    __root__: List[float] = Field(..., max_items=2, min_items=2)
+    __root__: List[float] = Field(..., max_length=2, min_length=2)
 
 
 class Val(BaseModel):
@@ -78,20 +79,20 @@ class AnnotationValue(BaseModel):
 class AssetNameValue(BaseModel):
     Value: Val
     # Annotation: Optional[Annotation1] = None
-    Annotation: Optional[Dict[constr(regex=r"^[0-9]+$"), Annotation1]] = None
+    Annotation: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[0-9]+$")], Annotation1]] = None
 
 
 class AssetName6(BaseModel):
     Value: Value3
     # Annotation: Optional[AnnotationValue] = None https://movai.atlassian.net/browse/BP-732
     Annotation: Union[
-        Optional[Dict[constr(regex=r"^[0-9]+$"), Annotation1]],
+        Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[0-9]+$")], Annotation1]],
         Optional[AnnotationValue],
     ] = None
 
 
 class Path1(BaseModel):
-    AssetName: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), AssetName6]] = None
+    AssetName: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")], AssetName6]] = None
 
 
 class BelongsObj(BaseModel):
@@ -100,7 +101,7 @@ class BelongsObj(BaseModel):
 
 
 class Field3arrayPoint(BaseModel):
-    __root__: List[float] = Field(..., max_items=3, min_items=3)
+    __root__: List[float] = Field(..., max_length=3, min_length=3)
 
 
 class VerticesValue(BaseModel):
@@ -117,8 +118,7 @@ class Edge(BaseModel):
 
 
 class Item(BaseModel):
-    class Config(BaseConfig):
-        exclude = ["old_name"]
+    model_config = ConfigDict(exclude={"old_name"})
 
     color: Optional[List] = None
     weight: Optional[int] = None
@@ -133,8 +133,8 @@ class Item(BaseModel):
     annotationPropOverrides: Optional[Any] = None
     assetName: Optional[str] = None
     size: Optional[List[float]] = None
-    vertices: Optional[Dict[constr(regex=r"^[0-9]+$"), VerticesValue]] = None
-    edges: Optional[Dict[constr(regex=r"^[0-9]+(_[0-9]+)?$"), Edge]] = None
+    vertices: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[0-9]+$")], VerticesValue]] = None
+    edges: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[0-9]+(_[0-9]+)?$")], Edge]] = None
     corners: Optional[List[Field3arrayPoint]] = None
     # fields that are missing in the schema added for determine item type
     # or to prevent failures in comparison after update
@@ -151,7 +151,7 @@ class MemoryValueObj(BaseModel):
 
 
 class BoxRegionValue(BaseModel):
-    AssetName: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), AssetNameValue]] = None
+    AssetName: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")], AssetNameValue]] = None
 
 
 class GlobalrefValue(BaseModel):
@@ -195,12 +195,12 @@ class GraphItemValue(BaseModel):
 
 class AssetName3(BaseModel):
     Value: Optional[Position] = None
-    Annotation: Optional[Dict[constr(regex=r"^[0-9]+$"), Annotation1]] = None
+    Annotation: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[0-9]+$")], Annotation1]] = None
 
 
 class KeyPointValue(BaseModel):
     # AssetName: Optional[Dict[constr(regex=r'^[a-zA-Z0-9]+$'), AssetName3]] = None  https://movai.atlassian.net/browse/BP-696
-    AssetName: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_-]+$"), AssetName3]] = None
+    AssetName: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_-]+$")], AssetName3]] = None
 
 
 class AssetName4(BaseModel):
@@ -212,7 +212,7 @@ class MapValue(BaseModel):
     #     Dict[constr(regex=r'^[a-zA-Z0-9_]+([.][a-zA-Z0-9]+)?$'), AssetName4]
     # ] = None  https://movai.atlassian.net/browse/BP-708
     AssetName: Optional[
-        Dict[constr(regex=r"^[a-zA-Z0-9_-]+([.][a-zA-Z0-9]+)?$"), AssetName4]
+        Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_-]+([.][a-zA-Z0-9]+)?$")], AssetName4]
     ] = None
 
 
@@ -240,7 +240,7 @@ class AssetName6(BaseModel):
 
 
 class Path(BaseModel):
-    AssetName: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), AssetName6]] = None
+    AssetName: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")], AssetName6]] = None
 
 
 class AssetName7(BaseModel):
@@ -248,7 +248,7 @@ class AssetName7(BaseModel):
 
 
 class PointCloudValue(BaseModel):
-    AssetName: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_.-]+$"), AssetName7]] = None
+    AssetName: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_.-]+$")], AssetName7]] = None
 
 
 class Value4(BaseModel):
@@ -261,7 +261,7 @@ class AssetName8(BaseModel):
 
 
 class PolygonRegionValue(BaseModel):
-    AssetName: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), AssetName8]] = None
+    AssetName: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")], AssetName8]] = None
 
 
 class AssetName9(BaseModel):
@@ -269,7 +269,7 @@ class AssetName9(BaseModel):
 
 
 class RobotValue(BaseModel):
-    AssetName: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), AssetName9]] = None
+    AssetName: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")], AssetName9]] = None
 
 
 class AssetType(BaseModel):

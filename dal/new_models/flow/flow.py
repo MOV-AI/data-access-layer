@@ -1,5 +1,5 @@
 from typing import Optional, Dict, List, Any, Union, ClassVar, Set
-from pydantic import Field, constr, BaseModel, Extra
+from pydantic import StringConstraints, Field, BaseModel, Extra
 from ..base_model import Arg, MovaiBaseModel
 from ..configuration import Configuration
 from .parsers import ParamParser
@@ -11,6 +11,7 @@ from .flowlinks import FlowLink
 from ..node import Node
 from cachetools import LRUCache
 from movai_core_shared.consts import ROS1_NODELETSERVER
+from typing_extensions import Annotated
 
 
 class Layer(BaseModel):
@@ -19,22 +20,22 @@ class Layer(BaseModel):
 
 
 class Flow(MovaiBaseModel, extra=Extra.allow):
-    Parameter: Optional[Dict[constr(regex=r"^[a-zA-Z0-9_]+$"), Arg]] = None
-    Container: Optional[Dict[constr(regex=r"^[a-zA-Z_0-9]+$"), ContainerClas]] = Field(
+    Parameter: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")], Arg]] = None
+    Container: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z_0-9]+$")], ContainerClas]] = Field(
         default_factory=dict
     )
     ExposedPorts: Optional[
         Dict[
-            constr(regex=r"^(__)?[a-zA-Z0-9_]+$"),
+            Annotated[str, StringConstraints(pattern=r"^(__)?[a-zA-Z0-9_]+$")],
             Dict[
-                constr(regex=r"^[a-zA-Z_0-9]+$"),
-                List[constr(regex=r"^~?[a-zA-Z_0-9]+(\/~?[a-zA-Z_0-9]+){0,}$")],
+                Annotated[str, StringConstraints(pattern=r"^[a-zA-Z_0-9]+$")],
+                List[Annotated[str, StringConstraints(pattern=r"^~?[a-zA-Z_0-9]+(\/~?[a-zA-Z_0-9]+){0,}$")]],
             ],
         ]
     ] = None
-    Layers: Optional[Dict[constr(regex=r"^[0-9]+$"), Layer]] = None
-    Links: Optional[Dict[constr(regex=r"^[0-9a-z-]+$"), FlowLink]] = Field(default_factory=dict)
-    NodeInst: Optional[Dict[constr(regex=r"^[a-zA-Z_0-9]+$"), NodeInstClass]] = Field(
+    Layers: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[0-9]+$")], Layer]] = None
+    Links: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[0-9a-z-]+$")], FlowLink]] = Field(default_factory=dict)
+    NodeInst: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z_0-9]+$")], NodeInstClass]] = Field(
         default_factory=dict
     )
     __START__: ClassVar[str] = "START/START/START"
