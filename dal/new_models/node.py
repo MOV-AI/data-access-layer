@@ -41,7 +41,7 @@ class ActionFields(BaseModel):
 class OutValue(ActionFields):
     out: Optional[Portfields] = None
 
-    def dict(
+    def model_dump(
         self,
         *,
         include=None,
@@ -52,7 +52,7 @@ class OutValue(ActionFields):
         exclude_defaults: bool = False,
         exclude_none: bool = True,
     ):
-        return super().dict(
+        return super().model_dump(
             include=include,
             exclude=exclude,
             by_alias=by_alias,
@@ -66,7 +66,7 @@ class OutValue(ActionFields):
 class InValue(ActionFields):
     in_: Optional[Portfields] = Field(default=None, alias="in")
 
-    def dict(
+    def model_dump(
         self,
         *,
         include=None,
@@ -77,7 +77,7 @@ class InValue(ActionFields):
         exclude_defaults: bool = False,
         exclude_none: bool = False,
     ):
-        return super().dict(
+        return super().model_dump(
             include=include,
             exclude=exclude,
             by_alias=True,

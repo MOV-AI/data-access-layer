@@ -70,7 +70,7 @@ class Robot(RedisModel, extra=pydantic.Extra.allow):
                 super().__init__(**obj)
 
             # TODO need to be tested
-            self.fleet = Robot(**self.dict())
+            self.fleet = Robot(**self.model_dump())
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot"""

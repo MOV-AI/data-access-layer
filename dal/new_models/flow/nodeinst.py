@@ -52,7 +52,7 @@ class NodeInst(BaseModel):
         extra="allow",
     )
 
-    def dict(
+    def model_dump(
         self,
         *,
         include=None,
@@ -63,7 +63,7 @@ class NodeInst(BaseModel):
         exclude_defaults: bool = False,
         exclude_none: bool = True,
     ):
-        dic = super().dict(
+        dic = super().model_dump(
             include=include,
             exclude=exclude,
             by_alias=by_alias,

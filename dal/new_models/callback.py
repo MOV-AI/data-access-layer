@@ -304,7 +304,7 @@ if __name__ == "__main__":
             }
         }
     )
-    r.dict()
+    r.model_dump()
     pk = r.save()
     """
     # because Label is string, the 5 will be converted automatically to string "5"
@@ -319,7 +319,7 @@ if __name__ == "__main__":
     print(cs)
     if callbacks:
         callback: Callback = callbacks[0]
-        print(callback.dict())
+        print(callback.model_dump())
         end = time.time()
         print(f"Searching and Object Creation took {(end-start)*1000}ms")
 

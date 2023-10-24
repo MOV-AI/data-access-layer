@@ -42,7 +42,7 @@ class FlowLink(BaseModel):
             )
     model_config = ConfigDict(exclude={"__DEFAULT_DEPENDENCY__"}, extra="allow")
 
-    def dict(
+    def model_dump(
         self,
         *,
         include=None,

@@ -41,7 +41,7 @@ class RedisModel(BaseModel):
         self.db(db_type).json().set(
             self.pk,
             "$",
-            self.dict(),
+            self.model_dump(),
         )
         cache[self.pk] = self
         return self.pk

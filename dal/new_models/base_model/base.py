@@ -28,7 +28,7 @@ class LastUpdate(pydantic.BaseModel):
             return datetime.strptime(v, "%d/%m/%Y %H:%M:%S")
         return datetime.strptime(v, "%d/%m/%Y at %H:%M:%S")
 
-    def dict(
+    def model_dump(
         self,
         *,
         include=None,
@@ -185,7 +185,7 @@ class MovaiBaseModel(RedisModel):
         [schema["properties"].pop(key) for key in to_remove]
         return schema
 
-    def dict(
+    def model_dump(
         self,
         *,
         include=None,
@@ -201,7 +201,7 @@ class MovaiBaseModel(RedisModel):
         Returns:
             dict: dictionary representation of the model
         """
-        dic = super().dict(exclude_none=exclude_none)
+        dic = super().model_dump(exclude_none=exclude_none)
         to_remove = []
         for key in dic:
             if key not in self._original_keys():

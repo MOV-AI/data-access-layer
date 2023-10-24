@@ -28,7 +28,7 @@ class Container(BaseModel):
         self._parser = None
         self._flow_class = None
 
-    def dict(
+    def mdoel_dump(
         self,
         *,
         include=None,
@@ -39,7 +39,7 @@ class Container(BaseModel):
         exclude_defaults: bool = False,
         exclude_none: bool = True,
     ):
-        dic = super().dict(
+        dic = super().model_dump(
             include=include,
             exclude=exclude,
             by_alias=by_alias,
