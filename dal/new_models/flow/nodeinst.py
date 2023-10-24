@@ -76,7 +76,7 @@ class NodeInst(BaseModel):
         dic.pop("_flow_ref")
         return dic
 
-    @field_validator("Parameter", pre=True)
+    @field_validator("Parameter", mode="before")
     def validate_regex(cls, value):
         if isinstance(value, dict):
             for key in value:

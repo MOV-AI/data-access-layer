@@ -125,7 +125,7 @@ class Node(MovaiBaseModel):
     class Meta:
         model_key_prefix = "Node"
 
-    @field_validator("Parameter", pre=True, always=True)
+    @field_validator("Parameter", mode="before")
     def validate_parameter(cls, v):
         try:
             return v
@@ -133,11 +133,11 @@ class Node(MovaiBaseModel):
             field, error = e.errors()[0]["loc"], e.errors()[0]["msg"]
             raise ValueError(f"{field}: {v} - {error}")
 
-    @field_validator("Remappable", pre=True, always=True)
+    @field_validator("Remappable", mode="before")
     def validate_remappable(cls, v):
         return v if v not in [None, ""] else False
 
-    @field_validator("Persistent", pre=True, always=True)
+    @field_validator("Persistent", mode="before")
     def validate_persistent(cls, v):
         return v if v not in [None, ""] else False
 

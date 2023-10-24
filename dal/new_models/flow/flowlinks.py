@@ -23,7 +23,7 @@ class FlowLink(BaseModel):
     Dependency: int = DEFAULT_DEPENDENCY
     __DEFAULT_DEPENDENCY__: ClassVar[int] = DEFAULT_DEPENDENCY
 
-    @field_validator("From", "To", pre=True)
+    @field_validator("From", "To", mode="before")
     def validate_regex(cls, value, field):
         try:
             l = value.split("/")

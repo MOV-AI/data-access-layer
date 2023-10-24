@@ -7,7 +7,7 @@ import re
 from movai_core_shared.logger import Log
 from .cache import ThreadSafeCache
 from datetime import datetime
-from pydantic import StringConstraints
+from pydantic import StringConstraints, field_validator
 from typing_extensions import Annotated
 
 
@@ -20,7 +20,7 @@ class LastUpdate(pydantic.BaseModel):
     date: datetime
     user: str = "movai"
 
-    @pydantic.validator("date", pre=True, always=True)
+    @field_validator("date", mode="before")
     def _validate_date(cls, v):
         if not isinstance(v, str) or not v:
             return datetime.now().replace(microsecond=0)
@@ -68,7 +68,7 @@ class MovaiBaseModel(RedisModel):
     project: str = ""
     Dummy: Optional[bool] = False
 
-    @pydantic.validator("LastUpdate", pre=True)
+    @field_validator("LastUpdate", mode="before")
     def _validate_last_update(cls, v) -> LastUpdate:
         """validate last update field
 
@@ -126,7 +126,7 @@ class MovaiBaseModel(RedisModel):
         """
         return super()._original_keys() + ["Info", "Label", "Description", "LastUpdate", "Version"]
 
-    @pydantic.validator("Dummy", pre=True)
+    @field_validator("Dummy", mode="before")
     def _validate_dummy(cls, v):
         return v if v not in [None, ""] else False
 
