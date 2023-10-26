@@ -1,6 +1,7 @@
 from typing import Optional, Dict, List, Any, ClassVar, Set
 from pydantic import StringConstraints, Field, BaseModel, ConfigDict
-from ..base_model import Arg, MovaiBaseModel
+from ..base_model.common import Arg
+from ..base import MovaiBaseModel
 from ..configuration import Configuration
 from .parsers import ParamParser
 from ...helpers.flow import GFlow

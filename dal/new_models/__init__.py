@@ -3,7 +3,7 @@ from .flow import Flow
 from .node import Node
 from .configuration import Configuration
 from .ports import Ports
-from .base_model import MovaiBaseModel
+from .base import MovaiBaseModel
 from .application import Application
 
 __all__ = [

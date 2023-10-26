@@ -1,14 +1,13 @@
-from typing import List, Optional, Union
 import json
-from .redis_model import RedisModel, GLOBAL_KEY_PREFIX
-from .common import PrimaryKey, DEFAULT_VERSION
 import re
+from typing import List, Optional, Union
+from .base_model.redis_model import RedisModel, GLOBAL_KEY_PREFIX
+from .base_model.common import PrimaryKey, DEFAULT_VERSION
 from movai_core_shared.logger import Log
-from .cache import ThreadSafeCache
+from .base_model.cache import ThreadSafeCache
 from datetime import datetime
 from pydantic import StringConstraints, field_validator, BaseModel
 from typing_extensions import Annotated
-from ..application import Application
 
 
 LOGGER = Log.get_logger("BaseModel.mov.ai")
@@ -28,7 +27,7 @@ class LastUpdate(BaseModel):
         return datetime.strptime(v, "%d/%m/%Y at %H:%M:%S")
 
 
-LABEL_REGEX = r"^[a-zA-Z0-9._-]+(/[a-zA-Z0-9._-]+){0,}$"
+LABEL_REGEX = r"^[a-zA-Z 0-9._-]+(/[a-zA-Z0-9._-]+){0,}$"
 valid_models = [
     "Flow",
     "Node",
@@ -243,6 +242,7 @@ class MovaiBaseModel(RedisModel):
             # Check if user has the Callback on the authorized Applications Callbacks list.
             # If the user has authorization on the Application that is calling the callback, then authorize.
             if app_name in user.get_permissions("Applications"):
+                from .application import Application
                 ca = Application(name=app_name)
                 if ca.Callbacks and self.name in ca.Callbacks:
                     has_perm = True

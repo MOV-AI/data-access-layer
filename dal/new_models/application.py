@@ -1,11 +1,11 @@
-from .base_model import MovaiBaseModel
+from .base import MovaiBaseModel
 from typing import List, Any
 from pydantic import Field
 
 
 class Application(MovaiBaseModel):
-    User: str
-    Type: str
+    User: str = ""
+    Type: str = ""
     Package: str = ""
     EntryPoint: str = ""
     Icon: str = ""

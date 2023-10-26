@@ -1,6 +1,6 @@
-from typing import Optional, Dict, List, Any, Union
+from typing import Optional, Dict, List
 from pydantic import StringConstraints, BaseModel, Field
-from .base_model import MovaiBaseModel
+from .base import MovaiBaseModel
 from movai_core_shared.consts import (
     TRANSITION_TYPE,
     ROS1_NODELETCLIENT,

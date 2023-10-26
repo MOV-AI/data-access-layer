@@ -5,7 +5,7 @@ import pkgutil
 import sys
 import rospkg
 from typing import Union, Optional, Dict, List
-from .base_model import MovaiBaseModel
+from .base import MovaiBaseModel
 from pydantic import StringConstraints
 from typing_extensions import Annotated
 

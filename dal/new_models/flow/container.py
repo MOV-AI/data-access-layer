@@ -1,6 +1,6 @@
 from pydantic import StringConstraints, ConfigDict, Field, BaseModel
-from typing import Optional, Dict, Any, Union, List
-from ..base_model import Arg
+from typing import Optional, Dict, Union, List
+from ..base_model.common import Arg
 from typing_extensions import Annotated
 
 

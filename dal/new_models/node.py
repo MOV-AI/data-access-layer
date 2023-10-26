@@ -1,6 +1,7 @@
 from typing import Optional, Dict, List, Any, Union
 from pydantic import StringConstraints, BaseModel, Field, field_validator, ConfigDict
-from .base_model import Arg, MovaiBaseModel
+from .base import MovaiBaseModel
+from .base_model.common import Arg
 from .ports import Ports
 from movai_core_shared.consts import (
     MOVAI_NODE,
