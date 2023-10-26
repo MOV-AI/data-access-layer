@@ -8,6 +8,7 @@ from .cache import ThreadSafeCache
 from datetime import datetime
 from pydantic import StringConstraints, field_validator, BaseModel
 from typing_extensions import Annotated
+from ..application import Application
 
 
 LOGGER = Log.get_logger("BaseModel.mov.ai")
@@ -156,21 +157,22 @@ class MovaiBaseModel(RedisModel):
         """
         return self.__class__.__name__
 
-    def json_schema(self) -> dict:
+    @classmethod
+    def json_schema(cls) -> dict:
         """Generate a JSON Schema for the model
 
         Returns:
             dict: JSON Schema
         """
-        schema = json.loads(super().model_json_schema(by_alias=True))
+        schema = json.loads(cls.model_json_schema(by_alias=True))
         to_remove = []
         for key in schema["properties"]:
-            if key not in self._original_keys():
+            if key not in cls._original_keys():
                 to_remove.append(key)
         [schema["properties"].pop(key) for key in to_remove]
         return schema
 
-    def fix_flow_links(self):
+    def _fix_flow_links(self):
         """will fix flow links to use strings instead of objects
 
         Returns:
@@ -205,7 +207,7 @@ class MovaiBaseModel(RedisModel):
             """somehow the model_dump in pydantic v2 does not take into consideration the
                overriden model_dump in inner classes, so we need to call it explicitly here.
             """
-            dic = self.fix_flow_links()
+            dic = self._fix_flow_links()
         else:
             dic = super().model_dump(exclude_none=exclude_none, by_alias=True)
         if "LastUpdate" in dic and isinstance(dic["LastUpdate"]["date"], datetime):
@@ -218,12 +220,20 @@ class MovaiBaseModel(RedisModel):
         return {self.scope: {self.name: dic}}
 
     def has_scope_permission(self, user, permission) -> bool:
+        """Check if user has permission on the scope
+
+        Args:
+            user (_type_): _description_
+            permission (_type_): type of the permission
+
+        Returns:
+            bool: True if user has permission, False otherwise
+        """
         if not user.has_permission(
             self.scope,
-            "{prefix}.{permission}".format(prefix=self.name, permission=permission),
-        ):
-            if not user.has_permission(self.scope, permission):
-                return False
+            f"{self.name}.{permission}",
+        ) and not user.has_permission(self.scope, permission):
+            return False
         return True
 
     def has_permission(self, user, permission, app_name):

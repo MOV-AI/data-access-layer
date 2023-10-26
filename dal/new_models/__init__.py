@@ -4,9 +4,7 @@ from .node import Node
 from .configuration import Configuration
 from .ports import Ports
 from .base_model import MovaiBaseModel
-from .layout import Layout
-from .annotation import Annotation
-
+from .application import Application
 
 __all__ = [
     "Callback",
@@ -15,6 +13,5 @@ __all__ = [
     "Configuration",
     "Ports",
     "MovaiBaseModel",
-    "Layout",
-    "Annotation",
+    "Application",
 ]
