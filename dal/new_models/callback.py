@@ -26,9 +26,6 @@ class Callback(MovaiBaseModel):
     def _original_keys(self) -> List[str]:
         return super()._original_keys() + ["Code", "Message", "Py3Lib"]
 
-    class Meta:
-        model_key_prefix = "Callback"
-
     @staticmethod
     def export_modules(jump_over_modules=None) -> None:
         """Get modules and save them to db (System)

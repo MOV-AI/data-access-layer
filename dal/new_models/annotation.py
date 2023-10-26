@@ -22,9 +22,6 @@ class Annotation(MovaiBaseModel):
     Parameter: Optional[Dict[PARAMETER_KEY_REGEX, Any]] = pydantic.Field(default_factory=dict)
     Field: Optional[Dict[FIELD_KEY_REGEX, FieldValue]] = pydantic.Field(default_factory=dict)
 
-    class Meta:
-        model_key_prefix = "Annotation"
-
     @classmethod
     def _original_keys(cls) -> List[str]:
         return super()._original_keys() + ["Type", "Policy", "Parameter", "Field"]

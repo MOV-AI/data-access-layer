@@ -41,6 +41,3 @@ class Ports(MovaiBaseModel):
 
     def _original_keys(self) -> List[str]:
         return super()._original_keys() + ["Data", "In", "Out"]
-
-    class Meta:
-        model_key_prefix = "Ports"

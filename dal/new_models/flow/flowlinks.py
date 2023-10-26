@@ -4,6 +4,8 @@ import re
 import uuid
 
 DEFAULT_DEPENDENCY = 0
+LINK_REGEX = r"^([~@a-zA-Z_0-9-]+)([\/])([\/~@a-zA-Z_0-9]+)+([\/])([~@a-zA-Z_0-9]+)$"
+regex = re.compile(LINK_REGEX)
 
 
 class LinkConfigTemplate(BaseModel):
@@ -11,10 +13,6 @@ class LinkConfigTemplate(BaseModel):
     port_name: str
     port_type: str
     str: str
-
-
-LINK_REGEX = r"^([~@a-zA-Z_0-9-]+)([\/])([\/~@a-zA-Z_0-9]+)+([\/])([~@a-zA-Z_0-9]+)$"
-regex = re.compile(LINK_REGEX)
 
 
 class FlowLink(BaseModel):
@@ -25,6 +23,8 @@ class FlowLink(BaseModel):
 
     @field_validator("From", "To", mode="before")
     def validate_regex(cls, value, field):
+        if isinstance(value, dict):
+            return value
         try:
             l = value.split("/")
             node_inst, port_name, port_type = l[0], "/".join(l[1 : len(l) - 1]), l[-1]
@@ -36,10 +36,11 @@ class FlowLink(BaseModel):
             }
 
             return output
-        except Exception:
+        except Exception as e:
             raise ValueError(
-                f"Field '{field.alias}' with value '{value}' does not match the required pattern '{LINK_REGEX}'."
+                f"Field {field.alias} with value {value} does not match the required pattern {LINK_REGEX}., Exception {e}"
             )
+
     model_config = ConfigDict(exclude={"__DEFAULT_DEPENDENCY__"}, extra="allow")
 
     def model_dump(

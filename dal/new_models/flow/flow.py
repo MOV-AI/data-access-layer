@@ -1,5 +1,5 @@
-from typing import Optional, Dict, List, Any, Union, ClassVar, Set
-from pydantic import StringConstraints, Field, BaseModel, Extra
+from typing import Optional, Dict, List, Any, ClassVar, Set
+from pydantic import StringConstraints, Field, BaseModel, ConfigDict
 from ..base_model import Arg, MovaiBaseModel
 from ..configuration import Configuration
 from .parsers import ParamParser
@@ -19,7 +19,7 @@ class Layer(BaseModel):
     on: Optional[bool] = None
 
 
-class Flow(MovaiBaseModel, extra=Extra.allow):
+class Flow(MovaiBaseModel):
     Parameter: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")], Arg]] = None
     Container: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z_0-9]+$")], ContainerClas]] = Field(
         default_factory=dict
@@ -29,7 +29,7 @@ class Flow(MovaiBaseModel, extra=Extra.allow):
             Annotated[str, StringConstraints(pattern=r"^(__)?[a-zA-Z0-9_]+$")],
             Dict[
                 Annotated[str, StringConstraints(pattern=r"^[a-zA-Z_0-9]+$")],
-                List[Annotated[str, StringConstraints(pattern=r"^~?[a-zA-Z_0-9]+(\/~?[a-zA-Z_0-9]+){0,}$")]],
+                List[Annotated[str, StringConstraints(pattern=r"^~?/?[a-zA-Z_0-9]+(\/~?[a-zA-Z_0-9]+){0,}$")]],
             ],
         ]
     ] = None
@@ -51,8 +51,8 @@ class Flow(MovaiBaseModel, extra=Extra.allow):
             "NodeInst",
         ]
 
-    class Meta:
-        model_key_prefix = "Flow"
+    # allow extra fields to be added dynamically after creation of object
+    model_config = ConfigDict(extra="allow")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

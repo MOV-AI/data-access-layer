@@ -1,5 +1,5 @@
 from typing import Optional, Dict, List, Any, Union
-from pydantic import StringConstraints, BaseModel, Field, field_validator
+from pydantic import StringConstraints, BaseModel, Field, field_validator, ConfigDict
 from .base_model import Arg, MovaiBaseModel
 from .ports import Ports
 from movai_core_shared.consts import (
@@ -27,7 +27,7 @@ class Parameter1(BaseModel):
 class Portfields(BaseModel):
     Message: Optional[str] = None
     Callback: Optional[str] = None
-    Parameter: Optional[Parameter1] = Field(default_factory=dict)
+    Parameter: Optional[Parameter1] = Field(default_factory=Parameter1)
 
 
 class ActionFields(BaseModel):
@@ -41,59 +41,19 @@ class ActionFields(BaseModel):
 class OutValue(ActionFields):
     out: Optional[Portfields] = None
 
-    def model_dump(
-        self,
-        *,
-        include=None,
-        exclude=None,
-        by_alias: bool = False,
-        skip_defaults: Optional[bool] = None,
-        exclude_unset: bool = False,
-        exclude_defaults: bool = False,
-        exclude_none: bool = True,
-    ):
-        return super().model_dump(
-            include=include,
-            exclude=exclude,
-            by_alias=by_alias,
-            skip_defaults=skip_defaults,
-            exclude_unset=exclude_unset,
-            exclude_defaults=exclude_defaults,
-            exclude_none=exclude_none,
-        )
-
 
 class InValue(ActionFields):
     in_: Optional[Portfields] = Field(default=None, alias="in")
 
-    def model_dump(
-        self,
-        *,
-        include=None,
-        exclude=None,
-        by_alias: bool = False,
-        skip_defaults: Optional[bool] = None,
-        exclude_unset: bool = False,
-        exclude_defaults: bool = False,
-        exclude_none: bool = False,
-    ):
-        return super().model_dump(
-            include=include,
-            exclude=exclude,
-            by_alias=True,
-            skip_defaults=skip_defaults,
-            exclude_unset=exclude_unset,
-            exclude_defaults=exclude_defaults,
-            exclude_none=exclude_none,
-        )
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class PortsInstValue(BaseModel):
     Message: Optional[str] = ""
     Package: Optional[str] = ""
     Template: Optional[str] = ""
-    Out: Optional[OutValue] = Field(default_factory=dict)
-    In: Optional[InValue] = Field(default_factory=dict)
+    Out: Optional[OutValue] = Field(default_factory=OutValue)
+    In: Optional[InValue] = Field(default_factory=InValue)
 
 
 class Node(MovaiBaseModel):
@@ -121,9 +81,6 @@ class Node(MovaiBaseModel):
             "Remappable",
             "Type",
         ]
-
-    class Meta:
-        model_key_prefix = "Node"
 
     @field_validator("Parameter", mode="before")
     def validate_parameter(cls, v):

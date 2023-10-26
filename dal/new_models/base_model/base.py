@@ -1,45 +1,30 @@
 from typing import List, Optional, Union
-import pydantic
 import json
 from .redis_model import RedisModel, GLOBAL_KEY_PREFIX
-from .common import PrimaryKey
+from .common import PrimaryKey, DEFAULT_VERSION
 import re
 from movai_core_shared.logger import Log
 from .cache import ThreadSafeCache
 from datetime import datetime
-from pydantic import StringConstraints, field_validator
+from pydantic import StringConstraints, field_validator, BaseModel
 from typing_extensions import Annotated
 
 
 LOGGER = Log.get_logger("BaseModel.mov.ai")
-DEFAULT_VERSION = "__UNVERSIONED__"
 cache = ThreadSafeCache()
 
 
-class LastUpdate(pydantic.BaseModel):
+class LastUpdate(BaseModel):
     date: datetime
     user: str = "movai"
 
     @field_validator("date", mode="before")
     def _validate_date(cls, v):
-        if not isinstance(v, str) or not v:
+        if not isinstance(v, str) or not v or v == "N/A":
             return datetime.now().replace(microsecond=0)
         if "at" not in v:
             return datetime.strptime(v, "%d/%m/%Y %H:%M:%S")
         return datetime.strptime(v, "%d/%m/%Y at %H:%M:%S")
-
-    def model_dump(
-        self,
-        *,
-        include=None,
-        exclude=None,
-        by_alias: bool = False,
-        skip_defaults: Optional[bool] = None,
-        exclude_unset: bool = False,
-        exclude_defaults: bool = False,
-        exclude_none: bool = True,
-    ) -> dict:
-        return {"user": self.user, "date": self.date.strftime("%d/%m/%Y at %H:%M:%S")}
 
 
 LABEL_REGEX = r"^[a-zA-Z0-9._-]+(/[a-zA-Z0-9._-]+){0,}$"
@@ -171,19 +156,34 @@ class MovaiBaseModel(RedisModel):
         """
         return self.__class__.__name__
 
-    def schema_json(self) -> dict:
+    def json_schema(self) -> dict:
         """Generate a JSON Schema for the model
 
         Returns:
             dict: JSON Schema
         """
-        schema = json.loads(super().schema_json(by_alias=True))
+        schema = json.loads(super().model_json_schema(by_alias=True))
         to_remove = []
         for key in schema["properties"]:
             if key not in self._original_keys():
                 to_remove.append(key)
         [schema["properties"].pop(key) for key in to_remove]
         return schema
+
+    def fix_flow_links(self):
+        """will fix flow links to use strings instead of objects
+
+        Returns:
+            _type_: _description_
+        """
+        if self.scope != "Flow":
+            return None
+        dic = super().model_dump(exclude_none=True, by_alias=True)
+        for id, link in self.Links.items():
+            dic["Links"][id]["From"] = link.From.str
+            dic["Links"][id]["To"] = link.To.str
+
+        return dic
 
     def model_dump(
         self,
@@ -201,7 +201,15 @@ class MovaiBaseModel(RedisModel):
         Returns:
             dict: dictionary representation of the model
         """
-        dic = super().model_dump(exclude_none=exclude_none)
+        if self.scope == "Flow":
+            """somehow the model_dump in pydantic v2 does not take into consideration the
+               overriden model_dump in inner classes, so we need to call it explicitly here.
+            """
+            dic = self.fix_flow_links()
+        else:
+            dic = super().model_dump(exclude_none=exclude_none, by_alias=True)
+        if "LastUpdate" in dic and isinstance(dic["LastUpdate"]["date"], datetime):
+            dic["LastUpdate"]["date"] = dic["LastUpdate"]["date"].strftime("%d/%m/%Y at %H:%M:%S")
         to_remove = []
         for key in dic:
             if key not in self._original_keys():

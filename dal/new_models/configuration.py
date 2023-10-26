@@ -14,9 +14,6 @@ class Configuration(MovaiBaseModel):
     def _original_keys(self) -> List[str]:
         return super()._original_keys() + ["Type", "Yaml"]
 
-    class Meta:
-        model_key_prefix = "Configuration"
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if not self.data:

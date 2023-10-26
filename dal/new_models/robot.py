@@ -48,9 +48,6 @@ class Robot(RedisModel, extra=pydantic.Extra.allow):
     Alerts: dict = pydantic.Field(default_factory=dict)
     Parameter: dict = pydantic.Field(default_factory=dict)
 
-    class Meta:
-        model_key_prefix = "Robot"
-
     def __init__(self, *args, **kwargs):
         if not args and not kwargs:
             robots = self.db("local").keys("*:Robot:*")

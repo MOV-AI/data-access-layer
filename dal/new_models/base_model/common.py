@@ -5,9 +5,12 @@ from abc import abstractmethod, ABC
 # from ulid import ULID
 
 
+DEFAULT_VERSION = "__UNVERSIONED__"
+
+
 class Arg(pydantic.BaseModel):
     Description: Optional[str] = None
-    Value: object
+    Value: object = pydantic.Field(default_factory=dict)
     Type: Optional[str] = None
 
 
