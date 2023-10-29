@@ -1,7 +1,7 @@
 import json
 import re
 from typing import List, Optional, Union
-from .base_model.redis_model import RedisModel, GLOBAL_KEY_PREFIX
+from .base_model.redis_model import RedisModel, DEFAULT_PROJECT
 from .base_model.common import PrimaryKey, DEFAULT_VERSION
 from movai_core_shared.logger import Log
 from .base_model.cache import ThreadSafeCache
@@ -71,6 +71,7 @@ class MovaiBaseModel(RedisModel):
     def __new__(cls, *args, **kwargs):
         if args:
             id = args[0]
+            # support for old format
             # {workspace}/{scope}/{ref}/{version}
             m = path_regex.search(id)
             version = kwargs.get("version", DEFAULT_VERSION) if kwargs else DEFAULT_VERSION
@@ -82,12 +83,14 @@ class MovaiBaseModel(RedisModel):
                     id, version = id.split("/")
             else:
                 scope = cls.__name__
-            project = kwargs.get("project", GLOBAL_KEY_PREFIX) if kwargs else GLOBAL_KEY_PREFIX
-            key = f"{project}:{scope}:{id}:{version}"
+            project = kwargs.get("project", DEFAULT_PROJECT) if kwargs else DEFAULT_PROJECT
+            key = PrimaryKey.create_pk(
+                        project=project, scope=scope, id=id, version=version
+                    )
             if key in cache:
                 return cache[key]
 
-            obj = cls.select(ids=[f"{id}:{version}"])
+            obj = cls.select(ids=[id], version=version, project=project)
             if not obj:
                 # TODO: change to better exception class.
                 raise Exception(f"{cls.__name__} {args[0]} not found!")
@@ -115,8 +118,8 @@ class MovaiBaseModel(RedisModel):
     def _validate_dummy(cls, v):
         return v if v not in [None, ""] else False
 
-    def __init__(self, *args, project: str = GLOBAL_KEY_PREFIX, **kwargs):
-        if not kwargs:
+    def __init__(self, *args, project: str = DEFAULT_PROJECT, **kwargs):
+        if not kwargs or self.scope not in kwargs:
             return
         version = DEFAULT_VERSION
         if "version" in kwargs:
@@ -145,7 +148,7 @@ class MovaiBaseModel(RedisModel):
                     f"wrong Data type, should be {self.scope}, recieved: {scope}, instead got: {list(kwargs.keys())[0]}"
                 )
         else:
-            raise ValueError(f"scope not supported ({scope}), should be one of {valid_models}")
+            raise ValueError(f"model not supported ({scope}), should be one of {valid_models}")
 
     @property
     def scope(self) -> str:
@@ -246,5 +249,3 @@ class MovaiBaseModel(RedisModel):
                 ca = Application(name=app_name)
                 if ca.Callbacks and self.name in ca.Callbacks:
                     has_perm = True
-
-        return has_perm

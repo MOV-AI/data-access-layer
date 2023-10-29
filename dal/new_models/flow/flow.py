@@ -57,7 +57,7 @@ class Flow(MovaiBaseModel):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if kwargs:
+        if kwargs and self.scope in kwargs:
             self._parser = ParamParser(self)
             self._graph = GFlow(self)
             self._full = None
