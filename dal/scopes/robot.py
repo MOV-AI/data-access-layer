@@ -13,7 +13,7 @@ import uuid
 import pickle
 from movai_core_shared.exceptions import DoesNotExist
 from movai_core_shared.envvars import MOVAI_FLOW_PORT
-from movai_core_shared.core.zmq_client import ZMQClient
+from movai_core_shared.core.zmq.zmq_client import ZMQClient
 from dal.scopes.scope import Scope
 from dal.movaidb import MovaiDB
 from dal.scopes.fleetrobot import FleetRobot
