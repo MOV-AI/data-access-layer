@@ -20,6 +20,7 @@ requirements = [
     "rospkg==1.4.0",
     "py3rosmsgs==1.18.2",
     "cachetools==5.3.1",
+    "pydantic==1.10.4",
     "movai-core-shared==2.4.1.*"
 ]
 
