@@ -4,6 +4,8 @@
     "$name": {
       "Label": "str",
       "Description": "str",
+      "LastUpdate": "any",
+      "Version": "str",
       "Field": {
         "$name": {
           "Type": "str",

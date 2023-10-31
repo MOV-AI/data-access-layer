@@ -1,6 +1,6 @@
 import os
 from redis import asyncio as redis
-from .redis_config import RedisConfig
+from .base_model.redis_config import RedisConfig
 
 URL = os.environ.get("REDIS_URL", RedisConfig().redis_url)
 

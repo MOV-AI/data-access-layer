@@ -1,9 +1,9 @@
 import pickle
 import uuid
-import pydantic
 from .base_model.redis_model import RedisModel
 from .configuration import Configuration
 from .base_model.common import PrimaryKey
+from pydantic import ConfigDict, BaseModel, Field
 
 """
     {'Robot': {'dde2a5de3b074f39956792785637ca3e': {'IP': '127.0.0.1',
@@ -28,25 +28,27 @@ from .base_model.common import PrimaryKey
     """
 
 
-class RobotStatus(pydantic.BaseModel):
+class RobotStatus(BaseModel):
     active_flow: str = None
     active_scene: str = None
-    active_states: list = pydantic.Field(default_factory=list)
-    core_lchd: list = pydantic.Field(default_factory=list)
-    locks: list = pydantic.Field(default_factory=list)
-    nodes_lchd: list = pydantic.Field(default_factory=list)
-    persistent_nodes_lchd: list = pydantic.Field(default_factory=list)
+    active_states: list = Field(default_factory=list)
+    core_lchd: list = Field(default_factory=list)
+    locks: list = Field(default_factory=list)
+    nodes_lchd: list = Field(default_factory=list)
+    persistent_nodes_lchd: list = Field(default_factory=list)
     timestamp: float = None
 
 
-class Robot(RedisModel, extra=pydantic.Extra.allow):
+class Robot(RedisModel):
     IP: str = "127.0.0.1"
     RobotName: str
     Status: RobotStatus = RobotStatus()
-    Actions: list = pydantic.Field(default_factory=list)
-    Notifications: list = pydantic.Field(default_factory=list)
-    Alerts: dict = pydantic.Field(default_factory=dict)
-    Parameter: dict = pydantic.Field(default_factory=dict)
+    Actions: list = Field(default_factory=list)
+    Notifications: list = Field(default_factory=list)
+    Alerts: dict = Field(default_factory=dict)
+    Parameter: dict = Field(default_factory=dict)
+
+    model_config = ConfigDict(extra="allow")
 
     def __init__(self, *args, **kwargs):
         if not args and not kwargs:

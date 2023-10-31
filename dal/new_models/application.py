@@ -12,3 +12,14 @@ class Application(MovaiBaseModel):
     Configuration: str = ""
     CustomConfiguration: str = ""
     Callbacks: List[Any] = Field(default_factory=list)
+
+    def _original_keys(self) -> List[str]:
+        return super()._original_keys() + [
+            "Type",
+            "Package",
+            "EntryPoint",
+            "Icon",
+            "Configuration",
+            "CustomConfiguration",
+            "Callbacks",
+        ]

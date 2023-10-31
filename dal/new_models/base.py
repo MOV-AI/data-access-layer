@@ -27,7 +27,7 @@ class LastUpdate(BaseModel):
         return datetime.strptime(v, "%d/%m/%Y at %H:%M:%S")
 
 
-LABEL_REGEX = r"^[a-zA-Z 0-9._-]+(/[a-zA-Z0-9._-]+){0,}$"
+LABEL_REGEX = r"^[a-zA-Z 0-9._-]*(/[a-zA-Z0-9._-]+){0,}$"
 valid_models = [
     "Flow",
     "Node",
@@ -125,30 +125,27 @@ class MovaiBaseModel(RedisModel):
         if "version" in kwargs:
             version = kwargs["version"]
         scope = next(iter(kwargs))
-        if scope in valid_models:
-            if scope == self.scope:
-                struct_ = kwargs[scope]
-                name = next(iter(struct_))
-                params = {"name": name, "project": project}
-                if "pk" not in struct_[name]:
-                    pk = PrimaryKey.create_pk(
-                        project=project, scope=self.scope, id=name, version=version
-                    )
-                    params.update({"pk": pk})
-                if label_regex.search(name) is None:
-                    raise ValueError(f"Validation Error for {scope} name:({name}), data:{kwargs}")
-
-                struct_[name]["Version"] = version
-                if "LastUpdate" not in struct_[name]:
-                    struct_[name]["LastUpdate"] = {"date": "", "user": ""}
-                super().__init__(**struct_[name], **params)
-                cache[pk] = self
-            else:
-                raise ValueError(
-                    f"wrong Data type, should be {self.scope}, recieved: {scope}, instead got: {list(kwargs.keys())[0]}"
+        if scope == self.scope:
+            struct_ = kwargs[scope]
+            name = next(iter(struct_))
+            params = {"name": name, "project": project}
+            if "pk" not in struct_[name]:
+                pk = PrimaryKey.create_pk(
+                    project=project, scope=self.scope, id=name, version=version
                 )
+                params.update({"pk": pk})
+            if label_regex.search(name) is None:
+                raise ValueError(f"Validation Error for {scope} name:({name}), data:{kwargs}")
+
+            struct_[name]["Version"] = version
+            if "LastUpdate" not in struct_[name]:
+                struct_[name]["LastUpdate"] = {"date": "", "user": ""}
+            super().__init__(**struct_[name], **params)
+            cache[pk] = self
         else:
-            raise ValueError(f"model not supported ({scope}), should be one of {valid_models}")
+            raise ValueError(
+                f"wrong Data type, should be {self.scope}, recieved: {scope}, instead got: {list(kwargs.keys())[0]}"
+            )
 
     @property
     def scope(self) -> str:

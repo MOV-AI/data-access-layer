@@ -26,6 +26,9 @@ class Ports(MovaiBaseModel):
     In: Optional[Dict[PORT_NAME_REGEX, InOutValue]] = Field(default_factory=dict)
     Out: Optional[Dict[PORT_NAME_REGEX, InOutValue]] = Field(default_factory=dict)
 
+    def _original_keys(self) -> List[str]:
+        return super()._original_keys() + ["Data", "In", "Out"]
+
     def is_transition(self, port_type: str, port_name: str) -> bool:
         """Check if a port is of type transition"""
 
@@ -38,6 +41,3 @@ class Ports(MovaiBaseModel):
             return True
 
         return False
-
-    def _original_keys(self) -> List[str]:
-        return super()._original_keys() + ["Data", "In", "Out"]
