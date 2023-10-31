@@ -11,13 +11,16 @@
    Module that implements Robot namespace
 """
 import pickle
-from .scope import Scope
-from dal.movaidb import MovaiDB
-from movai_core_shared.logger import Log
-from movai_core_shared.envvars import MOVAI_FLOW_PORT, MESSAGE_SERVER_PORT
-from movai_core_shared.common.utils import is_enteprise
-from movai_core_shared.core.message_client import MessageClient 
 
+from movai_core_shared.common.utils import is_enteprise, is_manager
+from movai_core_shared.consts import COMMAND_HANDLER_MSG_TYPE
+from movai_core_shared.envvars import MOVAI_FLOW_PORT, MESSAGE_SERVER_LOCAL_ADDR
+from movai_core_shared.logger import Log
+from movai_core_shared.core.message_client import MessageClient
+
+from dal.movaidb import MovaiDB
+
+from .scope import Scope
 
 logger = Log.get_logger("FleetRobot")
 
@@ -37,22 +40,31 @@ class FleetRobot(Scope):
         """
         super().__init__(scope="Robot", name=name, version=version, new=new, db=db)
         if is_enteprise():
-            server = f"tcp://{self.IP}:{MESSAGE_SERVER_PORT}"
+            server = MESSAGE_SERVER_LOCAL_ADDR
         else:
             server = f"tcp://spawner:{MOVAI_FLOW_PORT}"
-        self.__dict__["zmq_client"] = MessageClient(server_addr=server,robot_id=self.RobotName)
+        self.message_client = MessageClient(server_addr=server,robot_id=self.RobotName)
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot"""
-        to_send = {}
+        dst = {
+            "IP": self.IP,
+            "HOST": self.RobotName,
+            "ID": self.name
+        }
+        request = {
+            "dst": dst
+        }
         for key, value in locals().items():
             if value is not None and key in ("command", "flow", "node", "port", "data"):
-                to_send.update({key: value})
-        if self.zmq_client is None:
-            to_send = pickle.dumps(to_send)
-            self.Actions.append(to_send)
+                request.update({key: value})
+        if self.message_client is None:
+            request = pickle.dumps(request)
+            self.Actions.append(request)
         else:
-            self.zmq_client.send_request(to_send)
+            if is_manager():
+                
+            self.message_client.send_request(COMMAND_HANDLER_MSG_TYPE, )
 
     def get_active_alerts(self) -> dict:
         """Gets a dictionary of the active alerts on this specific robot.
