@@ -39,32 +39,31 @@ class FleetRobot(Scope):
             db (str, optional): "global/local". Defaults to "global".
         """
         super().__init__(scope="Robot", name=name, version=version, new=new, db=db)
-        if is_enteprise():
-            server = MESSAGE_SERVER_LOCAL_ADDR
-        else:
+        if is_manager():
             server = f"tcp://spawner:{MOVAI_FLOW_PORT}"
-        self.message_client = MessageClient(server_addr=server,robot_id=self.RobotName)
+        else:
+            server = MESSAGE_SERVER_LOCAL_ADDR
+            
+        self.__dict__["message_client"] = MessageClient(server_addr=server,robot_id=self.RobotName)
 
-    def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
+    def send_cmd(self, command, *, flow=None, node=None, port=None, req_data=None) -> None:
         """Send an action command to the Robot"""
         dst = {
             "IP": self.IP,
             "HOST": self.RobotName,
             "ID": self.name
         }
-        request = {
+        req_data = {
             "dst": dst
         }
         for key, value in locals().items():
-            if value is not None and key in ("command", "flow", "node", "port", "data"):
-                request.update({key: value})
+            if value is not None and key in ("command", "flow", "node", "port", "req_data"):
+                req_data.update({key: value})
         if self.message_client is None:
-            request = pickle.dumps(request)
-            self.Actions.append(request)
+            req_data = pickle.dumps(req_data)
+            self.Actions.append(req_data)
         else:
-            if is_manager():
-                
-            self.message_client.send_request(COMMAND_HANDLER_MSG_TYPE, )
+            self.message_client.send_request(COMMAND_HANDLER_MSG_TYPE, req_data)
 
     def get_active_alerts(self) -> dict:
         """Gets a dictionary of the active alerts on this specific robot.
