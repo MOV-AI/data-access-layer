@@ -246,6 +246,7 @@ class MovaiBaseModel(RedisModel):
             # If the user has authorization on the Application that is calling the callback, then authorize.
             if app_name in user.get_permissions("Applications"):
                 from .application import Application
-                ca = Application(name=app_name)
+                ca = Application(app_name)
                 if ca.Callbacks and self.name in ca.Callbacks:
                     has_perm = True
+        return has_perm
