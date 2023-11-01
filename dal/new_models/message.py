@@ -63,7 +63,7 @@ class Message(MovaiBaseModel):
     @staticmethod
     def fetch_portdata_api(db='local') -> Dict:
         """ Retrieve data from database """
-        system: System = System.select(ids=['PortsData'], db=db)[0]
+        system: System = System('PortsData', db=db)
         return system.Value
 
     # was a classmethod, no references found

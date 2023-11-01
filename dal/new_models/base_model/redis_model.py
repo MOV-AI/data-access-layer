@@ -56,8 +56,7 @@ class RedisModel(BaseModel):
         """
         if type == "global":
             return Redis().db_global
-        elif type == "local":
-            return Redis().db_local
+        return Redis().db_local
 
     @property
     def keyspace_pattern(self) -> str:
@@ -68,7 +67,7 @@ class RedisModel(BaseModel):
         """
         return f"__keyspace@0__:{self.pk}"
 
-    def save(self, db_type="global", version=None, project=None) -> str:
+    def save(self, db="global", version=None, project=None) -> str:
         """dump object to json and save it in redis json using key=pk (PrimaryKey)
 
         Returns:
@@ -81,23 +80,25 @@ class RedisModel(BaseModel):
             project=project, scope=self.scope, id=self.name, version=version
         )
 
-        self.db(db_type).json().set(
+        self.db(db).json().set(
             self.pk,
             "$",
             self.model_dump(by_alias=True, exclude_unset=True, exclude_none=True),
         )
-        cache[self.pk] = self
+        cache_key = f"{db}::{self.pk}"
+        cache[cache_key] = self
         return self.pk
 
-    def delete(self, db_type="global") -> None:
+    def delete(self, db="global") -> None:
         """delete object from redis
 
         Returns:
             None: None
         """
-        self.db(db_type).delete(self.pk)
-        if self.pk in cache:
-            del cache[self.pk]
+        self.db(db).delete(self.pk)
+        cache_key = f"{db}::{self.pk}"
+        if cache_key in cache:
+            del cache[cache_key]
 
     @classmethod
     def model_fetch_ids(cls, project=None, version=None, db="global") -> List[Tuple[str, str, str]]:
@@ -156,7 +157,7 @@ class RedisModel(BaseModel):
                 id = f"{id}:{version}"
             if cls.__name__ not in id:
                 id = f"{project}:{cls.__name__}:{id}"
-            obj = cls.db("global").json().get(id)
+            obj = cls.db(db).json().get(id)
             if obj is not None:
                 ret.append(cls(**obj, version=version, project=project))
         return ret

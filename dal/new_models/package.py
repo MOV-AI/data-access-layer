@@ -13,6 +13,7 @@ from sys import getsizeof
 
 
 logger = Log.get_logger(__name__)
+MegaByte = 1000000
 
 
 def compress(value: bytes) -> str:
@@ -72,7 +73,7 @@ class FileValue(BaseModel):
     def _validate_value(cls, value, info: ValidationInfo):
         if isinstance(value, str):
             return value
-        if getsizeof(value) > 8000000:
+        if getsizeof(value) > 15 * MegaByte:
             return compress(value)
         return base64.b64encode(value).decode("utf-8")
 

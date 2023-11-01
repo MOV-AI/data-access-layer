@@ -421,13 +421,9 @@ class Callback(Scope):
     def fetch_modules_api():
         """Retrieve saved modules from Layer1, called from REST API"""
 
-        System.select(ids=["PyModules"], db="local")
-        mods = MovaiDB("local").get({"System": {"PyModules": "**"}})
-        # [0] -> result dict
-        # [1] -> "error" string
-        # TODO possibly check error string
+        PyModules = System("PyModules", db="local")
 
-        return mods["System"]["PyModules"]["Value"]
+        return PyModules.Value
 
     def template_depends(self, force=False):
 

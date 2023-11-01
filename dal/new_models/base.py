@@ -8,6 +8,7 @@ from .base_model.cache import ThreadSafeCache
 from datetime import datetime
 from pydantic import StringConstraints, field_validator, BaseModel
 from typing_extensions import Annotated
+from movai_core_shared.exceptions import DoesNotExist
 
 
 LOGGER = Log.get_logger("BaseModel.mov.ai")
@@ -45,7 +46,7 @@ label_regex = re.compile(LABEL_REGEX)
 
 class MovaiBaseModel(RedisModel):
     Info: Optional[str] = None
-    Label: Annotated[str, StringConstraints(pattern=LABEL_REGEX)]
+    Label: Annotated[str, StringConstraints(pattern=LABEL_REGEX)] = ""
     Description: Optional[str] = None
     LastUpdate: Union[LastUpdate, str]
     Version: str = DEFAULT_VERSION
@@ -84,16 +85,17 @@ class MovaiBaseModel(RedisModel):
             else:
                 scope = cls.__name__
             project = kwargs.get("project", DEFAULT_PROJECT) if kwargs else DEFAULT_PROJECT
+            db = kwargs.get("db", "global") if kwargs else "global"
             key = PrimaryKey.create_pk(
                         project=project, scope=scope, id=id, version=version
                     )
-            if key in cache:
-                return cache[key]
+            cache_key = f"{db}::{key}"
+            if cache_key in cache:
+                return cache[cache_key]
 
-            obj = cls.select(ids=[id], version=version, project=project)
+            obj = cls.select(ids=[id], version=version, project=project, db=db)
             if not obj:
-                # TODO: change to better exception class.
-                raise Exception(f"{cls.__name__} {args[0]} not found!")
+                raise DoesNotExist(f"{cls.__name__} {args[0]} not found in DB {db}!")
             return obj[0]
         return super().__new__(cls)
 
@@ -118,7 +120,7 @@ class MovaiBaseModel(RedisModel):
     def _validate_dummy(cls, v):
         return v if v not in [None, ""] else False
 
-    def __init__(self, *args, project: str = DEFAULT_PROJECT, **kwargs):
+    def __init__(self, *args, project: str = DEFAULT_PROJECT, db: str = "global", **kwargs):
         if not kwargs or self.scope not in kwargs:
             return
         version = DEFAULT_VERSION
@@ -141,7 +143,8 @@ class MovaiBaseModel(RedisModel):
             if "LastUpdate" not in struct_[name]:
                 struct_[name]["LastUpdate"] = {"date": "", "user": ""}
             super().__init__(**struct_[name], **params)
-            cache[pk] = self
+            cache_key = f"{db}::{self.pk}"
+            cache[cache_key] = self
         else:
             raise ValueError(
                 f"wrong Data type, should be {self.scope}, recieved: {scope}, instead got: {list(kwargs.keys())[0]}"
