@@ -14,21 +14,15 @@ from miracle import Acl
 
 from movai_core_shared.consts import (
     READ_PERMISSION,
-    UPDATE_PERMISSION,
-    CREATE_PERMISSION,
-    DELETE_PERMISSION,
+    UPDATE_PERMISSION, 
+    CREATE_PERMISSION, 
+    DELETE_PERMISSION, 
     EXECUTE_PERMISSION,
     RESET_PERMISSION,
 )
 from movai_core_shared.envvars import REST_SCOPES
 from movai_core_shared.logger import Log
-from dal.models.scopestree import scopes
-import dal.new_models
-
-
-def Role():
-    import dal.new_models.role
-    return dal.new_models.role.Role
+from dal.models.scopestree import ScopesTree, scopes
 
 
 class ACLManager:
@@ -61,7 +55,7 @@ class ACLManager:
         """Setup ACL for the current user role and user resources"""
         acl = Acl()
         try:
-            role = Role()(self.user.Roles)
+            role = scopes.from_path(self.user.Roles, scope="Role")
         except Exception as e:
             self.log.warning("Invalid User Role: {}".format(str(e)))
             return acl
@@ -122,7 +116,7 @@ class ACLManager:
 
         # Applications
         resources_permissions["Applications"] = [
-            item for _, item, _ in dal.new_models.Application.model_fetch_ids()
+            item["ref"] for item in scopes().list_scopes(scope="Application")
         ]
 
         return resources_permissions
@@ -134,7 +128,8 @@ class ACLManager:
         Returns:
             Dict: a dict with all availabe roles in the system.
         """
-        return {role.name: role.model_dump() for role in Role().select(project="Roles")}
+        # FIXME this may be not the way they intend to use
+        return scopes().Role
 
 
 class NewACLManager(ACLManager):
@@ -149,7 +144,7 @@ class NewACLManager(ACLManager):
         acl = Acl()
         try:
             for role_name in self.user.Roles:
-                role_obj = Role()(role_name)
+                role_obj = ScopesTree().from_path(role_name, scope="Role")
                 for resource_key, resource_value in role_obj.Resources.items():
                     acl.grants({role_name: {resource_key: resource_value}})
         except AttributeError as e:
@@ -193,7 +188,7 @@ class NewACLManager(ACLManager):
 
         # Applications
         resources_permissions["Applications"] = [
-            item for _, item, _ in dal.new_models.Application.model_fetch_ids()
+            item["ref"] for item in scopes().list_scopes(scope="Application")
         ]
 
         return resources_permissions

@@ -22,12 +22,12 @@ from movai_core_shared.envvars import DEFAULT_ROLE_NAME
 from movai_core_shared.exceptions import RoleAlreadyExist, RoleDoesNotExist, RoleError
 
 
-from dal.models.scopestree import scopes
-from dal.models.model import Model
-from dal.models.aclobject import AclObject
-from dal.models.remoteuser import RemoteUser
-from dal.models.internaluser import InternalUser
-from dal.models.acl import NewACLManager
+from .scopestree import scopes
+from .model import Model
+from .aclobject import AclObject
+from .remoteuser import RemoteUser
+from .internaluser import InternalUser
+from .acl import NewACLManager
 from dal.new_models import Application
 
 

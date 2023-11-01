@@ -2,11 +2,14 @@
 """
 from .base import MovaiBaseModel
 from pydantic import Field, BaseModel, field_validator
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple, Union
 import hashlib
 from movai_core_shared.logger import Log
 import zlib
 import base64
+from typing_extensions import Annotated
+from pydantic import field_validator, BaseModel, Field, ValidationInfo, model_validator
+from sys import getsizeof
 
 
 logger = Log.get_logger(__name__)
@@ -27,8 +30,6 @@ def compress(value: bytes) -> str:
         str: A Base64 encoded string representation of the compressed byte data.
         If the input is already a string, it returns the input string directly.
     """
-    if isinstance(value, str):
-        return value
     compressed_data = zlib.compress(value)
     value = base64.b64encode(compressed_data).decode('utf-8')
 
@@ -50,33 +51,34 @@ def decompress(value: str) -> bytes:
                 encoded string or if the input is already in byte format,
                 it returns the input data directly.
     """
-    if isinstance(value, bytes):
-        return value
-
-    data = value.encode()
+    data = value
     try:
         # check if compressed
-        decoded_compressed_data = base64.b64decode(data)
+        decoded_compressed_data = base64.b64decode(value)
         decompressed_data = zlib.decompress(decoded_compressed_data)
         data = decompressed_data
     except Exception:
-        pass
+        return base64.b64decode(value)
     return data
 
 
 class FileValue(BaseModel):
     FileLabel: str = None
-    Value: str = None
+    Value: str
     Checksum: str = None
 
+    @field_validator("Value", mode="before")
     @classmethod
-    @field_validator("Value")
-    def _validate_value(cls, value):
-        return compress(value)
+    def _validate_value(cls, value, info: ValidationInfo):
+        if isinstance(value, str):
+            return value
+        if getsizeof(value) > 8000000:
+            return compress(value)
+        return base64.b64encode(value).decode("utf-8")
 
 
 class Package(MovaiBaseModel):
-    File: Dict[str, FileValue] = Field(default_factory=dict)
+    File: Dict[str, FileValue] = Field(default_factory=dict, validate_default=True)
 
     @classmethod
     def _original_keys(cls) -> List[str]:
@@ -120,13 +122,8 @@ class Package(MovaiBaseModel):
 
         if csum is None:
             with open(path_to, 'wb') as fd:
-                contents = self.File[file_name].Value
-                contents = decompress(contents)
-                try:
-                    fd.write(contents.encode())
-                except AttributeError:
-                    # bytes has no attribute encode
-                    fd.write(contents)
+                contents = decompress(self.File[file_name].Value)
+                fd.write(contents)
             # check checksum again
             csum = self.file_exists(file_name, path_to)
             if csum is None:
