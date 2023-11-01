@@ -1,26 +1,78 @@
 """
 """
 from .base import MovaiBaseModel
-from pydantic import Field, BaseModel, StrictBytes, field_validator
+from pydantic import Field, BaseModel, field_validator
 from typing import Dict, List, Tuple, Optional
 import hashlib
 from movai_core_shared.logger import Log
+import zlib
+import base64
 
 
 logger = Log.get_logger(__name__)
 
 
+def compress(value: bytes) -> str:
+    """This function is responsible for compressing byte data using the zlib
+    compression and encoding the compressed data to a Base64 string for easy
+    storage and representation.
+
+    Args:
+        value (bytes): The data you want to compress. If the input is a string,
+            it returns the string as-is without performing any compression.
+            This check is mainly to ensure that you don't accidentally try to
+            compress an already compressed string.
+
+    Returns:
+        str: A Base64 encoded string representation of the compressed byte data.
+        If the input is already a string, it returns the input string directly.
+    """
+    if isinstance(value, str):
+        return value
+    compressed_data = zlib.compress(value)
+    value = base64.b64encode(compressed_data).decode('utf-8')
+
+    return value
+
+
+def decompress(value: str) -> bytes:
+    """
+    This function tries to decode a Base64 encoded string (which ideally represents compressed
+    data) and then decompress it. If the given value is not compressed or encoded, or any error
+    occurs during decompression or decoding, it returns the input data as-is.
+
+    Args:
+        value (str): The string you want to decompress. If the input is a byte sequence,
+                    it returns the bytes as-is without performing any decompression.
+
+    Returns:
+        bytes: The decompressed byte data. If the input string isn't a valid compressed Base64
+                encoded string or if the input is already in byte format,
+                it returns the input data directly.
+    """
+    if isinstance(value, bytes):
+        return value
+
+    data = value.encode()
+    try:
+        # check if compressed
+        decoded_compressed_data = base64.b64decode(data)
+        decompressed_data = zlib.decompress(decoded_compressed_data)
+        data = decompressed_data
+    except Exception:
+        pass
+    return data
+
+
 class FileValue(BaseModel):
     FileLabel: str = None
-    Value: bytes = None
+    Value: str = None
     Checksum: str = None
 
     @classmethod
-    @field_validator("Value", mode="before")
+    @field_validator("Value")
     def _validate_value(cls, value):
-        if isinstance(value, str):
-            return value.encode()
-        return value
+        return compress(value)
 
 
 class Package(MovaiBaseModel):
@@ -39,6 +91,15 @@ class Package(MovaiBaseModel):
         """ Check checksum """
         return checksum == self.File[file_name].Checksum
 
+    def add_file(self, file_name, value: bytes):
+        """ Add a file to the package
+
+        Args:
+            file_name (str): file name
+            value (bytes): value of the file
+        """
+        self.File[file_name] = FileValue(Value=value, Checksum=compute_md5_checksum(value), FileLabel=file_name)
+
     def file_exists(self, file_name: str,  path_to: str) -> str:
         """ Check existing file against computed checksum """
         try:
@@ -50,6 +111,9 @@ class Package(MovaiBaseModel):
             pass
         return None
 
+    def get_value(self, file_name) -> bytes:
+        return decompress(self.File[file_name].Value)
+
     def dump_file(self, file_name: str, path_to: str) -> Tuple[bool, str, str]:
         """ Dump a file to storage """
         csum = self.file_exists(file_name, path_to)
@@ -57,6 +121,7 @@ class Package(MovaiBaseModel):
         if csum is None:
             with open(path_to, 'wb') as fd:
                 contents = self.File[file_name].Value
+                contents = decompress(contents)
                 try:
                     fd.write(contents.encode())
                 except AttributeError:
@@ -75,7 +140,7 @@ class Package(MovaiBaseModel):
             return Package(package).dump_file(file_name, path_to)
         except KeyError:  # Scope does not exist
             return (False, path_to, None)
-
+    '''
     def model_dump(
         self,
         *,
@@ -89,9 +154,11 @@ class Package(MovaiBaseModel):
     ):
         dic = super().model_dump(by_alias=by_alias, exclude_none=exclude_none)
         for f in dic["Package"][self.name]["File"]:
-            dic["Package"][self.name]["File"][f]["Value"] = dic["Package"][self.name]["File"][f]["Value"].decode(errors='replace')
+            value = dic["Package"][self.name]["File"][f]["Value"]
+            dic["Package"][self.name]["File"][f]["Value"] = compress(value)
 
         return dic
+    '''
 
 
 def compute_md5_checksum(file_path: str) -> str:

@@ -6,13 +6,11 @@
    Developers:
    - Moawiya Mograbi  (moawiya@mov.ai) - 2022
 """
-from .acl import ACLManager, NewACLManager
 from .configuration import Configuration
 from .aclobject import AclObject
 from .application import Application
 from .baseuser import BaseUser
-# from .callback import Callback
-from dal.new_models import Callback
+from .callback import Callback
 from .container import Container
 from .flow import Flow
 from .flowlinks import FlowLinks

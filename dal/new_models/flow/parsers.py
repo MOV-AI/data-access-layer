@@ -11,7 +11,7 @@ import ast
 import re
 import os
 from movai_core_shared.logger import Log
-from dal.models.var import Var
+from ..var import Var
 from dal.movaidb import MovaiDB
 from ..configuration import Configuration
 

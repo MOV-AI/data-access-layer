@@ -7,12 +7,18 @@ from .parsers import ParamParser
 from ...helpers.flow import GFlow
 from types import SimpleNamespace
 from .nodeinst import NodeInst as NodeInstClass
-from .container import Container as ContainerClas
+from .container import Container as ContainerClass
 from .flowlinks import FlowLink
 from ..node import Node
+from dal.helpers import flatten
 from cachetools import LRUCache
 from movai_core_shared.consts import ROS1_NODELETSERVER
 from typing_extensions import Annotated
+import re
+from movai_core_shared.exceptions import DoesNotExist
+from movai_core_shared.logger import Log
+
+logger = Log.get_logger(__name__)
 
 
 class Layer(BaseModel):
@@ -22,7 +28,7 @@ class Layer(BaseModel):
 
 class Flow(MovaiBaseModel):
     Parameter: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")], Arg]] = None
-    Container: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z_0-9]+$")], ContainerClas]] = Field(
+    Container: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z_0-9]+$")], ContainerClass]] = Field(
         default_factory=dict
     )
     ExposedPorts: Optional[
@@ -488,3 +494,296 @@ class Flow(MovaiBaseModel):
                 output.add(dependency)
 
         return output
+
+    @staticmethod
+    def exposed_ports_diff(previous_ports: dict, current_ports: dict) -> list:
+        """
+        Returns deleted exposed ports by subtracting ports
+        in current_ports from the previous_ports
+
+        Parameters:
+            previous_ports (dict): dictionary with previous ports
+            current_ports (dict): dictionary with current ports
+
+        Returns:
+            (list): list of dictionaries with the ports to delete
+
+        previous_ports and current_ports format:
+            {
+                <node_template_or_flow_name>:
+                    {
+                        <node_instance_name>: [<port_name1>, ..., <port_nameN>]
+                    }
+            }
+        """
+
+        # character used in the construction of the path
+        # usign comma because it cannot be used in the name of the nodes and ports
+        path_char = ","
+
+        # flatten the previous ports
+        res1 = flatten(previous_ports, [], "", path_char)
+
+        # flatten the current ports
+        res2 = flatten(current_ports, [], "", path_char)
+
+        # removing current_ports from the previous_ports will return ports to delete
+        diff = set(res1) - set(res2)
+
+        to_delete = {}
+
+        # convert diff back to initial format
+        for port_to_delete in diff:
+
+            template, node_instance, port = port_to_delete.split(path_char)
+
+            to_delete.setdefault(template, {}).setdefault(node_instance, []).append(
+                port
+            )
+
+        return [{key: value} for key, value in to_delete.items()]
+
+    @staticmethod
+    def on_flow_delete(flow_id: str):
+        """
+        Actions to do when a flow is deleted
+        - Delete all nodes of type Container with ContainerFlow = flow_id
+        """
+
+        for flow in Flow.select():
+            flow: Flow = flow
+            for c_name, c_value in flow.Container.items():
+                if c_value.ContainerFlow == flow_id:
+                    flow.delete_part("Container", c_name)
+
+    def __getTemplate(self, key: str, name: str) -> str:
+        """returns the template name (NodeInst) or flow name (Container)
+        Args:
+            key: NodeInst or Container
+            name: instance name
+
+        Return:
+            template name or None
+        """
+        template_keys = {"NodeInst": "Template", "Container": "ContainerFlow"}
+
+        # get all NodeInst(s) or Container(s)
+        _instances = getattr(self, key)
+
+        # get the specific NodeInst or Container
+        _inst = _instances.get(name)
+
+        # get the template based on the type
+        _template = getattr(_inst, template_keys[key], None)
+
+        # add prefix based on the type
+        # Containers should add __ to the template name
+        prefix = "__" if key == "Container" else ""
+
+        # build the template name
+        if _template:
+            return f"{prefix}{_template}"
+
+    def delete_part(self, key: str, name: str):
+        """Delete object dependencies"""
+
+        template = self.__getTemplate(key, name)
+        self.Container.get(name)
+
+        try:
+            # delete NodeInst or Container Links
+            if key in ["NodeInst", "Container"]:
+
+                # string to check will be nodeInst1/nodeInst2
+                # name can be nodeInst or nodeInst__otherName
+                pattern = re.compile(f"^{name}/.+|^{name}__.*/|/{name}$|/{name}__.*$")
+
+                for link, value in self.Links.items():
+                    values = [
+                        prop.node_inst for prop in [value.From, value.To]
+                    ]
+
+                    # join the values into one string
+                    # if pattern found delete link
+                    if pattern.findall("/".join(values)):
+                        del self.Links[link]
+
+                exposed_ports_dict = self.ExposedPorts.get(template, None)
+
+                # delete node exposed ports
+                if self.delete_exposed_port(template, "*", name):
+                    # we want to delete links only if there was exposed ports.
+                    if exposed_ports_dict:
+                        for port in exposed_ports_dict.get(name, []):
+                            self.delete_exposed_port_links(name, port)
+
+        except Exception as error:
+            logger.error(str(error))
+            return False
+
+        return True
+
+    def delete_exposed_port(
+        self, node_id: str, port_name: str = "*", node_inst_id: str = None
+    ) -> bool:
+        """Delete exposed port
+        Args:
+            node_id: Node template name
+            port_name: port name to delete or * to delete all
+            node_inst_id: delete only ports related w/ specific node instance
+
+        Info:
+            ExposedPorts is of type hash
+                - key (str) is the name of the Node (Template)
+                - value (dict) format is {"<NodeInst>": ["Ports"]}
+
+        Returns:
+            True for success, False otherwise.
+        """
+        try:
+            exposed_ports = {**self.ExposedPorts}
+            ports_deleted = {}
+
+            if not exposed_ports or node_id not in exposed_ports:
+                raise DoesNotExist
+
+            for node_inst, ports in self.ExposedPorts.get(node_id, {}).items():
+                # delete only node_inst_id ports
+                if node_inst_id is not None and node_inst != node_inst_id:
+                    continue
+
+                for port in ports:
+                    re_port = re.search(r"^.+/", port)[0][:-1]
+
+                    # delete specific port or all (*)
+                    if port_name in (re_port, "*"):
+                        exposed_ports[node_id][node_inst].remove(port)
+
+                        # add deleted port to list
+                        ports_deleted.setdefault(node_inst, [])
+                        ports_deleted[node_inst].append(port)
+
+                        if not exposed_ports[node_id][node_inst]:
+                            # remove NodeInst if list of ports is empty
+                            del exposed_ports[node_id][node_inst]
+
+            if exposed_ports[node_id].keys():
+                # update dictionary value
+                self.ExposedPorts.update(exposed_ports)
+            else:
+                # key (Node) value is empty
+                del self.ExposedPorts[node_id]
+
+            self.save()
+
+            return True
+
+        except DoesNotExist:
+            # No exposed ports...
+            pass
+
+        except Exception as e:
+            logger.error(str(e))
+
+        return False
+
+    #  NOT PORTED ->  move it to class Link
+    def delete_exposed_port_links(
+        self,
+        node_inst_name: str,
+        port_name: str,
+        join_char: str = None,
+        prefix: str = None,
+        flows: dict = None,
+    ) -> bool:
+        """
+        Find all links in all Flows with containers and delete links to the exposed port
+        Also deletes exposed ports
+
+        Args:
+            node_inst_name (str): The name of the node instance.
+            port_name (str): The unexposed port name.
+            join_char (str): '/' when starting from a node instance or '__' when starting from a subflow
+            prefix (str): Node instance name when going to upper flows.
+            flows (dict): List of flows with subflows.
+
+        Returns:
+            bool: True for success, False otherwise.
+
+        """
+
+        # get info about flows with containers
+        flows_with_containers: List[Flow] = []
+        for flow in Flow.select():
+            flow: Flow = flow
+            if flow.Container:
+                flows_with_containers.append(flow)
+
+        # Loop flows that have subflows
+        for flow in flows_with_containers:
+            # Loop throught subflows
+            for flow_container in next(iter(flow.Container.values())):
+                flow_container: ContainerClass = flow_container
+
+                # check if the subflow is referencing me
+                if flow_container.ContainerFlow == self.name:
+                    try:
+
+                        container_label = flow_container.ContainerLabel
+                        _port_prefix = (
+                            f"{container_label}__{prefix}"
+                            if prefix
+                            else container_label
+                        )
+
+                        _join_char = join_char or (
+                            "__"
+                            if (self.Container.get(node_inst_name, None) or prefix)
+                            else "/"
+                        )
+
+                        # we do not care about the in/out of the port bc port names are unique in the Node
+                        regex = re.compile(rf"{_port_prefix}__{node_inst_name}{_join_char}{port_name}/.+")
+
+                        # delete the link associated with the port
+                        for link_id, link in flow.Links.items():
+                            _to = link.To
+                            _from = link.From
+                            if regex.match(_to) or regex.match(_from):
+                                del flow.Links[link_id]
+
+                        # delete the exposed port
+                        # __<Flow name> is how we identify flows in the exposed ports
+                        if f"__{self.name}" in flow.ExposedPorts.keys():
+
+                            def format_port(pfx, nnm, pnm):
+                                return f"{pfx}__{nnm}/{pnm}" if pfx else f"{nnm}/{pnm}"
+
+                            # _port_name = port_name
+                            # if _port_name is not "*":
+                            #     _port_name = f"{prefix}__{node_inst_name}/{port_name}" if prefix else f'{node_inst_name}/{port_name}'
+                            _port_name = (
+                                format_port(prefix, node_inst_name, port_name)
+                                if port_name != "*"
+                                else port_name
+                            )
+
+                            flow.delete_exposed_port(
+                                f"__{self.name}", _port_name, container_label
+                            )
+
+                        # check Flows using 'flow' as a subflow
+                        flow.delete_exposed_port_links(
+                            node_inst_name,
+                            port_name,
+                            _join_char,
+                            _port_prefix,
+                            flows_with_containers,
+                        )
+
+                    except Exception as e:
+                        logger.error(str(e))
+
+            flow.save()
+
+        return True

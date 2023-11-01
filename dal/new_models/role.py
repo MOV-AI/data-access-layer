@@ -13,10 +13,10 @@ from movai_core_shared.consts import (
     UPDATE_PERMISSION,
 )
 from movai_core_shared.envvars import DEFAULT_ROLE_NAME
-from dal.models.aclobject import AclObject
-from dal.models.remoteuser import RemoteUser
-from dal.models.internaluser import InternalUser
-from dal.models.acl import NewACLManager
+from ..models.aclobject import AclObject
+#from ..models.remoteuser import RemoteUser
+from ..models.internaluser import InternalUser
+from ..models.acl import NewACLManager
 from .application import Application
 
 
@@ -129,7 +129,8 @@ class Role(MovaiBaseModel):
         if name == DEFAULT_ROLE_NAME:
             raise RoleError(f"Deleting the {name} role is forbidden!")
         try:
-            RemoteUser.remove_role_from_all_users(name)
+            # TODO check this
+            #RemoteUser.remove_role_from_all_users(name)
             InternalUser.remove_role_from_all_users(name)
             AclObject.remove_roles_from_all_objects(name)
             role = Role(name, project="Roles")

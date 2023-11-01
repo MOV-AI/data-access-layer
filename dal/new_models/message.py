@@ -34,7 +34,7 @@ import genmsg
 import rosmsg
 import rospkg
 
-from dal.scopes.system import System
+from .system import System
 
 from movai_core_shared.logger import Log
 
@@ -63,7 +63,8 @@ class Message(MovaiBaseModel):
     @staticmethod
     def fetch_portdata_api(db='local') -> Dict:
         """ Retrieve data from database """
-        return System('PortsData', db=db).Value
+        system: System = System.select(ids=['PortsData'], db=db)[0]
+        return system.Value
 
     # was a classmethod, no references found
     @staticmethod
@@ -215,12 +216,9 @@ class Message(MovaiBaseModel):
                 for suffix in ('Action', 'ActionGoal', 'ActionFeedback', 'ActionResult'):
                     msgs.remove(base+suffix)
 
-        try:
-            ports_data = System('PortsData', db=db)
-        except Exception:   # pylint: disable=broad-except
-            ports_data = System('PortsData', new=True, db=db)
-
-        ports_data.Value = value
+        system = System("PortsData")
+        system.Value = value
+        system.save(db=db)
 
     @staticmethod
     def fetch_portdata_messages() -> Dict:

@@ -28,6 +28,7 @@ from dal.models.aclobject import AclObject
 from dal.models.remoteuser import RemoteUser
 from dal.models.internaluser import InternalUser
 from dal.models.acl import NewACLManager
+from dal.new_models import Application
 
 
 class Role(Model):
@@ -108,7 +109,7 @@ class Role(Model):
             "AclObject": [READ_PERMISSION],
         }
         resources["Applications"] = [
-            item["ref"] for item in scopes().list_scopes(scope="Application")
+            item for _, item, _ in Application.model_fetch_ids()
         ]
         if not Role.is_exist(DEPLOYER_ROLE):
             deployer_role = cls.create(DEPLOYER_ROLE, resources)
