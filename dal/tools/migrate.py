@@ -10,6 +10,12 @@ import dal.new_models
 from tqdm import tqdm
 from threading import Lock
 import sys
+import logging
+
+logger = logging.getLogger("migrate.tool")
+handler = logging.FileHandler("migrate.log")
+handler.setLevel(logging.INFO)
+logger.addHandler(handler)
 
 
 db = sys.argv[1] if len(sys.argv) > 1 else "global"
@@ -45,7 +51,7 @@ def validate_model(model, id):
 
     try:
         obj = pydantic_class.model_validate(scopes_class(id).get_dict())
-        # obj.save()
+        obj.save()
         with lock:
             bars[model].update(1)
     except Exception:
@@ -72,7 +78,7 @@ for key in scopes_keys:
         id = id.split(",")[0]
         if not class_exist(type):
             if f"{type},{id}" not in ignoring:
-                print(f"Could not find {type} in new_models, ignoring {type}::{id}")
+                logger.info("Could not find %s in new_models, ignoring %s::%s", type, type, id)
                 ignoring.append(f"{type},{id}")
             invalid_models.add(type)
             continue

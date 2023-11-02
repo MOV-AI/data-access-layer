@@ -8,6 +8,7 @@ from typing import Union, Optional, Dict, List
 from .base import MovaiBaseModel
 from pydantic import StringConstraints
 from typing_extensions import Annotated
+from movai_core_shared.exceptions import DoesNotExist
 
 ValidStr = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z_]+$")]
 ValidStrNums = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")]
@@ -44,19 +45,13 @@ class Callback(MovaiBaseModel):
         data = Callback._get_modules(jump_over_modules)
 
         try:
-            # TODO change old system
-            from dal.scopes.system import System
-
-            # currently using the old api
-            mods = System("PyModules", db="local")  # scopes('local').System['PyModules', 'cache']
-        except Exception:  # pylint: disable=broad-except
-            mods = System(
-                "PyModules", new=True, db="local"
-            )  # scopes('local').create('System', 'PyModules')
+            from .system import System
+            mods = System("PyModules", db="local")
+        except DoesNotExist:  # pylint: disable=broad-except
+            mods = System.model_validate({"System": {"PyModules": {}}})
 
         mods.Value = data
-
-        del mods, data  # not that it's gonna make a difference ...
+        mods.save(db="local")
 
     # from old callback models
     @staticmethod

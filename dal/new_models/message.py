@@ -1,30 +1,4 @@
 """
-{
-  "_version": "1.0",
-  "schema": {
-    "$name": {
-      "Label": "str",
-      "Msg": {
-        "$name": {
-          "Source": "str",
-          "Compiled": "file"
-        }
-      },
-      "Srv": {
-        "$name": {
-          "Source": "str",
-          "Compiled": "file"
-        }
-      },
-      "Action": {
-        "$name": {
-          "Source": "str",
-          "Compiled": "str"
-        }
-      }
-    }
-  }
-}
 """
 from .base import MovaiBaseModel
 from pydantic import Field, BaseModel
@@ -32,6 +6,7 @@ from collections import deque
 from typing import Dict, List
 import genmsg
 import rosmsg
+from movai_core_shared.exceptions import DoesNotExist
 import rospkg
 
 from .system import System
@@ -216,7 +191,10 @@ class Message(MovaiBaseModel):
                 for suffix in ('Action', 'ActionGoal', 'ActionFeedback', 'ActionResult'):
                     msgs.remove(base+suffix)
 
-        system = System("PortsData")
+        try:
+            system = System("PortsData")
+        except DoesNotExist:
+            system = System.model_validate({"System": {"PortsData": {}}})
         system.Value = value
         system.save(db=db)
 

@@ -11,7 +11,6 @@ import ast
 import re
 import os
 from movai_core_shared.logger import Log
-from ..models.scopestree import scopes
 from ..models.var import Var
 from ..movaidb import MovaiDB
 from ..new_models.configuration import Configuration
@@ -264,6 +263,7 @@ def get_string_from_template(template: str, task_entry: object) -> str:
     def _replacer(match):
         try:
             template, enum = match[1].split(".")
+            from dal.models.scopestree import scopes
             return str(
                 scopes()
                 .SharedDataEntry[task_entry.SharedData[template].ID]

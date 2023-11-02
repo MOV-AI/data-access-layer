@@ -21,6 +21,7 @@ requirements = [
     "py3rosmsgs==1.18.2",
     "cachetools==5.3.1",
     "xmltodict==0.13.0",
+    "tqdm==4.66.1",
     "movai-core-shared==2.4.1.*"
 ]
 

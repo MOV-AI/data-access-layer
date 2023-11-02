@@ -12,7 +12,6 @@ from .application import Application
 from .baseuser import BaseUser
 from .callback import Callback
 from .container import Container
-from .flow import Flow
 from .flowlinks import FlowLinks
 from .form import Form
 from .internaluser import InternalUser
@@ -76,7 +75,6 @@ __all__ = [
     "Callback",
     "Configuration",
     "Container",
-    "Flow",
     "FlowLinks",
     "Form",
     "InternalUser",

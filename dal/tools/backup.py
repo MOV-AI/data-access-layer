@@ -5,18 +5,35 @@
 
    Developers:
    - Tiago Teixeira (tiago.teixeira@mov.ai) - 2020
+   - Moawiya Mograni (moawiya@mov.ai) - 2023
 
    Backup a.k.a. Import Export tool
 """
-
 import argparse
 import hashlib
 import json
+import pydantic
 import os
 import pickle
 import re
 import sys
 from importlib import import_module
+from typing import Dict, List
+from tqdm import tqdm
+import dal.new_models
+import movai_core_enterprise.new_models
+
+
+def get_class(scope):
+    if hasattr(dal.new_models, scope):
+        cls = getattr(dal.new_models, scope)
+    elif hasattr(movai_core_enterprise.new_models, scope):
+        cls = getattr(movai_core_enterprise.new_models, scope)
+    else:
+        mod = import_module("dal.scopes")
+        cls = getattr(mod, scope)
+
+    return cls
 
 
 def test_reachable(redis_url):
@@ -36,9 +53,24 @@ def test_reachable(redis_url):
         return False
 
 
+write_bar = None
+
+
+def setup_progress_bar(objects: Dict[str, List[str]]) -> Dict[str, tqdm]:
+    global write_bar
+    bars = {}
+    pos = 0
+    for model in objects:
+        bars[model] = tqdm(total=len(objects[model]), desc=f"{model} Files", position=pos)
+        if not write_bar:
+            write_bar = bars[model]
+        pos += 1
+    return bars
+
+
 def _from_path(name):
     try:
-        from ..models.scopestree import scopes
+        from dal.models.scopestree import scopes
         return scopes.extract_reference(name)[2]
     except KeyError:
         # not a path and `scope` wasn't passed
@@ -49,6 +81,7 @@ def _from_path(name):
 _re_config = re.compile(r"^\$\(\s*config\s+([${}a-zA-Z0-9_]+)\.?.*\)$")
 _re_envvar = re.compile(r"\$\{?(.+?)\}?$")
 _re_place_holder = re.compile(r"(/)?place_holder(?(1)(/|$)|)")
+bars = None
 
 
 class BackupException(Exception):
@@ -67,37 +100,6 @@ class RemoveException(Exception):
     """Exception used when removing metadata."""
 
     pass
-
-
-#
-# Base class for commonality
-#
-
-my_models = ["callback", "node"]
-
-class Factory:
-    # cache
-    CLASSES_CACHE = {}
-
-    @staticmethod
-    def get_class(scope):
-        """
-        Get the scope
-        """
-        if scope.lower() in my_models:
-            from dal.new_models import Callback, Node
-            if scope.lower() == "callback":
-                return Callback
-            return Node
-        if scope not in Factory.CLASSES_CACHE:
-            mod = import_module("dal.scopes")
-
-            try:
-                Factory.CLASSES_CACHE[scope] = getattr(mod, scope)
-            except AttributeError as exc:
-                raise BackupException(f"Scope does not exists {scope}") from exc
-
-        return Factory.CLASSES_CACHE[scope]
 
 
 class Backup(object):
@@ -309,7 +311,7 @@ class Importer(Backup):
         if scope not in self._imported:
             self._imported[scope] = []
         if name not in self._imported[scope]:
-            self.log(f"Imported {scope}:{name}")
+            # self.log(f"Imported {scope}:{name}")
             self._imported[scope].append(name)
 
     #
@@ -427,6 +429,7 @@ class Importer(Backup):
     # wrapper around movaidb.set
     #
     def _import_data(self, scope, name, data):
+        global bars
         # remove unwanted keys
         if self._delete:
             try:
@@ -439,29 +442,39 @@ class Importer(Backup):
                 pass
             # delete
             try:
-                obj = Factory.get_class(scope)(name)
+                obj = get_class(scope)(name)
                 # exists
-                self._db.delete_by_args(scope, Name=obj.name)
+                if isinstance(obj, pydantic.BaseModel):
+                    obj.delete()
+                else:
+                    self._db.delete_by_args(scope, Name=obj.name)
             except Exception:
                 pass
+        version = "v2"
         try:
-            if scope.lower() in my_models:
-                print(f"using new models import, {scope}")
+            cls = get_class(scope)
+            if issubclass(cls, pydantic.BaseModel):
                 # pydantic callback
-                obj = Factory.get_class(scope)(**data)
-                print("saving ....")
+                obj = cls.model_validate(data)
                 obj.save()
             else:
+                version = "v1"
                 self._db.set(data, validate=self.validate)
             self.set_imported(scope, name)
-        except Exception:
-            _msg = f"Failed to import '{scope}:{name}'"
+            if bars and scope in bars:
+                write_bar.write(f"{scope} {name} imported (using {version})")
+                bars[scope].update(1)
+        except Exception as e:
+            _msg = f"Failed to import '{scope}:{name}', error: {e}"
             if self.validate:
-                self.log(_msg)
+                #self.log(_msg)
                 raise ImportException(_msg)
             else:
+                pass
                 # force print
-                print(_msg)
+                #print(_msg)
+            if write_bar:
+                write_bar.write(_msg)
 
     #
     # default importer function
@@ -745,7 +758,7 @@ class Importer(Backup):
                         try:
                             self.import_node([template])
                         except AttributeError:
-                            self.import_default("Flow", [template])
+                            self.import_default("Node", [template])
                 # inner flows
                 container_dict = data["Flow"][name].get("Container", {})
                 for key in container_dict:
@@ -1059,7 +1072,7 @@ class Exporter(Backup):
     # get all objects, given a scope
     #
     def get_objs(self, scope):
-        return Factory.get_class(scope).get_all()
+        return get_class(scope).get_all()
 
     #
     # check if it's to override the file
@@ -1143,6 +1156,7 @@ class Exporter(Backup):
         # TODO post actions for Ports
 
     def export_default(self, scope, name):
+        global bars
         name = _from_path(name)
         if self.exported(scope, name):
             # not exporting again
@@ -1154,12 +1168,21 @@ class Exporter(Backup):
             os.makedirs(path)
 
         try:
-            obj = Factory.get_class(scope)(name)
+            obj = get_class(scope)(name)
         except:
             raise ExportException(f"Can't find {scope}:{name}")
 
+        version = "v2"
+        if isinstance(obj, pydantic.BaseModel):
+            dic = obj.model_dump()
+        else:
+            obj.get_dict()
+            version = "v1"
         json_path = os.path.join(scope, f"{name}.json")
-        self.dict2file(obj.get_dict(), json_path)
+        self.dict2file(dic, json_path)
+        if bars and scope in bars:
+            bars[scope].update(1)
+            write_bar.write(f"{scope} {name} Exported (using {version})")
 
         self.set_exported(scope, name)
         # okay
@@ -1174,7 +1197,7 @@ class Exporter(Backup):
         if self.exported("Callback", name):
             return
 
-        Callback = Factory.get_class("Callback")
+        Callback = get_class("Callback")
 
         self.export_default("Callback", name)
         # didn't blow before, so must exist
@@ -1188,7 +1211,7 @@ class Exporter(Backup):
         if self.exported("Package", name):
             return
 
-        Package = Factory.get_class("Package")
+        Package = get_class("Package")
 
         package_path = os.path.join(self.project_path, "Package", name)
         if not os.path.exists(package_path):
@@ -1226,7 +1249,7 @@ class Exporter(Backup):
         if self.exported("Message", name):
             return
 
-        Message = Factory.get_class("Message")
+        Message = get_class("Message")
         try:
             obj = Message(name)
         except:
@@ -1259,7 +1282,7 @@ class Exporter(Backup):
         if self.exported("Flow", name):
             return
 
-        Flow = Factory.get_class("Flow")
+        Flow = get_class("Flow")
 
         try:
             flow = Flow(name)
@@ -1294,7 +1317,7 @@ class Exporter(Backup):
         if self.exported("TaskTemplate", name):
             return
 
-        TaskTemplate = Factory.get_class("TaskTemplate")
+        TaskTemplate = get_class("TaskTemplate")
 
         try:
             tasktemplate = TaskTemplate(name)
@@ -1311,7 +1334,7 @@ class Exporter(Backup):
         if self.exported("SharedDataEntry", name):
             return
 
-        SharedDataEntry = Factory.get_class("SharedDataEntry")
+        SharedDataEntry = get_class("SharedDataEntry")
 
         try:
             sde = SharedDataEntry(name)
@@ -1333,7 +1356,7 @@ class Exporter(Backup):
         if self.exported("Node", name):
             return
 
-        Node = Factory.get_class("Node")
+        Node = get_class("Node")
 
         try:
             node = Node(name)
@@ -1355,7 +1378,7 @@ class Exporter(Backup):
             return
 
         if self.recursive:
-            StateMachine = Factory.get_class("StateMachine")
+            StateMachine = get_class("StateMachine")
 
             try:
                 sm = StateMachine(name)
@@ -1378,7 +1401,7 @@ class Exporter(Backup):
         if self.exported("Ports", name):
             return
 
-        Ports = Factory.get_class("Ports")
+        Ports = get_class("Ports")
 
         try:
             ports = Ports(name)
@@ -1415,7 +1438,7 @@ class Exporter(Backup):
             return
 
         if self.recursive:
-            GraphicScene = Factory.get_class("GraphicScene")
+            GraphicScene = get_class("GraphicScene")
 
             try:
                 scene = GraphicScene(name)
@@ -1453,7 +1476,7 @@ class Exporter(Backup):
         if self.exported("Configuration", name):
             return
 
-        Configuration = Factory.get_class("Configuration")
+        Configuration = get_class("Configuration")
 
         try:
             config = Configuration(name)
@@ -1782,7 +1805,7 @@ class Remover(Backup):
 
         """
         try:
-            obj = Factory.get_class(scope)(name)
+            obj = get_class(scope)(name)
             # exists
             self._db.delete_by_args(scope, Name=obj.name)
             self.log(f"Removed {scope}:{name}")
@@ -1809,6 +1832,7 @@ class Remover(Backup):
 
 
 def main():
+    global bars
     parser = argparse.ArgumentParser(description="Export/Import/Remove Mov.AI Data")
     parser.add_argument(
         "-a",
@@ -1943,6 +1967,7 @@ def main():
                 objects[args.type] = [args.name]
 
     try:
+        bars = setup_progress_bar(objects)
         tool.run(objects)
         print(args.action.capitalize() + "ed")
         exit(0)

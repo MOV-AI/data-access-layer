@@ -6,7 +6,7 @@ from .base_model.common import PrimaryKey, DEFAULT_VERSION
 from movai_core_shared.logger import Log
 from .base_model.cache import ThreadSafeCache
 from datetime import datetime
-from pydantic import StringConstraints, field_validator, BaseModel
+from pydantic import StringConstraints, field_validator, BaseModel, Field
 from typing_extensions import Annotated
 from movai_core_shared.exceptions import DoesNotExist
 
