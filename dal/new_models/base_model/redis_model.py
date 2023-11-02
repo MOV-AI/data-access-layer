@@ -1,10 +1,12 @@
+import redis
+import json
 from typing import List, Tuple
 from pydantic import ConfigDict, BaseModel
-import redis
 from dal.movaidb import Redis
 from .cache import ThreadSafeCache
 from .common import PrimaryKey, DEFAULT_VERSION
 from .redis_config import RedisConfig
+from dal.archive import Archive
 
 
 DEFAULT_PROJECT = "Movai"
@@ -67,7 +69,18 @@ class RedisModel(BaseModel):
         """
         return f"__keyspace@0__:{self.pk}"
 
-    def save(self, db="global", version=None, project=None) -> str:
+    def list_versions(self, db="global") -> List[str]:
+        """return a list of all versions of the object in Redis
+
+        Returns:
+            List[str]: list of versions
+        """
+        return [
+            key.decode().split(":")[-1]
+            for key in self.db(db).keys(f"{self.project}:{self.scope}:{self.name}:*")
+        ]
+
+    def save(self, db="global", version=None, project=None, save_to_file=None) -> str:
         """dump object to json and save it in redis json using key=pk (PrimaryKey)
 
         Returns:
@@ -79,7 +92,6 @@ class RedisModel(BaseModel):
         self.pk = PrimaryKey.create_pk(
             project=project, scope=self.scope, id=self.name, version=version
         )
-
         self.db(db).json().set(
             self.pk,
             "$",
@@ -161,6 +173,24 @@ class RedisModel(BaseModel):
             if obj is not None:
                 ret.append(cls(**obj, version=version, project=project))
         return ret
+
+    @classmethod
+    def select_git(cls, remote: str, file_path: str, version: str):
+        """select object from git archive and load it inside instance
+
+        Args:
+            remote (str): the git remote url
+            file_path (str): file path from root of the remote
+            version (str): desired file version
+
+        Returns:
+            _type_: _description_
+        """
+        archive = Archive(user="TEMP")
+        # local_path_repo = archive.local_path(remote)
+        path = archive.get(file_path, remote, version)
+        with path.open("r") as f:
+            return cls.model_validate(json.load(f), version=version)
 
 
 def get_project_ids(project, db="global", version=None) -> List[tuple]:

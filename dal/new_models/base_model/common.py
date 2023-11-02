@@ -39,4 +39,10 @@ class MovaiPrimaryKey(AbstractPrimaryKey):
         return f"{project}:{scope}:{id}:{version}"
 
 
+class RobotKey(AbstractPrimaryKey):
+    @classmethod
+    def create_pk(*args, fleet: str = "", scope: str = "", id: str = "", version: str = ""):
+        return f"Fleet:{fleet}:{scope}:{id}"
+
+
 PrimaryKey = MovaiPrimaryKey

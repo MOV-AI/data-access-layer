@@ -2,7 +2,7 @@ import pickle
 import uuid
 from .base_model.redis_model import RedisModel
 from .configuration import Configuration
-from .base_model.common import PrimaryKey
+from .base_model.common import PrimaryKey, RobotKey
 from pydantic import ConfigDict, BaseModel, Field
 
 """
@@ -59,6 +59,8 @@ class Robot(RedisModel):
                 pk = PrimaryKey.create_pk(
                     project="Movai", scope="Robot", id=unique_id.hex, version=""
                 )
+                pk = RobotKey.create_pk(fleet="DefautlFleet", scope="Robot", id=unique_id.hex, version="")
+                # Fleet:DefaultFleet:Robot:RobotName
                 robot_name = f"robot_{unique_id.hex[0:6]}"
                 super().__init__(pk=pk, RobotName=robot_name)
                 self.save("local")

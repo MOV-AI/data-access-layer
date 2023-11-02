@@ -27,6 +27,9 @@ class LastUpdate(BaseModel):
             return datetime.strptime(v, "%d/%m/%Y %H:%M:%S")
         return datetime.strptime(v, "%d/%m/%Y at %H:%M:%S")
 
+    def update(self):
+        self.date = datetime.now().replace(microsecond=0)
+
 
 LABEL_REGEX = r"^[a-zA-Z 0-9._-]*(/[a-zA-Z0-9._-]+){0,}$"
 valid_models = [
@@ -98,6 +101,10 @@ class MovaiBaseModel(RedisModel):
                 raise DoesNotExist(f"{cls.__name__} {args[0]} not found in DB {db}!")
             return obj[0]
         return super().__new__(cls)
+
+    def save(self, db="global", version=None, project=None, save_to_file=None) -> str:
+        self.LastUpdate.update()
+        super().save(db=db, version=version, project=project, save_to_file=save_to_file)
 
     @property
     def path(self):

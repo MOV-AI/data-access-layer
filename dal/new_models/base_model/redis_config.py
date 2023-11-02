@@ -26,3 +26,4 @@ class RedisConfig:
         return asdict(self)
 
 
+# RedisConfig("redis-master").redis_url
