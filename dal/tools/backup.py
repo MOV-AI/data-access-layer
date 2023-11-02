@@ -369,6 +369,7 @@ class Importer(Backup):
     # raises a ImportException if match returns false
     #
     def _get_files(self, scope, names, build=None, match=None):
+        global write_bar
         names = [_from_path(n) for n in names]
 
         if len(names) == 0:
@@ -398,11 +399,13 @@ class Importer(Backup):
             file_path = os.path.join(scope_path, builder(name))
             if not matcher(file_path):
                 _msg = f"{scope}:{name} not found"
-                self.log(_msg)
+                # self.log(_msg)
+                if write_bar:
+                    write_bar.write(_msg)
                 if self.validate:
                     raise ImportException(_msg)
                 else:
-                    print(_msg)
+                    # print(_msg)
                     continue
             files.append((name, file_path))
 
