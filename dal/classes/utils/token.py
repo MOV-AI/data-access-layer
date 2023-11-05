@@ -150,7 +150,7 @@ class TokenManager:
                 cls.remove_token(token_id)
 
     @classmethod
-    def remove_all_expired_tokens(cls):
+    async def remove_all_expired_tokens(cls):
         """Removes all the tokens that their expiration
         time has passed.
         """
