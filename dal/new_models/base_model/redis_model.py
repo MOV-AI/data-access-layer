@@ -1,6 +1,8 @@
-from typing import List, Tuple
-from pydantic import ConfigDict, BaseModel
+from typing import List, Tuple, Union
+from pydantic import ConfigDict, BaseModel, field_validator
 import redis
+from datetime import datetime
+
 from dal.movaidb import Redis
 from .cache import ThreadSafeCache
 from .common import PrimaryKey, DEFAULT_VERSION
@@ -22,11 +24,43 @@ def connect_to_redis(redis_config=RedisConfig()) -> redis.Redis:
         decode_responses=True,
     )
 
+class LastUpdate(BaseModel):
+    date: datetime
+    user: str
+
+    @field_validator("date", mode="before")
+    def _validate_date(cls, date):
+        if not isinstance(date, str) or not date or date == "N/A":
+            return datetime.now().replace(microsecond=0)
+        if "at" not in date:
+            return datetime.strptime(date, "%d/%m/%Y %H:%M:%S")
+        return datetime.strptime(date, "%d/%m/%Y at %H:%M:%S")
+
+    @field_validator("user", mode="before")
+    def _validate_user(cls, user):
+        if user is None:
+            return "N/A"
 
 class RedisModel(BaseModel):
     # pk: Primary key which is the key of the entry in Redis representing this object.
     pk: str
     model_config = ConfigDict(from_attributes=True, validate_assignment=True)
+    LastUpdate: Union[LastUpdate, str]
+
+    #@field_validator("LastUpdate", mode="before")
+    #def _validate_last_update(cls, v) -> LastUpdate:
+    #    """validate last update field
+#
+    #    Args:
+    #        v (str/dict): last update field
+#
+    #    Returns:
+    #        LastUpdate: LastUpdate Model
+    #    """
+    #    if v is None or isinstance(v, str):
+    #        # TODO: changed default values.
+    #        return LastUpdate(date="", user=None)
+    #    return LastUpdate(**v)
 
     class Meta:
         # variables added here will be treated as a class variables and initialized once.
@@ -68,7 +102,10 @@ class RedisModel(BaseModel):
         """
         return f"__keyspace@0__:{self.pk}"
 
-    def save(self, db_type="global", version=None, project=None) -> str:
+    def _update_time(self, username: str = None) -> None:
+        self.LastUpdate = LastUpdate(username)
+
+    def save(self, db="global", version=None, project=None) -> str:
         """dump object to json and save it in redis json using key=pk (PrimaryKey)
 
         Returns:
@@ -77,6 +114,7 @@ class RedisModel(BaseModel):
         version = self.Version if version is None else version
         project = self.project if project is None else project
         self.project, self.Version = project, version
+        self._update_time()
         self.pk = PrimaryKey.create_pk(
             project=project, scope=self.scope, id=self.name, version=version
         )

@@ -14,19 +14,6 @@ LOGGER = Log.get_logger("BaseModel.mov.ai")
 cache = ThreadSafeCache()
 
 
-class LastUpdate(BaseModel):
-    date: datetime
-    user: str = "movai"
-
-    @field_validator("date", mode="before")
-    def _validate_date(cls, v):
-        if not isinstance(v, str) or not v or v == "N/A":
-            return datetime.now().replace(microsecond=0)
-        if "at" not in v:
-            return datetime.strptime(v, "%d/%m/%Y %H:%M:%S")
-        return datetime.strptime(v, "%d/%m/%Y at %H:%M:%S")
-
-
 LABEL_REGEX = r"^[a-zA-Z 0-9._-]*(/[a-zA-Z0-9._-]+){0,}$"
 valid_models = [
     "Flow",
@@ -47,26 +34,13 @@ class MovaiBaseModel(RedisModel):
     Info: Optional[str] = None
     Label: Annotated[str, StringConstraints(pattern=LABEL_REGEX)]
     Description: Optional[str] = None
-    LastUpdate: Union[LastUpdate, str]
+    
     Version: str = DEFAULT_VERSION
     name: str = ""
     project: str = ""
     Dummy: Optional[bool] = False
 
-    @field_validator("LastUpdate", mode="before")
-    def _validate_last_update(cls, v) -> LastUpdate:
-        """validate last update field
 
-        Args:
-            v (str/dict): last update field
-
-        Returns:
-            LastUpdate: LastUpdate Model
-        """
-        if v is None or isinstance(v, str):
-            # TODO: changed default values.
-            return LastUpdate(date="", user="")
-        return LastUpdate(**v)
 
     def __new__(cls, *args, **kwargs):
         if args:
@@ -246,3 +220,15 @@ class MovaiBaseModel(RedisModel):
                 ca = Application(name=app_name)
                 if ca.Callbacks and self.name in ca.Callbacks:
                     has_perm = True
+
+    @classmethod
+    def is_exist(cls, name: str) -> bool:
+        """This funtion checks if an object with a specific name already exist.
+
+        Args:
+            object_name (str): The name of the object to check.
+
+        Returns:
+            bool: True if exist, False otherwise.
+        """
+        return len(cls.select(name)) > 0
