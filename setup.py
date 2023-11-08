@@ -21,7 +21,7 @@ requirements = [
     "py3rosmsgs==1.18.2",
     "pydantic==1.10.4",
     "cachetools==5.3.1",
-    "movai-core-shared==2.4.1.*"
+    "movai-core-shared==2.5.0.*"
 ]
 
 
