@@ -14,7 +14,7 @@ import pickle
 
 from movai_core_shared.common.utils import is_enteprise, is_manager
 from movai_core_shared.consts import COMMAND_HANDLER_MSG_TYPE
-from movai_core_shared.envvars import MOVAI_FLOW_PORT, MESSAGE_SERVER_LOCAL_ADDR
+from movai_core_shared.envvars import SPAWNER_BIND_PORT, LOCAL_MESSAGE_SERVER
 from movai_core_shared.logger import Log
 from movai_core_shared.core.message_client import MessageClient
 
@@ -39,26 +39,43 @@ class FleetRobot(Scope):
             db (str, optional): "global/local". Defaults to "global".
         """
         super().__init__(scope="Robot", name=name, version=version, new=new, db=db)
-        if is_manager():
-            server = f"tcp://spawner:{MOVAI_FLOW_PORT}"
+        if is_enteprise():
+            server = LOCAL_MESSAGE_SERVER
         else:
-            server = MESSAGE_SERVER_LOCAL_ADDR
+            server = f"tcp://spawner:{SPAWNER_BIND_PORT}"
             
         self.__dict__["message_client"] = MessageClient(server_addr=server,robot_id=self.RobotName)
 
-    def send_cmd(self, command, *, flow=None, node=None, port=None, req_data=None) -> None:
+    def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot"""
         dst = {
-            "IP": self.IP,
-            "HOST": self.RobotName,
-            "ID": self.name
+            "ip": self.IP,
+            "host": self.RobotName,
+            "id": self.name
         }
+        
+        command_data = {}
+
+        if command:
+            command_data["command"] = command
+        
+        if flow:
+            command_data["flow"] = flow
+        
+        if node:
+            command_data["node"] = node
+        
+        if port:
+            command_data["port"] = port
+        
+        if data:
+            command_data["data"] = data
+
         req_data = {
-            "dst": dst
+            "dst": dst,
+            "command": command_data
         }
-        for key, value in locals().items():
-            if value is not None and key in ("command", "flow", "node", "port", "req_data"):
-                req_data.update({key: value})
+
         if self.message_client is None:
             req_data = pickle.dumps(req_data)
             self.Actions.append(req_data)

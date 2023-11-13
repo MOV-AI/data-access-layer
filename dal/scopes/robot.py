@@ -13,7 +13,7 @@ import uuid
 import pickle
 from movai_core_shared.exceptions import DoesNotExist
 from movai_core_shared.consts import COMMAND_HANDLER_MSG_TYPE
-from movai_core_shared.envvars import MOVAI_FLOW_PORT
+from movai_core_shared.envvars import SPAWNER_BIND_PORT
 from movai_core_shared.core.message_client import MessageClient
 from dal.scopes.scope import Scope
 from dal.movaidb import MovaiDB
@@ -57,7 +57,7 @@ class Robot(Scope):
 
             self.__dict__["fleet"] = FleetRobot(unique_id.hex, new=True)
             self.fleet.RobotName = "robot_" + unique_id.hex[0:6]
-        server = f"tcp://{self.IP}:{MOVAI_FLOW_PORT}"
+        server = f"tcp://spawner:{SPAWNER_BIND_PORT}"
         self.__dict__["message_client"] = MessageClient(server_addr=server, robot_id=self.name)
 
     def set_ip(self, ip_address: str):
@@ -73,15 +73,27 @@ class Robot(Scope):
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot"""
-        data = {}
-        for key, value in locals().items():
-            if value is not None and key in ("command", "flow", "node", "port", "data"):
-                data.update({key: value})
+        req_data = {}
+        if command:
+            req_data["command"] = command
+        
+        if flow:
+            req_data["flow"] = flow
+        
+        if node:
+            req_data["node"] = node
+        
+        if port:
+            req_data["port"] = port
+        
+        if data:
+            req_data["data"] = data
+                        
         if self.message_client is None:
-            data = pickle.dumps(data)
-            self.Actions.append(data)
+            req_data = pickle.dumps(req_data)
+            self.Actions.append(req_data)
         else:
-            self.message_client.send_request(COMMAND_HANDLER_MSG_TYPE, data)
+            self.message_client.send_request(COMMAND_HANDLER_MSG_TYPE, req_data)
 
     def update_status(self, status: dict, db: str = "all"):
         """Update the Robot status in the database"""
