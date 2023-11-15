@@ -77,8 +77,8 @@ class FleetRobot(Scope):
         }
 
         if self.message_client is None:
-            req_data = pickle.dumps(req_data)
-            self.Actions.append(req_data)
+            command_data = pickle.dumps(command_data)
+            self.Actions.append(command_data)
         else:
             self.message_client.send_request(COMMAND_HANDLER_MSG_TYPE, req_data)
 
