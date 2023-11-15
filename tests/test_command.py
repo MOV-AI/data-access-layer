@@ -9,4 +9,4 @@ def sendToRobot(action_name: str, flow_name: str, robot_name: str):
     return True
 
 
-sendToRobot("STOP", "test_flow1", "56d33a4dc6fb44739948edd587db97b3")
+sendToRobot("START", "test_flow1", "Default")
