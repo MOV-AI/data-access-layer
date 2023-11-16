@@ -460,7 +460,7 @@ class MovaiDB:
                         }
                         if value:
                             db_set.delete(key)
-                            db_set.hmset(key, value)
+                            db_set.hset(key, mapping=value)
                     elif source == "list":
                         for lval in value:
                             if pickl:
