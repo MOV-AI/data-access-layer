@@ -12,11 +12,16 @@
 """
 import pickle
 
-from movai_core_shared.common.utils import is_enteprise, is_manager
-from movai_core_shared.consts import COMMAND_HANDLER_MSG_TYPE
-from movai_core_shared.envvars import SPAWNER_BIND_PORT, LOCAL_MESSAGE_SERVER
-from movai_core_shared.logger import Log
+from movai_core_shared.common.utils import is_enteprise
 from movai_core_shared.core.message_client import MessageClient
+from movai_core_shared.consts import COMMAND_HANDLER_MSG_TYPE
+from movai_core_shared.envvars import (
+    SPAWNER_BIND_PORT,
+    DEVICE_NAME,
+    MESSAGE_SERVER_PORT,
+)
+from movai_core_shared.logger import Log
+
 
 from dal.movaidb import MovaiDB
 
@@ -26,8 +31,7 @@ logger = Log.get_logger("FleetRobot")
 
 
 class FleetRobot(Scope):
-    """Represent the Robot scope in the redis-master.
-    """
+    """Represent the Robot scope in the redis-master."""
 
     def __init__(self, name: str, version="latest", new=False, db="global"):
         """constructor
@@ -39,48 +43,45 @@ class FleetRobot(Scope):
             db (str, optional): "global/local". Defaults to "global".
         """
         super().__init__(scope="Robot", name=name, version=version, new=new, db=db)
-        if is_enteprise():
-            server = LOCAL_MESSAGE_SERVER
-        else:
+        if self.RobotName == DEVICE_NAME or not is_enteprise():
             server = f"tcp://spawner:{SPAWNER_BIND_PORT}"
-            
-        self.__dict__["message_client"] = MessageClient(server_addr=server,robot_id=self.RobotName)
+        else:
+            server = f"tcp://{self.IP}:{MESSAGE_SERVER_PORT}"
+
+        self.__dict__["message_client"] = MessageClient(server_addr=server, robot_id=self.RobotName)
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot"""
-        dst = {
-            "ip": self.IP,
-            "host": self.RobotName,
-            "id": self.name
-        }
-        
+        dst = {"ip": self.IP, "host": self.RobotName, "id": self.name}
+
         command_data = {}
 
         if command:
             command_data["command"] = command
-        
+
         if flow:
             command_data["flow"] = flow
-        
+
         if node:
             command_data["node"] = node
-        
+
         if port:
             command_data["port"] = port
-        
+
         if data:
             command_data["data"] = data
 
-        req_data = {
-            "dst": dst,
-            "command": command_data
-        }
+        req_data = {"dst": dst, "command_data": command_data}
 
-        if self.message_client is None:
+        if (
+            self.RobotName == DEVICE_NAME
+            and hasattr(self, "message_client")
+            and self.message_client is not None
+        ):
+            self.message_client.send_request(COMMAND_HANDLER_MSG_TYPE, req_data)
+        else:
             command_data = pickle.dumps(command_data)
             self.Actions.append(command_data)
-        else:
-            self.message_client.send_request(COMMAND_HANDLER_MSG_TYPE, req_data)
 
     def get_active_alerts(self) -> dict:
         """Gets a dictionary of the active alerts on this specific robot.

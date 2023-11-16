@@ -11,10 +11,13 @@
 """
 import uuid
 import pickle
+
+from movai_core_shared.core.message_client import MessageClient
 from movai_core_shared.exceptions import DoesNotExist
 from movai_core_shared.consts import COMMAND_HANDLER_MSG_TYPE
-from movai_core_shared.envvars import SPAWNER_BIND_PORT
-from movai_core_shared.core.message_client import MessageClient
+from movai_core_shared.envvars import SPAWNER_BIND_PORT, DEVICE_NAME
+
+
 from dal.scopes.scope import Scope
 from dal.movaidb import MovaiDB
 from dal.scopes.fleetrobot import FleetRobot
@@ -27,14 +30,11 @@ class Robot(Scope):
     scope = "Robot"
 
     def __init__(self):
-
         robot_struct = MovaiDB("local").search_by_args("Robot", Name="*")[0]
 
         if robot_struct:
             for name in robot_struct["Robot"]:
-                super().__init__(
-                    scope="Robot", name=name, version="latest", new=False, db="local"
-                )
+                super().__init__(scope="Robot", name=name, version="latest", new=False, db="local")
                 try:
                     self.__dict__["fleet"] = FleetRobot(name)
                     self.RobotName = self.fleet.RobotName
@@ -58,13 +58,12 @@ class Robot(Scope):
             self.__dict__["fleet"] = FleetRobot(unique_id.hex, new=True)
             self.fleet.RobotName = "robot_" + unique_id.hex[0:6]
         server = f"tcp://spawner:{SPAWNER_BIND_PORT}"
-        self.__dict__["message_client"] = MessageClient(server_addr=server, robot_id=self.name)
+        self.__dict__["spawner_client"] = MessageClient(server_addr=server, robot_id=self.name)
 
     def set_ip(self, ip_address: str):
         """Set the IP Adress of the Robot"""
         self.IP = ip_address
         self.fleet.IP = ip_address
-
 
     def set_name(self, name: str):
         """Set the Name of the Robot"""
@@ -73,27 +72,33 @@ class Robot(Scope):
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot"""
-        req_data = {}
+        command_data = {}
         if command:
-            req_data["command"] = command
-        
+            command_data["command"] = command
+
         if flow:
-            req_data["flow"] = flow
-        
+            command_data["flow"] = flow
+
         if node:
-            req_data["node"] = node
-        
+            command_data["node"] = node
+
         if port:
-            req_data["port"] = port
-        
+            command_data["port"] = port
+
         if data:
-            req_data["data"] = data
-                        
-        if self.message_client is None:
-            req_data = pickle.dumps(req_data)
-            self.Actions.append(req_data)
+            command_data["data"] = data
+
+        req_data = {"command_data": command_data}
+
+        if (
+            self.RobotName == DEVICE_NAME
+            and hasattr(self, "spawner_client")
+            and self.spawner_client is not None
+        ):
+            self.spawner_client.send_request(COMMAND_HANDLER_MSG_TYPE, req_data)
         else:
-            self.message_client.send_request(COMMAND_HANDLER_MSG_TYPE, req_data)
+            command_data = pickle.dumps(command_data)
+            self.Actions.append(command_data)
 
     def update_status(self, status: dict, db: str = "all"):
         """Update the Robot status in the database"""
