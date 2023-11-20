@@ -46,9 +46,9 @@ class FleetRobot(Scope):
         if self.RobotName == DEVICE_NAME or not is_enteprise():
             server = f"tcp://spawner:{SPAWNER_BIND_PORT}"
         else:
-            server = f"tcp://{self.IP}:{MESSAGE_SERVER_PORT}"
+            server = f"tcp://{self.IP}:{SPAWNER_BIND_PORT}"
 
-        self.__dict__["message_client"] = MessageClient(server_addr=server, robot_id=self.RobotName)
+        self.__dict__["spawner_client"] = MessageClient(server_addr=server, robot_id=self.RobotName)
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot"""
@@ -74,11 +74,10 @@ class FleetRobot(Scope):
         req_data = {"dst": dst, "command_data": command_data}
 
         if (
-            self.RobotName == DEVICE_NAME
-            and hasattr(self, "message_client")
-            and self.message_client is not None
+            hasattr(self, "spawner_client") and
+            self.spawner_client is not None
         ):
-            self.message_client.send_request(COMMAND_HANDLER_MSG_TYPE, req_data)
+            self.spawner_client.send_request(COMMAND_HANDLER_MSG_TYPE, req_data)
         else:
             command_data = pickle.dumps(command_data)
             self.Actions.append(command_data)
