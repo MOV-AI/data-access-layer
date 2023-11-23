@@ -66,7 +66,7 @@ def chunk_data(data, n):
     if len(data) < n:
         return [[x] for x in data]
     chunk_size = len(data) // n
-    return [data[i:i + chunk_size] for i in range(0, len(data), chunk_size)]
+    return [data[i : i + chunk_size] for i in range(0, len(data), chunk_size)]
 
 
 invalid_models = set()
@@ -101,7 +101,9 @@ chunks = chunk_data(objs, NUM_THREADS)
 
 
 with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
-    futures = [executor.submit(validate_model, model, id) for chunk in chunks for model, id in chunk]
+    futures = [
+        executor.submit(validate_model, model, id) for chunk in chunks for model, id in chunk
+    ]
 
     for future in futures:
         future.result()  # to capture any exceptions thrown inside threads
