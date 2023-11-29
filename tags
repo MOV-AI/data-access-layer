@@ -3307,7 +3307,7 @@ secret_key_dict	build/lib/dal/classes/utils/secretkey.py	/^    secret_key_dict =
 secret_key_dict	dal/classes/utils/secretkey.py	/^    secret_key_dict = {'KeyLength': '',$/;"	v	class:SecretKey
 secure	build/lib/dal/models/internaluser.py	/^    secure = SecurePassword()$/;"	v	class:InternalUser
 secure	dal/models/internaluser.py	/^    secure = SecurePassword()$/;"	v	class:InternalUser
-select	dal/new_models/base_model/redis_model.py	/^    def select(cls, ids: List[str] = None, project=GLOBAL_KEY_PREFIX) -> list:$/;"	m	class:RedisModel
+find	dal/new_models/base_model/redis_model.py	/^    def find(cls, ids: List[str] = None, project=GLOBAL_KEY_PREFIX) -> list:$/;"	m	class:RedisModel
 send	build/lib/dal/classes/protocols/redis.py	/^    def send(self, msg):$/;"	m	class:ContextProtocolOut
 send	dal/classes/protocols/redis.py	/^    def send(self, msg):$/;"	m	class:ContextProtocolOut
 send_cmd	build/lib/dal/scopes/fleetrobot.py	/^    def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:$/;"	m	class:FleetRobot
