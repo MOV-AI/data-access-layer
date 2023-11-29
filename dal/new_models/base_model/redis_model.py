@@ -1,15 +1,29 @@
-import redis
+"""
+   Copyright (C) Mov.ai  - All Rights Reserved
+   Unauthorized copying of this file, via any medium is strictly prohibited
+   Proprietary and confidential
+
+   Developers:
+   - Moawiya Mograbi (moawiya@mov.ai) - 2023
+   - Erez Zomer (erez@mov.ai) - 2023
+"""
 import json
 from typing import List, Tuple
+
 from pydantic import ConfigDict, BaseModel
-from dal.movaidb import Redis
-from .cache import ThreadSafeCache
-from .common import PrimaryKey, DEFAULT_VERSION
-from .redis_config import RedisConfig
+import redis
+
+from movai_core_shared.logger import Log
+
 from dal.archive import Archive
+from dal.movaidb import Redis
 
+from .cache import ThreadSafeCache
+from .common import PrimaryKey, DEFAULT_VERSION, DEFAULT_PROJECT
+from .redis_config import RedisConfig
 
-DEFAULT_PROJECT = "Movai"
+LOGGER = Log.get_logger(__name__)
+
 cache = ThreadSafeCache()
 
 
@@ -26,9 +40,14 @@ def connect_to_redis(redis_config=RedisConfig()) -> redis.Redis:
 
 
 class RedisModel(BaseModel):
+    """The very basic model for implementing object mapping (OM).
+    """
     # pk: Primary key which is the key of the entry in Redis representing this object.
     pk: str
     model_config = ConfigDict(from_attributes=True, validate_assignment=True)
+    Project: str = DEFAULT_PROJECT
+    Version: str = DEFAULT_VERSION
+
 
     class Meta:
         # variables added here will be treated as a class variables and initialized once.
@@ -46,7 +65,7 @@ class RedisModel(BaseModel):
         return []
 
     @classmethod
-    def db(cls, type: str) -> redis.Redis:
+    def db(cls, db_type: str) -> redis.Redis:
         """return the redis connection object
 
         Args:
@@ -56,7 +75,7 @@ class RedisModel(BaseModel):
         Returns:
             redis.Redis: redis connection
         """
-        if type == "global":
+        if db_type == "global":
             return Redis().db_global
         return Redis().db_local
 
@@ -77,7 +96,7 @@ class RedisModel(BaseModel):
         """
         return [
             key.decode().split(":")[-1]
-            for key in self.db(db).keys(f"{self.project}:{self.scope}:{self.name}:*")
+            for key in self.db(db).keys(f"{self.Project}:{self.scope}:{self.name}:*")
         ]
 
     def save(self, db="global", version=None, project=None, save_to_file=None) -> str:
@@ -87,16 +106,20 @@ class RedisModel(BaseModel):
             str: _description_
         """
         version = self.Version if version is None else version
-        project = self.project if project is None else project
-        self.project, self.Version = project, version
+        project = self.Project if project is None else project
+        self.Project = project
+        self.Version = version
         self.pk = PrimaryKey.create_pk(
             project=project, scope=self.scope, id=self.name, version=version
         )
-        self.db(db).json().set(
-            self.pk,
-            "$",
-            self.model_dump(by_alias=True, exclude_unset=True, exclude_none=True),
-        )
+        try:
+            self.db(db).json().set(
+                self.pk,
+                "$",
+                self.model_dump(by_alias=True, exclude_unset=True, exclude_none=True),
+            )
+        except Exception as exc:
+            LOGGER.error(f"While trying to save model to DB, got the following exception: {exc}.")
         cache_key = f"{db}::{self.pk}"
         cache[cache_key] = self
         return self.pk
@@ -113,7 +136,7 @@ class RedisModel(BaseModel):
             del cache[cache_key]
 
     @classmethod
-    def model_fetch_ids(cls, project=None, version=None, db="global") -> List[Tuple[str, str, str]]:
+    def get_model_ids(cls, project=None, version=None, db="global") -> List[Tuple[str, str, str]]:
         """returns a list of tuples including all of the keys from the
            same class in Redis according to the calling class (Flow/Node/Callback/...).
            a Tuple will indicate (project, id, version)
@@ -140,7 +163,7 @@ class RedisModel(BaseModel):
         ]
 
     @classmethod
-    def select(
+    def find(
         cls, ids: List[str] = None, project=DEFAULT_PROJECT, version=DEFAULT_VERSION, db="global"
     ) -> List:
         """query objects from redis by id and project
@@ -176,7 +199,7 @@ class RedisModel(BaseModel):
 
     @classmethod
     def select_git(cls, remote: str, file_path: str, version: str):
-        """select object from git archive and load it inside instance
+        """find object from git archive and load it inside instance
 
         Args:
             remote (str): the git remote url

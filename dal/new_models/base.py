@@ -1,3 +1,12 @@
+"""
+   Copyright (C) Mov.ai  - All Rights Reserved
+   Unauthorized copying of this file, via any medium is strictly prohibited
+   Proprietary and confidential
+
+   Developers:
+   - Moawiya Mograbi (moawiya@mov.ai) - 2023
+   - Erez Zomer (erez@mov.ai) - 2023
+"""
 import json
 import re
 from typing import List, Optional, Union
@@ -51,10 +60,8 @@ class MovaiBaseModel(RedisModel):
     Info: Optional[str] = None
     Label: Annotated[str, StringConstraints(pattern=LABEL_REGEX)] = ""
     Description: Optional[str] = None
-    LastUpdate: Union[LastUpdate, str]
-    Version: str = DEFAULT_VERSION
+    LastUpdate: Union[LastUpdate, str]    
     name: str = ""
-    project: str = ""
     Dummy: Optional[bool] = False
 
     @field_validator("LastUpdate", mode="before")
@@ -96,7 +103,7 @@ class MovaiBaseModel(RedisModel):
             if cache_key in cache:
                 return cache[cache_key]
 
-            obj = cls.select(ids=[id], version=version, project=project, db=db)
+            obj = cls.find(ids=[id], version=version, project=project, db=db)
             if not obj:
                 raise DoesNotExist(f"{cls.__name__} {args[0]} not found in DB {db}!")
             return obj[0]

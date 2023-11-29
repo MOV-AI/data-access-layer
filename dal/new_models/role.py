@@ -94,7 +94,7 @@ class Role(MovaiBaseModel):
             "AclObject": [READ_PERMISSION],
         }
         resources["Applications"] = [
-            app.name for app in Application.select()
+            app.name for app in Application.find()
         ]
 
         deployer_role = cls.create(DEPLOYER_ROLE, resources)
@@ -148,4 +148,4 @@ class Role(MovaiBaseModel):
             list: containing the name of the current Roles.
         """
 
-        return [id for _, id, _ in Role.model_fetch_ids(project="Roles")]
+        return [id for _, id, _ in Role.get_model_ids(project="Roles")]

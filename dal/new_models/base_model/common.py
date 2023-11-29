@@ -5,6 +5,7 @@ from abc import abstractmethod, ABC
 # from ulid import ULID
 
 
+DEFAULT_PROJECT = "Movai"
 DEFAULT_VERSION = "__UNVERSIONED__"
 
 

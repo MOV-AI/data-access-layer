@@ -550,7 +550,7 @@ class Flow(MovaiBaseModel):
         - Delete all nodes of type Container with ContainerFlow = flow_id
         """
 
-        for flow in Flow.select():
+        for flow in Flow.find():
             flow: Flow = flow
             for c_name, c_value in flow.Container.items():
                 if c_value.ContainerFlow == flow_id:
@@ -714,7 +714,7 @@ class Flow(MovaiBaseModel):
 
         # get info about flows with containers
         flows_with_containers: List[Flow] = []
-        for flow in Flow.select():
+        for flow in Flow.find():
             flow: Flow = flow
             if flow.Container:
                 flows_with_containers.append(flow)

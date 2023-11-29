@@ -56,7 +56,7 @@ class Message(MovaiBaseModel):
         action_packs = []
         action_names = ('ActionFeedback', 'ActionGoal', 'ActionResult')
 
-        db_packs: List[Message] = Message.select()
+        db_packs: List[Message] = Message.find()
 
         if msg_type in ('msg', 'all'):
             msg_packs = [*(
@@ -150,7 +150,7 @@ class Message(MovaiBaseModel):
     def get_all(db='global') -> Dict[str, List]:
         """ Get a map of package -> messages from all packages """
 
-        db_packs: List[str] = [tup[1] for tup in Message.model_fetch_ids(db=db)]
+        db_packs: List[str] = [tup[1] for tup in Message.get_model_ids(db=db)]
 
         base_dict = {
             package: Message.get_msgs(package, db=db)

@@ -1,6 +1,5 @@
 from typing import Optional
 from dataclasses import dataclass, asdict
-from redis import asyncio as redis
 
 
 @dataclass
