@@ -19,11 +19,10 @@ requirements = [
     "pyros-genmsg==0.5.8",
     "rospkg==1.4.0",
     "py3rosmsgs==1.18.2",
-    "pydantic==1.10.4",
     "cachetools==5.3.1",
     "xmltodict==0.13.0",
     "tqdm==4.66.1",
-    "movai-core-shared==2.4.1.*"
+    "movai-core-shared==2.5.0.*",
 ]
 
 # pydantic is already imported in movai-core-shared
@@ -38,7 +37,7 @@ data_files += [file for file in glob("dal/validation/schema/2.4/common/*.json")]
 # The 'install_requires' is where you specify the package dependencies of your package. They will be automaticly installed, before your package.  # noqa: E501
 setuptools.setup(
     name="data-access-layer",
-    version="2.5.0-0",
+    version="2.5.0-5",
     author="Backend team",
     author_email="backend@mov.ai",
     description="DATA ACCESS LAYER",
@@ -51,10 +50,10 @@ setuptools.setup(
     install_requires=requirements,
     data_files=data_files,
     entry_points={
-         "console_scripts":[
-             "dal_backup = dal.tools.backup:main",
-             "edit_yaml = dal.tools.edit_yaml:main",
-             "secret_key = dal.tools.secret_key:main"
-         ]
-        },
+        "console_scripts": [
+            "dal_backup = dal.tools.backup:main",
+            "edit_yaml = dal.tools.edit_yaml:main",
+            "secret_key = dal.tools.secret_key:main",
+        ]
+    },
 )

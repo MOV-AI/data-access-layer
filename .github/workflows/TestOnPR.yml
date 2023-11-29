@@ -2,16 +2,7 @@ name: "CI - On main/dev/release branches"
 on:
   pull_request:
     branches:
-      - dev
-      - dev-*
-      - dev/*
-      - develop-*
-      - develop/*
-      - main
-      - 'releases/**'
-    paths-ignore:
-      - '.bumpversion.cfg'
-      - 'setup.py'
+      - "**/**"
 jobs:
   CI:
     uses: MOV-AI/.github/.github/workflows/py-workflow.yml@v1
