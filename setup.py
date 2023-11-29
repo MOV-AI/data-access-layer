@@ -26,6 +26,7 @@ requirements = [
     "movai-core-shared==2.4.1.*"
 ]
 
+# pydantic is already imported in movai-core-shared
 
 data_files = [file for file in glob("dal/validation/schema/1.0/*.json")]
 data_files += [file for file in glob("dal/validation/schema/2.0/*.json")]
