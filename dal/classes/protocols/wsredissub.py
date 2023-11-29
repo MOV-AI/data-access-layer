@@ -78,7 +78,7 @@ class WSRedisSub:
 
     async def release(self, conn_id):
         conn = self.connections[conn_id]["subs"]
-        self.databases.slave_pubsub.release(conn.connection)
+        asyncio.create_task(conn.wait_closed())
         del self.connections[conn_id]
 
     async def close_and_release(self, ws: web.WebSocketResponse, conn_id: str):
