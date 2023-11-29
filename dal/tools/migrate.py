@@ -13,7 +13,7 @@ import sys
 import logging
 
 logger = logging.getLogger("migrate.tool")
-handler = logging.FileHandler("migrate.log")
+handler = logging.FileHandler("/opt/mov.ai/app/migrate.log")
 handler.setLevel(logging.INFO)
 logger.addHandler(handler)
 
@@ -99,11 +99,14 @@ NUM_THREADS = 8
 # list of lists containing the data to be processed
 chunks = chunk_data(objs, NUM_THREADS)
 
+for chunk in chunks:
+    for model, id in chunk:
+        validate_model(model, id)
 
-with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
-    futures = [
-        executor.submit(validate_model, model, id) for chunk in chunks for model, id in chunk
-    ]
-
-    for future in futures:
-        future.result()  # to capture any exceptions thrown inside threads
+#with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
+#    futures = [
+#        executor.submit(validate_model, model, id) for chunk in chunks for model, id in chunk
+#    ]
+#
+#    for future in futures:
+#        future.result()  # to capture any exceptions thrown inside threads
