@@ -12,7 +12,7 @@
 """
 import pickle
 
-from movai_core_shared.common.utils import is_enteprise
+from movai_core_shared.common.utils import is_enterprise
 from movai_core_shared.core.message_client import MessageClient
 from movai_core_shared.consts import COMMAND_HANDLER_MSG_TYPE
 from movai_core_shared.envvars import (
@@ -43,7 +43,7 @@ class FleetRobot(Scope):
             db (str, optional): "global/local". Defaults to "global".
         """
         super().__init__(scope="Robot", name=name, version=version, new=new, db=db)
-        if self.RobotName == DEVICE_NAME or not is_enteprise():
+        if self.RobotName == DEVICE_NAME or not is_enterprise():
             server = f"tcp://spawner:{SPAWNER_BIND_PORT}"
         else:
             server = f"tcp://{self.IP}:{SPAWNER_BIND_PORT}"
