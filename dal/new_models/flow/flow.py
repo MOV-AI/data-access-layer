@@ -1,5 +1,5 @@
 from typing import Optional, Dict, List, Any, ClassVar, Set
-from pydantic import StringConstraints, Field, BaseModel, ConfigDict
+from pydantic import Field, BaseModel, ConfigDict
 from ..base_model.common import Arg
 from ..base import MovaiBaseModel
 from ..configuration import Configuration
@@ -27,10 +27,12 @@ class Layer(BaseModel):
 
 
 class Flow(MovaiBaseModel):
-    Parameter: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")], Arg]] = None
-    Container: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z_0-9]+$")], ContainerClass]] = Field(
-        default_factory=dict
-    )
+    #Parameter: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")], Arg]] = None
+    Parameter: Optional[Dict] = None
+    #Container: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z_0-9]+$")], ContainerClass]] = Field(
+    #    default_factory=dict
+    #)
+    Container: Optional[Dict]
     ExposedPorts: Optional[
         Dict[
             Annotated[str, StringConstraints(pattern=r"^(__)?[a-zA-Z0-9_]+$")],

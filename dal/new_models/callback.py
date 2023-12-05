@@ -6,12 +6,12 @@ import sys
 import rospkg
 from typing import Union, Optional, Dict, List
 from .base import MovaiBaseModel
-from pydantic import StringConstraints
+#from pydantic import StringConstraints
 from typing_extensions import Annotated
 from movai_core_shared.exceptions import DoesNotExist
 
-ValidStr = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z_]+$")]
-ValidStrNums = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")]
+#ValidStr = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z_]+$")]
+#ValidStrNums = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")]
 
 
 class Py3LibValue(pydantic.BaseModel):
@@ -22,7 +22,8 @@ class Py3LibValue(pydantic.BaseModel):
 class Callback(MovaiBaseModel):
     Code: Optional[str] = None
     Message: Optional[str] = None
-    Py3Lib: Optional[Dict[ValidStrNums, Py3LibValue]] = {}
+    #Py3Lib: Optional[Dict[ValidStrNums, Py3LibValue]] = {}
+    Py3Lib: Optional[Dict] = {}
 
     def _original_keys(self) -> List[str]:
         return super()._original_keys() + ["Code", "Message", "Py3Lib"]

@@ -7,36 +7,50 @@
    - Moawiya Mograbi (moawiya@mov.ai) - 2023
    - Erez Zomer (erez@mov.ai) - 2023
 """
+from datetime import datetime
 import json
 import re
 from typing import List, Optional, Union
-from .base_model.redis_model import RedisModel, DEFAULT_PROJECT
-from .base_model.common import PrimaryKey, DEFAULT_VERSION
-from movai_core_shared.logger import Log
-from .base_model.cache import ThreadSafeCache
-from datetime import datetime
-from pydantic import StringConstraints, field_validator, BaseModel, Field
 from typing_extensions import Annotated
+
+from pydantic import field_validator
+from redis_om import JsonModel, EmbeddedJsonModel
+
 from movai_core_shared.exceptions import DoesNotExist
+from movai_core_shared.logger import Log
+
+from .base_model.cache import ThreadSafeCache
+from .base_model.redis_model import DEFAULT_PROJECT
+from .base_model.common import PrimaryKey, DEFAULT_VERSION
 
 
 LOGGER = Log.get_logger("BaseModel.mov.ai")
 cache = ThreadSafeCache()
 
 
-class LastUpdate(BaseModel):
+class LastUpdate(EmbeddedJsonModel):
+    """A class for implementing the lastupdate field."""
     date: datetime
     user: str = "movai"
 
     @field_validator("date", mode="before")
-    def _validate_date(cls, v):
-        if not isinstance(v, str) or not v or v == "N/A":
+    def _validate_date(cls, value) -> datetime:
+        """a method for validating the date.
+
+        Args:
+            value (datetime): a datetime value.
+
+        Returns:
+            datetime: the supplied date.
+        """
+        if not isinstance(value, str) or not value or value == "N/A":
             return datetime.now().replace(microsecond=0)
-        if "at" not in v:
-            return datetime.strptime(v, "%d/%m/%Y %H:%M:%S")
-        return datetime.strptime(v, "%d/%m/%Y at %H:%M:%S")
+        if "at" not in value:
+            return datetime.strptime(value, "%d/%m/%Y %H:%M:%S")
+        return datetime.strptime(value, "%d/%m/%Y at %H:%M:%S")
 
     def update(self):
+        """Updates the object current date."""
         self.date = datetime.now().replace(microsecond=0)
 
 
@@ -56,28 +70,30 @@ path_regex = re.compile(r"([^\/]+)\/([^\/]+)\/(.*)")
 label_regex = re.compile(LABEL_REGEX)
 
 
-class MovaiBaseModel(RedisModel):
+class MovaiBaseModel(JsonModel):
+    """The basic movai model."""
     Info: Optional[str] = None
-    Label: Annotated[str, StringConstraints(pattern=LABEL_REGEX)] = ""
+    #Label: Annotated[str, StringConstraints(pattern=LABEL_REGEX)] = ""
+    Label: str
     Description: Optional[str] = None
     LastUpdate: Union[LastUpdate, str]    
     name: str = ""
     Dummy: Optional[bool] = False
 
     @field_validator("LastUpdate", mode="before")
-    def _validate_last_update(cls, v) -> LastUpdate:
+    def _validate_last_update(cls, value) -> LastUpdate:
         """validate last update field
 
         Args:
-            v (str/dict): last update field
+            value (str/dict): last update field
 
         Returns:
             LastUpdate: LastUpdate Model
         """
-        if v is None or isinstance(v, str):
+        if value is None or isinstance(value, str):
             # TODO: changed default values.
             return LastUpdate(date="", user="")
-        return LastUpdate(**v)
+        return LastUpdate(**value)
 
     def __new__(cls, *args, **kwargs):
         if args:
@@ -111,6 +127,7 @@ class MovaiBaseModel(RedisModel):
 
     def save(self, db="global", version=None, project=None, save_to_file=None) -> str:
         self.LastUpdate.update()
+        super().save()
         super().save(db=db, version=version, project=project, save_to_file=save_to_file)
 
     @property
@@ -131,8 +148,8 @@ class MovaiBaseModel(RedisModel):
         return super()._original_keys() + ["Info", "Label", "Description", "LastUpdate", "Version"]
 
     @field_validator("Dummy", mode="before")
-    def _validate_dummy(cls, v):
-        return v if v not in [None, ""] else False
+    def _validate_dummy(cls, value):
+        return value if value not in [None, ""] else False
 
     def __init__(self, *args, project: str = DEFAULT_PROJECT, db: str = "global", **kwargs):
         if not kwargs or self.scope not in kwargs:
