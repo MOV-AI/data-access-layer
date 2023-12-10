@@ -24,12 +24,22 @@ LOGGER = Log.get_logger("BaseModel.mov.ai")
 cache = ThreadSafeCache()
 
 
-class LastUpdate(BaseModel):
+class LastUpdated(BaseModel):
+    """A field represent the last time object was updated."""
     date: datetime
     user: str = "movai"
 
     @field_validator("date", mode="before")
+    @classmethod
     def _validate_date(cls, v):
+        """Valdation function.
+
+        Args:
+            v (datetime): the current time and date.
+
+        Returns:
+            datetime: A validated time and date.
+        """
         if not isinstance(v, str) or not v or v == "N/A":
             return datetime.now().replace(microsecond=0)
         if "at" not in v:
@@ -37,6 +47,7 @@ class LastUpdate(BaseModel):
         return datetime.strptime(v, "%d/%m/%Y at %H:%M:%S")
 
     def update(self):
+        """Updates the date and time to now."""
         self.date = datetime.now().replace(microsecond=0)
 
 
@@ -50,7 +61,7 @@ valid_models = [
     "Layout",
     "Application",
     "Configuration",
-    "Ports",
+    "Ports"
 ]
 path_regex = re.compile(r"([^\/]+)\/([^\/]+)\/(.*)")
 label_regex = re.compile(LABEL_REGEX)
@@ -59,25 +70,10 @@ label_regex = re.compile(LABEL_REGEX)
 class MovaiBaseModel(RedisModel):
     Info: Optional[str] = None
     Label: Annotated[str, StringConstraints(pattern=LABEL_REGEX)] = ""
-    Description: Optional[str] = None
-    LastUpdate: Union[LastUpdate, str]    
+    Description: Optional[str] = ""
+    LastUpdate: Annotated[LastUpdated, Field(default_factory=lambda: datetime.now)]
     name: str = ""
     Dummy: Optional[bool] = False
-
-    @field_validator("LastUpdate", mode="before")
-    def _validate_last_update(cls, v) -> LastUpdate:
-        """validate last update field
-
-        Args:
-            v (str/dict): last update field
-
-        Returns:
-            LastUpdate: LastUpdate Model
-        """
-        if v is None or isinstance(v, str):
-            # TODO: changed default values.
-            return LastUpdate(date="", user="")
-        return LastUpdate(**v)
 
     def __new__(cls, *args, **kwargs):
         if args:
@@ -103,7 +99,7 @@ class MovaiBaseModel(RedisModel):
             if cache_key in cache:
                 return cache[cache_key]
 
-            obj = cls.find(ids=[id], version=version, project=project, db=db)
+            obj = cls.get_model_objects(ids=[id], version=version, project=project, db=db)
             if not obj:
                 raise DoesNotExist(f"{cls.__name__} {args[0]} not found in DB {db}!")
             return obj[0]
@@ -163,6 +159,7 @@ class MovaiBaseModel(RedisModel):
             raise ValueError(
                 f"wrong Data type, should be {self.scope}, recieved: {scope}, instead got: {list(kwargs.keys())[0]}"
             )
+        self._logger = Log.get_logger(self.__class__.__name__)
 
     @property
     def scope(self) -> str:
