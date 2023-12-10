@@ -7,6 +7,7 @@ from .base import MovaiBaseModel
 from .application import Application
 from .message import Message
 from .package import Package
+from .robot import Robot
 from .system import System
 from .base_model.redis_model import get_project_ids
 
@@ -20,6 +21,7 @@ __all__ = [
     "Application",
     "Message",
     "Package",
+    "Robot",
     "System",
     "get_project_ids",
 ]
