@@ -56,7 +56,7 @@ class Message(MovaiBaseModel):
         action_packs = []
         action_names = ('ActionFeedback', 'ActionGoal', 'ActionResult')
 
-        db_packs: List[Message] = Message.find()
+        db_packs: List[Message] = Message.get_all_models()
 
         if msg_type in ('msg', 'all'):
             msg_packs = [*(

@@ -94,7 +94,7 @@ class Role(MovaiBaseModel):
             "AclObject": [READ_PERMISSION],
         }
         resources["Applications"] = [
-            app.name for app in Application.find()
+            app.name for app in Application.get_model_objects()
         ]
 
         deployer_role = cls.create(DEPLOYER_ROLE, resources)

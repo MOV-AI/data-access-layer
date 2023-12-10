@@ -10,9 +10,10 @@
 import json
 from typing import List, Tuple
 
-from pydantic import ConfigDict, BaseModel
+from pydantic import ConfigDict, BaseModel, PrivateAttr
 import redis
 
+from logging import Logger
 from movai_core_shared.logger import Log
 
 from dal.archive import Archive
@@ -47,6 +48,7 @@ class RedisModel(BaseModel):
     model_config = ConfigDict(from_attributes=True, validate_assignment=True)
     Project: str = DEFAULT_PROJECT
     Version: str = DEFAULT_VERSION
+    _logger: Logger
 
 
     class Meta:
@@ -163,7 +165,7 @@ class RedisModel(BaseModel):
         ]
 
     @classmethod
-    def find(
+    def get_model_objects(
         cls, ids: List[str] = None, project=DEFAULT_PROJECT, version=DEFAULT_VERSION, db="global"
     ) -> List:
         """query objects from redis by id and project

@@ -1075,7 +1075,7 @@ class Exporter(Backup):
     # get all objects, given a scope
     #
     def get_objs(self, scope):
-        return get_class(scope).get_all()
+        return get_class(scope).get_model_objects()
 
     #
     # check if it's to override the file
