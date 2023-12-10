@@ -6,14 +6,15 @@
    Developers:
    - Manuel Silva  (manuel.silva@mov.ai) - 2020
 """
-
 import ast
 import re
 import os
+
 from movai_core_shared.logger import Log
-from ..models.var import Var
-from ..movaidb import MovaiDB
-from ..new_models.configuration import Configuration
+
+from dal.movaidb import MovaiDB
+from dal.models.var import Var
+from dal.new_models.configuration import Configuration
 
 
 class ParamParser:
