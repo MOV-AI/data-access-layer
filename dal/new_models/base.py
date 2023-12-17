@@ -26,7 +26,7 @@ cache = ThreadSafeCache()
 
 class LastUpdated(BaseModel):
     """A field represent the last time object was updated."""
-    date: datetime
+    date: Annotated[datetime, Field(default_factory=lambda: datetime.now)]
     user: str = "movai"
 
     @field_validator("date", mode="before")
@@ -40,6 +40,8 @@ class LastUpdated(BaseModel):
         Returns:
             datetime: A validated time and date.
         """
+        if isinstance(v, datetime):
+            return v.replace(microsecond=0)
         if not isinstance(v, str) or not v or v == "N/A":
             return datetime.now().replace(microsecond=0)
         if "at" not in v:
@@ -68,13 +70,23 @@ label_regex = re.compile(LABEL_REGEX)
 
 
 class MovaiBaseModel(RedisModel):
+    """A base class for all MOV.AI models.
+    """
     Info: Optional[str] = None
     Label: Annotated[str, StringConstraints(pattern=LABEL_REGEX)] = ""
     Description: Optional[str] = ""
-    LastUpdate: Annotated[LastUpdated, Field(default_factory=lambda: datetime.now)]
+    LastUpdate: Optional[LastUpdated]
     name: str = ""
     Dummy: Optional[bool] = False
 
+    @field_validator("LastUpdate", mode="before")
+    @classmethod
+    def _validate_lastupdate(cls, value):
+        if value is None or isinstance(value, str):
+            return LastUpdated(**{})
+        return LastUpdated(**value)
+            
+            
     def __new__(cls, *args, **kwargs):
         if args:
             id = args[0]
