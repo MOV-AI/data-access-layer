@@ -6,6 +6,7 @@
    Developers:
    - Moawiya Mograbi  (moawiya@mov.ai) - 2022
 """
+from .acl import ACLManager, NewACLManager
 from .configuration import Configuration
 from .aclobject import AclObject
 from .application import Application
@@ -46,8 +47,8 @@ try:
         GraphicAsset,
         GraphicScene,
         Layout,
-        SharedDataEntry, 
-        SharedDataTemplate, 
+        SharedDataEntry,
+        SharedDataTemplate,
         TaskEntry,
         TaskTemplate,
     )
@@ -66,7 +67,7 @@ except ImportError:
 
 
 __all__ = [
-    "ACLManager", 
+    "ACLManager",
     "NewACLManager",
     "Configuration",
     "AclObject",
@@ -102,4 +103,3 @@ __all__ = [
 ]
 
 __all__.extend(enterprise_modules)
-
