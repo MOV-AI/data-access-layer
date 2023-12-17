@@ -1,9 +1,13 @@
-from pydantic import StringConstraints, ConfigDict, BaseModel, Field, field_validator
-from typing import Optional, Dict, Any
-from ..base_model.common import Arg
 from re import match
-from ..node import Node
+from typing import Optional, Dict, Any
 from typing_extensions import Annotated
+
+from pydantic import StringConstraints, ConfigDict, BaseModel, Field, field_validator, computed_field
+
+from ..base_model.common import Arg
+from ..node import Node
+from .parsers import ParamParser
+
 
 
 ValidName = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")]
@@ -34,7 +38,6 @@ class NodeInst(BaseModel):
         super().__init__(*args, **kwargs)
         self.Launch = None
         self.Dummy = None
-        self.Launch = None
         self.Remappable = None
         self.Persistent = None
         self._flow_ref = None
@@ -45,11 +48,10 @@ class NodeInst(BaseModel):
             "Launch",
             "Dummy",
             "Remappable",
-            "Persistent",
-            "_flow_ref",
             "_parser",
         },
         extra="allow",
+        arbitrary_types_allowed=True
     )
 
     def model_dump(
@@ -58,7 +60,6 @@ class NodeInst(BaseModel):
         include=None,
         exclude=None,
         by_alias: bool = True,
-        skip_defaults: Optional[bool] = None,
         exclude_unset: bool = False,
         exclude_defaults: bool = False,
         exclude_none: bool = True,
@@ -67,13 +68,12 @@ class NodeInst(BaseModel):
             include=include,
             exclude=exclude,
             by_alias=by_alias,
-            skip_defaults=skip_defaults,
             exclude_unset=exclude_unset,
             exclude_defaults=exclude_defaults,
-            exclude_none=exclude_none,
+            exclude_none=exclude_none
         )
-        dic.pop("_parser")
-        dic.pop("_flow_ref")
+        dic.pop("_parser", None)
+        dic.pop("_flow_ref", None)
         return dic
 
     @field_validator("Parameter", mode="before")
@@ -87,7 +87,15 @@ class NodeInst(BaseModel):
         return value
 
     @property
-    def flow(self):
+    def node_template(self) -> Node:
+        """
+        return the current template for this node
+        instance
+        """
+        return Node(self.Template)
+
+    @property
+    def flow(self) -> BaseModel:
         """Returns the flow (Flow)"""
         return self._parser.flow
 
@@ -97,7 +105,7 @@ class NodeInst(BaseModel):
         return self.node_template.Type
 
     @property
-    def parser(self):
+    def parser(self) -> ParamParser:
         """Get the parser from the parent (GParser)"""
         return self._parser
 
@@ -260,10 +268,3 @@ class NodeInst(BaseModel):
             self.Launch = ("override", output)
         return output
 
-    @property
-    def node_template(self) -> Node:
-        """
-        return the current template for this node
-        instance
-        """
-        return Node(self.Template)
