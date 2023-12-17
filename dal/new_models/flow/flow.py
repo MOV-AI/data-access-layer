@@ -1,5 +1,5 @@
 from typing import Optional, Dict, List, Any, ClassVar, Set
-from pydantic import StringConstraints, Field, BaseModel, ConfigDict
+from pydantic import StringConstraints, Field, BaseModel, ConfigDict, computed_field
 from ..base_model.common import Arg
 from ..base import MovaiBaseModel
 from ..configuration import Configuration
@@ -59,7 +59,10 @@ class Flow(MovaiBaseModel):
         ]
 
     # allow extra fields to be added dynamically after creation of object
-    model_config = ConfigDict(extra="allow")
+    model_config = ConfigDict(
+        extra="allow",
+        arbitrary_types_allowed=True
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -83,7 +86,10 @@ class Flow(MovaiBaseModel):
     @property
     def full(self) -> dict:
         """Returns the data from the main flow and all subflows"""
-        self._full = self._full or self.get_dict()
+        if self._full:
+            return self._full
+        
+        self._full = self._build_dict(is_dict=False)
         return self._full
 
     @property
@@ -119,15 +125,8 @@ class Flow(MovaiBaseModel):
 
         return output
 
-    @property
-    def parser(self) -> ParamParser:
-        """Get or create and instance of the parser"""
-
-        self._parser = self._parser or ParamParser(self)
-        return self._parser
-
     @classmethod
-    def _with_prefix(cls, prefix: str, nodes: dict, links: dict) -> SimpleNamespace:
+    def _with_prefix(cls, prefix: str, nodes: dict, links: dict, is_dict: bool = True) -> SimpleNamespace:
         """ "
         Add a prefix to the node instances and also to the links
         """
@@ -137,27 +136,30 @@ class Flow(MovaiBaseModel):
 
         for _id, node_inst in nodes:
             pref_id = f"{prefix}{_id}"
-
-            output.NodeInst.update({pref_id: node_inst})
+            node = node_inst.model_dump() if is_dict else node_inst
+            output.NodeInst.update({pref_id: node})
 
         for _id, value in links:
             _value = {}
             pref_id = f"{prefix}{_id}"
 
-            _value["From"] = (
-                f"{prefix}{value.From.str}"
-                if value.From.str.upper() != Flow.__START__
-                else value.From.str
-            )
+            if value.From.str.upper() != Flow.__START__:
+                _value["From"] = f"{prefix}{value.From.str}"
+            else:
+                _value["From"] = value.From.str
+
             _value["To"] = f"{prefix}{value.To.str}"
             _value["Dependency"] = value.Dependency
+            
+            flow_link = FlowLink(**_value)
+            link = flow_link.model_dump() if is_dict else flow_link
 
             # required for legacy compatibility
-            output.Links.update({pref_id: FlowLink(**_value)})
+            output.Links.update({pref_id: link})
 
         return output
 
-    def get_dict(self, data: dict = None, prefix: str = None, prev_flows: list = None) -> dict:
+    def _build_dict(self, data: SimpleNamespace = None, prefix: str = None, prev_flows: list = None, is_dict: bool = True) -> SimpleNamespace:
         """
         Aggregate data from the main flow and subflows
         Returns a dictionary with the following format
@@ -177,7 +179,7 @@ class Flow(MovaiBaseModel):
             raise RecursionError("Flow already in use, this will lead to infinite recursion")
 
         # start creating the dict
-        output = data or self._with_prefix("", self.NodeInst.items(), self.Links.items())
+        output = data or self._with_prefix("", self.NodeInst.items(), self.Links.items(), is_dict)
 
         for _, container in self.Container.items():
             # container.ContainerFlow is expected to have the full path of the doc
@@ -188,7 +190,7 @@ class Flow(MovaiBaseModel):
             label = f"{_prefix}{container.ContainerLabel}"
 
             # extract subflow data
-            wprefix = subflow._with_prefix(label, subflow.NodeInst.items(), subflow.Links.items())
+            wprefix = subflow._with_prefix(label, subflow.NodeInst.items(), subflow.Links.items(), is_dict)
 
             # update main dict
             output.NodeInst.update(wprefix.NodeInst)
@@ -197,8 +199,20 @@ class Flow(MovaiBaseModel):
             # append current flow to the list of flows already in use
             prev_flows.append(self.pk)
 
-            subflow.get_dict(output, label, prev_flows.copy())
+            subflow._build_dict(output, label, prev_flows.copy(), is_dict)
 
+        return output
+
+    def get_dict(self, recursive: bool = False) -> dict:
+        output = self.model_dump()
+
+        if not recursive:
+            return output
+
+        data = self._build_dict()
+
+        output["Flow"][self.name]["Links"] = data.Links
+        output["Flow"][self.name]["NodeInst"] = data.NodeInst
         return output
 
     def get_node_params(self, node_name: str, context: str = None) -> dict:
@@ -262,9 +276,7 @@ class Flow(MovaiBaseModel):
 
         output = []
 
-        for link_id in self.full.Links.keys():
-            link = self.full.Links[link_id]
-
+        for link in self.Links.values():
             # node is connected to the start block
             if link.From.str.upper() == Flow.__START__:
                 output.append(link.To.node_inst)
