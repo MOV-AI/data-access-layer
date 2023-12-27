@@ -1,22 +1,37 @@
+"""
+   Copyright (C) Mov.ai  - All Rights Reserved
+   Unauthorized copying of this file, via any medium is strictly prohibited
+   Proprietary and confidential
+
+   Developers:
+    - Moawiya Mograbi  (moawiya@mov.ai) - 2023
+    - Erez Zomer (erez@mov.ai) - 2023
+"""
+from cachetools import LRUCache
+import re
+from types import SimpleNamespace
 from typing import Optional, Dict, List, Any, ClassVar, Set
+from typing_extensions import Annotated
+
+
 from pydantic import StringConstraints, Field, BaseModel, ConfigDict, computed_field
+
+from movai_core_shared.consts import ROS1_NODELETSERVER
+from movai_core_shared.exceptions import DoesNotExist
+from movai_core_shared.logger import Log
+
+from dal.helpers import flatten
+from dal.helpers.flow import GFlow
+
 from ..base_model.common import Arg
 from ..base import MovaiBaseModel
-from ..configuration import Configuration
-from .parsers import ParamParser
-from ...helpers.flow import GFlow
-from types import SimpleNamespace
 from .nodeinst import NodeInst as NodeInstClass
 from .container import Container as ContainerClass
 from .flowlinks import FlowLink
+from .parsers import ParamParser
+from ..configuration import Configuration
 from ..node import Node
-from dal.helpers import flatten
-from cachetools import LRUCache
-from movai_core_shared.consts import ROS1_NODELETSERVER
-from typing_extensions import Annotated
-import re
-from movai_core_shared.exceptions import DoesNotExist
-from movai_core_shared.logger import Log
+
 
 logger = Log.get_logger(__name__)
 

@@ -1,7 +1,18 @@
-from pydantic import ConfigDict, BaseModel, field_validator
-from typing import ClassVar, Optional
+"""
+   Copyright (C) Mov.ai  - All Rights Reserved
+   Unauthorized copying of this file, via any medium is strictly prohibited
+   Proprietary and confidential
+
+   Developers:
+   - Moawiya Mograbi  (moawiya@mov.ai) - 2023
+   - Erez Zomer (erez@mov.ai) - 2023
+"""
 import re
+from typing import ClassVar, Optional
 import uuid
+
+from pydantic import ConfigDict, BaseModel, field_validator
+
 
 DEFAULT_DEPENDENCY = 0
 LINK_REGEX = r"^([~@a-zA-Z_0-9-]+)([\/])([\/~@a-zA-Z_0-9]+)+([\/])([~@a-zA-Z_0-9]+)$"

@@ -7,18 +7,20 @@
    - Moawiya Mograbi (moawiya@mov.ai) - 2023
    - Erez Zomer (erez@mov.ai) - 2023
 """
+from datetime import datetime
 import json
 import re
-from typing import List, Optional, Union
+from typing import List, Optional
+from typing_extensions import Annotated
+
+from pydantic import StringConstraints, field_validator, BaseModel, Field
+
+from movai_core_shared.exceptions import DoesNotExist
+from movai_core_shared.logger import Log
+
+from .base_model.cache import ThreadSafeCache
 from .base_model.redis_model import RedisModel, DEFAULT_PROJECT
 from .base_model.common import PrimaryKey, DEFAULT_VERSION
-from movai_core_shared.logger import Log
-from .base_model.cache import ThreadSafeCache
-from datetime import datetime
-from pydantic import StringConstraints, field_validator, BaseModel, Field
-from typing_extensions import Annotated
-from movai_core_shared.exceptions import DoesNotExist
-
 
 LOGGER = Log.get_logger("BaseModel.mov.ai")
 cache = ThreadSafeCache()

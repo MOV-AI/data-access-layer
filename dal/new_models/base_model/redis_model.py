@@ -8,12 +8,12 @@
    - Erez Zomer (erez@mov.ai) - 2023
 """
 import json
+from logging import Logger
 from typing import List, Tuple
 
 from pydantic import ConfigDict, BaseModel, PrivateAttr
 import redis
 
-from logging import Logger
 from movai_core_shared.logger import Log
 
 from dal.archive import Archive
@@ -114,11 +114,12 @@ class RedisModel(BaseModel):
         self.pk = PrimaryKey.create_pk(
             project=project, scope=self.scope, id=self.name, version=version
         )
+        obj = self.model_dump(by_alias=True, exclude_unset=True, exclude_none=True)
         try:
             self.db(db).json().set(
                 self.pk,
                 "$",
-                self.model_dump(by_alias=True, exclude_unset=True, exclude_none=True),
+                obj
             )
         except Exception as exc:
             LOGGER.error(f"While trying to save model to DB, got the following exception: {exc}.")

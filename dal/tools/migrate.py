@@ -1,24 +1,54 @@
-"""this tool will migrate all the data from the old scopes to the new models
+"""
+   Copyright (C) Mov.ai  - All Rights Reserved
+   Unauthorized copying of this file, via any medium is strictly prohibited
+   Proprietary and confidential
+
+   Developers:
+   - Moawiya Mograbi  (moawiya@mov.ai) - 2023
+   - Erez Zomer (erez@mov.ai) - 2023
+   
+   this tool will migrate all the data from the old scopes to the new models
     inside Redis. It will also validate the data and save it if it is valid.
 """
+#!/usr/bin/env python3
 from concurrent.futures import ThreadPoolExecutor
+import logging
+from threading import Lock
+from tqdm import tqdm
+import sys
+
 from dal.movaidb import Redis
+import dal.new_models
 import dal.scopes
+from dal.scopes.robot import Robot
+
 import movai_core_enterprise.scopes
 import movai_core_enterprise.new_models
-import dal.new_models
-from tqdm import tqdm
-from threading import Lock
-import sys
-import logging
 
 logger = logging.getLogger("migrate.tool")
 handler = logging.FileHandler("/opt/mov.ai/app/migrate.log")
 handler.setLevel(logging.INFO)
 logger.addHandler(handler)
+dal_models = (
+    "Application",
+    "Callback",
+    "Configuration",
+    "get_project_ids",
+    "Flow",
+    "Message",
+    "MovaiBaseModel",
+    "Node",
+    "Ports",
+    "System"
+)
+enterprise_models = ("Annotation",)
+pydantic_models = set()
+pydantic_models.update(dal_models)
+pydantic_models.update(enterprise_models)
 
 
 db = sys.argv[1] if len(sys.argv) > 1 else "global"
+logger.info(f"migrating db: {db}")
 objs = set()
 count = {}
 bars = {}
@@ -50,11 +80,16 @@ def validate_model(model, id):
         pydantic_class = getattr(movai_core_enterprise.new_models, model)
 
     try:
-        obj = pydantic_class.model_validate(scopes_class(id).get_dict())
+        if scopes_class is Robot:
+            obj_dict = scopes_class().get_dict()
+        else:
+            obj_dict = scopes_class(id).get_dict()
+        obj = pydantic_class.model_validate(obj_dict)
         obj.save()
         with lock:
             bars[model].update(1)
-    except Exception:
+    except Exception as exc:
+        logger.error(exc)
         with lock:
             bars[model].write(f"Validation Error for {model} :: {id}")
         pass
@@ -74,19 +109,21 @@ valid_models = set()
 ignoring = list()
 for key in scopes_keys:
     if "," in key:
-        type, id, *_ = key.split(":")
+        model, id, *_ = key.split(":")
         id = id.split(",")[0]
-        if not class_exist(type):
-            if f"{type},{id}" not in ignoring:
-                logger.info("Could not find %s in new_models, ignoring %s::%s", type, type, id)
-                ignoring.append(f"{type},{id}")
-            invalid_models.add(type)
+        if model not in pydantic_models:
             continue
-        valid_models.add(type)
-        objs.add((type, id))
-        if type not in count:
-            count[type] = set()
-        count[type].add(id)
+        if not class_exist(model):
+            if f"{model},{id}" not in ignoring:
+                logger.info("Could not find %s in new_models, ignoring %s::%s", model, model, id)
+                ignoring.append(f"{model},{id}")
+            invalid_models.add(model)
+            continue
+        valid_models.add(model)
+        objs.add((model, id))
+        if model not in count:
+            count[model] = set()
+        count[model].add(id)
 
 
 pos = 0
@@ -103,10 +140,10 @@ for chunk in chunks:
     for model, id in chunk:
         validate_model(model, id)
 
-#with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
-#    futures = [
-#        executor.submit(validate_model, model, id) for chunk in chunks for model, id in chunk
-#    ]
-#
-#    for future in futures:
-#        future.result()  # to capture any exceptions thrown inside threads
+with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
+    futures = [
+        executor.submit(validate_model, model, id) for chunk in chunks for model, id in chunk
+    ]
+
+    for future in futures:
+        future.result()  # to capture any exceptions thrown inside threads

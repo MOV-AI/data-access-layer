@@ -1,21 +1,33 @@
-import pydantic
+"""
+   Copyright (C) Mov.ai  - All Rights Reserved
+   Unauthorized copying of this file, via any medium is strictly prohibited
+   Proprietary and confidential
+
+   Developers:
+   - Moawiya Mograbi (moawiya@mov.ai) - 2023
+   - Erez Zomer (erez@mov.ai) - 2023
+"""
 import importlib
 import inspect
 import pkgutil
 import sys
-import rospkg
 from typing import Union, Optional, Dict, List
-from .base import MovaiBaseModel
-from pydantic import StringConstraints
 from typing_extensions import Annotated
+
+from pydantic import BaseModel, StringConstraints, StrictStr
+import rospkg
+
 from movai_core_shared.exceptions import DoesNotExist
+
+from .base import MovaiBaseModel
+
 
 ValidStr = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z_]+$")]
 ValidStrNums = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")]
 
 
-class Py3LibValue(pydantic.BaseModel):
-    Class: Union[pydantic.types.StrictStr, bool] = None
+class Py3LibValue(BaseModel):
+    Class: Union[StrictStr, bool] = None
     Module: str
 
 
