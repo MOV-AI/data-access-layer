@@ -10,6 +10,7 @@
 import importlib
 import inspect
 import pkgutil
+import pydoc
 import sys
 from typing import Union, Optional, Dict, List
 from typing_extensions import Annotated
@@ -36,7 +37,8 @@ class Callback(MovaiBaseModel):
     Message: Optional[str] = None
     Py3Lib: Optional[Dict[ValidStrNums, Py3LibValue]] = {}
 
-    def _original_keys(self) -> List[str]:
+    @classmethod
+    def _original_keys(cls) -> List[str]:
         return super()._original_keys() + ["Code", "Message", "Py3Lib"]
 
     @staticmethod
