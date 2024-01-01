@@ -107,8 +107,11 @@ class Robot(Scope):
     def get_states(self):
         """Gets the states of the robot from its own configuration.
         When Robot groups are implemented it should merge with the group configuration"""
-        states = Configuration(self.RobotName).get_param("states")
-        if not states:
+        try:
+            states = Configuration(self.RobotName).get_param("states")
+            if states is None:
+                raise Exception(f"Couldn't get states param from configuration: {self.RobotName}")
+        except Exception:
             states = {}
 
         return states
