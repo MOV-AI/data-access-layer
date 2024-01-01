@@ -11,6 +11,8 @@ from typing import List, Any
 import xmltodict
 import yaml
 
+from box import Box
+
 from pydantic import Field
 
 from .base import MovaiBaseModel
@@ -67,3 +69,11 @@ class Configuration(MovaiBaseModel):
             ) from exc
 
         return value
+
+
+class Config(Box):
+    """Config with dot accessible elements"""
+    def __init__(self, name):
+        # raises DoesNotExist in case Configuration name does not exist
+        config = Configuration(name).get_value()
+        super().__init__(Box(config))
