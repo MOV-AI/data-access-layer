@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
    Copyright (C) Mov.ai  - All Rights Reserved
    Unauthorized copying of this file, via any medium is strictly prohibited
@@ -10,17 +11,17 @@
    this tool will migrate all the data from the old scopes to the new models
     inside Redis. It will also validate the data and save it if it is valid.
 """
-#!/usr/bin/env python3
 from concurrent.futures import ThreadPoolExecutor
 import logging
 from threading import Lock
-from tqdm import tqdm
 import sys
+from tqdm import tqdm
+
 
 from dal.movaidb import Redis
 import dal.new_models
 import dal.scopes
-from dal.scopes.robot import Robot
+from dal.scopes import Robot, System
 
 import movai_core_enterprise.scopes
 import movai_core_enterprise.new_models
@@ -69,7 +70,7 @@ def class_exist(name):
             return False
 
 
-def validate_model(model, id):
+def validate_model(model: str, id: str, db: str = "global"):
     global bars, objs
 
     try:
@@ -82,10 +83,13 @@ def validate_model(model, id):
     try:
         if scopes_class is Robot:
             obj_dict = scopes_class().get_dict()
+        elif scopes_class is System:
+            db = "local"
+            obj_dict = scopes_class(id, db=db).get_dict()
         else:
             obj_dict = scopes_class(id).get_dict()
         obj = pydantic_class.model_validate(obj_dict)
-        obj.save()
+        obj.save(db=db)
         with lock:
             bars[model].update(1)
     except Exception as exc:
