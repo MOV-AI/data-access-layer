@@ -38,7 +38,7 @@ class Container(BaseModel):
         self._parser = None
         self._flow_class = None
 
-    def mdoel_dump(
+    def model_dump(
         self,
         *,
         include=None,
