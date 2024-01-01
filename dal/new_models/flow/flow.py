@@ -7,14 +7,13 @@
     - Moawiya Mograbi  (moawiya@mov.ai) - 2023
     - Erez Zomer (erez@mov.ai) - 2023
 """
-from cachetools import LRUCache
 import re
 from types import SimpleNamespace
 from typing import Optional, Dict, List, Any, ClassVar, Set
 from typing_extensions import Annotated
 
-
-from pydantic import StringConstraints, Field, BaseModel, ConfigDict, computed_field
+from cachetools import LRUCache
+from pydantic import StringConstraints, Field, BaseModel, ConfigDict
 
 from movai_core_shared.consts import ROS1_NODELETSERVER
 from movai_core_shared.exceptions import DoesNotExist
@@ -23,43 +22,56 @@ from movai_core_shared.logger import Log
 from dal.helpers import flatten
 from dal.helpers.flow import GFlow
 
-from ..base_model.common import Arg
-from ..base import MovaiBaseModel
-from .nodeinst import NodeInst as NodeInstClass
-from .container import Container as ContainerClass
-from .flowlinks import FlowLink
-from .parsers import ParamParser
-from ..configuration import Configuration
-from ..node import Node
+from dal.new_models.base_model.common import Arg
+from dal.new_models.base import MovaiBaseModel
+from dal.helpers.parsers import ParamParser
+from dal.new_models.configuration import Configuration
+from dal.new_models.flow.nodeinst import NodeInst as NodeInstClass
+from dal.new_models.flow.container import Container as ContainerClass
+from dal.new_models.flow.flowlinks import FlowLink
+from dal.new_models.node import Node
 
 
 logger = Log.get_logger(__name__)
 
 
 class Layer(BaseModel):
+    """A class for represent flow layer."""
+
     name: Optional[str] = None
     on: Optional[bool] = None
 
 
 class Flow(MovaiBaseModel):
-    Parameter: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")], Arg]] = None
-    Container: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z_0-9]+$")], ContainerClass]] = Field(
-        default_factory=dict
-    )
+    """A class for representing Flow in based on pydantic."""
+
+    Parameter: Optional[
+        Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")], Arg]
+    ] = None
+    Container: Optional[
+        Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z_0-9]+$")], ContainerClass]
+    ] = Field(default_factory=dict)
     ExposedPorts: Optional[
         Dict[
             Annotated[str, StringConstraints(pattern=r"^(__)?[a-zA-Z0-9_]+$")],
             Dict[
                 Annotated[str, StringConstraints(pattern=r"^[a-zA-Z_0-9]+$")],
-                List[Annotated[str, StringConstraints(pattern=r"^~?/?[a-zA-Z_0-9]+(\/~?[a-zA-Z_0-9]+){0,}$")]],
+                List[
+                    Annotated[
+                        str,
+                        StringConstraints(pattern=r"^~?/?[a-zA-Z_0-9]+(\/~?[a-zA-Z_0-9]+){0,}$"),
+                    ]
+                ],
             ],
         ]
     ] = None
     Layers: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[0-9]+$")], Layer]] = None
-    Links: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[0-9a-z-]+$")], FlowLink]] = Field(default_factory=dict)
-    NodeInst: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z_0-9]+$")], NodeInstClass]] = Field(
-        default_factory=dict
-    )
+    Links: Optional[
+        Dict[Annotated[str, StringConstraints(pattern=r"^[0-9a-z-]+$")], FlowLink]
+    ] = Field(default_factory=dict)
+    NodeInst: Optional[
+        Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z_0-9]+$")], NodeInstClass]
+    ] = Field(default_factory=dict)
     __START__: ClassVar[str] = "START/START/START"
     __END__: ClassVar[str] = "END/END/END"
 
@@ -74,10 +86,7 @@ class Flow(MovaiBaseModel):
         ]
 
     # allow extra fields to be added dynamically after creation of object
-    model_config = ConfigDict(
-        extra="allow",
-        arbitrary_types_allowed=True
-    )
+    model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -103,7 +112,7 @@ class Flow(MovaiBaseModel):
         """Returns the data from the main flow and all subflows"""
         if self._full:
             return self._full
-        
+
         self._full = self._build_dict(is_dict=False)
         return self._full
 
@@ -141,7 +150,9 @@ class Flow(MovaiBaseModel):
         return output
 
     @classmethod
-    def _with_prefix(cls, prefix: str, nodes: dict, links: dict, is_dict: bool = True) -> SimpleNamespace:
+    def _with_prefix(
+        cls, prefix: str, nodes: dict, links: dict, is_dict: bool = True
+    ) -> SimpleNamespace:
         """ "
         Add a prefix to the node instances and also to the links
         """
@@ -165,7 +176,7 @@ class Flow(MovaiBaseModel):
 
             _value["To"] = f"{prefix}{value.To.str}"
             _value["Dependency"] = value.Dependency
-            
+
             flow_link = FlowLink(**_value)
             link = flow_link.model_dump() if is_dict else flow_link
 
@@ -174,7 +185,13 @@ class Flow(MovaiBaseModel):
 
         return output
 
-    def _build_dict(self, data: SimpleNamespace = None, prefix: str = None, prev_flows: list = None, is_dict: bool = True) -> SimpleNamespace:
+    def _build_dict(
+        self,
+        data: SimpleNamespace = None,
+        prefix: str = None,
+        prev_flows: list = None,
+        is_dict: bool = True,
+    ) -> SimpleNamespace:
         """
         Aggregate data from the main flow and subflows
         Returns a dictionary with the following format
@@ -205,7 +222,9 @@ class Flow(MovaiBaseModel):
             label = f"{_prefix}{container.ContainerLabel}"
 
             # extract subflow data
-            wprefix = subflow._with_prefix(label, subflow.NodeInst.items(), subflow.Links.items(), is_dict)
+            wprefix = subflow._with_prefix(
+                label, subflow.NodeInst.items(), subflow.Links.items(), is_dict
+            )
 
             # update main dict
             output.NodeInst.update(wprefix.NodeInst)
@@ -561,12 +580,9 @@ class Flow(MovaiBaseModel):
 
         # convert diff back to initial format
         for port_to_delete in diff:
-
             template, node_instance, port = port_to_delete.split(path_char)
 
-            to_delete.setdefault(template, {}).setdefault(node_instance, []).append(
-                port
-            )
+            to_delete.setdefault(template, {}).setdefault(node_instance, []).append(port)
 
         return [{key: value} for key, value in to_delete.items()]
 
@@ -620,15 +636,12 @@ class Flow(MovaiBaseModel):
         try:
             # delete NodeInst or Container Links
             if key in ["NodeInst", "Container"]:
-
                 # string to check will be nodeInst1/nodeInst2
                 # name can be nodeInst or nodeInst__otherName
                 pattern = re.compile(f"^{name}/.+|^{name}__.*/|/{name}$|/{name}__.*$")
 
                 for link, value in self.Links.items():
-                    values = [
-                        prop.node_inst for prop in [value.From, value.To]
-                    ]
+                    values = [prop.node_inst for prop in [value.From, value.To]]
 
                     # join the values into one string
                     # if pattern found delete link
@@ -755,22 +768,17 @@ class Flow(MovaiBaseModel):
                 # check if the subflow is referencing me
                 if flow_container.ContainerFlow == self.name:
                     try:
-
                         container_label = flow_container.ContainerLabel
-                        _port_prefix = (
-                            f"{container_label}__{prefix}"
-                            if prefix
-                            else container_label
-                        )
+                        _port_prefix = f"{container_label}__{prefix}" if prefix else container_label
 
                         _join_char = join_char or (
-                            "__"
-                            if (self.Container.get(node_inst_name, None) or prefix)
-                            else "/"
+                            "__" if (self.Container.get(node_inst_name, None) or prefix) else "/"
                         )
 
                         # we do not care about the in/out of the port bc port names are unique in the Node
-                        regex = re.compile(rf"{_port_prefix}__{node_inst_name}{_join_char}{port_name}/.+")
+                        regex = re.compile(
+                            rf"{_port_prefix}__{node_inst_name}{_join_char}{port_name}/.+"
+                        )
 
                         # delete the link associated with the port
                         for link_id, link in flow.Links.items():
@@ -795,9 +803,7 @@ class Flow(MovaiBaseModel):
                                 else port_name
                             )
 
-                            flow.delete_exposed_port(
-                                f"__{self.name}", _port_name, container_label
-                            )
+                            flow.delete_exposed_port(f"__{self.name}", _port_name, container_label)
 
                         # check Flows using 'flow' as a subflow
                         flow.delete_exposed_port_links(

@@ -2,12 +2,17 @@ from re import match
 from typing import Optional, Dict, Any
 from typing_extensions import Annotated
 
-from pydantic import StringConstraints, ConfigDict, BaseModel, Field, field_validator, computed_field
+from pydantic import (
+    StringConstraints,
+    ConfigDict,
+    BaseModel,
+    Field,
+    field_validator
+)
 
-from ..base_model.common import Arg
-from ..node import Node
-from .parsers import ParamParser
-
+from dal.new_models.base_model.common import Arg
+from dal.new_models.node import Node
+from dal.helpers.parsers import ParamParser
 
 
 ValidName = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")]
@@ -51,7 +56,7 @@ class NodeInst(BaseModel):
             "_parser",
         },
         extra="allow",
-        arbitrary_types_allowed=True
+        arbitrary_types_allowed=True,
     )
 
     def model_dump(
@@ -70,7 +75,7 @@ class NodeInst(BaseModel):
             by_alias=by_alias,
             exclude_unset=exclude_unset,
             exclude_defaults=exclude_defaults,
-            exclude_none=exclude_none
+            exclude_none=exclude_none,
         )
         dic.pop("_parser", None)
         dic.pop("_flow_ref", None)
@@ -194,21 +199,6 @@ class NodeInst(BaseModel):
             return self.node_template.Dummy
 
     @property
-    def is_nodelet(self) -> bool:
-        """Returns True if the node is of type Nodelet"""
-        return self.node_template.is_nodelet
-
-    @property
-    def is_state(self) -> bool:
-        """Returns True if the node is of type State"""
-        return self.node_template.is_state
-
-    @property
-    def is_plugin(self) -> bool:
-        """Returns True if the node is of type plugin"""
-        return self.node_template.is_plugin
-
-    @property
     def name(self) -> str:
         return self.node_template.name
 
@@ -267,4 +257,3 @@ class NodeInst(BaseModel):
         if isinstance(output, bool) and key == "_launch":
             self.Launch = ("override", output)
         return output
-

@@ -6,14 +6,15 @@
    Developers:
    - Manuel Silva  (manuel.silva@mov.ai) - 2020
 """
-
 import ast
 import re
 import os
 from movai_core_shared.logger import Log
-from ..var import Var
 from dal.movaidb import MovaiDB
-from ..configuration import Configuration
+
+from dal.new_models.var import Var
+
+from dal.new_models.configuration import Configuration
 
 __REGEX__ = r"\$\((param|config|var|flow)[^$)]+\)"
 pattern = re.compile(__REGEX__)
