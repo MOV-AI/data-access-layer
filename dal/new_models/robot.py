@@ -1,34 +1,28 @@
+"""
+   Copyright (C) Mov.ai  - All Rights Reserved
+   Unauthorized copying of this file, via any medium is strictly prohibited
+   Proprietary and confidential
+
+   Developers:
+   - Moawiya Mograbi (moawiya@mov.ai) - 2023
+   - Erez Zomer (erez@mov.ai) - 2023
+"""
 import pickle
 import uuid
-from .base_model.redis_model import RedisModel
-from .configuration import Configuration
-from .base_model.common import PrimaryKey, RobotKey
+from typing import List
+from ipaddress import IPv4Address
+
 from pydantic import ConfigDict, BaseModel, Field
 
-"""
-    {'Robot': {'dde2a5de3b074f39956792785637ca3e': {'IP': '127.0.0.1',
-   'RobotName': 'tugbot-24-70',
-   'Status': {'active_flow': '',
-    'active_scene': '',
-    'active_states': [],
-    'core_lchd': [],
-    'locks': [],
-    'nodes_lchd': [],
-    'persistent_nodes_lchd': [],
-    'timestamp': 1688980993.2879748},
-   'Actions': [],
-   'Notifications': [],
-   'Alerts': {},
-   'Label': '',
-   'Info': ''}}}
-
-
-    Returns:
-        _type_: _description_
-    """
+from dal.new_models.base import MovaiBaseModel
+from dal.new_models.configuration import Configuration
+from dal.new_models.base_model.common import PrimaryKey, RobotKey
+from dal.new_models.base_model.redis_model import DEFAULT_PROJECT, DEFAULT_VERSION
 
 
 class RobotStatus(BaseModel):
+    """A class that implements the RobotStatus field"""
+
     active_flow: str = None
     active_scene: str = None
     active_states: list = Field(default_factory=list)
@@ -39,8 +33,10 @@ class RobotStatus(BaseModel):
     timestamp: float = None
 
 
-class Robot(RedisModel):
-    IP: str = "127.0.0.1"
+class Robot(MovaiBaseModel):
+    """A class that implements the Robot model."""
+
+    IP: IPv4Address = "127.0.0.1"
     RobotName: str
     Status: RobotStatus = RobotStatus()
     Actions: list = Field(default_factory=list)
@@ -50,28 +46,47 @@ class Robot(RedisModel):
 
     model_config = ConfigDict(extra="allow")
 
-    def __init__(self, *args, **kwargs):
-        if not args and not kwargs:
-            robots = self.db("local").keys("*:Robot:*")
-            if not robots:
-                # no robot exist so we create one
-                unique_id = uuid.uuid4()
-                pk = PrimaryKey.create_pk(
-                    project="Movai", scope="Robot", id=unique_id.hex, version=""
-                )
-                pk = RobotKey.create_pk(fleet="DefautlFleet", scope="Robot", id=unique_id.hex, version="")
-                # Fleet:DefaultFleet:Robot:RobotName
-                robot_name = f"robot_{unique_id.hex[0:6]}"
-                super().__init__(pk=pk, RobotName=robot_name)
-                self.save("local")
-                self.save("global")
-            else:
-                pk = self.db("local").keys("*:Robot:*")[0].decode()
-                obj = self.db("local").json().get(pk)
-                super().__init__(**obj)
+    def __init__(self, **kwargs):
+        if kwargs:
+            super().__init__(**kwargs)
+        else:
+            robot = self.db("local").keys("*:Robot:*")
+        if robot:
+            pk = self.db("local").keys("*:Robot:*")[0].decode()
+            obj = self.db("local").json().get(pk)
+            super().__init__(**obj)
+        else:
+            # no robot exist so we create one
+            unique_id = uuid.uuid4()
+            pk = PrimaryKey.create_pk(project="Movai", scope="Robot", id=unique_id.hex, version="")
+            pk = RobotKey.create_pk(
+                fleet="DefautlFleet", scope="Robot", id=unique_id.hex, version=""
+            )
+            # Fleet:DefaultFleet:Robot:RobotName
+            robot_name = f"robot_{unique_id.hex[0:6]}"
+            super().__init__(pk=pk, RobotName=robot_name)
+            self.save("local")
+            self.save("global")
 
             # TODO need to be tested
-            self.fleet = Robot(**self.model_dump())
+            # self.fleet = Robot(**self.model_dump())
+
+    @classmethod
+    def _original_keys(cls) -> List[str]:
+        """keys that are originally defined part of the model
+
+        Returns:
+            List[str]: list including the original keys
+        """
+        return super()._original_keys() + [
+            "IP",
+            "RobotName",
+            "Status",
+            "Actions",
+            "Notifications",
+            "Alerts",
+            "Parameters",
+        ]
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot"""
@@ -143,8 +158,8 @@ class Robot(RedisModel):
             self.Alerts.pop(alert)
 
     @staticmethod
-    def check_alert_dictionary(alert: dict) -> None:
-        """Checks if the alert dictionary contains all the required fileds.
+    def check_alert_dictionary(self, alert: dict) -> None:
+        """Checks if the alert dictionary contains all the required fields.
         if not logs a warning.
 
         Args:
@@ -152,7 +167,7 @@ class Robot(RedisModel):
         """
         for field in ("info", "action", "callback"):
             if field not in alert:
-                logger.warning(f"The field: {field} is missing from alert dictionary")
+                self._logger.warning(f"The field: {field} is missing from alert dictionary")
 
     @staticmethod
     def get_robot_key_by_ip(ip_address: str, key_name: str) -> bytes:
@@ -173,4 +188,24 @@ class Robot(RedisModel):
             robot = db.get(robo_dict)["Robot"][robot_id]
             if robot["IP"] == ip_address:
                 return robot[key_name]
+        return None
+
+    @classmethod
+    def get_robot(
+        cls, robot_name: str, project: str = DEFAULT_PROJECT, version: str = DEFAULT_VERSION
+    ):
+        """Gets the robot object by its name.
+
+        Args:
+            robot_name (str): The name of the robot to get.
+            project (str, optional): The project which the robot is part of. Defaults to DEFAULT_PROJECT.
+            version (str, optional): The version of the robot object. Defaults to DEFAULT_VERSION.
+
+        Returns:
+            Robot: A Robot object.
+        """
+        robots = cls.get_model_objects(project=project, version=version)
+        for robot in robots:
+            if robot.RobotName == robot_name:
+                print(robot)
         return None

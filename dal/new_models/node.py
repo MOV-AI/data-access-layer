@@ -1,8 +1,17 @@
+"""
+   Copyright (C) Mov.ai  - All Rights Reserved
+   Unauthorized copying of this file, via any medium is strictly prohibited
+   Proprietary and confidential
+
+   Developers:
+   - Moawiya Mograbi (moawiya@mov.ai) - 2023
+   - Erez Zomer (erez@mov.ai) - 2023
+"""
 from typing import Optional, Dict, List, Any, Union
+from typing_extensions import Annotated
+
 from pydantic import StringConstraints, BaseModel, Field, field_validator, ConfigDict
-from .base import MovaiBaseModel
-from .base_model.common import Arg
-from .ports import Ports
+
 from movai_core_shared.consts import (
     MOVAI_NODE,
     MOVAI_SERVER,
@@ -13,8 +22,10 @@ from movai_core_shared.consts import (
     ROS1_NODELET,
     ROS1_PLUGIN,
 )
-from typing_extensions import Annotated
 
+from dal.new_models.base import MovaiBaseModel
+from dal.new_models.base_model.common import Arg
+from dal.new_models.ports import Ports
 
 KEY_REGEX = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")]
 PORT_NAME = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")]
@@ -26,12 +37,16 @@ class Parameter1(BaseModel):
 
 
 class Portfields(BaseModel):
+    """A class that represent Portfields."""
+
     Message: Optional[str] = None
     Callback: Optional[str] = None
     Parameter: Optional[Parameter1] = Field(default_factory=Parameter1)
 
 
 class ActionFields(BaseModel):
+    """A class that represent ActionFields."""
+
     cancel: Optional[Portfields] = None
     feedback: Optional[Portfields] = None
     goal: Optional[Portfields] = None
@@ -40,16 +55,22 @@ class ActionFields(BaseModel):
 
 
 class OutValue(ActionFields):
+    """A class that represent OutValue field."""
+
     out: Optional[Portfields] = None
 
 
 class InValue(ActionFields):
+    """A class that represent InValue field."""
+
     in_: Optional[Portfields] = Field(default=None, alias="in")
 
     model_config = ConfigDict(populate_by_name=True)
 
 
 class PortsInstValue(BaseModel):
+    """A class that represent PortsInValue field."""
+
     Message: Optional[str] = ""
     Package: Optional[str] = ""
     Template: Optional[str] = ""
@@ -58,9 +79,13 @@ class PortsInstValue(BaseModel):
 
 
 class Node(MovaiBaseModel):
+    """A class that implements the Message Model."""
+
     EnvVar: Optional[Dict[KEY_REGEX, Arg]] = Field(default_factory=dict)
     CmdLine: Optional[Dict[KEY_REGEX, Arg]] = Field(default_factory=dict)
-    Parameter: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[@a-zA-Z0-9_/]+$")], Arg]] = Field(default_factory=dict)
+    Parameter: Optional[
+        Dict[Annotated[str, StringConstraints(pattern=r"^[@a-zA-Z0-9_/]+$")], Arg]
+    ] = Field(default_factory=dict)
     Launch: Optional[Union[bool, str]] = None
     PackageDepends: Optional[Union[str, List[Any]]] = None
     Path: Optional[str] = None
@@ -69,7 +94,13 @@ class Node(MovaiBaseModel):
     Remappable: Optional[bool] = False
     Type: Optional[str] = None
 
-    def _original_keys(self) -> List[str]:
+    @classmethod
+    def _original_keys(cls) -> List[str]:
+        """keys that are originally defined part of the model.
+
+        Returns:
+            List[str]: list including the original keys
+        """
         return super()._original_keys() + [
             "EnvVar",
             "CmdLine",
@@ -84,20 +115,18 @@ class Node(MovaiBaseModel):
         ]
 
     @field_validator("Parameter", mode="before")
+    @classmethod
     def validate_parameter(cls, v):
         try:
             return v
-        except ValueError as e:
-            field, error = e.errors()[0]["loc"], e.errors()[0]["msg"]
+        except ValueError as verr:
+            field, error = verr.errors()[0]["loc"], verr.errors()[0]["msg"]
             raise ValueError(f"{field}: {v} - {error}")
 
-    @field_validator("Remappable", mode="before")
+    @field_validator("Remappable", "Persistent", mode="before")
+    @classmethod
     def validate_remappable(cls, v):
-        return v if v not in [None, ""] else False
-
-    @field_validator("Persistent", mode="before")
-    def validate_persistent(cls, v):
-        return v if v not in [None, ""] else False
+        return False if v in [None, ""] else v
 
     @property
     def is_remappable(self) -> bool:

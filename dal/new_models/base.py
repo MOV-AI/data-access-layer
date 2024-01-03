@@ -19,15 +19,16 @@ from movai_core_shared.exceptions import DoesNotExist
 from movai_core_shared.logger import Log
 
 from .base_model.cache import ThreadSafeCache
-from .base_model.redis_model import RedisModel, DEFAULT_PROJECT
-from .base_model.common import PrimaryKey, DEFAULT_VERSION
+from .base_model.redis_model import RedisModel
+from .base_model.common import PrimaryKey, DEFAULT_DB, DEFAULT_PROJECT, DEFAULT_VERSION
 
-LOGGER = Log.get_logger("BaseModel.mov.ai")
+
 cache = ThreadSafeCache()
 
 
 class LastUpdated(BaseModel):
     """A field represent the last time object was updated."""
+
     date: Annotated[datetime, Field(default_factory=lambda: datetime.now)]
     user: str = "movai"
 
@@ -56,24 +57,13 @@ class LastUpdated(BaseModel):
 
 
 LABEL_REGEX = r"^[a-zA-Z 0-9._-]*(/[a-zA-Z0-9._-]+){0,}$"
-valid_models = [
-    "Flow",
-    "Node",
-    "Callback",
-    "Annotation",
-    "GraphicScene",
-    "Layout",
-    "Application",
-    "Configuration",
-    "Ports"
-]
 path_regex = re.compile(r"([^\/]+)\/([^\/]+)\/(.*)")
 label_regex = re.compile(LABEL_REGEX)
 
 
 class MovaiBaseModel(RedisModel):
-    """A base class for all MOV.AI models.
-    """
+    """A base class for all MOV.AI models."""
+
     Info: Optional[str] = None
     Label: Annotated[str, StringConstraints(pattern=LABEL_REGEX)] = ""
     Description: Optional[str] = ""
@@ -87,9 +77,16 @@ class MovaiBaseModel(RedisModel):
         if value is None or isinstance(value, str):
             return LastUpdated(**{})
         return LastUpdated(**value)
-            
-            
-    def __new__(cls, *args, **kwargs):
+
+    def __new__(cls, *args, **kwargs) -> RedisModel:
+        """Creates the object PrimaryKey if does not exist and add it to the cache.
+
+        Raises:
+            DoesNotExist: If the object specified does can not be found in db.
+
+        Returns:
+            RedisModel: The requested object before initialization.
+        """
         if args:
             id = args[0]
             # support for old format
@@ -106,9 +103,7 @@ class MovaiBaseModel(RedisModel):
                 scope = cls.__name__
             project = kwargs.get("project", DEFAULT_PROJECT) if kwargs else DEFAULT_PROJECT
             db = kwargs.get("db", "global") if kwargs else "global"
-            key = PrimaryKey.create_pk(
-                        project=project, scope=scope, id=id, version=version
-                    )
+            key = PrimaryKey.create_pk(project=project, scope=scope, id=id, version=version)
             cache_key = f"{db}::{key}"
             if cache_key in cache:
                 return cache[cache_key]
@@ -118,31 +113,6 @@ class MovaiBaseModel(RedisModel):
                 raise DoesNotExist(f"{cls.__name__} {args[0]} not found in DB {db}!")
             return obj[0]
         return super().__new__(cls)
-
-    def save(self, db="global", version=None, project=None, save_to_file=None) -> str:
-        self.LastUpdate.update()
-        super().save(db=db, version=version, project=project, save_to_file=save_to_file)
-
-    @property
-    def path(self):
-        return f"global/{self.scope}/{self.name}/{self.Version}"
-
-    @property
-    def ref(self) -> str:
-        return self.name
-
-    @classmethod
-    def _original_keys(cls) -> List[str]:
-        """keys that are originally defined part of the model
-
-        Returns:
-            List[str]: list including the original keys
-        """
-        return super()._original_keys() + ["Info", "Label", "Description", "LastUpdate", "Version"]
-
-    @field_validator("Dummy", mode="before")
-    def _validate_dummy(cls, v):
-        return v if v not in [None, ""] else False
 
     def __init__(self, *args, project: str = DEFAULT_PROJECT, db: str = "global", **kwargs):
         if not kwargs or self.scope not in kwargs:
@@ -173,7 +143,52 @@ class MovaiBaseModel(RedisModel):
             raise ValueError(
                 f"wrong Data type, should be {self.scope}, recieved: {scope}, instead got: {list(kwargs.keys())[0]}"
             )
-        self._logger = Log.get_logger(self.__class__.__name__)
+        #self._logger = Log.get_logger(self.__class__.__name__)
+
+    def save(self, db="global", version=None, project=None) -> None:
+        """Saves the object to the DB.
+
+        Args:
+            db (str, optional): specifies which DB to save the object. Defaults to "global".
+            version (_type_, optional): What is the version of the object. Defaults to None.
+            project (_type_, optional):Which project owns the object. Defaults to None.
+
+        Returns:
+            str: _description_
+        """
+        self.LastUpdate.update()
+        super().save(db=db, version=version, project=project)
+
+    @property
+    def path(self) -> str:
+        """The path of the object in the db.
+
+        Returns:
+            str: a string representing the path.
+        """
+        return f"{self.DB}/{self.scope}/{self.name}/{self.Version}"
+
+    @property
+    def ref(self) -> str:
+        """A property representing object name, added for backward compatiblity.
+
+        Returns:
+            str: The objects name.
+        """
+        return self.name
+
+    @classmethod
+    def _original_keys(cls) -> List[str]:
+        """keys that are originally defined part of the model
+
+        Returns:
+            List[str]: list including the original keys
+        """
+        return super()._original_keys() + ["Info", "Label", "Description", "LastUpdate", "Version"]
+
+    @field_validator("Dummy", mode="before")
+    def _validate_dummy(cls, v):
+        return v if v not in [None, ""] else False
 
     @property
     def scope(self) -> str:
@@ -232,7 +247,7 @@ class MovaiBaseModel(RedisModel):
         """
         if self.scope == "Flow":
             """somehow the model_dump in pydantic v2 does not take into consideration the
-               overriden model_dump in inner classes, so we need to call it explicitly here.
+            overriden model_dump in inner classes, so we need to call it explicitly here.
             """
             dic = self._fix_flow_links()
         else:
@@ -271,6 +286,7 @@ class MovaiBaseModel(RedisModel):
             # If the user has authorization on the Application that is calling the callback, then authorize.
             if app_name in user.get_permissions("Applications"):
                 from .application import Application
+
                 ca = Application(app_name)
                 if ca.Callbacks and self.name in ca.Callbacks:
                     has_perm = True

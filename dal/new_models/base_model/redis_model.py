@@ -9,7 +9,7 @@
 """
 import json
 from logging import Logger
-from typing import List, Tuple
+from typing import List, Tuple, ClassVar
 
 from pydantic import ConfigDict, BaseModel, PrivateAttr
 import redis
@@ -20,18 +20,17 @@ from dal.archive import Archive
 from dal.movaidb import Redis
 
 from .cache import ThreadSafeCache
-from .common import PrimaryKey, DEFAULT_VERSION, DEFAULT_PROJECT
+from .common import PrimaryKey, DEFAULT_DB, DEFAULT_PROJECT, DEFAULT_VERSION
 from .redis_config import RedisConfig
 
-LOGGER = Log.get_logger(__name__)
 
 cache = ThreadSafeCache()
 
 
 def connect_to_redis(redis_config=RedisConfig()) -> redis.Redis:
     """Connects to redis.
-        TODO: check this.
-        another option for a redis connection in case we are removing movaidb
+    TODO: check this.
+    another option for a redis connection in case we are removing movaidb
     """
     return redis.from_url(
         redis_config.redis_url,
@@ -41,15 +40,15 @@ def connect_to_redis(redis_config=RedisConfig()) -> redis.Redis:
 
 
 class RedisModel(BaseModel):
-    """The very basic model for implementing object mapping (OM).
-    """
+    """The very basic model for implementing object mapping (OM)."""
+
     # pk: Primary key which is the key of the entry in Redis representing this object.
     pk: str
     model_config = ConfigDict(from_attributes=True, validate_assignment=True)
+    DB: str = DEFAULT_DB
     Project: str = DEFAULT_PROJECT
     Version: str = DEFAULT_VERSION
-    _logger: Logger
-
+    _logger: ClassVar[Logger] = Log.get_logger(__name__)
 
     class Meta:
         # variables added here will be treated as a class variables and initialized once.
@@ -67,7 +66,7 @@ class RedisModel(BaseModel):
         return []
 
     @classmethod
-    def db(cls, db_type: str) -> redis.Redis:
+    def db_handler(cls, db_type: str) -> redis.Redis:
         """return the redis connection object
 
         Args:
@@ -98,10 +97,10 @@ class RedisModel(BaseModel):
         """
         return [
             key.decode().split(":")[-1]
-            for key in self.db(db).keys(f"{self.Project}:{self.scope}:{self.name}:*")
+            for key in self.db_handler(db).keys(f"{self.Project}:{self.scope}:{self.name}:*")
         ]
 
-    def save(self, db="global", version=None, project=None, save_to_file=None) -> str:
+    def save(self, db="global", version=None, project=None) -> str:
         """dump object to json and save it in redis json using key=pk (PrimaryKey)
 
         Returns:
@@ -109,6 +108,7 @@ class RedisModel(BaseModel):
         """
         version = self.Version if version is None else version
         project = self.Project if project is None else project
+        self.DB = db
         self.Project = project
         self.Version = version
         self.pk = PrimaryKey.create_pk(
@@ -116,13 +116,11 @@ class RedisModel(BaseModel):
         )
         obj = self.model_dump(by_alias=True, exclude_unset=True, exclude_none=True)
         try:
-            self.db(db).json().set(
-                self.pk,
-                "$",
-                obj
-            )
+            self.db_handler(db).json().set(self.pk, "$", obj)
         except Exception as exc:
-            LOGGER.error(f"While trying to save model to DB, got the following exception: {exc}.")
+            self._logger.error(
+                f"While trying to save model to DB, got the following exception: {exc}."
+            )
         cache_key = f"{db}::{self.pk}"
         cache[cache_key] = self
         return self.pk
@@ -133,7 +131,7 @@ class RedisModel(BaseModel):
         Returns:
             None: None
         """
-        self.db(db).delete(self.pk)
+        self.db_handler(db).delete(self.pk)
         cache_key = f"{db}::{self.pk}"
         if cache_key in cache:
             del cache[cache_key]
@@ -143,7 +141,7 @@ class RedisModel(BaseModel):
         """returns a list of tuples including all of the keys from the
            same class in Redis according to the calling class (Flow/Node/Callback/...).
            a Tuple will indicate (project, id, version)
- 
+
         Args:
             project: project id to search for, if None, all projects will be returned
             version: version to search for, if None, all versions will be returned
@@ -162,7 +160,7 @@ class RedisModel(BaseModel):
         version = "*" if version is None else version
         return [
             tuple([key.decode().split(":")[0]] + key.decode().split(":")[2:])
-            for key in cls.db(db).keys(f"{project}:{cls.__name__}:*:{version}")
+            for key in cls.db_handler(db).keys(f"{project}:{cls.__name__}:*:{version}")
         ]
 
     @classmethod
@@ -187,7 +185,7 @@ class RedisModel(BaseModel):
             # get all objects of type cls
             ids = [
                 key.decode()
-                for key in cls.db(db).keys(f"{project}:{cls.__name__}:*:{version}")
+                for key in cls.db_handler(db).keys(f"{project}:{cls.__name__}:*:{version}")
             ]
         for id in ids:
             if len(id.split(":")) == 1:
@@ -195,7 +193,7 @@ class RedisModel(BaseModel):
                 id = f"{id}:{version}"
             if cls.__name__ not in id:
                 id = f"{project}:{cls.__name__}:{id}"
-            obj = cls.db(db).json().get(id)
+            obj = cls.db_handler(db).json().get(id)
             if obj is not None:
                 ret.append(cls(**obj, version=version, project=project))
         return ret
@@ -232,9 +230,6 @@ def get_project_ids(project, db="global", version=None) -> List[tuple]:
     Returns:
         tuple: tuple of (type, id, version)
     """
-    database = RedisModel.db(db)
+    database = RedisModel.db_handler(db)
     version = "*" if not version else version
-    return [
-        tuple(key.decode().split(":")[1:])
-        for key in database.keys(f"{project}:*:*:{version}")
-    ]
+    return [tuple(key.decode().split(":")[1:]) for key in database.keys(f"{project}:*:*:{version}")]

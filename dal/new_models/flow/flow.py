@@ -17,7 +17,6 @@ from pydantic import StringConstraints, Field, BaseModel, ConfigDict
 
 from movai_core_shared.consts import ROS1_NODELETSERVER
 from movai_core_shared.exceptions import DoesNotExist
-from movai_core_shared.logger import Log
 
 from dal.helpers import flatten
 from dal.helpers.flow import GFlow
@@ -32,9 +31,6 @@ from dal.new_models.flow.flowlinks import FlowLink
 from dal.new_models.node import Node
 
 
-logger = Log.get_logger(__name__)
-
-
 class Layer(BaseModel):
     """A class for represent flow layer."""
 
@@ -43,7 +39,7 @@ class Layer(BaseModel):
 
 
 class Flow(MovaiBaseModel):
-    """A class for representing Flow in based on pydantic."""
+    """A class that implements the Flow model."""
 
     Parameter: Optional[
         Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")], Arg]
@@ -75,7 +71,16 @@ class Flow(MovaiBaseModel):
     __START__: ClassVar[str] = "START/START/START"
     __END__: ClassVar[str] = "END/END/END"
 
-    def _original_keys(self) -> List[str]:
+    # allow extra fields to be added dynamically after creation of object
+    model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
+
+    @classmethod
+    def _original_keys(cls) -> List[str]:
+        """keys that are originally defined part of the model.
+
+        Returns:
+            List[str]: list including the original keys
+        """
         return super()._original_keys() + [
             "Parameter",
             "Container",
@@ -85,10 +90,8 @@ class Flow(MovaiBaseModel):
             "NodeInst",
         ]
 
-    # allow extra fields to be added dynamically after creation of object
-    model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
-
     def __init__(self, *args, **kwargs):
+        """Constructor."""
         super().__init__(*args, **kwargs)
         if kwargs and self.scope in kwargs:
             self._parser = ParamParser(self)
@@ -658,7 +661,7 @@ class Flow(MovaiBaseModel):
                             self.delete_exposed_port_links(name, port)
 
         except Exception as error:
-            logger.error(str(error))
+            self._logger.error(str(error))
             return False
 
         return True
@@ -723,7 +726,7 @@ class Flow(MovaiBaseModel):
             pass
 
         except Exception as e:
-            logger.error(str(e))
+            self._logger.error(str(e))
 
         return False
 
@@ -815,7 +818,7 @@ class Flow(MovaiBaseModel):
                         )
 
                     except Exception as e:
-                        logger.error(str(e))
+                        self._logger.error(str(e))
 
             flow.save()
 

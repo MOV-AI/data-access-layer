@@ -1,9 +1,14 @@
 """
-"""
+   Copyright (C) Mov.ai  - All Rights Reserved
+   Unauthorized copying of this file, via any medium is strictly prohibited
+   Proprietary and confidential
 
-from .base import MovaiBaseModel
+   Developers:
+   - Moawiya Mograbi (moawiya@mov.ai) - 2023
+   - Erez Zomer (erez@mov.ai) - 2023
+"""
 from typing import Dict, List
-from movai_core_shared.logger import Log
+
 from movai_core_shared.exceptions import RoleAlreadyExist, RoleDoesNotExist, RoleError
 from movai_core_shared.consts import (
     ADMIN_ROLE,
@@ -13,23 +18,29 @@ from movai_core_shared.consts import (
     UPDATE_PERMISSION,
 )
 from movai_core_shared.envvars import DEFAULT_ROLE_NAME
-from ..models.aclobject import AclObject
-#from ..models.remoteuser import RemoteUser
-from ..models.internaluser import InternalUser
-from ..models.acl import NewACLManager
-from .application import Application
 
-
-logger = Log.get_logger(__name__)
+from dal.models.acl import NewACLManager
+from dal.models.aclobject import AclObject
+from dal.models.internaluser import InternalUser
+from dal.new_models.application import Application
+from dal.new_models.base import MovaiBaseModel
 
 
 class Role(MovaiBaseModel):
+    """A class that implements the Role model."""
+
     Resources: Dict[str, List[str]] = {}
 
     def __init___(self, *args, **kwargs) -> None:
         super().__init__(*args, project="Roles", **kwargs)
 
-    def _original_keys(self) -> list:
+    @classmethod
+    def _original_keys(cls) -> list:
+        """keys that are originally defined part of the model
+
+        Returns:
+            List[str]: list including the original keys
+        """
         return super()._original_keys() + ["Resources"]
 
     @classmethod
@@ -53,7 +64,7 @@ class Role(MovaiBaseModel):
             return role
         except ValueError:
             error_msg = "The requested Role already exist"
-            logger.error(error_msg)
+            self._logger.error(error_msg)
             raise RoleAlreadyExist(error_msg)
 
     @classmethod
@@ -74,7 +85,7 @@ class Role(MovaiBaseModel):
             "EmailsAlertsConfig": [READ_PERMISSION],
             "EmailsAlertsRecipients": [READ_PERMISSION, UPDATE_PERMISSION],
             "Configuration": [READ_PERMISSION],
-            "Applications": ["FleetBoard", "mov-fe-app-launcher"]
+            "Applications": ["FleetBoard", "mov-fe-app-launcher"],
         }
         operator_role = cls.create(OPERATOR_ROLE, resources)
 
@@ -93,9 +104,7 @@ class Role(MovaiBaseModel):
             "Role": [READ_PERMISSION],
             "AclObject": [READ_PERMISSION],
         }
-        resources["Applications"] = [
-            app.name for app in Application.get_model_objects()
-        ]
+        resources["Applications"] = [app.name for app in Application.get_model_objects()]
 
         deployer_role = cls.create(DEPLOYER_ROLE, resources)
 
@@ -130,14 +139,14 @@ class Role(MovaiBaseModel):
             raise RoleError(f"Deleting the {name} role is forbidden!")
         try:
             # TODO check this
-            #RemoteUser.remove_role_from_all_users(name)
+            # RemoteUser.remove_role_from_all_users(name)
             InternalUser.remove_role_from_all_users(name)
             AclObject.remove_roles_from_all_objects(name)
             role = Role(name, project="Roles")
             role.delete()
         except KeyError:
             error_msg = "The requested Role does not exist"
-            logger.error(error_msg)
+            self._logger.error(error_msg)
             raise RoleDoesNotExist(error_msg)
 
     @staticmethod

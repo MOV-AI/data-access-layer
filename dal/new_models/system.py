@@ -15,10 +15,17 @@ from .base import MovaiBaseModel
 
 
 class System(MovaiBaseModel):
+    """A class that implements the System model."""
+
     Value: Dict[str, Dict[str, Union[bool, List[str], dict]]] = Field(default_factory=dict)
     Parameter: dict = Field(default_factory=dict)
     Package: dict = Field(default_factory=dict)
 
     @classmethod
     def _original_keys(cls) -> List[str]:
+        """keys that are originally defined part of the model
+
+        Returns:
+            List[str]: list including the original keys
+        """
         return super()._original_keys() + ["Value", "Parameter", "Package"]

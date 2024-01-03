@@ -13,8 +13,9 @@ from movai_core_shared.logger import Log
 from dal.movaidb import MovaiDB
 
 from dal.new_models.var import Var
-
 from dal.new_models.configuration import Configuration
+
+from movai_core_enterprise.scopes.shareddataentry import SharedDataEntry
 
 __REGEX__ = r"\$\((param|config|var|flow)[^$)]+\)"
 pattern = re.compile(__REGEX__)
@@ -258,9 +259,7 @@ def get_string_from_template(template: str, task_entry: object) -> str:
     def _replacer(match):
         try:
             template, enum = match[1].split(".")
-            return str(
-                scopes().SharedDataEntry[task_entry.SharedData[template].ID].Field[enum].Value
-            )
+            return str(SharedDataEntry(task_entry.SharedData[template].ID).Field[enum].Value)
         except Exception:  # pylint: disable=broad-except
             # ValueError from split/unpack
             # or another from somewhere

@@ -20,6 +20,8 @@ regex = re.compile(LINK_REGEX)
 
 
 class LinkConfigTemplate(BaseModel):
+    """A class that implements LinkConfigTemplate field."""
+
     node_inst: str
     port_name: str
     port_type: str
@@ -27,12 +29,15 @@ class LinkConfigTemplate(BaseModel):
 
 
 class FlowLink(BaseModel):
+    """A class that implements FlowLink field."""
+
     From: LinkConfigTemplate
     To: LinkConfigTemplate
     Dependency: int = DEFAULT_DEPENDENCY
     __DEFAULT_DEPENDENCY__: ClassVar[int] = DEFAULT_DEPENDENCY
 
     @field_validator("From", "To", mode="before")
+    @classmethod
     def validate_regex(cls, value, field):
         if isinstance(value, dict):
             return value
@@ -54,17 +59,7 @@ class FlowLink(BaseModel):
 
     model_config = ConfigDict(exclude={"__DEFAULT_DEPENDENCY__"}, extra="allow")
 
-    def model_dump(
-        self,
-        *,
-        include=None,
-        exclude=None,
-        by_alias: bool = False,
-        skip_defaults: Optional[bool] = None,
-        exclude_unset: bool = False,
-        exclude_defaults: bool = False,
-        exclude_none: bool = True,
-    ):
+    def model_dump(self):
         return {"From": self.From.str, "To": self.To.str, "Dependency": self.Dependency}
 
     def __init__(self, *args, **kwargs):

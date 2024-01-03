@@ -15,6 +15,8 @@ from .base import MovaiBaseModel
 
 
 class Application(MovaiBaseModel):
+    """A class that implements the Application model."""
+
     User: str = ""
     Type: str = ""
     Package: str = ""
@@ -24,7 +26,13 @@ class Application(MovaiBaseModel):
     CustomConfiguration: str = ""
     Callbacks: List[Any] = Field(default_factory=list)
 
-    def _original_keys(self) -> List[str]:
+    @classmethod
+    def _original_keys(cls) -> List[str]:
+        """keys that are originally defined part of the model.
+
+        Returns:
+            List[str]: list including the original keys
+        """
         return super()._original_keys() + [
             "Type",
             "Package",

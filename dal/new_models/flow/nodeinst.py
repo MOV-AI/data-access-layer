@@ -2,13 +2,7 @@ from re import match
 from typing import Optional, Dict, Any
 from typing_extensions import Annotated
 
-from pydantic import (
-    StringConstraints,
-    ConfigDict,
-    BaseModel,
-    Field,
-    field_validator
-)
+from pydantic import StringConstraints, ConfigDict, BaseModel, Field, field_validator
 
 from dal.new_models.base_model.common import Arg
 from dal.new_models.node import Node
@@ -182,10 +176,6 @@ class NodeInst(BaseModel):
 
         # get the value from the property Persistent
         prop = temp if self.Persistent in [None, ""] else self.Persistent
-
-        # get the value from the parameter _persistent
-        # parameter takes precedence
-        # param = self.get_param("_persistent")
 
         # return prop if param in [None, ""] else param
         return prop

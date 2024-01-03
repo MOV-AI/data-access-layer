@@ -9,7 +9,6 @@
 """
 from .application import Application
 from .base import MovaiBaseModel
-from .base_model.redis_model import get_project_ids
 from .callback import Callback
 from .configuration import Configuration
 from .flow import Flow
@@ -23,11 +22,10 @@ __all__ = [
     "Application",
     "Callback",
     "Configuration",
-    "get_project_ids",
     "Flow",
     "Message",
     "MovaiBaseModel",
     "Node",
     "Ports",
-    "System"
+    "System",
 ]

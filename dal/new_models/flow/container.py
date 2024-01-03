@@ -23,15 +23,22 @@ class Y(BaseModel):
 
 
 class Visualization(BaseModel):
+    """A class that implements the Visualization field"""
+
     x: X
     y: Y
 
 
 class Container(BaseModel):
+    """A class that implements the Container field"""
+
     ContainerFlow: str = ""
     ContainerLabel: str = ""
-    Parameter: Optional[Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")], Arg]] = Field(default_factory=dict)
+    Parameter: Optional[
+        Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")], Arg]
+    ] = Field(default_factory=dict)
     Visualization: Union[List[float], Visualization]
+    model_config = ConfigDict(extra="allow")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -61,7 +68,6 @@ class Container(BaseModel):
         dic.pop("_parser")
         dic.pop("_flow_class")
         return dic
-    model_config = ConfigDict(extra="allow")
 
     @property
     def flow(self):
@@ -71,7 +77,15 @@ class Container(BaseModel):
     @property
     def subflow(self):
         """Returns the flow instance (Flow) represented by the container"""
-        return self._flow_class(self.ContainerFlow)
+        if self.ContainerFlow and self._flow_class:
+            try:
+                obj = self._flow_class(self.ContainerFlow)
+                return obj
+            except Exception as exc:
+                self._logger(
+                    f"Got exception of type: {exc} while trying to load the object: {self.ContainerFlow}"
+                )
+                return None
 
     @property
     def parser(self):

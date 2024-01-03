@@ -32,4 +32,3 @@ class RedisConfig:
 
     def dict(self):
         return asdict(self)
-

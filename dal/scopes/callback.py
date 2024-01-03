@@ -16,7 +16,7 @@ import pkgutil
 import pydoc
 import importlib
 from dal.movaidb import MovaiDB
-from dal.new_models import System
+from dal.scopes.system import System
 from dal.scopes.scope import Scope
 
 

@@ -24,23 +24,35 @@ PORT_NAME_REGEX = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")]
 
 
 class OutPort(BaseModel):
+    """OutPort field"""
+
     Transport: str
     Protocol: str
-    Message: Optional[str] = None    
+    Message: Optional[str] = None
     Parameter: Optional[dict] = Field(default_factory=dict)
     LinkEnabled: bool
 
 
 class InPort(OutPort):
+    """InPort field"""
+
     Callback: Optional[str] = None
 
 
 class Ports(MovaiBaseModel):
+    """A class that implement the Ports model."""
+
     Data: dict = Field(default_factory=dict)
     In: Optional[Dict[PORT_NAME_REGEX, InPort]] = Field(default_factory=dict)
     Out: Optional[Dict[PORT_NAME_REGEX, OutPort]] = Field(default_factory=dict)
 
-    def _original_keys(self) -> List[str]:
+    @classmethod
+    def _original_keys(cls) -> List[str]:
+        """keys that are originally defined part of the model.
+
+        Returns:
+            List[str]: list including the original keys
+        """
         return super()._original_keys() + ["Data", "In", "Out"]
 
     def is_transition(self, port_type: str, port_name: str) -> bool:

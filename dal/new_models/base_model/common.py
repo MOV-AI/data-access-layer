@@ -4,7 +4,7 @@ from abc import abstractmethod, ABC
 
 # from ulid import ULID
 
-
+DEFAULT_DB = "global"
 DEFAULT_PROJECT = "Movai"
 DEFAULT_VERSION = "__UNVERSIONED__"
 

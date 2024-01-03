@@ -1,19 +1,23 @@
 """
+   Copyright (C) Mov.ai  - All Rights Reserved
+   Unauthorized copying of this file, via any medium is strictly prohibited
+   Proprietary and confidential
+
+   Developers:
+   - Moawiya Mograbi (moawiya@mov.ai) - 2023
+   - Erez
 """
-from .base import MovaiBaseModel
-from pydantic import Field, BaseModel, field_validator
-from typing import Dict, List, Tuple, Union
-import hashlib
-from movai_core_shared.logger import Log
 import zlib
 import base64
-from typing_extensions import Annotated
-from pydantic import field_validator, BaseModel, Field, ValidationInfo, model_validator
+import hashlib
+from typing import Dict, List, Tuple
 from sys import getsizeof
 
+from pydantic import Field, BaseModel, field_validator, ValidationInfo
 
-logger = Log.get_logger(__name__)
-MegaByte = 1000000
+from .base import MovaiBaseModel
+
+MEGABYTE = 1000000
 
 
 def compress(value: bytes) -> str:
@@ -32,7 +36,7 @@ def compress(value: bytes) -> str:
         If the input is already a string, it returns the input string directly.
     """
     compressed_data = zlib.compress(value)
-    value = base64.b64encode(compressed_data).decode('utf-8')
+    value = base64.b64encode(compressed_data).decode("utf-8")
 
     return value
 
@@ -64,6 +68,8 @@ def decompress(value: str) -> bytes:
 
 
 class FileValue(BaseModel):
+    """A class that implements the FileValue field."""
+
     FileLabel: str = None
     Value: str
     Checksum: str = None
@@ -73,12 +79,14 @@ class FileValue(BaseModel):
     def _validate_value(cls, value, info: ValidationInfo):
         if isinstance(value, str):
             return value
-        if getsizeof(value) > 15 * MegaByte:
+        if getsizeof(value) > 15 * MEGABYTE:
             return compress(value)
         return base64.b64encode(value).decode("utf-8")
 
 
 class Package(MovaiBaseModel):
+    """A class that implements the Package model."""
+
     File: Dict[str, FileValue] = Field(default_factory=dict, validate_default=True)
 
     @classmethod
@@ -91,26 +99,28 @@ class Package(MovaiBaseModel):
         return super()._original_keys() + ["File"]
 
     def is_checksum_valid(self, file_name: str, checksum: str) -> bool:
-        """ Check checksum """
+        """Check checksum"""
         return checksum == self.File[file_name].Checksum
 
     def add_file(self, file_name, value: bytes):
-        """ Add a file to the package
+        """Add a file to the package
 
         Args:
             file_name (str): file name
             value (bytes): value of the file
         """
-        self.File[file_name] = FileValue(Value=value, Checksum=compute_md5_checksum(value), FileLabel=file_name)
+        self.File[file_name] = FileValue(
+            Value=value, Checksum=compute_md5_checksum(value), FileLabel=file_name
+        )
 
-    def file_exists(self, file_name: str,  path_to: str) -> str:
-        """ Check existing file against computed checksum """
+    def file_exists(self, file_name: str, path_to: str) -> str:
+        """Check existing file against computed checksum"""
         try:
             csum = compute_md5_checksum(path_to)
             if self.is_checksum_valid(file_name, csum):
                 return csum
         except FileNotFoundError:
-            logger.warning(f"File {path_to} not found")
+            self._logger.warning(f"File {path_to} not found")
             pass
         return None
 
@@ -118,11 +128,11 @@ class Package(MovaiBaseModel):
         return decompress(self.File[file_name].Value)
 
     def dump_file(self, file_name: str, path_to: str) -> Tuple[bool, str, str]:
-        """ Dump a file to storage """
+        """Dump a file to storage"""
         csum = self.file_exists(file_name, path_to)
 
         if csum is None:
-            with open(path_to, 'wb') as fd:
+            with open(path_to, "wb") as fd:
                 contents = decompress(self.File[file_name].Value)
                 fd.write(contents)
             # check checksum again
@@ -133,12 +143,13 @@ class Package(MovaiBaseModel):
 
     @staticmethod
     def dump(package: str, file_name: str, path_to: str) -> Tuple[bool, str, str]:
-        """ Dump a file to storage """
+        """Dump a file to storage"""
         try:
             return Package(package).dump_file(file_name, path_to)
         except KeyError:  # Scope does not exist
             return (False, path_to, None)
-    '''
+
+    """
     def model_dump(
         self,
         *,
@@ -156,7 +167,7 @@ class Package(MovaiBaseModel):
             dic["Package"][self.name]["File"][f]["Value"] = compress(value)
 
         return dic
-    '''
+    """
 
 
 def compute_md5_checksum(file_path: str) -> str:
@@ -173,7 +184,7 @@ def compute_md5_checksum(file_path: str) -> str:
     hasher = hashlib.md5()
 
     # Open the file in binary read mode.
-    with open(file_path, 'rb') as file:
+    with open(file_path, "rb") as file:
         # Read the file in chunks (here, we read 4096 bytes at a time).
         # This approach ensures that the whole file is not loaded into memory at once.
         for chunk in iter(lambda: file.read(4096), b""):

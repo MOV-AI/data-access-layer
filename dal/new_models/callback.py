@@ -20,7 +20,7 @@ import rospkg
 
 from movai_core_shared.exceptions import DoesNotExist
 
-from .base import MovaiBaseModel
+from dal.new_models.base import MovaiBaseModel
 
 
 ValidStr = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z_]+$")]
@@ -33,12 +33,19 @@ class Py3LibValue(BaseModel):
 
 
 class Callback(MovaiBaseModel):
+    """A class that implements the Callback Model."""
+
     Code: Optional[str] = None
     Message: Optional[str] = None
     Py3Lib: Optional[Dict[ValidStrNums, Py3LibValue]] = {}
 
     @classmethod
     def _original_keys(cls) -> List[str]:
+        """keys that are originally defined part of the model.
+
+        Returns:
+            List[str]: list including the original keys
+        """
         return super()._original_keys() + ["Code", "Message", "Py3Lib"]
 
     @staticmethod
@@ -60,6 +67,7 @@ class Callback(MovaiBaseModel):
 
         try:
             from .system import System
+
             mods = System("PyModules", db="local")
         except DoesNotExist:  # pylint: disable=broad-except
             mods = System.model_validate({"System": {"PyModules": {}}})
@@ -230,11 +238,7 @@ class Callback(MovaiBaseModel):
                             ret_dict["consts"].append(key)
                             # ignore the value tho, only need key
                     else:
-                        # just add it
-                        # or don't ?
                         ret_dict["consts"].append(key)
-
-                # so it's done ?
                 del i_mod
             except rospkg.common.ResourceNotFound:
                 # ros throws this exception somewhere in inspect.getmembers
@@ -265,8 +269,6 @@ class Callback(MovaiBaseModel):
 
             # ignore _pkgs _starting _with '_'
             if x[1].startswith("_") or x[1] == "init_local_db":
-                # nope
-
                 continue
             # create the template dict
             modules[x[1]] = {"isPkg": x[2]}

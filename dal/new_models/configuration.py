@@ -19,11 +19,19 @@ from .base import MovaiBaseModel
 
 
 class Configuration(MovaiBaseModel):
+    """A class that implements the Configuration Model."""
+
     Type: str = "yaml"
     Yaml: str = ""
     data: dict = Field(default_factory=dict)  # runtime parameter
 
-    def _original_keys(self) -> List[str]:
+    @classmethod
+    def _original_keys(cls) -> List[str]:
+        """keys that are originally defined part of the model.
+
+        Returns:
+            List[str]: list including the original keys
+        """
         return super()._original_keys() + ["Type", "Yaml"]
 
     def __init__(self, *args, **kwargs):
@@ -65,7 +73,7 @@ class Configuration(MovaiBaseModel):
 
         except Exception as exc:
             raise Exception(
-                f'"{param}" is not a valid parameter in Configuration "{self.name}"'
+                f"{param} is not a valid parameter in Configuration {self.name}"
             ) from exc
 
         return value
@@ -73,6 +81,7 @@ class Configuration(MovaiBaseModel):
 
 class Config(Box):
     """Config with dot accessible elements"""
+
     def __init__(self, name):
         # raises DoesNotExist in case Configuration name does not exist
         config = Configuration(name).get_value()
