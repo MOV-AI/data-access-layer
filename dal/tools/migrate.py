@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
    Copyright (C) Mov.ai  - All Rights Reserved
    Unauthorized copying of this file, via any medium is strictly prohibited
@@ -34,7 +33,6 @@ dal_models = (
     "Application",
     "Callback",
     "Configuration",
-    "get_project_ids",
     "Flow",
     "Message",
     "MovaiBaseModel",
@@ -42,20 +40,13 @@ dal_models = (
     "Ports",
     "System"
 )
-enterprise_models = ("Annotation",)
+enterprise_models = ()
 pydantic_models = set()
 pydantic_models.update(dal_models)
 pydantic_models.update(enterprise_models)
 
 
-db = sys.argv[1] if len(sys.argv) > 1 else "global"
-logger.info(f"migrating db: {db}")
-objs = set()
-count = {}
-bars = {}
-lock = Lock()
-database = Redis().db_global if db == "global" else Redis().db_local
-scopes_keys = [key.decode() for key in database.keys("*")]
+
 
 
 def class_exist(name):
@@ -70,8 +61,8 @@ def class_exist(name):
             return False
 
 
-def validate_model(model: str, id: str, db: str = "global"):
-    global bars, objs
+def validate_model(bars: dict, objs: dict, model: str, id: str, db: str = "global"):
+    lock = Lock()
 
     try:
         scopes_class = getattr(dal.scopes, model)
@@ -107,47 +98,52 @@ def chunk_data(data, n):
     chunk_size = len(data) // n
     return [data[i : i + chunk_size] for i in range(0, len(data), chunk_size)]
 
+def main():
+    db = sys.argv[1] if len(sys.argv) > 1 else "global"
+    objs = set()
+    count = {}
+    bars = {}
+    database = Redis().db_global if db == "global" else Redis().db_local
+    scopes_keys = [key.decode() for key in database.keys("*")]
+    invalid_models = set()
+    valid_models = set()
+    ignoring = list()
+    for key in scopes_keys:
+        if "," in key:
+            model, id, *_ = key.split(":")
+            id = id.split(",")[0]
+            if model not in pydantic_models:
+                continue
+            if not class_exist(model):
+                if f"{model},{id}" not in ignoring:
+                    logger.info("Could not find %s in new_models, ignoring %s::%s", model, model, id)
+                    ignoring.append(f"{model},{id}")
+                invalid_models.add(model)
+                continue
+            valid_models.add(model)
+            objs.add((model, id))
+            if model not in count:
+                count[model] = set()
+            count[model].add(id)
+            
+    pos = 0
+    for model in valid_models:
+        bars[model] = tqdm(total=len(count[model]), desc=f"{model} Files", position=pos)
+        pos += 1
 
-invalid_models = set()
-valid_models = set()
-ignoring = list()
-for key in scopes_keys:
-    if "," in key:
-        model, id, *_ = key.split(":")
-        id = id.split(",")[0]
-        if model not in pydantic_models:
-            continue
-        if not class_exist(model):
-            if f"{model},{id}" not in ignoring:
-                logger.info("Could not find %s in new_models, ignoring %s::%s", model, model, id)
-                ignoring.append(f"{model},{id}")
-            invalid_models.add(model)
-            continue
-        valid_models.add(model)
-        objs.add((model, id))
-        if model not in count:
-            count[model] = set()
-        count[model].add(id)
+    # Number of threads you'd like to use
+    NUM_THREADS = 8
+    # list of lists containing the data to be processed
+    chunks = chunk_data(objs, NUM_THREADS)
+
+    with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
+        futures = [
+            executor.submit(validate_model, bars, objs, model, id) for chunk in chunks for model, id in chunk
+        ]
+
+        for future in futures:
+            future.result()  # to capture any exceptions thrown inside threads
 
 
-pos = 0
-for model in valid_models:
-    bars[model] = tqdm(total=len(count[model]), desc=f"{model} Files", position=pos)
-    pos += 1
-
-# Number of threads you'd like to use
-NUM_THREADS = 8
-# list of lists containing the data to be processed
-chunks = chunk_data(objs, NUM_THREADS)
-
-for chunk in chunks:
-    for model, id in chunk:
-        validate_model(model, id)
-
-with ThreadPoolExecutor(max_workers=NUM_THREADS) as executor:
-    futures = [
-        executor.submit(validate_model, model, id) for chunk in chunks for model, id in chunk
-    ]
-
-    for future in futures:
-        future.result()  # to capture any exceptions thrown inside threads
+if __name__ == "__main__":
+    main()
