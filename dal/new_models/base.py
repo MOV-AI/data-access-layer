@@ -143,7 +143,7 @@ class MovaiBaseModel(RedisModel):
             raise ValueError(
                 f"wrong Data type, should be {self.scope}, recieved: {scope}, instead got: {list(kwargs.keys())[0]}"
             )
-        #self._logger = Log.get_logger(self.__class__.__name__)
+        # self._logger = Log.get_logger(self.__class__.__name__)
 
     def save(self, db="global", version=None, project=None) -> None:
         """Saves the object to the DB.
@@ -187,6 +187,7 @@ class MovaiBaseModel(RedisModel):
         return super()._original_keys() + ["Info", "Label", "Description", "LastUpdate", "Version"]
 
     @field_validator("Dummy", mode="before")
+    @classmethod
     def _validate_dummy(cls, v):
         return v if v not in [None, ""] else False
 

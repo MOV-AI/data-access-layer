@@ -76,6 +76,7 @@ class NodeInst(BaseModel):
         return dic
 
     @field_validator("Parameter", mode="before")
+    @classmethod
     def validate_regex(cls, value):
         if isinstance(value, dict):
             for key in value:
