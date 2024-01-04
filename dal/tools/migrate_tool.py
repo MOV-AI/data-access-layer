@@ -115,10 +115,6 @@ class Convert(MigrationCommands):
         self.invalid_models = {}
         self.valid_models = {}
 
-    @property
-    def name(self):
-        return "convert"
-
     @classmethod
     def define_arguments(cls, subparsers) -> None:
         """An abstract function for implementing command arguments.
