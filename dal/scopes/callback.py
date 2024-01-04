@@ -16,6 +16,7 @@ import pkgutil
 import pydoc
 import importlib
 from dal.movaidb import MovaiDB
+from dal.scopes.system import System
 from dal.scopes.scope import Scope
 
 
@@ -412,21 +413,17 @@ class Callback(Scope):
         # -DEBUG
 
         # and now save to database
-        MovaiDB("local").set({"System": {"PyModules": {"Value": root}}})
-        # python frees the class
-
-        # nothing to return
+        system = System("PyModules")
+        system.Value = root
+        system.save(db="local")
 
     @staticmethod
     def fetch_modules_api():
         """Retrieve saved modules from Layer1, called from REST API"""
 
-        mods = MovaiDB("local").get({"System": {"PyModules": "**"}})
-        # [0] -> result dict
-        # [1] -> "error" string
-        # TODO possibly check error string
+        PyModules = System("PyModules", db="local")
 
-        return mods["System"]["PyModules"]["Value"]
+        return PyModules.Value
 
     def template_depends(self, force=False):
 

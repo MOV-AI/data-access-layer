@@ -4,12 +4,12 @@
    Proprietary and confidential
 
    Developers:
-   - Tiago Teixeira  (tiago.teixeira@mov.ai) - 2020
-
-   Role Model (only of name)
+   - Moawiya Mograbi (moawiya@mov.ai) - 2023
+   - Erez Zomer (erez@mov.ai) - 2023
 """
-from typing import Dict
+from typing import Dict, List
 
+from movai_core_shared.exceptions import RoleAlreadyExist, RoleDoesNotExist, RoleError
 from movai_core_shared.consts import (
     ADMIN_ROLE,
     OPERATOR_ROLE,
@@ -19,23 +19,32 @@ from movai_core_shared.consts import (
 )
 from movai_core_shared.envvars import DEFAULT_ROLE_NAME
 
-from movai_core_shared.exceptions import RoleAlreadyExist, RoleDoesNotExist, RoleError
+from dal.models.acl import NewACLManager
+from dal.models.aclobject import AclObject
+from dal.models.internaluser import InternalUser
+from dal.new_models.application import Application
+from dal.new_models.base import MovaiBaseModel
 
 
-from .scopestree import scopes
-from .model import Model
-from .aclobject import AclObject
-from .remoteuser import RemoteUser
-from .internaluser import InternalUser
-from .acl import NewACLManager
-from dal.new_models import Application
+class Role(MovaiBaseModel):
+    """A class that implements the Role model."""
 
+    Resources: Dict[str, List[str]] = {}
 
-class Role(Model):
-    """Role Model (only of name)"""
+    def __init___(self, *args, **kwargs) -> None:
+        super().__init__(*args, project="Roles", **kwargs)
 
     @classmethod
-    def create(cls, name: str, resources: Dict):
+    def _original_keys(cls) -> list:
+        """keys that are originally defined part of the model
+
+        Returns:
+            List[str]: list including the original keys
+        """
+        return super()._original_keys() + ["Resources"]
+
+    @classmethod
+    def create(cls, name: str, resources: Dict) -> "Role":
         """create a new Role object in DB
 
         Args:
@@ -48,14 +57,14 @@ class Role(Model):
             RoleAlreadyExist: in case a Role with that name already exist.
         """
         try:
-            role = scopes().create(Role.__name__, name)
+            role = cls(name)
             role.Label = name
             role.Resources = resources
-            role.write()
+            role.save(project="Roles")
             return role
         except ValueError:
             error_msg = "The requested Role already exist"
-            cls.log.error(error_msg)
+            self._logger.error(error_msg)
             raise RoleAlreadyExist(error_msg)
 
     @classmethod
@@ -63,14 +72,7 @@ class Role(Model):
         """
         creates default admin Role
         """
-        resources = NewACLManager.get_permissions()
-        if not Role.is_exist(ADMIN_ROLE):
-            admin_role = cls.create(ADMIN_ROLE, resources)
-        else:
-            admin_role = Role(ADMIN_ROLE)
-            for key, item in resources.items():
-                admin_role.Resources[key] = item
-                admin_role.write()
+        admin_role = cls.create(ADMIN_ROLE, NewACLManager.get_permissions())
 
         return admin_role
 
@@ -83,15 +85,9 @@ class Role(Model):
             "EmailsAlertsConfig": [READ_PERMISSION],
             "EmailsAlertsRecipients": [READ_PERMISSION, UPDATE_PERMISSION],
             "Configuration": [READ_PERMISSION],
+            "Applications": ["FleetBoard", "mov-fe-app-launcher"],
         }
-        resources["Applications"] = ["FleetBoard", "mov-fe-app-launcher"]
-        if not Role.is_exist(OPERATOR_ROLE):
-            operator_role = cls.create(OPERATOR_ROLE, resources)
-        else:
-            operator_role = Role(OPERATOR_ROLE)
-            for key, item in resources.items():
-                operator_role.Resources[key] = item
-                operator_role.write()
+        operator_role = cls.create(OPERATOR_ROLE, resources)
 
         return operator_role
 
@@ -108,16 +104,9 @@ class Role(Model):
             "Role": [READ_PERMISSION],
             "AclObject": [READ_PERMISSION],
         }
-        resources["Applications"] = [
-            item for _, item, _ in Application.get_model_ids()
-        ]
-        if not Role.is_exist(DEPLOYER_ROLE):
-            deployer_role = cls.create(DEPLOYER_ROLE, resources)
-        else:
-            deployer_role = Role(DEPLOYER_ROLE)
-            for key, item in resources.items():
-                deployer_role.Resources[key] = item
-                deployer_role.write()
+        resources["Applications"] = [app.name for app in Application.get_model_objects()]
+
+        deployer_role = cls.create(DEPLOYER_ROLE, resources)
 
         return deployer_role
 
@@ -134,7 +123,7 @@ class Role(Model):
     def update(self, resources: Dict) -> None:
         """Update role data"""
         self.Resources = resources
-        self.write()
+        self.save(project="Roles")
 
     @classmethod
     def remove(cls, name: str) -> None:
@@ -149,14 +138,15 @@ class Role(Model):
         if name == DEFAULT_ROLE_NAME:
             raise RoleError(f"Deleting the {name} role is forbidden!")
         try:
-            RemoteUser.remove_role_from_all_users(name)
+            # TODO check this
+            # RemoteUser.remove_role_from_all_users(name)
             InternalUser.remove_role_from_all_users(name)
             AclObject.remove_roles_from_all_objects(name)
-            role = Role(name)
-            scopes().delete(role)
+            role = Role(name, project="Roles")
+            role.delete()
         except KeyError:
             error_msg = "The requested Role does not exist"
-            cls.log.error(error_msg)
+            self._logger.error(error_msg)
             raise RoleDoesNotExist(error_msg)
 
     @staticmethod
@@ -166,11 +156,5 @@ class Role(Model):
         Returns:
             list: containing the name of the current Roles.
         """
-        roles_names = []
-        for obj in scopes().list_scopes(scope="Role"):
-            role_name = str(obj["ref"])
-            roles_names.append(role_name)
-        return roles_names
 
-
-Model.register_model_class("Role", Role)
+        return [id for _, id, _ in Role.get_model_ids(project="Roles")]
