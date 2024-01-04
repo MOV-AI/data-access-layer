@@ -9,12 +9,19 @@
 import ast
 import re
 import os
-
 from movai_core_shared.logger import Log
-
 from dal.movaidb import MovaiDB
-from dal.models.var import Var
+
+from dal.new_models.var import Var
 from dal.new_models.configuration import Configuration
+
+from movai_core_enterprise.scopes.shareddataentry import SharedDataEntry
+
+__REGEX__ = r"\$\((param|config|var|flow)[^$)]+\)"
+pattern = re.compile(__REGEX__)
+EVAL_REGEX = r"\$\((param|config|var|flow)\s+([\w\.-]+)\)"
+eval_pattern = re.compile(EVAL_REGEX)
+logger = Log.get_logger("ParamParser.mov.ai")
 
 
 class ParamParser:
@@ -22,10 +29,6 @@ class ParamParser:
     Parser for the node instance, container and flow parameters
     Supports configuration. parameters, var, flow and env variables
     """
-
-    logger = Log.get_logger("ParamParser.mov.ai")
-
-    __REGEX__ = r"\$\((param|config|var|flow)[^$)]+\)"
 
     def __init__(self, flow):
         self.mapping = {
@@ -72,8 +75,7 @@ class ParamParser:
         while 1:
             temp_param = expression
 
-            expression = re.sub(
-                self.__REGEX__,
+            expression = pattern.sub(
                 lambda m: self.eval_reference(key, m.group(), instance, node_name),
                 expression,
             )
@@ -88,9 +90,7 @@ class ParamParser:
 
         return expression
 
-    def eval_reference(
-        self, key: str, expression: str, instance: any, node_name: str
-    ) -> str:
+    def eval_reference(self, key: str, expression: str, instance: any, node_name: str) -> str:
         """
         Calls a specific function to evaluate the expression
 
@@ -110,15 +110,10 @@ class ParamParser:
         try:
             # $(<context> <parameter reference>)
             # ex.: $(flow var_A)
-            pattern = re.compile(
-                rf"\$\(({'|'.join(self.mapping.keys())})\s+([\w\.-]+)\)"
-            )
-            result = pattern.search(expression)
+            result = eval_pattern.search(expression)
             if result is None:
                 raise ValueError(f'Invalid expression "{expression}"')
 
-            if result is None:
-                raise ValueError(f"Invalid expression, {expression}")
             # get the function to call from the mapping dict
             func = self.mapping.get(result.group(1))
 
@@ -129,7 +124,9 @@ class ParamParser:
             extra_info = f'in flow "{self.flow.ref}"'
 
             if self.context != self.flow.ref:
-                extra_info = f'in subflow "{self.context}" in the context of the flow "{self.flow.ref}"'
+                extra_info = (
+                    f'in subflow "{self.context}" in the context of the flow "{self.flow.ref}"'
+                )
 
             info = (
                 f'Error evaluating "{key}" with value "{expression}"'
@@ -138,7 +135,7 @@ class ParamParser:
 
             msg = f"{info}; {error}"
 
-            self.logger.error(msg)
+            logger.error(msg)
 
         return str(output)
 
@@ -162,9 +159,7 @@ class ParamParser:
 
         return output
 
-    def eval_param(
-        self, param_name: str, default: str, instance: any, node_name: str
-    ) -> any:
+    def eval_param(self, param_name: str, default: str, instance: any, node_name: str) -> any:
         """
         Returns the param expression evaluated or default
             ex.: $(param name)
@@ -264,13 +259,7 @@ def get_string_from_template(template: str, task_entry: object) -> str:
     def _replacer(match):
         try:
             template, enum = match[1].split(".")
-            from dal.models.scopestree import scopes
-            return str(
-                scopes()
-                .SharedDataEntry[task_entry.SharedData[template].ID]
-                .Field[enum]
-                .Value
-            )
+            return str(SharedDataEntry(task_entry.SharedData[template].ID).Field[enum].Value)
         except Exception:  # pylint: disable=broad-except
             # ValueError from split/unpack
             # or another from somewhere

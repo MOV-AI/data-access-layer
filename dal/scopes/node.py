@@ -74,6 +74,7 @@ class Node(Scope):
         final_params = {}
         node_name = self.name
         params = MovaiDB().get({"Node": {node_name: {attribute: {"*": {"Value": ""}}}}})
+        params = getattr(attribute)
 
         if params:
             for param, _value in params["Node"][node_name][attribute].items():

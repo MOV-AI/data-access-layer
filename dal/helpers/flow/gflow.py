@@ -77,7 +77,7 @@ class GFlow:
 
         return output
 
-    def should_skip(self, link: Template) -> bool:
+    def should_skip(self, link) -> bool:
         """ Special rules for including vertex in the graph """
 
         ports = set([GFlow.__START__, GFlow.__END__])
@@ -110,9 +110,9 @@ class GFlow:
         self.graph = {}
 
         # iterate over all th links in the main flow and subflows
-        for link_id in self.flow.Links.full.keys():
+        for link_id in self.flow.full.Links.keys():
 
-            link = self.flow.Links[link_id]
+            link = self.flow.full.Links[link_id]
 
             if self.should_skip(link):
                 continue
@@ -135,7 +135,7 @@ class GFlow:
         # list of ports sorted by count (nr. of connections)
         ports = self.sort_graph()
 
-        links = self.flow.Links.full
+        links = self.flow.full.Links
 
         # TODO review and refactor
         while ports:
@@ -153,25 +153,25 @@ class GFlow:
 
             # First we need to check if any connected port was previously remapped
             for link in port["links"]:
-                port_to_remap = links[link]["To"] if port["_type"] == "From" else links[link]["From"]
+                port_to_remap = links[link].To if port["_type"] == "From" else links[link].From
 
-                if self.graph[port_to_remap]["remap"] is not None:
+                if self.graph[port_to_remap.str]["remap"] is not None:
 
                     # A second port previously remapped with a different value was found.
-                    if ports_already_remapped > 0 and self.graph[port_to_remap]["remap"] != remap_to:
+                    if ports_already_remapped > 0 and self.graph[port_to_remap.str]["remap"] != remap_to:
                         error_msg = f"Remap could not be solved. More than one port previously " \
                                     f"remapped with different values. port: {port_to_remap}"
                         raise Exception(error_msg)
 
-                    remap_to = self.graph[port_to_remap]["remap"]
+                    remap_to = self.graph[port_to_remap.str]["remap"]
                     port["remap"] = remap_to
                     ports_already_remapped += 1
 
             # Do the remap
             for link in port["links"]:
                 # remap the other port
-                port_to_remap = links[link]["To"] if port["_type"] == "From" else links[link]["From"]
-                self.graph[port_to_remap]["remap"] = remap_to
+                port_to_remap = links[link].To if port["_type"] == "From" else links[link].From
+                self.graph[port_to_remap.str]["remap"] = remap_to
 
         return self.graph
 

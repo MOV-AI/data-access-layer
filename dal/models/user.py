@@ -29,6 +29,11 @@ from dal.data.shared.vault import (
 )
 
 
+def Role():
+    import dal.new_models.role
+    return dal.new_models.role.Role
+
+
 class User(Model):
     """This class represents the user object as record in the DB,
     it handles all operations required for user: authentication,
@@ -51,7 +56,7 @@ class User(Model):
             Union[Model, None]: a Role object or None if it not found.
         """
         try:
-            return scopes.from_path(self.Role, scope="Role")
+            return Role()(self.Role)
         except KeyError:
             return None
 
