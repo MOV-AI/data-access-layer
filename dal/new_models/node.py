@@ -31,17 +31,12 @@ KEY_REGEX = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")]
 PORT_NAME = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")]
 
 
-class Parameter1(BaseModel):
-    Child: Optional[str] = None
-    Parent: Optional[str] = None
-
-
 class Portfields(BaseModel):
     """A class that represent Portfields."""
 
     Message: Optional[str] = None
     Callback: Optional[str] = None
-    Parameter: Optional[Parameter1] = Field(default_factory=Parameter1)
+    Parameter: Optional[dict] = Field(default_factory=dict)
 
 
 class ActionFields(BaseModel):
