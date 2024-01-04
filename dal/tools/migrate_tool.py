@@ -99,7 +99,7 @@ class MigrationCommands(BaseCommand):
 
         for model in models_to_ignore:
             if model in models_to_convert:
-                models_to_convert.pop(model)
+                models_to_convert.remove(model)
 
         self.log.info(f"The following models will be converted after scan: {models_to_convert}")
         self.log.info(f"The follogin models will be ignored after scan: {models_to_ignore}")

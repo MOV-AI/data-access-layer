@@ -597,7 +597,6 @@ class Flow(MovaiBaseModel):
         """
 
         for flow in Flow.get_model_objects():
-            flow: Flow = flow
             for c_name, c_value in flow.Container.items():
                 if c_value.ContainerFlow == flow_id:
                     flow.delete_part("Container", c_name)
@@ -758,7 +757,6 @@ class Flow(MovaiBaseModel):
         # get info about flows with containers
         flows_with_containers: List[Flow] = []
         for flow in Flow.get_model_objects():
-            flow: Flow = flow
             if flow.Container:
                 flows_with_containers.append(flow)
 
@@ -766,8 +764,6 @@ class Flow(MovaiBaseModel):
         for flow in flows_with_containers:
             # Loop throught subflows
             for flow_container in next(iter(flow.Container.values())):
-                flow_container: ContainerClass = flow_container
-
                 # check if the subflow is referencing me
                 if flow_container.ContainerFlow == self.name:
                     try:

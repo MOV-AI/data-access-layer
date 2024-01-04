@@ -46,7 +46,6 @@ class NodeInst(ScopeObjectNode):
         """
         from dal.new_models import Node
         return Node(self.Template)
-        #return scopes.from_path(self.Template, scope="Node")
 
     @property
     def namespace(self) -> str:
