@@ -20,8 +20,8 @@ import dal.new_models
 import dal.scopes
 
 import movai_core_enterprise.scopes
-import movai_core_enterprise.new_models
-from movai_core_enterprise.new_models import __all__ as enterprise_models
+import movai_core_enterprise.om
+from movai_core_enterprise.om import __all__ as enterprise_models
 
 
 NUM_THREADS = 8
