@@ -18,7 +18,7 @@ from tqdm import tqdm
 
 
 from dal.movaidb import Redis
-import dal.new_models
+import dal.om
 import dal.scopes
 from dal.scopes import Robot, System
 
@@ -51,7 +51,7 @@ pydantic_models.update(enterprise_models)
 
 def class_exist(name):
     try:
-        getattr(dal.new_models, name)
+        getattr(dal.om, name)
         return True
     except AttributeError:
         try:
@@ -66,7 +66,7 @@ def validate_model(bars: dict, objs: dict, model: str, id: str, db: str = "globa
 
     try:
         scopes_class = getattr(dal.scopes, model)
-        pydantic_class = getattr(dal.new_models, model)
+        pydantic_class = getattr(dal.om, model)
     except AttributeError:
         scopes_class = getattr(movai_core_enterprise.scopes, model)
         pydantic_class = getattr(movai_core_enterprise.om, model)
@@ -116,7 +116,7 @@ def main():
                 continue
             if not class_exist(model):
                 if f"{model},{id}" not in ignoring:
-                    logger.info("Could not find %s in new_models, ignoring %s::%s", model, model, id)
+                    logger.info("Could not find %s in , ignoring %s::%s", model, model, id)
                     ignoring.append(f"{model},{id}")
                 invalid_models.add(model)
                 continue

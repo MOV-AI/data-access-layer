@@ -21,7 +21,7 @@ from movai_core_shared.envvars import SPAWNER_BIND_PORT, DEVICE_NAME
 from dal.scopes.scope import Scope
 from dal.movaidb import MovaiDB
 from dal.scopes.fleetrobot import FleetRobot
-from dal.new_models.configuration import Configuration
+from dal.om.configuration import Configuration
 
 
 class Robot(Scope):

@@ -20,13 +20,13 @@ import sys
 from importlib import import_module
 from typing import Dict, List
 from tqdm import tqdm
-import dal.new_models
+import dal.om
 import movai_core_enterprise.om
 
 
 def get_class(scope):
-    if hasattr(dal.new_models, scope):
-        cls = getattr(dal.new_models, scope)
+    if hasattr(dal.om, scope):
+        cls = getattr(dal.om, scope)
     elif hasattr(movai_core_enterprise.om, scope):
         cls = getattr(movai_core_enterprise.om, scope)
     else:

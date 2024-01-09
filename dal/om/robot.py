@@ -14,10 +14,10 @@ from ipaddress import IPv4Address
 
 from pydantic import ConfigDict, BaseModel, Field
 
-from dal.new_models.base import MovaiBaseModel
-from dal.new_models.configuration import Configuration
-from dal.new_models.base_model.common import PrimaryKey, RobotKey
-from dal.new_models.base_model.redis_model import DEFAULT_PROJECT, DEFAULT_VERSION
+from dal.om.base import MovaiBaseModel
+from dal.om.configuration import Configuration
+from dal.om.base_model.common import PrimaryKey, RobotKey
+from dal.om.base_model.redis_model import DEFAULT_PROJECT, DEFAULT_VERSION
 
 
 class RobotStatus(BaseModel):

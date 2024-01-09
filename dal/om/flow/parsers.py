@@ -12,8 +12,8 @@ import os
 from movai_core_shared.logger import Log
 from dal.movaidb import MovaiDB
 
-from dal.new_models.var import Var
-from dal.new_models.configuration import Configuration
+from dal.om.var import Var
+from dal.om.configuration import Configuration
 
 from movai_core_enterprise.scopes.shareddataentry import SharedDataEntry
 

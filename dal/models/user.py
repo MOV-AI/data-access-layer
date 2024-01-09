@@ -30,8 +30,8 @@ from dal.data.shared.vault import (
 
 
 def Role():
-    import dal.new_models.role
-    return dal.new_models.role.Role
+    import dal.om.role
+    return dal.om.role.Role
 
 
 class User(Model):

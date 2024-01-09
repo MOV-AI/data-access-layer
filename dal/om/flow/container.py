@@ -11,7 +11,7 @@ from typing_extensions import Annotated
 
 from pydantic import StringConstraints, ConfigDict, Field, BaseModel
 
-from dal.new_models.base_model.common import Arg
+from dal.om.base_model.common import Arg
 
 
 class X(BaseModel):

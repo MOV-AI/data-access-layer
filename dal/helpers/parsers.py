@@ -14,7 +14,7 @@ from movai_core_shared.logger import Log
 
 from dal.movaidb import MovaiDB
 from dal.models.var import Var
-from dal.new_models.configuration import Configuration
+from dal.om.configuration import Configuration
 
 
 class ParamParser:

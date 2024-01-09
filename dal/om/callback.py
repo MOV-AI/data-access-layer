@@ -20,7 +20,7 @@ import rospkg
 
 from movai_core_shared.exceptions import DoesNotExist
 
-from dal.new_models.base import MovaiBaseModel
+from dal.om.base import MovaiBaseModel
 
 
 ValidStr = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z_]+$")]

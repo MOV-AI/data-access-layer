@@ -21,14 +21,14 @@ from movai_core_shared.exceptions import DoesNotExist
 from dal.helpers import flatten
 from dal.helpers.flow import GFlow
 
-from dal.new_models.base_model.common import Arg
-from dal.new_models.base import MovaiBaseModel
+from dal.om.base_model.common import Arg
+from dal.om.base import MovaiBaseModel
 from dal.helpers.parsers import ParamParser
-from dal.new_models.configuration import Configuration
-from dal.new_models.flow.nodeinst import NodeInst as NodeInstClass
-from dal.new_models.flow.container import Container as ContainerClass
-from dal.new_models.flow.flowlinks import FlowLink
-from dal.new_models.node import Node
+from dal.om.configuration import Configuration
+from dal.om.flow.nodeinst import NodeInst as NodeInstClass
+from dal.om.flow.container import Container as ContainerClass
+from dal.om.flow.flowlinks import FlowLink
+from dal.om.node import Node
 
 
 class Layer(BaseModel):

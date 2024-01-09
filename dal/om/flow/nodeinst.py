@@ -4,8 +4,8 @@ from typing_extensions import Annotated
 
 from pydantic import StringConstraints, ConfigDict, BaseModel, Field, field_validator
 
-from dal.new_models.base_model.common import Arg
-from dal.new_models.node import Node
+from dal.om.base_model.common import Arg
+from dal.om.node import Node
 from dal.helpers.parsers import ParamParser
 
 

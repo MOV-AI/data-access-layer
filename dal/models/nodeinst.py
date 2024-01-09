@@ -44,7 +44,7 @@ class NodeInst(ScopeObjectNode):
         return the current template for this node
         instance
         """
-        from dal.new_models import Node
+        from dal.om import Node
         return Node(self.Template)
 
     @property

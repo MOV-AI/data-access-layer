@@ -22,8 +22,8 @@ from movai_core_shared.envvars import DEFAULT_ROLE_NAME
 from dal.models.acl import NewACLManager
 from dal.models.aclobject import AclObject
 from dal.models.internaluser import InternalUser
-from dal.new_models.application import Application
-from dal.new_models.base import MovaiBaseModel
+from dal.om.application import Application
+from dal.om.base import MovaiBaseModel
 
 
 class Role(MovaiBaseModel):

@@ -23,9 +23,9 @@ from movai_core_shared.consts import (
     ROS1_PLUGIN,
 )
 
-from dal.new_models.base import MovaiBaseModel
-from dal.new_models.base_model.common import Arg
-from dal.new_models.ports import Ports
+from dal.om.base import MovaiBaseModel
+from dal.om.base_model.common import Arg
+from dal.om.ports import Ports
 
 KEY_REGEX = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")]
 PORT_NAME = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")]

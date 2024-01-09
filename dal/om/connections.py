@@ -2,7 +2,7 @@ import os
 
 from redis import asyncio as redis
 
-from dal.new_models.base_model.redis_config import RedisConfig
+from dal.om.base_model.redis_config import RedisConfig
 
 URL = os.environ.get("REDIS_URL", RedisConfig().redis_url)
 

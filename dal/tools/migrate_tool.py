@@ -15,8 +15,8 @@ from tqdm import tqdm
 from movai_core_shared.core.base_command import BaseCommand
 
 from dal.movaidb import Redis
-from dal.new_models import __all__ as dal_models
-import dal.new_models
+from dal.om import __all__ as dal_models
+import dal.om
 import dal.scopes
 
 import movai_core_enterprise.scopes
@@ -55,7 +55,7 @@ def model_exist(model_type: str) -> bool:
         bool: True if exist, False otherwise.
     """
     try:
-        getattr(dal.new_models, model_type)
+        getattr(dal.om, model_type)
         return True
     except AttributeError:
         try:
@@ -171,7 +171,7 @@ class Convert(MigrationCommands):
 
         try:
             scopes_class = getattr(dal.scopes, model_type)
-            pydantic_class = getattr(dal.new_models, model_type)
+            pydantic_class = getattr(dal.om, model_type)
         except AttributeError:
             scopes_class = getattr(movai_core_enterprise.scopes, model_type)
             pydantic_class = getattr(movai_core_enterprise.om, model_type)
@@ -203,7 +203,7 @@ class Convert(MigrationCommands):
                 continue
             if not model_exist(model_type):
                 self.logger.info(
-                    f"Could not find {model_type} in new_models, ignoring {model_type}::{model_id}"
+                    f"Could not find {model_type} in , ignoring {model_type}::{model_id}"
                 )
                 if model_type not in self.invalid_models:
                     self.invalid_models[model_type] = set()

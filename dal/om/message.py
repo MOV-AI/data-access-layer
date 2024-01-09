@@ -18,8 +18,8 @@ from pydantic import Field, BaseModel
 
 from movai_core_shared.exceptions import DoesNotExist
 
-from dal.new_models.base import MovaiBaseModel
-from dal.new_models.system import System
+from dal.om.base import MovaiBaseModel
+from dal.om.system import System
 
 
 class MessageValue(BaseModel):
