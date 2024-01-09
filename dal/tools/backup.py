@@ -21,14 +21,14 @@ from importlib import import_module
 from typing import Dict, List
 from tqdm import tqdm
 import dal.new_models
-import movai_core_enterprise.new_models
+import movai_core_enterprise.om
 
 
 def get_class(scope):
     if hasattr(dal.new_models, scope):
         cls = getattr(dal.new_models, scope)
-    elif hasattr(movai_core_enterprise.new_models, scope):
-        cls = getattr(movai_core_enterprise.new_models, scope)
+    elif hasattr(movai_core_enterprise.om, scope):
+        cls = getattr(movai_core_enterprise.om, scope)
     else:
         mod = import_module("dal.scopes")
         cls = getattr(mod, scope)
