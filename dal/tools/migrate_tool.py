@@ -20,8 +20,8 @@ import dal.new_models
 import dal.scopes
 
 import movai_core_enterprise.scopes
-import movai_core_enterprise.new_models
-from movai_core_enterprise.new_models import __all__ as enterprise_models
+import movai_core_enterprise.om
+from movai_core_enterprise.om import __all__ as enterprise_models
 
 
 NUM_THREADS = 8
@@ -59,7 +59,7 @@ def model_exist(model_type: str) -> bool:
         return True
     except AttributeError:
         try:
-            getattr(movai_core_enterprise.new_models, model_type)
+            getattr(movai_core_enterprise.om, model_type)
             return True
         except AttributeError:
             return False
@@ -174,7 +174,7 @@ class Convert(MigrationCommands):
             pydantic_class = getattr(dal.new_models, model_type)
         except AttributeError:
             scopes_class = getattr(movai_core_enterprise.scopes, model_type)
-            pydantic_class = getattr(movai_core_enterprise.new_models, model_type)
+            pydantic_class = getattr(movai_core_enterprise.om, model_type)
         try:
             obj = pydantic_class.model_validate(scopes_class(model_name).get_dict())
             obj.save()

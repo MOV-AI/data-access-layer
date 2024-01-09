@@ -23,7 +23,7 @@ import dal.scopes
 from dal.scopes import Robot, System
 
 import movai_core_enterprise.scopes
-import movai_core_enterprise.new_models
+import movai_core_enterprise.om
 
 logger = logging.getLogger("migrate.tool")
 handler = logging.FileHandler("/opt/mov.ai/app/migrate.log")
@@ -55,7 +55,7 @@ def class_exist(name):
         return True
     except AttributeError:
         try:
-            getattr(movai_core_enterprise.new_models, name)
+            getattr(movai_core_enterprise.om, name)
             return True
         except AttributeError:
             return False
@@ -69,7 +69,7 @@ def validate_model(bars: dict, objs: dict, model: str, id: str, db: str = "globa
         pydantic_class = getattr(dal.new_models, model)
     except AttributeError:
         scopes_class = getattr(movai_core_enterprise.scopes, model)
-        pydantic_class = getattr(movai_core_enterprise.new_models, model)
+        pydantic_class = getattr(movai_core_enterprise.om, model)
 
     try:
         if scopes_class is Robot:
