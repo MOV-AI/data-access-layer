@@ -64,7 +64,7 @@ label_regex = re.compile(LABEL_REGEX)
 class MovaiBaseModel(RedisModel):
     """A base class for all MOV.AI models."""
 
-    Info: Optional[str] = None
+    Info: Optional[str] = ""
     Label: Annotated[str, StringConstraints(pattern=LABEL_REGEX)] = ""
     Description: Optional[str] = ""
     LastUpdate: Optional[LastUpdated]
