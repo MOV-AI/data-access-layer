@@ -7,7 +7,6 @@
    - Moawiya Mograbi (moawiya@mov.ai) - 2023
    - Erez Zomer (erez@mov.ai) - 2023
 """
-from .application import Application
 from .base import MovaiBaseModel
 from .callback import Callback
 from .configuration import Configuration
@@ -19,7 +18,6 @@ from .system import System
 
 
 __all__ = [
-    "Application",
     "Callback",
     "Configuration",
     "Flow",
@@ -29,3 +27,10 @@ __all__ = [
     "Ports",
     "System",
 ]
+
+try:
+    from movai_core_enterprise.new_models import __all__ as enterprise_models
+except ImportError:
+    enterprise_models = []
+
+PYDANTIC_MODELS = set(__all__ + enterprise_models)

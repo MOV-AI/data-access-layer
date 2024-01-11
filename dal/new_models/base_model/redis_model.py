@@ -20,7 +20,7 @@ from dal.archive import Archive
 from dal.movaidb import Redis
 
 from .cache import ThreadSafeCache
-from .common import PrimaryKey, DEFAULT_DB, DEFAULT_PROJECT, DEFAULT_VERSION
+from .common import PrimaryKey, DEFAULT_DB, DEFAULT_VERSION
 from .redis_config import RedisConfig
 
 
@@ -46,7 +46,6 @@ class RedisModel(BaseModel):
     pk: str
     model_config = ConfigDict(from_attributes=True, validate_assignment=True)
     DB: str = DEFAULT_DB
-    Project: str = DEFAULT_PROJECT
     Version: str = DEFAULT_VERSION
     _logger: ClassVar[Logger] = Log.get_logger(__name__)
 
@@ -97,23 +96,19 @@ class RedisModel(BaseModel):
         """
         return [
             key.decode().split(":")[-1]
-            for key in self.db_handler(db).keys(f"{self.Project}:{self.scope}:{self.name}:*")
+            for key in self.db_handler(db).keys(f"{self.scope}:{self.name}:*")
         ]
 
-    def save(self, db="global", version=None, project=None) -> str:
+    def save(self, db="global", version=None) -> str:
         """dump object to json and save it in redis json using key=pk (PrimaryKey)
 
         Returns:
             str: _description_
         """
         version = self.Version if version is None else version
-        project = self.Project if project is None else project
         self.DB = db
-        self.Project = project
         self.Version = version
-        self.pk = PrimaryKey.create_pk(
-            project=project, scope=self.scope, id=self.name, version=version
-        )
+        self.pk = PrimaryKey.create_pk(scope=self.scope, id=self.name, version=version)
         obj = self.model_dump(by_alias=True, exclude_unset=True, exclude_none=True)
         try:
             self.db_handler(db).json().set(self.pk, "$", obj)
@@ -137,13 +132,12 @@ class RedisModel(BaseModel):
             del cache[cache_key]
 
     @classmethod
-    def get_model_ids(cls, project=None, version=None, db="global") -> List[Tuple[str, str, str]]:
+    def get_model_ids(cls, version=None, db="global") -> List[Tuple[str, str, str]]:
         """returns a list of tuples including all of the keys from the
            same class in Redis according to the calling class (Flow/Node/Callback/...).
-           a Tuple will indicate (project, id, version)
+           a Tuple will indicate (id, version)
 
         Args:
-            project: project id to search for, if None, all projects will be returned
             version: version to search for, if None, all versions will be returned
             db: global(redis-master) or local(redis-local), default: global
 
@@ -153,22 +147,19 @@ class RedisModel(BaseModel):
             it instead of fetching all keys and filtering them, which would result in O(1)
 
         Returns:
-            List[tuple]: list of tuples of all keys in DB that belongs to that project
-                         and class type Tuples include (project, id, version)
+            List[tuple]: list of tuples of all keys in DB and class type 
+            Tuples include (id, version)
         """
-        project = "*" if project is None else project
         version = "*" if version is None else version
         return [
             tuple([key.decode().split(":")[0]] + key.decode().split(":")[2:])
-            for key in cls.db_handler(db).keys(f"{project}:{cls.__name__}:*:{version}")
+            for key in cls.db_handler(db).keys(f"{cls.__name__}:*:{version}")
         ]
 
     @classmethod
-    def get_model_objects(
-        cls, ids: List[str] = None, project=DEFAULT_PROJECT, version=DEFAULT_VERSION, db="global"
-    ) -> List:
-        """query objects from redis by id and project
-        if id is not provided, all objects of type cls will be returned
+    def get_model_objects(cls, ids: List[str] = None, version=DEFAULT_VERSION, db="global") -> List:
+        """query objects from redis by id if id is not provided, 
+        all objects of type cls will be returned
 
         Args:
             ids (List[str]): list of ids to search for.
@@ -176,7 +167,6 @@ class RedisModel(BaseModel):
                             or it's a list of ids of object id and a version seperated by
                             ":" flow1:v1, flow2:v2, in the last case version param won't
                             be taken into consideration
-            project: a project id
             version: version of the object
             db: global(redis-master) or local(redis-local), default: global
         """
@@ -185,17 +175,17 @@ class RedisModel(BaseModel):
             # get all objects of type cls
             ids = [
                 key.decode()
-                for key in cls.db_handler(db).keys(f"{project}:{cls.__name__}:*:{version}")
+                for key in cls.db_handler(db).keys(f"{cls.__name__}:*:{version}")
             ]
         for id in ids:
             if len(id.split(":")) == 1:
                 # no version in id
                 id = f"{id}:{version}"
             if cls.__name__ not in id:
-                id = f"{project}:{cls.__name__}:{id}"
+                id = f"{cls.__name__}:{id}"
             obj = cls.db_handler(db).json().get(id)
             if obj is not None:
-                ret.append(cls(**obj, version=version, project=project))
+                ret.append(cls(**obj, version=version))
         return ret
 
     @classmethod
@@ -215,21 +205,3 @@ class RedisModel(BaseModel):
         path = archive.get(file_path, remote, version)
         with path.open("r") as f:
             return cls.model_validate(json.load(f), version=version)
-
-
-def get_project_ids(project, db="global", version=None) -> List[tuple]:
-    """
-        returns a list of tuples of all objects existing in DB for the given project
-
-    Args:
-        project (str): the project id.
-        db (str, optional): type of database to use "local"/"global". Defaults to "global".
-        version (str, optional): desired version. Defaults to None.
-                                if None, all versions will be returned
-
-    Returns:
-        tuple: tuple of (type, id, version)
-    """
-    database = RedisModel.db_handler(db)
-    version = "*" if not version else version
-    return [tuple(key.decode().split(":")[1:]) for key in database.keys(f"{project}:*:*:{version}")]

@@ -20,7 +20,7 @@ from movai_core_shared.logger import Log
 
 from .base_model.cache import ThreadSafeCache
 from .base_model.redis_model import RedisModel
-from .base_model.common import PrimaryKey, DEFAULT_DB, DEFAULT_PROJECT, DEFAULT_VERSION
+from .base_model.common import PrimaryKey, DEFAULT_DB, DEFAULT_VERSION
 
 
 cache = ThreadSafeCache()
@@ -101,39 +101,36 @@ class MovaiBaseModel(RedisModel):
                     id, version = id.split("/")
             else:
                 scope = cls.__name__
-            project = kwargs.get("project", DEFAULT_PROJECT) if kwargs else DEFAULT_PROJECT
             db = kwargs.get("db", "global") if kwargs else "global"
-            key = PrimaryKey.create_pk(project=project, scope=scope, id=id, version=version)
+            key = PrimaryKey.create_pk(scope=scope, id=id, version=version)
             cache_key = f"{db}::{key}"
             if cache_key in cache:
                 return cache[cache_key]
 
-            obj = cls.get_model_objects(ids=[id], version=version, project=project, db=db)
+            obj = cls.get_model_objects(ids=[id], version=version, db=db)
             if not obj:
                 raise DoesNotExist(f"{cls.__name__} {args[0]} not found in DB {db}!")
             return obj[0]
         return super().__new__(cls)
 
-    def __init__(self, *args, project: str = DEFAULT_PROJECT, db: str = "global", **kwargs):
+    def __init__(self, *args, db: str = "global", **kwargs):
         if not kwargs or self.scope not in kwargs:
             return
-        version = DEFAULT_VERSION
-        if "version" in kwargs:
-            version = kwargs["version"]
         scope = next(iter(kwargs))
         if scope == self.scope:
             struct_ = kwargs[scope]
             name = next(iter(struct_))
-            params = {"name": name, "project": project}
+            version = kwargs["Version"] if "Version" in kwargs else DEFAULT_VERSION
+            params = {"version": version}
+            if "name" not in struct_[name]:
+                params["name"] = name
             if "pk" not in struct_[name]:
-                pk = PrimaryKey.create_pk(
-                    project=project, scope=self.scope, id=name, version=version
-                )
-                params.update({"pk": pk})
+                pk = PrimaryKey.create_pk(scope=self.scope, id=name, version=version)
+                params["pk"] =  pk
             if label_regex.search(name) is None:
                 raise ValueError(f"Validation Error for {scope} name:({name}), data:{kwargs}")
 
-            struct_[name]["Version"] = version
+            struct_[name]["Version"] = DEFAULT_VERSION
             if "LastUpdate" not in struct_[name]:
                 struct_[name]["LastUpdate"] = {"date": "", "user": ""}
             super().__init__(**struct_[name], **params)
@@ -143,21 +140,19 @@ class MovaiBaseModel(RedisModel):
             raise ValueError(
                 f"wrong Data type, should be {self.scope}, recieved: {scope}, instead got: {list(kwargs.keys())[0]}"
             )
-        # self._logger = Log.get_logger(self.__class__.__name__)
-
-    def save(self, db="global", version=None, project=None) -> None:
+        
+    def save(self, db="global", version=None) -> None:
         """Saves the object to the DB.
 
         Args:
             db (str, optional): specifies which DB to save the object. Defaults to "global".
             version (_type_, optional): What is the version of the object. Defaults to None.
-            project (_type_, optional):Which project owns the object. Defaults to None.
 
         Returns:
             str: _description_
         """
         self.LastUpdate.update()
-        super().save(db=db, version=version, project=project)
+        super().save(db=db, version=version)
 
     @property
     def path(self) -> str:
@@ -286,8 +281,7 @@ class MovaiBaseModel(RedisModel):
             # Check if user has the Callback on the authorized Applications Callbacks list.
             # If the user has authorization on the Application that is calling the callback, then authorize.
             if app_name in user.get_permissions("Applications"):
-                from .application import Application
-
+                from dal.scopes.application import Application
                 ca = Application(app_name)
                 if ca.Callbacks and self.name in ca.Callbacks:
                     has_perm = True
