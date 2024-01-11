@@ -5,7 +5,6 @@ from abc import abstractmethod, ABC
 # from ulid import ULID
 
 DEFAULT_DB = "global"
-DEFAULT_PROJECT = "Movai"
 DEFAULT_VERSION = "__UNVERSIONED__"
 
 
@@ -35,9 +34,9 @@ class UlidPrimaryKey(AbstractPrimaryKey):
 
 class MovaiPrimaryKey(AbstractPrimaryKey):
     @classmethod
-    def create_pk(*args, project: str = "", scope: str = "", id: str = "", version: str = ""):
+    def create_pk(*args, scope: str = "", id: str = "", version: str = ""):
         # return f"{id}:{version}:{UlidPrimaryKey.create_pk()}"
-        return f"{project}:{scope}:{id}:{version}"
+        return f"{scope}:{id}:{version}"
 
 
 class RobotKey(AbstractPrimaryKey):
