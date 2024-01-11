@@ -17,7 +17,7 @@ from pydantic import ConfigDict, BaseModel, Field
 from dal.new_models.base import MovaiBaseModel
 from dal.new_models.configuration import Configuration
 from dal.new_models.base_model.common import PrimaryKey, RobotKey
-from dal.new_models.base_model.redis_model import DEFAULT_PROJECT, DEFAULT_VERSION
+from dal.new_models.base_model.redis_model import DEFAULT_VERSION
 
 
 class RobotStatus(BaseModel):
@@ -192,13 +192,12 @@ class Robot(MovaiBaseModel):
 
     @classmethod
     def get_robot(
-        cls, robot_name: str, project: str = DEFAULT_PROJECT, version: str = DEFAULT_VERSION
+        cls, robot_name: str, version: str = DEFAULT_VERSION
     ):
         """Gets the robot object by its name.
 
         Args:
             robot_name (str): The name of the robot to get.
-            project (str, optional): The project which the robot is part of. Defaults to DEFAULT_PROJECT.
             version (str, optional): The version of the robot object. Defaults to DEFAULT_VERSION.
 
         Returns:

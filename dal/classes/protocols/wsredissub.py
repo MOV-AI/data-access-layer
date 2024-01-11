@@ -13,13 +13,18 @@
 import asyncio
 import json
 import sys
+from typing import List
 import uuid
-import aioredis
 import yaml
-from aiohttp import WSMsgType, web
-from movai_core_shared.logger import Log
-from dal.movaidb import MovaiDB, RedisClient
 
+import aioredis
+from aiohttp import WSMsgType, web
+
+from movai_core_shared.logger import Log
+
+from dal.movaidb import MovaiDB, RedisClient
+from dal.new_models import PYDANTIC_MODELS
+from dal.new_models.base import DEFAULT_VERSION
 try:
     from gd_node.callback import GD_Callback
 
@@ -38,7 +43,6 @@ class WSRedisSub:
         self.http_endpoint = "/subscriber"
         self.node_name = _node_name
         self.app = app
-
         self.databases = None
         self.connections = {}
         self.tasks = {}
@@ -187,7 +191,7 @@ class WSRedisSub:
         except Exception as err:
             LOGGER.error(str(err))
 
-    def convert_pattern(self, _pattern: dict) -> str:
+    def convert_pattern(self, _pattern: dict) -> List[str]:
         try:
             pattern = _pattern.copy()
             scope = pattern.pop("Scope")
@@ -202,17 +206,37 @@ class WSRedisSub:
             LOGGER.error(e)
             return None
 
+    def convert_pattern_pydantic(self, _pattern: dict) -> str:
+        """This function generate a string pattern suitable for the
+        new models based on pydantic.
+
+        Args:
+            _pattern (dict): The pattern recived from the client.
+
+        Returns:
+            str: The pattern in a string format.
+        """
+        scope = _pattern.get("Scope")
+        name = _pattern.get("Name", "*")
+        version = _pattern.get("Version", DEFAULT_VERSION)
+        pattern = f"{scope}:{name}:{version}"
+        return pattern
+
     async def add_pattern(self, conn_id, conn, _pattern, **ignore):
         """Add pattern to subscriber"""
         LOGGER.info(f"add_pattern{_pattern}")
-
         self.connections[conn_id]["patterns"].append(_pattern)
         key_patterns = []
+        
         if isinstance(_pattern, list):
             for patt in _pattern:
                 key_patterns.extend(self.convert_pattern(patt))
         else:
-            key_patterns = self.convert_pattern(_pattern)
+            if _pattern.get("Scope") in PYDANTIC_MODELS:
+                key_patterns.append(self.convert_pattern_pydantic(_pattern))
+            else:
+                key_patterns.extend(self.convert_pattern(_pattern))
+
         keys = []
         tasks = []
         for key_pattern in key_patterns:
@@ -231,14 +255,30 @@ class WSRedisSub:
             for key in value:
                 keys.append(key)
 
+        values = {}
+        if _pattern.get("Scope") in PYDANTIC_MODELS:
+            for key in keys:
+                app, name = key.decode().split(":", 1)
+                name = name.split(":", 1)[0]
+                value = await self.get_json_value(key)
+                if app not in values:
+                    values[app] = {}
+                values[app][name] = value[app][name]
+        else:
         # get all values
-        values = await self.mget(keys)
+            values = await self.mget(keys)
 
         ws = self.connections[conn_id]["conn"]
         await self.push_to_queue(
             ws, {"event": "subscribe", "patterns": [_pattern], "value": values}
         )
 
+    async def get_json_value(self, key):
+        _conn = self.databases.db_slave
+        value = await _conn.execute("json.get", key)
+        value = json.loads(value)
+        return value
+        
     async def remove_pattern(self, conn_id, conn, _pattern, **ignore):
         """Remove pattern from subscriber"""
         LOGGER.debug(f"removing pattern {_pattern} {conn}")
@@ -335,12 +375,16 @@ class WSRedisSub:
         if type_ == "string":
             value = await _conn.get(key)
             value = self.movaidb.decode_value(value)
-        if type_ == "list":
+        elif type_ == "list":
             value = await _conn.lrange(key, 0, -1)
             value = self.movaidb.decode_list(value)
-        if type_ == "hash":
+        elif type_ == "hash":
             value = await _conn.hgetall(key)
             value = self.movaidb.decode_hash(value)
+        elif type_ == "ReJSON-RL":
+            value = await _conn.execute("json.get", key)
+            #value = self.redis.db_global.json().get
+        
         try:  # Json cannot dump ROS Messages
             json.dumps(value)
         except:
@@ -394,6 +438,8 @@ class WSRedisSub:
             value = await _conn.lrange(key, 0, -1)
         elif type_ == "hash":
             value = await _conn.hgetall(key)
+        elif type_ == "ReJSON-RL":
+            value = await _conn.execute("json.get", key)
         else:
             raise ValueError(f"Unexpected type: {type_} for key: {key}")
 
@@ -408,6 +454,8 @@ class WSRedisSub:
             value = self.movaidb.decode_list(value)
         elif type_ == "hash":
             value = self.movaidb.sort_dict(self.movaidb.decode_hash(value))
+        elif type_ == "ReJSON-RL":
+            value = json.loads(value)
         else:
             raise ValueError(f"Unexpected type: {type_} for value: {value}")
 

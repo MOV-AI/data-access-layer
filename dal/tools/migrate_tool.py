@@ -15,17 +15,19 @@ from tqdm import tqdm
 from movai_core_shared.core.base_command import BaseCommand
 
 from dal.movaidb import Redis
-from dal.new_models import __all__ as dal_models
+from dal.new_models import PYDANTIC_MODELS
 import dal.new_models
 import dal.scopes
 
-import movai_core_enterprise.scopes
-import movai_core_enterprise.new_models
-from movai_core_enterprise.new_models import __all__ as enterprise_models
+try:
+    import movai_core_enterprise.scopes
+    import movai_core_enterprise.new_models
+except ImportError:
+    pass
 
 
 NUM_THREADS = 8
-PYDANTIC_MODELS = set(dal_models + enterprise_models)
+
 
 
 def convert_list_to_dict(arg_list: list) -> dict:

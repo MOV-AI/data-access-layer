@@ -28,7 +28,7 @@ from .aclobject import AclObject
 from .remoteuser import RemoteUser
 from .internaluser import InternalUser
 from .acl import NewACLManager
-from dal.new_models import Application
+from dal.scopes.application import Application
 
 
 class Role(Model):
