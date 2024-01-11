@@ -38,7 +38,7 @@ data_files += [file for file in glob("dal/validation/schema/2.4/common/*.json")]
 # The 'install_requires' is where you specify the package dependencies of your package. They will be automaticly installed, before your package.  # noqa: E501
 setuptools.setup(
     name="data-access-layer",
-    version="2.5.0-7",
+    version="2.5.0-8",
     author="Backend team",
     author_email="backend@mov.ai",
     description="DATA ACCESS LAYER",
