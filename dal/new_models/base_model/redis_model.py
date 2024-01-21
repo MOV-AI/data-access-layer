@@ -65,7 +65,7 @@ class RedisModel(BaseModel):
         return []
 
     @classmethod
-    def db_handler(cls, db_type: str) -> redis.Redis:
+    def db_handler(cls, db_type: str = DEFAULT_DB) -> redis.Redis:
         """return the redis connection object
 
         Args:
@@ -88,7 +88,7 @@ class RedisModel(BaseModel):
         """
         return f"__keyspace@0__:{self.pk}"
 
-    def list_versions(self, db="global") -> List[str]:
+    def list_versions(self, db=DEFAULT_DB) -> List[str]:
         """return a list of all versions of the object in Redis
 
         Returns:
@@ -99,7 +99,7 @@ class RedisModel(BaseModel):
             for key in self.db_handler(db).keys(f"{self.scope}:{self.name}:*")
         ]
 
-    def save(self, db="global", version=None) -> str:
+    def save(self, db=DEFAULT_DB, version=None) -> str:
         """dump object to json and save it in redis json using key=pk (PrimaryKey)
 
         Returns:
@@ -120,7 +120,7 @@ class RedisModel(BaseModel):
         cache[cache_key] = self
         return self.pk
 
-    def delete(self, db="global") -> None:
+    def delete(self, db=DEFAULT_DB) -> None:
         """delete object from redis
 
         Returns:
@@ -132,10 +132,25 @@ class RedisModel(BaseModel):
             del cache[cache_key]
 
     @classmethod
-    def get_model_ids(cls, version=None, db="global") -> List[Tuple[str, str, str]]:
-        """returns a list of tuples including all of the keys from the
-           same class in Redis according to the calling class (Flow/Node/Callback/...).
-           a Tuple will indicate (id, version)
+    def get_model_keys(cls, version: str = DEFAULT_VERSION, db: str = DEFAULT_DB) -> List[str]:
+        """Fetch the Model keys from db.
+
+        Args:
+            version (str, optional): The version of the keys to fetch. Defaults to 
+            "__UNVERSIONED__".
+            db (str, optional): The db to fetch the keys from. Defaults to "global".
+
+        Returns:
+            List[str]: A list of all the keys related to that Model in the specified version.
+        """
+        keys = [key.decode() for key in cls.db_handler(db).keys(f"{cls.__name__}:*:{version}")]
+        return keys
+
+    @classmethod
+    def get_model_names(cls, version="*", db=DEFAULT_DB) -> List[Tuple[str, str]]:
+        """returns a list of tuples including all of the names of the
+           same Model in DB according to the calling Model (Flow/Node/Callback/...).
+           a Tuple will indicate (name, version)
 
         Args:
             version: version to search for, if None, all versions will be returned
@@ -147,43 +162,42 @@ class RedisModel(BaseModel):
             it instead of fetching all keys and filtering them, which would result in O(1)
 
         Returns:
-            List[tuple]: list of tuples of all keys in DB and class type 
-            Tuples include (id, version)
+            List[tuple]: list of tuples of all names in DB and version.
+            Tuples include (name, version)
         """
-        version = "*" if version is None else version
-        return [
-            tuple([key.decode().split(":")[0]] + key.decode().split(":")[2:])
-            for key in cls.db_handler(db).keys(f"{cls.__name__}:*:{version}")
-        ]
+        models_keys = cls.get_model_keys(version, db)
+        names = []
+        for model_key in models_keys:
+            _, name, version = model_key.split(":")
+            names.append((name, version))
+        return names
 
     @classmethod
-    def get_model_objects(cls, ids: List[str] = None, version=DEFAULT_VERSION, db="global") -> List:
-        """query objects from redis by id if id is not provided, 
+    def get_model_objects(
+        cls, keys: List[str] = None, version=DEFAULT_VERSION, db=DEFAULT_DB
+    ) -> List:
+        """query objects from redis by id if id is not provided,
         all objects of type cls will be returned
 
         Args:
-            ids (List[str]): list of ids to search for.
-                            either it's a list of simple id, etc, tugbot_flow, node1
-                            or it's a list of ids of object id and a version seperated by
+            keys (List[str]): list of keys to search for.
+                            either it's a list of simple name, etc, tugbot_flow, node1
+                            or it's a list of names of object id and a version seperated by
                             ":" flow1:v1, flow2:v2, in the last case version param won't
                             be taken into consideration
-            version: version of the object
+            version: version of the object, default: __UNVERSIONED__.
             db: global(redis-master) or local(redis-local), default: global
         """
         ret = []
-        if not ids:
-            # get all objects of type cls
-            ids = [
-                key.decode()
-                for key in cls.db_handler(db).keys(f"{cls.__name__}:*:{version}")
-            ]
-        for id in ids:
-            if len(id.split(":")) == 1:
+        if not keys:
+            keys = cls.get_model_keys(version, db)
+        for key in keys:
+            if ":" not in key:
                 # no version in id
-                id = f"{id}:{version}"
-            if cls.__name__ not in id:
-                id = f"{cls.__name__}:{id}"
-            obj = cls.db_handler(db).json().get(id)
+                key = f"{key}:{version}"
+            if cls.__name__ not in key:
+                key = f"{cls.__name__}:{key}"
+            obj = cls.db_handler(db).json().get(key)
             if obj is not None:
                 ret.append(cls(**obj, version=version))
         return ret
