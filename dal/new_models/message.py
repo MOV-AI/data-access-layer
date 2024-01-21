@@ -159,7 +159,7 @@ class Message(MovaiBaseModel):
     def get_all(db="global") -> Dict[str, List]:
         """Get a map of package -> messages from all packages"""
 
-        db_packs: List[str] = [tup[1] for tup in Message.get_model_ids(db=db)]
+        db_packs: List[str] = [tup[1] for tup in Message.get_model_names(db=db)]
 
         base_dict = {
             package: Message.get_msgs(package, db=db) for package in Message.get_packages(db=db)
