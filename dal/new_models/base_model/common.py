@@ -15,9 +15,10 @@ class Arg(pydantic.BaseModel):
 
 
 class AbstractPrimaryKey(ABC):
+
     @classmethod
     @abstractmethod
-    def create_pk(*args, **kwargs):
+    def create_pk(cls, *args, **kwargs):
         """A primary key generator"""
 
 
@@ -28,21 +29,35 @@ class UlidPrimaryKey(AbstractPrimaryKey):
     """
 
     @classmethod
-    def create_pk(*args, **kwargs) -> str:
+    def create_pk(cls, *args, **kwargs) -> str:
         return str("")  # ULID())
 
 
 class MovaiPrimaryKey(AbstractPrimaryKey):
+    """A primary key for MovaAi models in db.
+    """
     @classmethod
-    def create_pk(*args, scope: str = "", id: str = "", version: str = ""):
-        # return f"{id}:{version}:{UlidPrimaryKey.create_pk()}"
-        return f"{scope}:{id}:{version}"
+    def create_pk(cls, name: str, version: str = DEFAULT_VERSION) -> str:
+        """Create a primary key in the format of: Scope:Name:Version
+
+        Args:
+            name (str, optional): The name of the object. Defaults to "".
+            version (str, optional): The version of the object. Defaults to "".
+
+        Returns:
+            str: A key in the required format.
+        """
+        scope = cls.__name__
+        return f"{scope}:{name}:{version}"
 
 
-class RobotKey(AbstractPrimaryKey):
+class RobotKey(MovaiPrimaryKey):
+    """A primary key for specific for the Robot model.
+    """
     @classmethod
-    def create_pk(*args, fleet: str = "", scope: str = "", id: str = "", version: str = ""):
-        return f"Fleet:{fleet}:{scope}:{id}"
+    def create_pk(cls, fleet: str, name: str, version: str = DEFAULT_VERSION):
+        pk = super().create_pk(name, version)
+        return f"Fleet:{fleet}:{pk}"
 
 
 PrimaryKey = MovaiPrimaryKey
