@@ -219,7 +219,7 @@ class WSRedisSub:
         scope = _pattern.get("Scope")
         name = _pattern.get("Name", "*")
         version = _pattern.get("Version", DEFAULT_VERSION)
-        pattern = f"{scope}:{name}:{version}"
+        pattern = f"global:{scope}:{name}:{version}"
         return pattern
 
     async def add_pattern(self, conn_id, conn, _pattern, **ignore):
@@ -258,12 +258,11 @@ class WSRedisSub:
         values = {}
         if _pattern.get("Scope") in PYDANTIC_MODELS:
             for key in keys:
-                app, name = key.decode().split(":", 1)
-                name = name.split(":", 1)[0]
+                _, model, name, _ = key.decode().split(":")
                 value = await self.get_json_value(key)
-                if app not in values:
-                    values[app] = {}
-                values[app][name] = value[app][name]
+                if model not in values:
+                    values[model] = {}
+                values[model][name] = value[model][name]
         else:
         # get all values
             values = await self.mget(keys)

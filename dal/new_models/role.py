@@ -157,4 +157,4 @@ class Role(MovaiBaseModel):
             list: containing the name of the current Roles.
         """
 
-        return [id for _, id, _ in Role.get_model_ids(project="Roles")]
+        return [id for _, id, _ in Role.get_model_names()]

@@ -7,7 +7,6 @@
    - Moawiya Mograbi (moawiya@mov.ai) - 2023
    - Erez Zomer (erez@mov.ai) - 2023
 """
-from .base import MovaiBaseModel
 from .callback import Callback
 from .configuration import Configuration
 from .flow import Flow
@@ -22,7 +21,6 @@ __all__ = [
     "Configuration",
     "Flow",
     "Message",
-    "MovaiBaseModel",
     "Node",
     "Ports",
     "System",

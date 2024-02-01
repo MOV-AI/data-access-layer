@@ -18,33 +18,13 @@ from dal.movaidb import Redis
 from dal.new_models import PYDANTIC_MODELS
 import dal.new_models
 import dal.scopes
+from dal.scopes.system import System
 
 try:
     import movai_core_enterprise.scopes
     import movai_core_enterprise.new_models
 except ImportError:
     pass
-
-
-NUM_THREADS = 8
-
-
-
-def convert_list_to_dict(arg_list: list) -> dict:
-    arguments = {}
-    for arg in arg_list:
-        if isinstance(arg, tuple):
-            if len(arg) > 1:
-                arg_key = arg[0]
-                arg_val = arg[1]
-                if arg_val is None:
-                    continue
-                if isinstance(arg_val, list):
-                    arg_val = parse_tags(arg_val)
-                arguments[arg_key] = arg_val
-            else:
-                arguments[arg[0]] = ""
-    return arguments
 
 
 def model_exist(model_type: str) -> bool:
@@ -178,7 +158,11 @@ class Convert(MigrationCommands):
             scopes_class = getattr(movai_core_enterprise.scopes, model_type)
             pydantic_class = getattr(movai_core_enterprise.new_models, model_type)
         try:
-            obj = pydantic_class.model_validate(scopes_class(model_name).get_dict())
+            if scopes_class is System:
+                obj_dict = scopes_class(id).get_dict()
+            else:
+                obj_dict = scopes_class(model_name).get_dict()
+            obj = pydantic_class(**obj_dict)
             obj.save()
             # self.log.info(
             #    f"Successfully converted the object {model_type}:{model_name} to pydantic format.")

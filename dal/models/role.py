@@ -109,7 +109,7 @@ class Role(Model):
             "AclObject": [READ_PERMISSION],
         }
         resources["Applications"] = [
-            item for _, item, _ in Application.get_model_ids()
+            item for item in Application.get_all()
         ]
         if not Role.is_exist(DEPLOYER_ROLE):
             deployer_role = cls.create(DEPLOYER_ROLE, resources)

@@ -30,14 +30,14 @@ class Var:
 
         milis = int((expire) * 1000) if expire else None
         MovaiDB(scope).set(
-            {"Var": {self.scope: {"ID": {prefix + name: {"Value": value}}}}}, px=milis
+            {"Var": {self.model: {"ID": {prefix + name: {"Value": value}}}}}, px=milis
         )
 
     def __getattr__(self, name):
         scope, prefix = self.__get_scope()
         try:
             return MovaiDB(scope).get_value(
-                {"Var": {self.scope: {"ID": {prefix + name: {"Value": ""}}}}}, search=False
+                {"Var": {self.model: {"ID": {prefix + name: {"Value": ""}}}}}, search=False
             )
         except KeyError:
             return None
@@ -45,7 +45,7 @@ class Var:
     def __delattr__(self, name):
         try:
             scope, prefix = self.__get_scope()
-            MovaiDB(scope).delete({"Var": {self.scope: {"ID": {prefix + name: {"Value": ""}}}}})
+            MovaiDB(scope).delete({"Var": {self.model: {"ID": {prefix + name: {"Value": ""}}}}})
             return True
         except:
             return False
@@ -64,7 +64,7 @@ class Var:
 
     def __get_scope(self):
         """Get the Local or Global Scope"""
-        if self.scope in ("fleet", "global"):
+        if self.model in ("fleet", "global"):
             scope = "global"
         else:
             scope = "local"
@@ -77,7 +77,7 @@ class Var:
             "fleet": self._robot_name + "@",
             "global": "@",
         }
-        prefix = prefixes.get(self.scope, "@")
+        prefix = prefixes.get(self.model, "@")
         return scope, prefix
 
     @staticmethod
