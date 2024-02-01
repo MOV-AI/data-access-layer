@@ -12,28 +12,40 @@
 import argparse
 import hashlib
 import json
-import pydantic
 import os
 import pickle
 import re
 import sys
-from importlib import import_module
 from typing import Dict, List
+
+import pydantic
 from tqdm import tqdm
+
+from movai_core_shared.logger import Log
+
 import dal.new_models
+from dal.new_models.base import MovaiBaseModel
+import dal.scopes
+
 import movai_core_enterprise.new_models
+import movai_core_enterprise.scopes
 
 
-def get_class(scope):
-    if hasattr(dal.new_models, scope):
-        cls = getattr(dal.new_models, scope)
-    elif hasattr(movai_core_enterprise.new_models, scope):
-        cls = getattr(movai_core_enterprise.new_models, scope)
+LOGGER = Log.get_logger(__name__)
+
+
+def get_class(scope_name):
+    if hasattr(dal.new_models, scope_name):
+        scope = getattr(dal.new_models, scope_name)
+    elif hasattr(movai_core_enterprise.new_models, scope_name):
+        scope = getattr(movai_core_enterprise.new_models, scope_name)
+    elif hasattr(dal.scopes, scope_name):
+        scope = getattr(dal.scopes, scope_name)
+    elif hasattr(movai_core_enterprise.scopes, scope_name):
+        scope = getattr(movai_core_enterprise.scopes, scope_name)
     else:
-        mod = import_module("dal.scopes")
-        cls = getattr(mod, scope)
-
-    return cls
+        LOGGER.warning(f"The scope: {scope_name} could not be loaded")
+    return scope
 
 
 def test_reachable(redis_url):
@@ -447,7 +459,7 @@ class Importer(Backup):
             try:
                 obj = get_class(scope)(name)
                 # exists
-                if isinstance(obj, pydantic.BaseModel):
+                if isinstance(obj, MovaiBaseModel):
                     obj.delete()
                 else:
                     self._db.delete_by_args(scope, Name=obj.name)
@@ -456,7 +468,7 @@ class Importer(Backup):
         version = "v2"
         try:
             cls = get_class(scope)
-            if issubclass(cls, pydantic.BaseModel):
+            if issubclass(cls, MovaiBaseModel):
                 # pydantic callback
                 obj = cls.model_validate(data)
                 obj.save()
@@ -1176,7 +1188,7 @@ class Exporter(Backup):
             raise ExportException(f"Can't find {scope}:{name}")
 
         version = "v2"
-        if isinstance(obj, pydantic.BaseModel):
+        if isinstance(obj, MovaiBaseModel):
             dic = obj.model_dump()
         else:
             obj.get_dict()
