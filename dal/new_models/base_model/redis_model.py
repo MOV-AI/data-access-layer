@@ -9,7 +9,7 @@
 """
 import json
 from logging import Logger
-from typing import List, Tuple, ClassVar
+from typing import List, Set, ClassVar
 
 from pydantic import ConfigDict, BaseModel, PrivateAttr
 import redis
@@ -20,11 +20,11 @@ from dal.archive import Archive
 from dal.movaidb import Redis
 
 from .cache import ThreadSafeCache
-from .common import PrimaryKey, DEFAULT_DB, DEFAULT_VERSION
+from .common import MovaiPrimaryKey, DEFAULT_DB, DEFAULT_VERSION
 from .redis_config import RedisConfig
 
 
-cache = ThreadSafeCache()
+CACHE = ThreadSafeCache()
 
 
 def connect_to_redis(redis_config=RedisConfig()) -> redis.Redis:
@@ -45,7 +45,7 @@ class RedisModel(BaseModel):
     # pk: Primary key which is the key of the entry in Redis representing this object.
     pk: str
     model_config = ConfigDict(from_attributes=True, validate_assignment=True)
-    DB: str = DEFAULT_DB
+    db: str = DEFAULT_DB
     Version: str = DEFAULT_VERSION
     _logger: ClassVar[Logger] = Log.get_logger(__name__)
 
@@ -75,9 +75,17 @@ class RedisModel(BaseModel):
         Returns:
             redis.Redis: redis connection
         """
+        if not isinstance(db_type, str):
+            raise ValueError("The argument db_type must be a string!")
+
+        db_type = db_type.lower()
+
         if db_type == "global":
             return Redis().db_global
-        return Redis().db_local
+        elif db_type == "local":
+            return Redis().db_local
+        else:
+            raise ValueError(f"The requested db: '{db_type}' is unknown!")
 
     @property
     def keyspace_pattern(self) -> str:
@@ -96,19 +104,18 @@ class RedisModel(BaseModel):
         """
         return [
             key.decode().split(":")[-1]
-            for key in self.db_handler(db).keys(f"{self.scope}:{self.name}:*")
+            for key in self.db_handler(db).keys(f"{db}:{self.model}:{self.name}:*")
         ]
 
-    def save(self, db=DEFAULT_DB, version=None) -> str:
+    def save(self, db=DEFAULT_DB, version=DEFAULT_VERSION) -> str:
         """dump object to json and save it in redis json using key=pk (PrimaryKey)
 
         Returns:
             str: _description_
         """
-        version = self.Version if version is None else version
-        self.DB = db
+        self.db = db
         self.Version = version
-        self.pk = PrimaryKey.create_pk(scope=self.scope, id=self.name, version=version)
+        self.pk = MovaiPrimaryKey(db=db, model=self.model, name=self.name, version=version).pk
         obj = self.model_dump(by_alias=True, exclude_unset=True, exclude_none=True)
         try:
             self.db_handler(db).json().set(self.pk, "$", obj)
@@ -116,23 +123,26 @@ class RedisModel(BaseModel):
             self._logger.error(
                 f"While trying to save model to DB, got the following exception: {exc}."
             )
-        cache_key = f"{db}::{self.pk}"
-        cache[cache_key] = self
+        CACHE[self.pk] = self.__dict__
         return self.pk
 
-    def delete(self, db=DEFAULT_DB) -> None:
+    def delete(self) -> None:
         """delete object from redis
 
         Returns:
             None: None
         """
-        self.db_handler(db).delete(self.pk)
-        cache_key = f"{db}::{self.pk}"
-        if cache_key in cache:
-            del cache[cache_key]
+        self.db_handler(self.db).delete(self.pk)
+        if self.pk in CACHE:
+            del CACHE[self.pk]
+
+    def remove(self, **kwargs) -> None:
+        """Like delete() for backward compatible with the old OM.
+        """
+        self.delete()
 
     @classmethod
-    def get_model_keys(cls, version: str = DEFAULT_VERSION, db: str = DEFAULT_DB) -> List[str]:
+    def get_model_keys(cls, db: str = DEFAULT_DB, version: str = DEFAULT_VERSION) -> List[MovaiPrimaryKey]:
         """Fetch the Model keys from db.
 
         Args:
@@ -143,18 +153,21 @@ class RedisModel(BaseModel):
         Returns:
             List[str]: A list of all the keys related to that Model in the specified version.
         """
-        keys = [key.decode() for key in cls.db_handler(db).keys(f"{cls.__name__}:*:{version}")]
+        model = cls.__name__
+        keys = []
+        for key in cls.db_handler(db).keys(f"{db}:{model}:*:{version}"):
+            keys.append(key.decode())
         return keys
 
     @classmethod
-    def get_model_names(cls, version="*", db=DEFAULT_DB) -> List[Tuple[str, str]]:
+    def get_model_names(cls, db: str = DEFAULT_DB, version: str = DEFAULT_VERSION) -> Set[str]:
         """returns a list of tuples including all of the names of the
            same Model in DB according to the calling Model (Flow/Node/Callback/...).
            a Tuple will indicate (name, version)
 
         Args:
-            version: version to search for, if None, all versions will be returned
-            db: global(redis-master) or local(redis-local), default: global
+            version: version to search for, Defaults to '__UNVERSIONED__'.
+            db: global(redis-master) or local(redis-local), Default to 'global'.
 
         Time Complexity:
             O(n) where n is the number of keys in Redis
@@ -165,41 +178,32 @@ class RedisModel(BaseModel):
             List[tuple]: list of tuples of all names in DB and version.
             Tuples include (name, version)
         """
-        models_keys = cls.get_model_keys(version, db)
-        names = []
-        for model_key in models_keys:
-            _, name, version = model_key.split(":")
-            names.append((name, version))
+        models_keys = cls.get_model_keys(db, version)
+        names = set()
+        for key in models_keys:
+            name = key.split(":")[2]
+            names.add(name)
         return names
 
     @classmethod
     def get_model_objects(
-        cls, keys: List[str] = None, version=DEFAULT_VERSION, db=DEFAULT_DB
-    ) -> List:
+        cls, names: List[str] = None, db=DEFAULT_DB, version=DEFAULT_VERSION
+    ) -> List[BaseModel]:
         """query objects from redis by id if id is not provided,
         all objects of type cls will be returned
 
         Args:
-            keys (List[str]): list of keys to search for.
+            names (List[str]): list of names to search for.
                             either it's a list of simple name, etc, tugbot_flow, node1
                             or it's a list of names of object id and a version seperated by
-                            ":" flow1:v1, flow2:v2, in the last case version param won't
+                            ":" global:Flow:flow1:v1, global:Flow:flow2:v2, in the last case version param won't
                             be taken into consideration
-            version: version of the object, default: __UNVERSIONED__.
-            db: global(redis-master) or local(redis-local), default: global
+            db (str): global(redis-master) or local(redis-local), default to 'global'.
+            version (str): version of the object, default to '__UNVERSIONED__'.
         """
-        ret = []
-        if not keys:
-            keys = cls.get_model_keys(version, db)
-        for key in keys:
-            if ":" not in key:
-                # no version in id
-                key = f"{key}:{version}"
-            if cls.__name__ not in key:
-                key = f"{cls.__name__}:{key}"
-            obj = cls.db_handler(db).json().get(key)
-            if obj is not None:
-                ret.append(cls(**obj, version=version))
+        if not names:
+            names = cls.get_model_names(db, version)
+        ret = [cls(name) for name in names]
         return ret
 
     @classmethod
