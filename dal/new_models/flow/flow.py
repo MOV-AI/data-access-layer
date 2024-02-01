@@ -93,46 +93,95 @@ class Flow(MovaiBaseModel):
     def __init__(self, *args, **kwargs):
         """Constructor."""
         super().__init__(*args, **kwargs)
-        if kwargs and self.scope in kwargs:
-            self._parser = ParamParser(self)
-            self._graph = GFlow(self)
-            self._full = None
-            self._links_cache = LRUCache(maxsize=100)
-            if self.NodeInst:
-                for _, node_inst in self.NodeInst.items():
-                    node_inst._parser = self._parser
-                    node_inst._flow_ref = self.name
-            if self.Links:
-                for _, link in self.Links.items():
-                    link._parser = self._parser
-            if self.Container:
-                for _, container in self.Container.items():
-                    container._parser = self._parser
-                    container._flow_class = Flow
+        self._parser = None
+        self._graph = None
+        self._full = None
+        self._links_cache = LRUCache(maxsize=100)
+        if self.NodeInst:
+            for _, node_inst in self.NodeInst.items():
+                node_inst._parser = self.parser
+                node_inst._flow_ref = self.name
+        if self.Links:
+            for _, link in self.Links.items():
+                link._parser = self.parser
+        if self.Container:
+            for _, container in self.Container.items():
+                container._parser = self.parser
+                container._flow_class = Flow
+
+    def model_dump(
+        self,
+        *,
+        include=None,
+        exclude=None,
+        by_alias: bool = True,
+        exclude_unset: bool = False,
+        exclude_defaults: bool = False,
+        exclude_none: bool = True,
+        round_trip: bool = False,
+        warnings: bool = False
+    ):
+        """Generate a dictionary representation of the model
+
+        Returns:
+            dict: dictionary representation of the model
+        """
+        obj_dict = super().model_dump(include=include,
+                                      exclude=exclude,
+                                      by_alias=by_alias,
+                                      exclude_unset=exclude_unset,
+                                      exclude_defaults=exclude_defaults,
+                                      exclude_none=exclude_none,
+                                      round_trip=round_trip,
+                                      warnings=warnings)
+
+        self._fix_flow_links(obj_dict[self.model][self.name])
+        return obj_dict
+
+    def _fix_flow_links(self, obj_dict: dict) -> None:
+        """will fix flow links to use strings instead of objects
+
+        Returns:
+            _type_: _description_
+        """
+        for link_id, link in self.Links.items():
+            if isinstance(link, FlowLink):
+                obj_dict["Links"][link_id]["From"] = link.From.str
+                obj_dict["Links"][link_id]["To"] = link.To.str
+            elif isinstance(link, dict):
+                obj_dict["Links"][link_id]["From"] = link["From"]
+                obj_dict["Links"][link_id]["To"] = link["To"]
+            else:
+                self._logger.error("link format is unknown.")
 
     @property
     def full(self) -> dict:
         """Returns the data from the main flow and all subflows"""
-        if self._full:
-            return self._full
+        if not self._full:
+            self._full = self._build_dict(is_dict=False)
 
-        self._full = self._build_dict(is_dict=False)
         return self._full
 
     @property
     def parser(self) -> ParamParser:
         """Get or create and instance of the parser"""
+        if not self._parser:
+            self._parser = ParamParser(self)
+
         return self._parser
 
     @property
     def graph(self) -> GFlow:
         """Get or create an instance of the graph generator"""
+        if not self._graph:
+            self._graph = GFlow(self)
+
         return self._graph
 
     @property
     def remaps(self) -> dict:
         """Get remaps from the graph instance"""
-        return self._graph.get_remaps()
+        return self.graph.get_remaps()
 
     def eval_config(self, _config: str, *__) -> any:
         """

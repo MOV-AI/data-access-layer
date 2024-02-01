@@ -15,22 +15,18 @@ from typing_extensions import Annotated
 
 from pydantic import StringConstraints, field_validator, BaseModel, Field
 
-from movai_core_shared.exceptions import DoesNotExist
+from movai_core_shared.exceptions import AlreadyExist, DoesNotExist, InvalidStructure
 from movai_core_shared.logger import Log
 
-from .base_model.cache import ThreadSafeCache
-from .base_model.redis_model import RedisModel
-from .base_model.common import PrimaryKey, DEFAULT_DB, DEFAULT_VERSION
-
-
-cache = ThreadSafeCache()
+from .base_model.redis_model import CACHE, RedisModel
+from .base_model.common import MovaiPrimaryKey, DEFAULT_DB, DEFAULT_VERSION
 
 
 class LastUpdated(BaseModel):
     """A field represent the last time object was updated."""
 
-    date: Annotated[datetime, Field(default_factory=lambda: datetime.now)]
-    user: str = "movai"
+    date: datetime = Field(default_factory=lambda: datetime.now())
+    user: str = ""
 
     @field_validator("date", mode="before")
     @classmethod
@@ -68,7 +64,7 @@ class MovaiBaseModel(RedisModel):
     Label: Annotated[str, StringConstraints(pattern=LABEL_REGEX)] = ""
     Description: Optional[str] = ""
     LastUpdate: Optional[LastUpdated]
-    name: str = ""
+    name: Annotated[str, StringConstraints(pattern=LABEL_REGEX)] = ""
     Dummy: Optional[bool] = False
 
     @field_validator("LastUpdate", mode="before")
@@ -76,77 +72,111 @@ class MovaiBaseModel(RedisModel):
     def _validate_lastupdate(cls, value):
         if value is None or isinstance(value, str):
             return LastUpdated(**{})
-        return LastUpdated(**value)
+        return value
 
-    def __new__(cls, *args, **kwargs) -> RedisModel:
-        """Creates the object PrimaryKey if does not exist and add it to the cache.
+    def __init__(self, *args, db: str = DEFAULT_DB, version: str = DEFAULT_VERSION, **kwargs):
+        """Initialize or create a new pydantic object. if given args assumes that it needs to initailize
+        an existing object while the first argument wil be the object's name.
+        if given kwargs assumes a new object should be created and ignore args.
+
+        Args:
+            db (str, optional): Specify which db the object will be stored. Defaults to DEFAULT_DB.
+            version (str, optional): Specifies the version of the object. Defaults to DEFAULT_VERSION.
 
         Raises:
-            DoesNotExist: If the object specified does can not be found in db.
+            ValueError: In case args weren't given to load an object.
+        """
+        if not args and kwargs:
+            obj_dict = self._create_object_dict(db, version, kwargs)
+            super().__init__(**obj_dict)
+        else:
+            if not args:
+                raise ValueError("Object's name must be provided inorder to initialize object.")
+            obj_name = args[0]
+            obj_dict = self._fetch_object_dict(db, version, obj_name)
+            super().__init__(**obj_dict)
+
+    def _create_object_dict(self, db: str, version: str, obj_dict: dict) -> dict:
+        """Creates a dictionary that can initialize an object in the OM (object mapping).
+
+        Args:
+            db (str): The db to store the object, global or local.
+            version (str): The version of the object.
+            obj_dict (dict): The initial dictionary with the object's data.
+
+        Raises:
+            InvalidStructure: In case the initial dict doesn't contain the model name.
+            ValueError: In case the model name is different than the class.
+            AlreadyExist: In case this object aleady exist in the required db.
 
         Returns:
-            RedisModel: The requested object before initialization.
+            dict:  A dictionary represent the object's structure.
         """
-        if args:
-            id = args[0]
-            # support for old format
-            # {workspace}/{scope}/{ref}/{version}
-            m = path_regex.search(id)
-            version = kwargs.get("version", DEFAULT_VERSION) if kwargs else DEFAULT_VERSION
-            if m is not None:
-                workspace = m.group(1)
-                scope = m.group(2)
-                id = m.group(3)
-                if "/" in id:
-                    id, version = id.split("/")
-            else:
-                scope = cls.__name__
-            db = kwargs.get("db", "global") if kwargs else "global"
-            key = PrimaryKey.create_pk(scope=scope, id=id, version=version)
-            cache_key = f"{db}::{key}"
-            if cache_key in cache:
-                return cache[cache_key]
+        if self.model not in obj_dict:
+            raise InvalidStructure(f"The supplied dict is invalid for model: {self.model}")
 
-            obj = cls.get_model_objects(ids=[id], version=version, db=db)
-            if not obj:
-                raise DoesNotExist(f"{cls.__name__} {args[0]} not found in DB {db}!")
-            return obj[0]
-        return super().__new__(cls)
+        model = next(iter(obj_dict))
 
-    def __init__(self, *args, db: str = "global", **kwargs):
-        if not kwargs or self.scope not in kwargs:
-            return
-        scope = next(iter(kwargs))
-        if scope == self.scope:
-            struct_ = kwargs[scope]
-            name = next(iter(struct_))
-            version = kwargs["Version"] if "Version" in kwargs else DEFAULT_VERSION
-            params = {"version": version}
-            if "name" not in struct_[name]:
-                params["name"] = name
-            if "pk" not in struct_[name]:
-                pk = PrimaryKey.create_pk(scope=self.scope, id=name, version=version)
-                params["pk"] =  pk
-            if label_regex.search(name) is None:
-                raise ValueError(f"Validation Error for {scope} name:({name}), data:{kwargs}")
-
-            struct_[name]["Version"] = DEFAULT_VERSION
-            if "LastUpdate" not in struct_[name]:
-                struct_[name]["LastUpdate"] = {"date": "", "user": ""}
-            super().__init__(**struct_[name], **params)
-            cache_key = f"{db}::{self.pk}"
-            cache[cache_key] = self
-        else:
+        if model != self.model:
             raise ValueError(
-                f"wrong Data type, should be {self.scope}, recieved: {scope}, instead got: {list(kwargs.keys())[0]}"
+                f"wrong Data type, should be {self.model}, recieved: {model}, instead got: {list(obj_dict.keys())[0]}"
             )
-        
-    def save(self, db="global", version=None) -> None:
+
+        obj_dict = obj_dict[model]
+        name = next(iter(obj_dict))
+        obj_dict = obj_dict[name]
+        version = obj_dict.get("Version", version)
+        pk = MovaiPrimaryKey(db=db, model=model, name=name, version=version)
+        if pk.pk in self.get_model_keys(db, version):
+            raise AlreadyExist(f"The key: {pk.pk} is already exist!")
+        obj_dict["pk"] = pk.pk
+        if "name" not in obj_dict:
+            obj_dict["name"] = name
+        if "LastUpdate" not in obj_dict:
+            obj_dict["LastUpdate"] = {}
+        CACHE[pk.pk] = obj_dict
+        return obj_dict
+
+    def _fetch_object_dict(self, db: str, version: str, name: str) -> dict:
+        """Fetch a dictionary of an object from the db.
+
+        Args:
+            db (str): global or local db.
+            version (str): The version of the object to fetch.
+            name (str): The name of the object to fetch.
+
+        Raises:
+            DoesNotExist: In case the the object could not be found.
+
+        Returns:
+            dict: A dictionary representing the object's structure.
+        """
+        if name.count("/") == 3:
+            db, model, name, version = name.split("/")
+        else:
+            model = self.model
+
+        pk = MovaiPrimaryKey(db=db, model=model, name=name, version=version)
+
+        if pk.pk in CACHE:
+            model_dict = CACHE[pk.pk]
+            return model_dict
+
+        obj_dict = self.db_handler(db).json().get(pk.pk)
+        if not obj_dict:
+            raise DoesNotExist(f"The key {pk.pk} does not exist!")
+        obj_dict = obj_dict[self.model][name]
+        obj_dict["name"] = name
+        obj_dict["pk"] = pk.pk
+        CACHE[pk.pk] = obj_dict
+        return obj_dict
+
+    def save(self, db=DEFAULT_DB, version=DEFAULT_VERSION) -> None:
         """Saves the object to the DB.
 
         Args:
-            db (str, optional): specifies which DB to save the object. Defaults to "global".
-            version (_type_, optional): What is the version of the object. Defaults to None.
+           db (str, optional): specifies which DB to save the object. Defaults to "global".
+           version (_type_, optional): What is the version of the object. Defaults to None.
 
         Returns:
             str: _description_
@@ -161,7 +191,7 @@ class MovaiBaseModel(RedisModel):
         Returns:
             str: a string representing the path.
         """
-        return f"{self.DB}/{self.scope}/{self.name}/{self.Version}"
+        return f"{self.db}/{self.model}/{self.name}/{self.Version}"
 
     @property
     def ref(self) -> str:
@@ -187,11 +217,11 @@ class MovaiBaseModel(RedisModel):
         return v if v not in [None, ""] else False
 
     @property
-    def scope(self) -> str:
-        """return the scope of the model (Class name)
+    def model(self) -> str:
+        """return the model of the model (Class name)
 
         Returns:
-            str: scope of the model
+            str: model of the model
         """
         return self.__class__.__name__
 
@@ -210,55 +240,43 @@ class MovaiBaseModel(RedisModel):
         [schema["properties"].pop(key) for key in to_remove]
         return schema
 
-    def _fix_flow_links(self):
-        """will fix flow links to use strings instead of objects
-
-        Returns:
-            _type_: _description_
-        """
-        if self.scope != "Flow":
-            return None
-        dic = super().model_dump(exclude_none=True, by_alias=True)
-        for id, link in self.Links.items():
-            dic["Links"][id]["From"] = link.From.str
-            dic["Links"][id]["To"] = link.To.str
-
-        return dic
-
     def model_dump(
         self,
         *,
         include=None,
         exclude=None,
         by_alias: bool = True,
-        skip_defaults: Optional[bool] = None,
         exclude_unset: bool = False,
         exclude_defaults: bool = False,
         exclude_none: bool = True,
+        round_trip: bool = False,
+        warnings: bool = False
     ):
         """Generate a dictionary representation of the model
 
         Returns:
             dict: dictionary representation of the model
         """
-        if self.scope == "Flow":
-            """somehow the model_dump in pydantic v2 does not take into consideration the
-            overriden model_dump in inner classes, so we need to call it explicitly here.
-            """
-            dic = self._fix_flow_links()
-        else:
-            dic = super().model_dump(exclude_none=exclude_none, by_alias=True)
-        if "LastUpdate" in dic and isinstance(dic["LastUpdate"]["date"], datetime):
-            dic["LastUpdate"]["date"] = dic["LastUpdate"]["date"].strftime("%d/%m/%Y at %H:%M:%S")
-        to_remove = []
-        for key in dic:
-            if key not in self._original_keys():
-                to_remove.append(key)
-        dic = {key: value for key, value in dic.items() if key not in to_remove}
-        return {self.scope: {self.name: dic}}
+        obj_dict = super().model_dump(include=include,
+                                      exclude=exclude,
+                                      by_alias=by_alias,
+                                      exclude_unset=exclude_unset,
+                                      exclude_defaults=exclude_defaults,
+                                      exclude_none=exclude_none,
+                                      round_trip=round_trip,
+                                      warnings=warnings)
+
+        if "LastUpdate" in obj_dict and isinstance(obj_dict["LastUpdate"]["date"], datetime):
+            obj_dict["LastUpdate"]["date"] = obj_dict["LastUpdate"]["date"].strftime("%d/%m/%Y at %H:%M:%S")
+#        to_remove = []
+#        for key in obj_dict:
+#            if key not in self._original_keys():
+#                to_remove.append(key)
+        obj_dict = {key: value for key, value in obj_dict.items() if key in self._original_keys()}
+        return {self.model: {self.name: obj_dict}}
 
     def has_scope_permission(self, user, permission) -> bool:
-        """Check if user has permission on the scope
+        """Check if user has permission on the model
 
         Args:
             user (_type_): _description_
@@ -268,9 +286,9 @@ class MovaiBaseModel(RedisModel):
             bool: True if user has permission, False otherwise
         """
         if not user.has_permission(
-            self.scope,
+            self.model,
             f"{self.name}.{permission}",
-        ) and not user.has_permission(self.scope, permission):
+        ) and not user.has_permission(self.model, permission):
             return False
         return True
 

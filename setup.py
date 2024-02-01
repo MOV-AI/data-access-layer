@@ -55,6 +55,7 @@ setuptools.setup(
             "dal_backup = dal.tools.backup:main",
             "edit_yaml = dal.tools.edit_yaml:main",
             "secret_key = dal.tools.secret_key:main",
+            "migrate_tool = dal.tools.migrate_tool:main"
         ]
     },
 )
