@@ -13,17 +13,25 @@ import yaml
 
 from box import Box
 
-from pydantic import Field
+from pydantic import Field, constr, field_validator
 
+from movai_core_shared.exceptions import ConfigurationError
 from .base import MovaiBaseModel
 
 
 class Configuration(MovaiBaseModel):
     """A class that implements the Configuration Model."""
 
-    Type: str = "yaml"
+    Type: constr(to_lower=True) = "yaml"
     Yaml: str = ""
     data: dict = Field(default_factory=dict)  # runtime parameter
+
+    @field_validator("Type", mode="before")
+    @classmethod
+    def _validate_type(cls, value):
+        if value is None or value == "":
+            return "yaml"
+        return value
 
     @classmethod
     def _original_keys(cls) -> List[str]:
@@ -37,25 +45,33 @@ class Configuration(MovaiBaseModel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if not self.data:
-            self._convert_yaml_dict()
+            self._parse_data()
 
     def get_value(self) -> dict:
         """Returns a dictionary with the configuration values"""
         return self.data
 
-    def _convert_yaml_dict(self):
-        data = yaml.load(self.Yaml, Loader=yaml.FullLoader)
-        if isinstance(data, dict):
-            self.data = data
-            self.Type = "yaml"
-        else:
-            self.Type = "xml"
-            self.data = xmltodict.parse(self.Yaml)
+    def _parse_data(self):
+        try:
+            if self.Type == "yaml" or self.Type == "Yaml":
+                data = yaml.load(self.Yaml, Loader=yaml.FullLoader)
+            elif self.Type == "xml":
+                data = xmltodict.parse(self.Yaml)
+            else:
+                raise ConfigurationError(f"The format {self.Type} is Unknown")
+            if data is None:
+                data = dict()
+        except Exception as exc:
+            raise ConfigurationError(f"Got an error while parsin data: {str(exc)}") from exc
+
+        if not isinstance(data, dict):
+            raise ConfigurationError(f"Parsing the data of configuration {self.name} failed.")
+        self.data = data
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         ret = super().__setattr__(__name, __value)
         if __name == "Yaml":
-            self._convert_yaml_dict()
+            self._parse_data()
         return ret
 
     def get_param(self, param: str) -> any:
