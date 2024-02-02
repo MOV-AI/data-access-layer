@@ -16,6 +16,7 @@ from .scopestree import scopes
 from dal.helpers.flow import GFlow
 from dal.helpers.parsers import ParamParser
 from .model import Model
+import re
 
 
 class Flow(Model):
@@ -244,7 +245,7 @@ class Flow(Model):
 
         return output
 
-    def get_param(self, key: str, context: str = None) -> any:
+    def get_param(self, key: str, context: str = None, is_subflow: bool = False) -> any:
         """
         Returns a parameter of the flow after parsing it
         """
@@ -254,6 +255,14 @@ class Flow(Model):
             param = self.Parameter[key].Value
         except KeyError:
             return None
+
+        if is_subflow:
+            # Check if instance is pointing to upper flow
+            # If so, continue to next (upper) flow
+            regex_flow = r"\$\((flow)[^$)]+\)"
+            flow_in_param = re.search(regex_flow, param)
+            if flow_in_param:
+                return param
 
         # main flow context or own context
         _context = context or self.ref

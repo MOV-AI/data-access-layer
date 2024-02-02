@@ -225,8 +225,9 @@ class ParamParser:
         """
 
         node_name_arr = node_name.split("__")
-
-        value = instance.flow.get_param(param_name, self.context)
+        # Check if this is the main flow or a subflow
+        is_subflow = True if len(node_name_arr) > 1 else False
+        value = instance.flow.get_param(param_name, self.context, is_subflow = is_subflow)
         if value is None:
             value = default
 
@@ -244,8 +245,9 @@ class ParamParser:
                     # get the container instance
                     ctr_instance = self.flow.get_container(_name, self.context)
 
-                    # get the parameter value
-                    ctr_value = ctr_instance.get_param(param_name, _name, self.context)
+                    # get the instance parameter value
+                    # if there is no instance param, set to default
+                    ctr_value = ctr_instance.get_param(param_name, _name, self.context, default_value = value)
 
                     value = value if ctr_value is None else ctr_value
 
