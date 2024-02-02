@@ -10,11 +10,10 @@
 import re
 from types import SimpleNamespace
 
-from dal.helpers.flow import GFlow
-from dal.helpers.parsers import ParamParser
 from movai_core_shared.consts import ROS1_NODELETSERVER
 from movai_core_shared.logger import Log
-
+from dal.helpers.flow import GFlow
+from dal.helpers.parsers import ParamParser
 from .model import Model
 from .scopestree import scopes
 
