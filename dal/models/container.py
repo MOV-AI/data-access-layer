@@ -50,7 +50,8 @@ class Container(ScopeObjectNode):
     def get_param(self, key: str,
                   name: str = None,
                   context=None,
-                  custom_parser: any = None) -> any:
+                  custom_parser: any = None,
+                  default_value: any = None) -> any:
         """
         Returns a specific parameter of the container after
         parsing it
@@ -67,7 +68,7 @@ class Container(ScopeObjectNode):
         try:
             _value = self.Parameter[key].Value
         except KeyError:
-            _value = None
+            _value = default_value
 
         # parse the parameter
         output = _parser.parse(key, str(_value), _name, self, _context)
