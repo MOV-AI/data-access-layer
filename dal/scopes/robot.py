@@ -20,7 +20,7 @@ from movai_core_shared.envvars import SPAWNER_BIND_ADDR, DEVICE_NAME
 from dal.scopes.scope import Scope
 from dal.movaidb import MovaiDB
 from dal.scopes.fleetrobot import FleetRobot
-from .configuration import Configuration
+from dal.new_models.configuration import Configuration
 
 
 class Robot(Scope):
@@ -110,8 +110,11 @@ class Robot(Scope):
         When Robot groups are implemented it should merge with the group configuration"""
         try:
             states = Configuration(self.RobotName).get_param("states")
-        except:
+            if states is None:
+                raise Exception(f"Couldn't get states param from configuration: {self.RobotName}")
+        except Exception:
             states = {}
+
         return states
 
     def set_param(self, param: str, value, db: str = "all"):
