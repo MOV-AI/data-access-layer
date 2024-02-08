@@ -16,8 +16,8 @@ from movai_core_shared.common.utils import is_enterprise
 from movai_core_shared.core.message_client import MessageClient
 from movai_core_shared.consts import COMMAND_HANDLER_MSG_TYPE
 from movai_core_shared.envvars import (
-    SPAWNER_BIND_PORT,
     DEVICE_NAME,
+    SPAWNER_BIND_ADDR,
     MESSAGE_SERVER_PORT,
 )
 from movai_core_shared.logger import Log
@@ -44,9 +44,12 @@ class FleetRobot(Scope):
         """
         super().__init__(scope="Robot", name=name, version=version, new=new, db=db)
         if self.RobotName == DEVICE_NAME or not is_enterprise():
-            server = f"tcp://spawner:{SPAWNER_BIND_PORT}"
+            # default : ipc:///opt/mov.ai/comm/SpawnerServer-{DEVICE_NAME}-{FLEET_NAME}.sock"
+            server = SPAWNER_BIND_ADDR
         else:
-            server = f"tcp://{self.IP}:{SPAWNER_BIND_PORT}"
+            # Message needs to be sent to the message server of the remote robot
+            # which will be forwarded to the spawner server of the remote robot
+            server = f"tcp://{self.IP}:{MESSAGE_SERVER_PORT}"
 
         self.__dict__["spawner_client"] = MessageClient(server_addr=server, robot_id=self.RobotName)
 
@@ -73,10 +76,7 @@ class FleetRobot(Scope):
 
         req_data = {"dst": dst, "command_data": command_data}
 
-        if (
-            hasattr(self, "spawner_client") and
-            self.spawner_client is not None
-        ):
+        if hasattr(self, "spawner_client") and self.spawner_client is not None:
             self.spawner_client.send_request(COMMAND_HANDLER_MSG_TYPE, req_data)
         else:
             command_data = pickle.dumps(command_data)
