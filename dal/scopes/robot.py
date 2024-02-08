@@ -15,8 +15,7 @@ import pickle
 from movai_core_shared.core.message_client import MessageClient
 from movai_core_shared.exceptions import DoesNotExist
 from movai_core_shared.consts import COMMAND_HANDLER_MSG_TYPE
-from movai_core_shared.envvars import SPAWNER_BIND_PORT, DEVICE_NAME
-
+from movai_core_shared.envvars import SPAWNER_BIND_ADDR, DEVICE_NAME
 
 from dal.scopes.scope import Scope
 from dal.movaidb import MovaiDB
@@ -57,7 +56,9 @@ class Robot(Scope):
 
             self.__dict__["fleet"] = FleetRobot(unique_id.hex, new=True)
             self.fleet.RobotName = "robot_" + unique_id.hex[0:6]
-        server = f"tcp://spawner:{SPAWNER_BIND_PORT}"
+
+        # default : ipc:///opt/mov.ai/comm/SpawnerServer-{DEVICE_NAME}-{FLEET_NAME}.sock"
+        server = SPAWNER_BIND_ADDR
         self.__dict__["spawner_client"] = MessageClient(server_addr=server, robot_id=self.name)
 
     def set_ip(self, ip_address: str):
