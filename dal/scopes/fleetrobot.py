@@ -101,7 +101,7 @@ class FleetRobot(Scope):
             send_to_redis = True
 
         if send_to_redis:
-            logger.info(f"Command {command_data}, publish in redis for robot {self.RobotName}")
+            logger.info(f"Command {command_data}, published in redis for robot {self.RobotName}")
             command_data = pickle.dumps(command_data)
             self.Actions.append(command_data)
 
