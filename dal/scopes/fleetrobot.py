@@ -47,9 +47,9 @@ class FleetRobot(Scope):
             # default : ipc:///opt/mov.ai/comm/SpawnerServer-{DEVICE_NAME}-{FLEET_NAME}.sock"
             server = SPAWNER_BIND_ADDR
         else:
-            # Message needs to be sent to the message server of the remote robot
-            # which will be forwarded to the spawner server of the remote robot
-            server = f"tcp://{self.IP}:{MESSAGE_SERVER_PORT}"
+            # Message needs to be sent to the message-server
+            # which will be forwarded to the spawner server of the remote robot {self.IP}
+            server = f"tcp://message-server:{MESSAGE_SERVER_PORT}"
 
         self.__dict__["spawner_client"] = MessageClient(server_addr=server, robot_id=self.RobotName)
 
@@ -76,9 +76,32 @@ class FleetRobot(Scope):
 
         req_data = {"dst": dst, "command_data": command_data}
 
+        # For retro-compatibility, if the dest robot is a fleet robot
+        # then the response is required since the forward by message-server might fail
+        # in this case, the command will be published to redis
+        send_to_redis = False
+        response_required = False
+        if self.RobotName != DEVICE_NAME and is_enterprise():
+            response_required = True
+
         if hasattr(self, "spawner_client") and self.spawner_client is not None:
-            self.spawner_client.send_request(COMMAND_HANDLER_MSG_TYPE, req_data)
+            res = self.spawner_client.send_request(
+                COMMAND_HANDLER_MSG_TYPE, req_data, respose_required=response_required
+            )
+            if (
+                response_required
+                and res is not None
+                and "response" in res
+                and res["response"] != {}
+            ):
+                logger.info(f"Command {command_data} sent to robot {self.RobotName}")
+            else:
+                send_to_redis = True
         else:
+            send_to_redis = True
+
+        if send_to_redis:
+            logger.info(f"Command {command_data}, published in redis for robot {self.RobotName}")
             command_data = pickle.dumps(command_data)
             self.Actions.append(command_data)
 
