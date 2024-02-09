@@ -91,7 +91,7 @@ class FleetRobot(Scope):
             if (
                 response_required
                 and res is not None
-                and hasattr(res, "response")
+                and "response" in res
                 and res["response"] != {}
             ):
                 logger.info(f"Command {command_data} sent to robot {self.RobotName}")
