@@ -1,0 +1,88 @@
+{
+    "Node": {
+        "scene_events": {
+            "Info": "This node detects events related to any area in the graphic scene. The node has the following functionalities:\n\n1) detection when the robot enters an area (publish once, the area name through on_entry out port)\n2) detection when the robot exit the area (publish once, area name through on_exit out port)\n3) detection when the robot is inside an area (publish constantly (base_link tf frequency), the area name through in_areas out port)\n\nA list of areas (param: user_areas) can be set when not using all areas from the scene (param: use_all_areas). The areas which are not in the scene will not be considered.",
+            "Label": "scene_events",
+            "LastUpdate": {
+                "date": "11/02/2022 at 18:01:59",
+                "user": "movai"
+            },
+            "Launch": true,
+            "PackageDepends": "",
+            "Parameter": {
+                "use_all_areas": {
+                    "Description": "[bool] Consider all areas in the scene for map based event functionalities",
+                    "Value": "True"
+                },
+                "user_areas": {
+                    "Description": "[list] List of areas to be used for map based events, only considered if use_all_areas param is set to False",
+                    "Value": "[\"area1\",\"area2\"]"
+                }
+            },
+            "Path": "",
+            "Persistent": true,
+            "PortsInst": {
+                "depends": {
+                    "In": {
+                        "in": {
+                            "Message": "movai_msgs/Dependency"
+                        }
+                    },
+                    "Message": "Dependency",
+                    "Package": "movai_msgs",
+                    "Template": "MovAI/Dependency"
+                },
+                "in_area_to_redis": {
+                    "Message": "redis_sub",
+                    "Package": "movai_msgs",
+                    "Template": "Redis/VarSubscriber"
+                },
+                "in_areas": {
+                    "Message": "StringArray",
+                    "Out": {
+                        "out": {
+                            "Message": "movai_common/StringArray"
+                        }
+                    },
+                    "Package": "movai_common",
+                    "Template": "ROS1/Publisher"
+                },
+                "init": {
+                    "Message": "Init",
+                    "Package": "movai_msgs",
+                    "Template": "MovAI/Init"
+                },
+                "on_entry": {
+                    "Message": "StringArray",
+                    "Out": {
+                        "out": {
+                            "Message": "movai_common/StringArray"
+                        }
+                    },
+                    "Package": "movai_common",
+                    "Template": "ROS1/Publisher"
+                },
+                "on_exit": {
+                    "Message": "StringArray",
+                    "Out": {
+                        "out": {
+                            "Message": "movai_common/StringArray"
+                        }
+                    },
+                    "Package": "movai_common",
+                    "Template": "ROS1/Publisher"
+                },
+                "tf_listener": {
+                    "Message": "TF",
+                    "Package": "movai_msgs",
+                    "Template": "ROS1/TFSubscriber"
+                }
+            },
+            "Remappable": true,
+            "Type": "MovAI/Node",
+            "User": "",
+            "Version": "",
+            "VersionDelta": {}
+        }
+    }
+}

@@ -1,8 +1,9 @@
-import sys
+""" Initialization code for pytest """
 
 from movai_core_shared.core.secure import generate_secret_string
 
 import dal.classes.utils.secretkey
+
 
 def mock_secretkey():
     """ Replaces the function that calls out to Redis with a mock """
