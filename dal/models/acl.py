@@ -12,9 +12,18 @@ from typing import List, Dict
 
 from miracle import Acl
 
+from movai_core_shared.consts import (
+    READ_PERMISSION,
+    UPDATE_PERMISSION,
+    CREATE_PERMISSION,
+    DELETE_PERMISSION,
+    EXECUTE_PERMISSION,
+    RESET_PERMISSION,
+)
 from movai_core_shared.envvars import REST_SCOPES
 from movai_core_shared.logger import Log
-from dal.models.scopestree import ScopesTree ,scopes
+
+from dal.models.scopestree import ScopesTree, scopes
 
 
 class ACLManager:
@@ -23,14 +32,16 @@ class ACLManager:
     """
 
     log = Log.get_logger("ACLManager")
-    _DEFAULT_PERMISSIONS = ["create", "read", "update", "delete"]
-    _EXECUTE_PERMISSIONS = _DEFAULT_PERMISSIONS + ["execute"]
-    _USER_PERMISSIONS = _DEFAULT_PERMISSIONS + ["reset"]
+    _DEFAULT_PERMISSIONS = [CREATE_PERMISSION, READ_PERMISSION, UPDATE_PERMISSION, DELETE_PERMISSION]
+    _EXECUTE_PERMISSIONS = _DEFAULT_PERMISSIONS + [EXECUTE_PERMISSION]
+    _USER_PERMISSIONS = _DEFAULT_PERMISSIONS + [RESET_PERMISSION]
     _SPECIAL_PERMISSIONS_MAP = {
         "Application": _EXECUTE_PERMISSIONS,
         "Callback": _EXECUTE_PERMISSIONS,
         "User": ["read"],
         "InternalUser": _USER_PERMISSIONS,
+        "EmailsAlertsConfig": [READ_PERMISSION, UPDATE_PERMISSION],
+        "EmailsAlertsRecipients": [READ_PERMISSION, UPDATE_PERMISSION],
     }
 
     def __init__(self, user):
@@ -53,7 +64,7 @@ class ACLManager:
         user_resources = self.user.Resources
 
         # Setup user role resources
-        for (resource_key, resource_value) in role.Resources.items():
+        for resource_key, resource_value in role.Resources.items():
             acl.grants(
                 {
                     role.ref: {
@@ -63,8 +74,7 @@ class ACLManager:
             )
 
         # Setup user resources
-        for (resource_key, resource_value) in user_resources.items():
-
+        for resource_key, resource_value in user_resources.items():
             if resource_key[:1] == "-":
                 acl.revoke_all(role.ref, resource_key[1:])
                 continue
@@ -101,9 +111,7 @@ class ACLManager:
         # Scopes
         for scope in resources:
             try:
-                resources_permissions[scope] = ACLManager._SPECIAL_PERMISSIONS_MAP[
-                    scope
-                ]
+                resources_permissions[scope] = ACLManager._SPECIAL_PERMISSIONS_MAP[scope]
             except KeyError:
                 resources_permissions[scope] = ACLManager._DEFAULT_PERMISSIONS
 
@@ -126,8 +134,7 @@ class ACLManager:
 
 
 class NewACLManager(ACLManager):
-    """This class is Replacing ACLManger for BaseUser objects.
-    """
+    """This class is Replacing ACLManger for BaseUser objects."""
 
     def get_acl(self) -> Acl:
         """Setup ACL for the current user role.
@@ -139,7 +146,7 @@ class NewACLManager(ACLManager):
         try:
             for role_name in self.user.Roles:
                 role_obj = ScopesTree().from_path(role_name, scope="Role")
-                for (resource_key, resource_value) in role_obj.Resources.items():
+                for resource_key, resource_value in role_obj.Resources.items():
                     acl.grants({role_name: {resource_key: resource_value}})
         except AttributeError as e:
             self.log.warning(str(e))
@@ -155,7 +162,15 @@ class NewACLManager(ACLManager):
 
         resources = ACLManager.get_resources()
         resources.extend(
-            ["Role", "InternalUser", "RemoteUser", "AclObject", "LdapConfig"]
+            [
+                "Role",
+                "InternalUser",
+                "RemoteUser",
+                "AclObject",
+                "LdapConfig",
+                "EmailsAlertsConfig",
+                "EmailsAlertsRecipients",
+            ]
         )
         return resources
 
@@ -168,9 +183,7 @@ class NewACLManager(ACLManager):
         # Scopes
         for scope in resources:
             try:
-                resources_permissions[scope] = NewACLManager._SPECIAL_PERMISSIONS_MAP[
-                    scope
-                ]
+                resources_permissions[scope] = NewACLManager._SPECIAL_PERMISSIONS_MAP[scope]
             except KeyError:
                 resources_permissions[scope] = NewACLManager._DEFAULT_PERMISSIONS
 

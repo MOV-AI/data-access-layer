@@ -3,6 +3,8 @@
   "schema": {
     "$name": {
       "Label": "str",
+      "LastUpdate": "any",
+      "Version": "str",
       "File": {
         "$name": {
           "FileLabel": "str",

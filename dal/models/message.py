@@ -23,7 +23,7 @@ from .model import Model
 from movai_core_shared.logger import Log
 
 
-logger = Log.get_logger('')
+logger = Log.get_logger(__name__)
 
 
 class Message(Model):
