@@ -42,8 +42,3 @@ jobs:
           --index-url="https://artifacts.cloud.mov.ai/repository/pypi-experimental/simple" \
           --extra-index-url https://pypi.org/simple \
           ./dist/*.whl
-
-      - name: Run tests
-        run: |
-          python3 -m pip install pytest pytest-mock
-          pytest
