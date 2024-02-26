@@ -18,7 +18,6 @@ import re
 import sys
 from typing import Dict, List
 
-import pydantic
 from tqdm import tqdm
 
 from movai_core_shared.logger import Log
@@ -27,8 +26,13 @@ import dal.new_models
 from dal.new_models.base import MovaiBaseModel
 import dal.scopes
 
-import movai_core_enterprise.new_models
-import movai_core_enterprise.scopes
+try:
+    import movai_core_enterprise.new_models
+    import movai_core_enterprise.scopes
+
+    ENTERPRISE_AVAILABLE = True
+except ModuleNotFoundError:
+    ENTERPRISE_AVAILABLE = False
 
 
 LOGGER = Log.get_logger(__name__)
@@ -37,11 +41,11 @@ LOGGER = Log.get_logger(__name__)
 def get_class(scope_name):
     if hasattr(dal.new_models, scope_name):
         scope = getattr(dal.new_models, scope_name)
-    elif hasattr(movai_core_enterprise.new_models, scope_name):
+    elif ENTERPRISE_AVAILABLE and hasattr(movai_core_enterprise.new_models, scope_name):
         scope = getattr(movai_core_enterprise.new_models, scope_name)
     elif hasattr(dal.scopes, scope_name):
         scope = getattr(dal.scopes, scope_name)
-    elif hasattr(movai_core_enterprise.scopes, scope_name):
+    elif ENTERPRISE_AVAILABLE and hasattr(movai_core_enterprise.scopes, scope_name):
         scope = getattr(movai_core_enterprise.scopes, scope_name)
     else:
         LOGGER.warning(f"The scope: {scope_name} could not be loaded")
@@ -58,6 +62,7 @@ def test_reachable(redis_url):
     """
     try:
         from redis import Redis
+
         r = Redis(redis_url, socket_connect_timeout=1)
         return r.ping()
     except Exception as exc:
@@ -83,6 +88,7 @@ def setup_progress_bar(objects: Dict[str, List[str]]) -> Dict[str, tqdm]:
 def _from_path(name):
     try:
         from dal.models.scopestree import scopes
+
         return scopes.extract_reference(name)[2]
     except KeyError:
         # not a path and `scope` wasn't passed
@@ -247,6 +253,7 @@ class Importer(Backup):
             ]
         else:
             from dal.movaidb.database import MovaiDB
+
             self._db = MovaiDB()
             self.dry_print = lambda *paths: None
 
@@ -482,12 +489,12 @@ class Importer(Backup):
         except Exception as e:
             _msg = f"Failed to import '{scope}:{name}', error: {e}"
             if self.validate:
-                #self.log(_msg)
+                # self.log(_msg)
                 raise ImportException(_msg)
             else:
                 pass
                 # force print
-                #print(_msg)
+                # print(_msg)
             if write_bar:
                 write_bar.write(_msg)
 
@@ -543,7 +550,7 @@ class Importer(Backup):
             try:
                 with open(yaml_path) as file:
                     data["Configuration"][name]["Yaml"] = file.read()
-            except:
+            except OSError:
                 # probably file not found
                 pass
 
@@ -686,13 +693,15 @@ class Importer(Backup):
     # imports ports
     #
     def import_ports(self, names=None):
-        def to_import(ports):
-            return ports in names or ports.split("/")[0] in names
-
         if names is None:
 
             def to_import(ports):
                 return True
+
+        else:
+
+            def to_import(ports):
+                return ports in names or ports.split("/")[0] in names
 
         packages = None
         if names is not None:
@@ -1184,7 +1193,7 @@ class Exporter(Backup):
 
         try:
             obj = get_class(scope)(name)
-        except:
+        except Exception:
             raise ExportException(f"Can't find {scope}:{name}")
 
         version = "v2"
@@ -1234,7 +1243,7 @@ class Exporter(Backup):
 
         try:
             package = Package(name)
-        except:
+        except Exception:
             raise ExportException(f"Can't find Package:{name}")
 
         for key in package.File:
@@ -1267,7 +1276,7 @@ class Exporter(Backup):
         Message = get_class("Message")
         try:
             obj = Message(name)
-        except:
+        except Exception:
             raise ExportException(f"Can't find Message:{name}")
 
         message_path = os.path.join(self.project_path, "Message", name)
@@ -1301,7 +1310,7 @@ class Exporter(Backup):
 
         try:
             flow = Flow(name)
-        except:
+        except Exception:
             raise ExportException(f"Can't find Flow:{name}")
 
         # export dependencies
@@ -1397,7 +1406,7 @@ class Exporter(Backup):
 
             try:
                 sm = StateMachine(name)
-            except:
+            except Exception:
                 raise ExportException(f"Can't find StateMachine:{name}")
 
             for state in sm.State:
@@ -1420,7 +1429,7 @@ class Exporter(Backup):
 
         try:
             ports = Ports(name)
-        except:
+        except Exception:
             raise ExportException(f"Can't find Ports:{name}")
 
         if self.recursive:
@@ -1735,6 +1744,7 @@ class Remover(Backup):
             self.dry_print = lambda *paths: [print(path) for path in paths]
         else:
             from dal.movaidb.database import MovaiDB
+
             self._db = MovaiDB()
             self.dry_print = lambda *paths: None
 
@@ -2003,6 +2013,7 @@ def main():
 
     # not exited before, means exception
     exit(1)
+
 
 if __name__ == "__main__":
     main()

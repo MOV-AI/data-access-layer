@@ -8,7 +8,7 @@ try:
     import movai_core_enterprise.new_models
 
     ENTERPRISE_AVAILABLE = True
-except ImportError:
+except ModuleNotFoundError:
     ENTERPRISE_AVAILABLE = False
 
 from movai_core_shared.logger import Log
