@@ -3,8 +3,13 @@
 import pytest
 from pytest_mock import MockerFixture
 
-import movai_core_enterprise.scopes
-import movai_core_enterprise.new_models
+try:
+    import movai_core_enterprise.scopes
+    import movai_core_enterprise.new_models
+    ENTERPRISE_AVAILABLE = True
+except ImportError:
+    ENTERPRISE_AVAILABLE = False
+
 from movai_core_shared.logger import Log
 
 import dal.scopes
@@ -20,9 +25,12 @@ def validate_model(model: str, object_id: str, db: str = "global"):
     try:
         scopes_class = getattr(dal.scopes, model)
         pydantic_class = getattr(dal.new_models, model)
-    except AttributeError:
-        scopes_class = getattr(movai_core_enterprise.scopes, model)
-        pydantic_class = getattr(movai_core_enterprise.new_models, model)
+    except AttributeError as e:
+        if ENTERPRISE_AVAILABLE
+            scopes_class = getattr(movai_core_enterprise.scopes, model)
+            pydantic_class = getattr(movai_core_enterprise.new_models, model)
+        else:
+            raise e
 
     if scopes_class is Robot:
         obj_dict = scopes_class().get_dict()
