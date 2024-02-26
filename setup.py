@@ -10,7 +10,7 @@ requirements = [
     "aiohttp==3.8.1",
     "cachetools==5.3.1",
     "deepdiff==4.0.9",
-    "gitpython==3.1.30",
+    "gitpython==3.1.31",
     "jsonschema==3.2.0",
     "miracle-acl==0.0.4.post1",
     "pyjwt==1.7.1",
@@ -38,7 +38,7 @@ data_files += [file for file in glob("dal/validation/schema/2.4/common/*.json")]
 # The 'install_requires' is where you specify the package dependencies of your package. They will be automaticly installed, before your package.  # noqa: E501
 setuptools.setup(
     name="data-access-layer",
-    version="2.5.1-0",
+    version="2.5.1-1",
     author="Backend team",
     author_email="backend@mov.ai",
     description="DATA ACCESS LAYER",
