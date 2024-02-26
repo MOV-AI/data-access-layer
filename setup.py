@@ -10,7 +10,7 @@ requirements = [
     "aiohttp==3.8.1",
     "cachetools==5.3.1",
     "deepdiff==4.0.9",
-    "gitpython==3.1.31",
+    "gitpython==3.1.41",
     "jsonschema==3.2.0",
     "miracle-acl==0.0.4.post1",
     "pyjwt==1.7.1",
