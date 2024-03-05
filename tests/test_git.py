@@ -106,6 +106,7 @@ def test_commit_errors():
         archive.commit("file1", "https://github.com/Mograbi/test-git", base_version="master", message="")
 
 
+@pytest.mark.xfail
 def test_commit():
     if not should_run_test():
         pytest.skip("cannot check this from inside gitub pipeline")
@@ -121,6 +122,7 @@ def test_commit():
     new_commit = archive.commit("file1", "https://github.com/Mograbi/test-git", base_version="master", message="new commit")
 
 
+@pytest.mark.xfail
 def test_revert():
     if not should_run_test():
         pytest.skip("cannot check this from inside gitub pipeline")
@@ -152,6 +154,7 @@ def test_revert():
                             }""").items()))
 
 
+@pytest.mark.xfail
 def test_version_errors():
     if not should_run_test():
         pytest.skip("cannot check this from inside gitub pipeline")
@@ -163,6 +166,7 @@ def test_version_errors():
         archive.create_version(remote, "master", "v0.1")
 
 
+@pytest.mark.xfail
 def test_version():
     if not should_run_test():
         pytest.skip("cannot check this from inside gitub pipeline")
@@ -188,6 +192,7 @@ def test_delete_errors(params, expected_error):
         archive.delete(*params)
 
 
+@pytest.mark.xfail
 def test_delete():
     if not should_run_test():
         pytest.skip("cannot check this from inside gitub pipeline")

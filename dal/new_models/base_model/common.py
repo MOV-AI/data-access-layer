@@ -10,9 +10,10 @@
 from typing import Optional
 from typing_extensions import Annotated
 
-from pydantic import BaseModel, Field, StringConstraints, computed_field
+from pydantic import BaseModel, Field, StringConstraints, computed_field, field_validator
 
 from movai_core_shared.exceptions import PrimaryKeyError
+
 
 DEFAULT_DB = "global"
 DEFAULT_VERSION = "__UNVERSIONED__"
@@ -37,6 +38,13 @@ class MovaiPrimaryKey(BaseModel):
     @property
     def pk(self) -> str:
         return f"{self.db}:{self.model}:{self.name}:{self.version}"
+
+    @field_validator("version", mode="before")
+    @classmethod
+    def _validate_version(cls, value):
+        if not value:
+            return DEFAULT_VERSION
+        return value
 
 
 class RobotKey(MovaiPrimaryKey):
