@@ -1,27 +1,103 @@
-"""
-   Copyright (C) Mov.ai  - All Rights Reserved
-   Unauthorized copying of this file, via any medium is strictly prohibited
-   Proprietary and confidential
+from re import match
+from typing import Optional, Dict, Any
+from typing_extensions import Annotated
 
-   Developers:
-   - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
-   - Manuel Sila  (manuel.silva@mov.ai) - 2020
-"""
-from .scopestree import ScopeObjectNode, ScopeNode, scopes
-from movai_core_shared.logger import Log
+from pydantic import StringConstraints, ConfigDict, BaseModel, Field, field_validator
+
+from dal.new_models.base_model.common import Arg
+from dal.new_models.node import Node
+from dal.helpers.parsers import ParamParser
 
 
-class NodeInst(ScopeObjectNode):
-    """
-    A node instance
-    """
+ValidName = Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")]
+PARAMETER_REGEX = r"^(/?[a-zA-Z0-9_@]+)+$"
 
-    logger = Log.get_logger("NodeInst.mov.ai")
+
+class CmdLineValue(BaseModel):
+    Value: Any = None
+
+
+class EnvVarValue(BaseModel):
+    Value: Any = None
+
+
+class NodeInst(BaseModel):
+    NodeLabel: Optional[ValidName] = None
+    Parameter: Optional[Dict[str, Arg]] = Field(default_factory=dict)
+    Template: Optional[ValidName] = None
+    CmdLine: Optional[
+        Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")], CmdLineValue]
+    ] = Field(default_factory=dict)
+    EnvVar: Optional[
+        Dict[Annotated[str, StringConstraints(pattern=r"^[a-zA-Z0-9_]+$")], EnvVarValue]
+    ] = Field(default_factory=dict)
+    NodeLayers: Optional[Any] = None
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.Launch = None
+        self.Dummy = None
+        self.Remappable = None
+        self.Persistent = None
+        self._flow_ref = None
+        self._parser = None
+
+    model_config = ConfigDict(
+        exclude={
+            "Launch",
+            "Dummy",
+            "Remappable",
+            "_parser",
+        },
+        extra="allow",
+        arbitrary_types_allowed=True,
+    )
+
+    def model_dump(
+        self,
+        *,
+        include=None,
+        exclude=None,
+        by_alias: bool = True,
+        exclude_unset: bool = False,
+        exclude_defaults: bool = False,
+        exclude_none: bool = True,
+    ):
+        dic = super().model_dump(
+            include=include,
+            exclude=exclude,
+            by_alias=by_alias,
+            exclude_unset=exclude_unset,
+            exclude_defaults=exclude_defaults,
+            exclude_none=exclude_none,
+        )
+        dic.pop("_parser", None)
+        dic.pop("_flow_ref", None)
+        return dic
+
+    @field_validator("Parameter", mode="before")
+    @classmethod
+    def validate_regex(cls, value):
+        if isinstance(value, dict):
+            for key in value:
+                if not match(PARAMETER_REGEX, key):
+                    raise ValueError(
+                        f"Field 'Parameter' with value '{key}' does not match the required pattern '{PARAMETER_REGEX}'."
+                    )
+        return value
 
     @property
-    def flow(self):
+    def node_template(self) -> Node:
+        """
+        return the current template for this node
+        instance
+        """
+        return Node(self.Template)
+
+    @property
+    def flow(self) -> BaseModel:
         """Returns the flow (Flow)"""
-        return self.parent.parent
+        return self._parser.flow
 
     @property
     def type(self) -> str:
@@ -29,28 +105,29 @@ class NodeInst(ScopeObjectNode):
         return self.node_template.Type
 
     @property
-    def parser(self):
+    def parser(self) -> ParamParser:
         """Get the parser from the parent (GParser)"""
-        return self.parent.parent.parser
-
-    @property
-    def all(self) -> dict:
-        """Get all node instances from the full flow"""
-        return self.flow.full.NodeInst
-
-    @property
-    def node_template(self):
-        """
-        return the current template for this node
-        instance
-        """
-        from dal.new_models import Node
-        return Node(self.Template)
+        return self._parser
 
     @property
     def namespace(self) -> str:
         """Returns the value from the parameter _namespace"""
         return self.get_param("_namespace") or ""
+
+    @property
+    def is_nodelet(self) -> bool:
+        """Returns True if the node is of type Nodelet"""
+        return self.node_template.is_nodelet
+
+    @property
+    def is_state(self) -> bool:
+        """Returns True if the node is of type state"""
+        return self.node_template.is_state
+
+    @property
+    def is_plugin(self) -> bool:
+        """Returns True if the node is of type plugin"""
+        return self.node_template.is_plugin
 
     @property
     def is_remappable(self) -> bool:
@@ -101,47 +178,31 @@ class NodeInst(ScopeObjectNode):
         # get the value from the property Persistent
         prop = temp if self.Persistent in [None, ""] else self.Persistent
 
-        # get the value from the parameter _persistent
-        # parameter takes precedence
-        # param = self.get_param("_persistent")
-
         # return prop if param in [None, ""] else param
         return prop
 
     @property
     def is_dummy(self) -> bool:
         """Returns True if the node is configured as Dummy"""
-        if self.Dummy is not None:
+        if self.Dummy not in [None, ""]:
             return self.Dummy
         else:
             return self.node_template.Dummy
 
     @property
-    def is_nodelet(self) -> bool:
-        """Returns True if the node is of type Nodelet"""
-        return self.node_template.is_nodelet
-
-    @property
-    def is_state(self) -> bool:
-        """Returns True if the node is of type state"""
-        return self.node_template.is_state
-
-    @property
-    def is_plugin(self) -> bool:
-        """Returns True if the node is of type plugin"""
-        return self.node_template.is_plugin
+    def name(self) -> str:
+        return self.node_template.name
 
     def get_params(self, name: str = None, context: str = None) -> dict:
         """Returns all the parameters"""
         params = {}
         _name = name or self.name
-        _context = context or self.flow.ref
+        _context = context or self._flow_ref
 
         for key in self.node_template.Parameter.keys():
             value = self.get_param(key, _name, _context)
             if value is not None:
                 params.update({key: value})
-
 
         return params
 
@@ -157,18 +218,16 @@ class NodeInst(ScopeObjectNode):
         _parser = custom_parser or self.parser
 
         # main flow context or own context
-        _context = context or self.flow.ref
+        _context = context or self._flow_ref
 
         # get the template value
-        tpl_value = self.node_template.get_params().get(
-            key, None
-        )  # Parameter[key].Value
+        tpl_value = self.node_template.get_params().get(key, None)  # Parameter[key].Value
 
         # get the instance value
         try:
             inst_value = self.Parameter[key].Value
             if inst_value is None:
-                #param is disabled, and we return None
+                # param is disabled, and we return None
                 return None
 
         except KeyError:
@@ -189,6 +248,3 @@ class NodeInst(ScopeObjectNode):
         if isinstance(output, bool) and key == "_launch":
             self.Launch = ("override", output)
         return output
-
-
-ScopeNode.register_scope_object("schemas/1.0/Flow/NodeInst", NodeInst)

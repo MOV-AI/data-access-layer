@@ -14,14 +14,15 @@ from miracle import Acl
 
 from movai_core_shared.consts import (
     READ_PERMISSION,
-    UPDATE_PERMISSION, 
-    CREATE_PERMISSION, 
-    DELETE_PERMISSION, 
+    UPDATE_PERMISSION,
+    CREATE_PERMISSION,
+    DELETE_PERMISSION,
     EXECUTE_PERMISSION,
     RESET_PERMISSION,
 )
 from movai_core_shared.envvars import REST_SCOPES
 from movai_core_shared.logger import Log
+
 from dal.models.scopestree import ScopesTree, scopes
 
 

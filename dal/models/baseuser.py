@@ -17,9 +17,9 @@ from movai_core_shared.exceptions import (
     UserPermissionsError,
 )
 
-from dal.models.scopestree import ScopesTree, scopes
-from dal.models.model import Model
-from dal.models.acl import NewACLManager
+from .scopestree import ScopesTree, scopes
+from .model import Model
+from .acl import NewACLManager
 
 
 class BaseUser(Model):

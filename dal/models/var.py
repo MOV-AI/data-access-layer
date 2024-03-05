@@ -96,23 +96,3 @@ class Var:
         if scope == 'node': #also clean SM Vars
             MovaiDB(scope_).unsafe_delete({'Var':{scope:{'ID':{prefix+'*':{'Parameter': '*'}}}}})
 
-
-if __name__ == '__main__':
-
-    pass
-
-    '''
-    Callback:
-        ID = node_name@port_name@name
-    Node:
-        ID = node_name@name
-    Robot:
-        ID = @name
-    Flow:
-        ID = flow@name
-
-    Fleet:
-        ID = robot_name@name
-    Global:
-        ID = @name
-    '''

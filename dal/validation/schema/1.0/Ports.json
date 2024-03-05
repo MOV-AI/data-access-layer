@@ -5,6 +5,8 @@
       "Label": "str",
       "Info": "str",
       "Data": "hash",
+      "LastUpdate": "any",
+      "Version": "str",
       "In": {
         "$name": {
           "Transport": "str",

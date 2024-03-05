@@ -31,10 +31,10 @@ from movai_core_shared.consts import (
 from dal.movaidb import MovaiDB
 from dal.scopes.scope import Scope
 from dal.scopes.ports import Ports
-from dal.scopes.node import Node
 from dal.models.var import Var
+from dal.scopes.node import Node
 from movai_core_shared.exceptions import DoesNotExist
-from .configuration import Configuration
+from dal.scopes.configuration import Configuration
 from movai_core_shared.logger import Log
 
 LOGGER = Log.get_logger("Flow")
@@ -440,7 +440,7 @@ class Flow(Scope):
             if only_values:
                 output.update({param: value["Value"]})
             else:
-                if node_template.get("Type", None) == ROS1_PLUGIN:
+                if node_template.is_plugin():
                     plugin_name = node_template["Path"].split("/")[-1]
                     output.update(
                         {param: "_%s/%s:=%s" % (plugin_name, param, value["Value"])}
@@ -471,7 +471,7 @@ class Flow(Scope):
         if not params:
             params = {}
 
-            params_raw = self.get_node(node_name).get("Parameter", {})
+            params_raw = self.get_node(node_name).Parameter
             output = {key: value["Value"] for key, value in params_raw.items()}
 
             output.update(self.get_node_inst_params(node_name))
@@ -554,7 +554,7 @@ class Flow(Scope):
 
         _config_name, _config_param = _config.split(".", 1)
 
-        output = Configuration(_config_name, db=self.db).get_param(_config_param)
+        output = Configuration(_config_name).get_param(_config_param)
 
         return output
 
@@ -674,8 +674,7 @@ class Flow(Scope):
 
             # get the value from the node template
             output = (
-                self.get_node(node_name)
-                .get("Parameter", {})
+                self.get_node(node_name).Parameter
                 .get(reference, {})
                 .get("Value")
             )
@@ -781,27 +780,23 @@ class Flow(Scope):
         return template_name
 
     # ported -> NodeInst.node_template (instance of Node)
-    def get_node(self, node_inst_name: str) -> dict:
+    def get_node(self, node_inst_name: str):
         """Return the node dict from cache or from DB"""
         template_name = self.get_node_template_name(node_inst_name)
 
         node_template = self.cache_node_templates.get(template_name)
         if not node_template:
-            node_template = MovaiDB(db=self.db).get({"Node": {template_name: "**"}})[
-                "Node"
-            ][template_name]
+            node_template = scopes.from_path("Node", node_template)
             self.cache_node_templates.update({template_name: node_template})
 
         return node_template
 
     # ported - Node.get_port(<port template>)
-    def get_port(self, port_template: str) -> dict:
+    def get_port(self, port_template: str):
         """Return ports dict from cache or from DB"""
-        ports = self.cache_ports_templates.get(port_template)
+        ports = self.cache_ports_templates.get(port_template, None)
         if not ports:
-            ports = MovaiDB(db=self.db).get({"Ports": {port_template: "**"}})["Ports"][
-                port_template
-            ]
+            ports = scopes.from_path("Ports", port_template)
             self.cache_ports_templates.update({port_template: ports})
         return ports
 
@@ -811,7 +806,7 @@ class Flow(Scope):
     # node_template.Path
     def get_node_path(self, node_name: str) -> str:
         """Return node type"""
-        return self.get_node(node_name).get("Path", None)
+        return self.get_node(node_name).Path
 
     # ported - Node.Type
     # node_inst = flow.get_node_inst(<node_inst name>)["ref"]
@@ -819,7 +814,7 @@ class Flow(Scope):
     # node_template.Type
     def get_node_type(self, node_name: str) -> str:
         """Return node type"""
-        return self.get_node(node_name).get("Type", None)
+        return self.get_node(node_name).Type
 
     # ported -> NodeInst.is_persistent (property)
     def get_node_persistent(self, node_name: str) -> bool:
@@ -831,7 +826,7 @@ class Flow(Scope):
         )
         if persist is not None:
             return persist
-        return self.get_node(node_name).get("Persistent", None)
+        return self.get_node(node_name).Persistent
 
     # ported -> flow.get_nodelet_manager
     def get_nodelet_manager(self, node_name: str, port: str = None) -> str:
@@ -876,10 +871,10 @@ class Flow(Scope):
                 port_type_name = "In"
             else:
                 continue
-            port_template_name = node_template["PortsInst"][port_inst]["Template"]
+            port_template_name = node_template.PortsInst[port_inst]["Template"]
 
             port = self.get_port(port_template_name)
-            port_type = port[port_type_name][port_name]
+            port_type = getattr(port, port_type_name)[port_name]
 
             # CHANGE -> port_template was a Ports() class, now its the name
             # port_template = Ports(port_template_name, db=self.db)
@@ -891,7 +886,7 @@ class Flow(Scope):
     def get_node_port_template(self, node_name: str, port_inst: str) -> str:
         """Returns the name of the template for that specific portsinst"""
         node_template = self.get_node(node_name)
-        port_template_name = node_template["PortsInst"][port_inst]["Template"]
+        port_template_name = node_template.PortsInst[port_inst]["Template"]
         return port_template_name
 
     # WONT PORT
@@ -912,7 +907,7 @@ class Flow(Scope):
         )
         if dummy_inst is not None:
             return dummy_inst
-        return self.get_node(node_name).get("Dummy", False)
+        return self.get_node(node_name).Dummy
 
     # ported -> NodeInst
     def is_node_remmapable(self, node_name: str) -> bool:
