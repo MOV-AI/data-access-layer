@@ -6,22 +6,32 @@
    Developers:
    - Manuel Silva (manuel.silva@mov.ai) - 2020
    - Tiago Paulino (tiago@mov.ai) - 2020
+   - Dor Marcous (dor@mov.ai) - 2022
 
    Module that implements Robot namespace
 """
 import pickle
-from threading import Timer
-from enum import Enum
-from .scope import Scope
-from dal.movaidb import MovaiDB
+
+from movai_core_shared.common.utils import is_enterprise
+from movai_core_shared.core.message_client import MessageClient
+from movai_core_shared.consts import COMMAND_HANDLER_MSG_TYPE
+from movai_core_shared.envvars import (
+    DEVICE_NAME,
+    SPAWNER_BIND_ADDR,
+    MESSAGE_SERVER_PORT,
+)
 from movai_core_shared.logger import Log
 
 
+from dal.movaidb import MovaiDB
+
+from .scope import Scope
+
 logger = Log.get_logger("FleetRobot")
 
+
 class FleetRobot(Scope):
-    """Represent the Robot scope in the redis-master.
-    """
+    """Represent the Robot scope in the redis-master."""
 
     def __init__(self, name: str, version="latest", new=False, db="global"):
         """constructor
@@ -33,17 +43,67 @@ class FleetRobot(Scope):
             db (str, optional): "global/local". Defaults to "global".
         """
         super().__init__(scope="Robot", name=name, version=version, new=new, db=db)
+        if self.RobotName == DEVICE_NAME or not is_enterprise():
+            # default : ipc:///opt/mov.ai/comm/SpawnerServer-{DEVICE_NAME}-{FLEET_NAME}.sock"
+            server = SPAWNER_BIND_ADDR
+        else:
+            # Message needs to be sent to the message-server
+            # which will be forwarded to the spawner server of the remote robot {self.IP}
+            server = f"tcp://message-server:{MESSAGE_SERVER_PORT}"
+
+        self.__dict__["spawner_client"] = MessageClient(server_addr=server, robot_id=self.RobotName)
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot"""
-        to_send = {}
-        for key, value in locals().items():
-            if value is not None and key in ("command", "flow", "node", "port", "data"):
-                to_send.update({key: value})
+        dst = {"ip": self.IP, "host": self.RobotName, "id": self.name}
 
-        to_send = pickle.dumps(to_send)
+        command_data = {}
 
-        self.Actions.append(to_send)
+        if command:
+            command_data["command"] = command
+
+        if flow:
+            command_data["flow"] = flow
+
+        if node:
+            command_data["node"] = node
+
+        if port:
+            command_data["port"] = port
+
+        if data:
+            command_data["data"] = data
+
+        req_data = {"dst": dst, "command_data": command_data}
+
+        # For retro-compatibility, if the dest robot is a fleet robot
+        # then the response is required since the forward by message-server might fail
+        # in this case, the command will be published to redis
+        send_to_redis = False
+        response_required = False
+        if self.RobotName != DEVICE_NAME and is_enterprise():
+            response_required = True
+
+        if hasattr(self, "spawner_client") and self.spawner_client is not None:
+            res = self.spawner_client.send_request(
+                COMMAND_HANDLER_MSG_TYPE, req_data, respose_required=response_required
+            )
+            if (
+                response_required
+                and res is not None
+                and "response" in res
+                and res["response"] != {}
+            ):
+                logger.info(f"Command {command_data} sent to robot {self.RobotName}")
+            else:
+                send_to_redis = True
+        else:
+            send_to_redis = True
+
+        if send_to_redis:
+            logger.info(f"Command {command_data}, published in redis for robot {self.RobotName}")
+            command_data = pickle.dumps(command_data)
+            self.Actions.append(command_data)
 
     def get_active_alerts(self) -> dict:
         """Gets a dictionary of the active alerts on this specific robot.
