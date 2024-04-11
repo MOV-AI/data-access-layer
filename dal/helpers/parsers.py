@@ -155,7 +155,7 @@ class ParamParser:
             obj = scopes.from_path(_config_name, scope="Configuration")
 
         except KeyError as exc:
-            raise Exception(f"Configuration {_config_name} does not exist") from exc
+            raise ValueError(f"Configuration {_config_name} does not exist") from exc
 
         output = obj.get_param(_config_param)
 
