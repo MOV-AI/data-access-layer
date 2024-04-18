@@ -53,8 +53,14 @@ class FleetRobot(Scope):
 
         self.__dict__["spawner_client"] = MessageClient(server_addr=server, robot_id=self.RobotName)
 
-    def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
-        """Send an action command to the Robot"""
+    def send_cmd(
+        self, command: str, *, flow: str = None, node: str = None, port=None, data=None
+    ) -> None:
+        """Send an action command to the Robot.
+
+        See flow-initiator/flow_initiator/spawner/spawner.py for possible commands.
+
+        """
         dst = {"ip": self.IP, "host": self.RobotName, "id": self.name}
 
         command_data = {}
@@ -82,6 +88,7 @@ class FleetRobot(Scope):
         send_to_redis = False
         response_required = False
         if self.RobotName != DEVICE_NAME and is_enterprise():
+            logger.debug(f"{self.RobotName} is a fleet member")
             response_required = True
 
         if hasattr(self, "spawner_client") and self.spawner_client is not None:
@@ -89,15 +96,21 @@ class FleetRobot(Scope):
                 COMMAND_HANDLER_MSG_TYPE, req_data, respose_required=response_required
             )
             if (
-                response_required
+                not response_required
+                or response_required
                 and res is not None
                 and "response" in res
                 and res["response"] != {}
             ):
-                logger.info(f"Command {command_data} sent to robot {self.RobotName}")
+                # success if response is not required or if required, is well formed
+                logger.info(f"Sent command {command_data} to robot {self.RobotName}")
             else:
+                logger.debug(
+                    f"Failed to send command {command_data} {self.RobotName}, response: {res}"
+                )
                 send_to_redis = True
         else:
+            logger.debug(f"Spawner client not found for {self.RobotName}")
             send_to_redis = True
 
         if send_to_redis:
