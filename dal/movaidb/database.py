@@ -31,6 +31,23 @@ LOGGER = Log.get_logger("dal.mov.ai")
 dal_directory = path.dirname(dal.__file__)
 __SCHEMAS_URL__ = f"file://{dal_directory}/validation/schema"
 
+class SubscribeManager(metaclass=Singleton):
+   
+    _key_map={}
+
+    @classmethod
+    def register_sub(cls, key):
+        cls._key_map[key] = None
+
+    @classmethod
+    def unregister_sub(cls, key):
+        del cls._key_map[key]
+    
+    @classmethod    
+    def is_registered(cls, key):
+        return key in cls._key_map
+
+
 
 class AioRedisClient(metaclass=Singleton):
     """
@@ -538,12 +555,17 @@ class MovaiDB:
 
         return True  # need also local
 
+    # =================== CHECK  SUBSCRIBERS  ===================================
+    def check_registration(self, key: str):
+
+        return SubscribeManager().is_registered(key)
+
     # ===================  SUBSCRIBERS  ===================================
-    async def subscribe_channel(self, _input: dict, function):
+    async def subscribe_channel(self, _input: dict, function, port_name: str, node_name: str):
         """Subscribes to a specific channel"""
         for elem in self.dict_to_keys(_input, validate=False):
             key, _, _ = elem
-            self.loop.create_task(self.task_subscriber(key + "*", function))
+            self.loop.create_task(self.task_subscriber(key + "*", function, port_name, node_name))
 
     async def subscribe(self, _input: dict, function):
         """Subscribes to a KeySpace event"""
@@ -553,7 +575,7 @@ class MovaiDB:
                 self.task_subscriber("__keyspace@*__:%s" % key, function)
             )
 
-    async def task_subscriber(self, key: str, callback) -> None:
+    async def task_subscriber(self, key: str, callback, port_name: str=None, node_name: str=None  ) -> None:
         """Calls a callback every time it gets a message."""
         # Acquires a connection from free pool.
         # Creates new connection if needed.
@@ -562,12 +584,17 @@ class MovaiDB:
         conn = aioredis.Redis(_conn)
         # Switch connection to Pub/Sub mode and subscribe to specified patterns
         channel = await conn.psubscribe(key)
+        if port_name and node_name:
+            SubscribeManager().register_sub(node_name + port_name)
         # Waits for message to become available in channel
         while await channel[0].wait_message():
             msg = await channel[0].get(encoding="utf-8")
             callback(msg)
         conn.close()
         await conn.wait_closed()
+        # Delete from cache the subscribed key 
+        if port_name and node_name:
+            SubscribeManager().unregister_sub(node_name + port_name)
 
     # ===================  List and Hashes  ===============================
     def lpush(self, _input: dict, pickl: bool = True):
