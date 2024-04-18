@@ -95,9 +95,8 @@ class FleetRobot(Scope):
             res = self.spawner_client.send_request(
                 COMMAND_HANDLER_MSG_TYPE, req_data, respose_required=response_required
             )
-            if (
-                not response_required
-                or response_required
+            if (not response_required) or (
+                response_required
                 and res is not None
                 and "response" in res
                 and res["response"] != {}
