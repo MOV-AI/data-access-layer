@@ -88,7 +88,7 @@ class FleetRobot(Scope):
         send_to_redis = False
         response_required = False
         if self.RobotName != DEVICE_NAME and is_enterprise():
-            logger.debug(f"{self.RobotName} is a fleet member")
+            logger.debug("%s is a fleet member", self.RobotName)
             response_required = True
 
         if hasattr(self, "spawner_client") and self.spawner_client is not None:
@@ -103,18 +103,18 @@ class FleetRobot(Scope):
                 and res["response"] != {}
             ):
                 # success if response is not required or if required, is well formed
-                logger.info(f"Sent command {command_data} to robot {self.RobotName}")
+                logger.info("Sent command %s to robot %s", command_data, self.RobotName)
             else:
                 logger.debug(
-                    f"Failed to send command {command_data} {self.RobotName}, response: {res}"
+                    "Failed to send command %s %s, response: %s", command_data, self.RobotName, res
                 )
                 send_to_redis = True
         else:
-            logger.debug(f"Spawner client not found for {self.RobotName}")
+            logger.debug("Spawner client not found for %s", self.RobotName)
             send_to_redis = True
 
         if send_to_redis:
-            logger.info(f"Command {command_data}, published in redis for robot {self.RobotName}")
+            logger.info("Command %s, published in redis for robot %s", command_data, self.RobotName)
             command_data = pickle.dumps(command_data)
             self.Actions.append(command_data)
 
