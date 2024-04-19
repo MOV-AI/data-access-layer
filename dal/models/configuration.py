@@ -37,7 +37,6 @@ class Configuration(Model):
         if self.Type == "xml":
             # Yaml is the name of the field
             return self.Yaml
-        
         # Don't need to go to DB because the schema is already loaded in the constructor of the class
         # TODO:We can implement a proper caching system later to save this yaml.load operation
         return yaml.load(self.Yaml, Loader=yaml.FullLoader)
