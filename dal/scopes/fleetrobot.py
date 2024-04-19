@@ -53,8 +53,14 @@ class FleetRobot(Scope):
 
         self.__dict__["spawner_client"] = MessageClient(server_addr=server, robot_id=self.RobotName)
 
-    def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
-        """Send an action command to the Robot"""
+    def send_cmd(
+        self, command: str, *, flow: str = None, node: str = None, port=None, data=None
+    ) -> None:
+        """Send an action command to the Robot.
+
+        See flow-initiator/flow_initiator/spawner/spawner.py for possible commands.
+
+        """
         dst = {"ip": self.IP, "host": self.RobotName, "id": self.name}
 
         command_data = {}
@@ -82,26 +88,32 @@ class FleetRobot(Scope):
         send_to_redis = False
         response_required = False
         if self.RobotName != DEVICE_NAME and is_enterprise():
+            logger.debug("%s is a fleet member", self.RobotName)
             response_required = True
 
         if hasattr(self, "spawner_client") and self.spawner_client is not None:
             res = self.spawner_client.send_request(
                 COMMAND_HANDLER_MSG_TYPE, req_data, respose_required=response_required
             )
-            if (
+            if (not response_required) or (
                 response_required
                 and res is not None
                 and "response" in res
                 and res["response"] != {}
             ):
-                logger.info(f"Command {command_data} sent to robot {self.RobotName}")
+                # success if response is not required or if required, is well formed
+                logger.info("Sent command %s to robot %s", command_data, self.RobotName)
             else:
+                logger.debug(
+                    "Failed to send command %s %s, response: %s", command_data, self.RobotName, res
+                )
                 send_to_redis = True
         else:
+            logger.debug("Spawner client not found for %s", self.RobotName)
             send_to_redis = True
 
         if send_to_redis:
-            logger.info(f"Command {command_data}, published in redis for robot {self.RobotName}")
+            logger.info("Command %s, published in redis for robot %s", command_data, self.RobotName)
             command_data = pickle.dumps(command_data)
             self.Actions.append(command_data)
 
