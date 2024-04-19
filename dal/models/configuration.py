@@ -37,17 +37,10 @@ class Configuration(Model):
         if self.Type == "xml":
             # Yaml is the name of the field
             return self.Yaml
-
-        # self.Yaml will be set once we load configuration and remain the same
-        # until we update the self.Yaml explicitly unlike Configuration(Scope)
-        db_yaml = self._get_db_yaml()
-        if db_yaml != self.Yaml or self.ref not in self.cache:
-            # we need to update it because of the scopes caching system
-            _data = yaml.load(db_yaml, Loader=yaml.FullLoader)
-            self.cache[self.ref] = _data
-            self.Yaml = db_yaml
-
-        return self.cache[self.ref]
+        
+        # Don't need to go to DB because the schema is already loaded in the constructor of the class
+        # TODO: We can implement a proper caching system later to save this yaml.load operation
+        return yaml.load(self.Yaml, Loader=yaml.FullLoader)
 
     def get_param(self, param: str) -> any:
         """Returns the configuration value of a key in the format param.subparam.subsubparam"""
