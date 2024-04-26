@@ -82,7 +82,7 @@ class ContextServerIn(ContextProtocolIn):
         ContextProtocolIn (_type_): _description_
     """
     def __init__(self, callback: Callable, params: dict, **kwargs) -> None:
-        super().__init__(call   back, params, **kwargs)
+        super().__init__(callback, params, **kwargs)
 
     @property
     def ID(self) -> str:
