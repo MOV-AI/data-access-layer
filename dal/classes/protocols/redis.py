@@ -29,6 +29,8 @@ class ContextMsg:
 
 
 class ContextProtocolIn:
+    """Subscribes to context channels and runs a callback when the ID is mentioned"""
+
     ID: str
 
     def __init__(self, callback: Callable, params: dict, **ignore) -> None:
