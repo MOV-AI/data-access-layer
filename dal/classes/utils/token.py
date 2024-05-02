@@ -6,6 +6,7 @@
    Developers:
    - Erez Zomer  (erez@mov.ai) - 2022
 """
+
 from socket import gethostname
 import uuid
 import jwt
@@ -96,7 +97,7 @@ class EmptyDBToken(dict):
 class TokenManager:
     """A general class for managing tokens in DB."""
 
-    log = Log.get_logger('TokenManger')
+    log = Log.get_logger("TokenManger")
     _db = None
     token_type = "Token"
 
@@ -129,9 +130,7 @@ class TokenManager:
         """
         if cls.is_token_exist(token_id):
             cls.db.delete(EmptyDBToken(token_id))
-            cls.log.debug(
-                f"The token id {token_id} has been removed from the allowed token list."
-            )
+            cls.log.debug(f"The token id {token_id} has been removed from the allowed token list.")
 
     @classmethod
     def store_token(cls, token: TokenObject) -> None:
@@ -141,14 +140,11 @@ class TokenManager:
             token (TokenObject): The token to store.
         """
         cls.db.set(DBToken(token))
-        cls.log.debug(
-            f"The token id {token.jwt_id} has been added to the allowed token list."
-        )
+        cls.log.debug(f"The token id {token.jwt_id} has been added to the allowed token list.")
 
     @classmethod
     def remove_all_tokens(cls):
-        """Removes all token from db.
-        """
+        """Removes all token from db."""
         cls.log.info(f"Removing all tokens from token list.")
         tokens = cls.db.get(EmptyDBToken(None, cls.token_type))
         tokens = tokens.get(cls.token_type)
@@ -170,10 +166,11 @@ class TokenManager:
                 if token_data["ExpirationTime"] < current_time:
                     cls.remove_token(token_id)
 
+
 class Token:
     allowed_algorithms = ["HS256", "RS256", "ES256"]
     required_keys = set(["sub", "iss", "iat", "exp", "jti"])
-    log = Log.get_logger('Token')
+    log = Log.get_logger("Token")
     _token_manager = TokenManager
     _issuer = gethostname()
 

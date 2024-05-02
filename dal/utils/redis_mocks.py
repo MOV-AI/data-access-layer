@@ -21,16 +21,17 @@ logger = logging.getLogger("RedisProxies")
 RECEIVER_LOOP: List[asyncio.AbstractEventLoop] = []
 CHANNELS: Dict[bytes, aioredis.Channel] = {}
 
+
 class _fake_redis(_patch):
     recording_dir: str
 
     @staticmethod
     def make_connection_class(recording_path: str) -> Type:
         class FakeConnection(redis.connection.Connection):
-            """ Implements a VCRpy style mock, which can record real connections 
-                to Redis and save them to a file. Then that file can be used 
-                to reproduce communications without needing Redis """
-            
+            """Implements a VCRpy style mock, which can record real connections
+            to Redis and save them to a file. Then that file can be used
+            to reproduce communications without needing Redis"""
+
             __responses = {}
             __last_out: List[Optional[str]] = [None]
 
@@ -48,7 +49,7 @@ class _fake_redis(_patch):
 
             def can_read(self, timeout: float | None = 0) -> bool:
                 return super().can_read(timeout=timeout) if RECORD else False
-            
+
             def send_command(self, *args, **kwargs) -> None:
                 FakeConnection.__last_out[0] = f"({args}, {kwargs})"
                 logger.info("send_command(%s, %s)", args, kwargs)
@@ -60,16 +61,34 @@ class _fake_redis(_patch):
                     for pattern, channel in CHANNELS.items():
                         pattern_str = pattern.decode("utf-8")
                         if fnmatch(channel_name, pattern_str):
-                            logger.warning("Publishing %s %s to %s(%s) on loop %s", pattern, msg, channel, id(channel), loop)
+                            logger.warning(
+                                "Publishing %s %s to %s(%s) on loop %s",
+                                pattern,
+                                msg,
+                                channel,
+                                id(channel),
+                                loop,
+                            )
                             loop.call_soon_threadsafe(
-                                (lambda channel, pattern, msg: channel.put_nowait((pattern, msg.encode("utf-8")))),
-                                channel, pattern, msg)
-            
-            def read_response(self, disable_decoding: bool = False, *, disconnect_on_error: bool = True):
+                                (
+                                    lambda channel, pattern, msg: channel.put_nowait(
+                                        (pattern, msg.encode("utf-8"))
+                                    )
+                                ),
+                                channel,
+                                pattern,
+                                msg,
+                            )
+
+            def read_response(
+                self, disable_decoding: bool = False, *, disconnect_on_error: bool = True
+            ):
                 logger.warning("read_response()")
                 if RECORD:
                     try:
-                        value = super().read_response(disable_decoding, disconnect_on_error=disconnect_on_error)
+                        value = super().read_response(
+                            disable_decoding, disconnect_on_error=disconnect_on_error
+                        )
                     except Exception as e:
                         logger.warning("GOT EXC: %s", e)
                         value = e
@@ -86,16 +105,24 @@ class _fake_redis(_patch):
                 else:
                     return value
 
-            
             def disconnect(self, *args: object) -> None:
                 if RECORD:
                     super().disconnect(*args)
+
         return FakeConnection
-        
 
     def __init__(self: _patch, getter: Callable[[], Any], attribute: str, recording_dir) -> None:
-        super().__init__(getter, attribute, new=None, spec=None, create=False, spec_set=None,
-                         autospec=None, new_callable=None, kwargs={})
+        super().__init__(
+            getter,
+            attribute,
+            new=None,
+            spec=None,
+            create=False,
+            spec_set=None,
+            autospec=None,
+            new_callable=None,
+            kwargs={},
+        )
         self.recording_dir = recording_dir
 
     def __call__(self, func: Callable) -> Callable:
@@ -111,7 +138,7 @@ def fake_redis(target, recording_dir):
 
 
 class FakeAsyncConnection(aioredis.connection.AbcConnection):
-    """ Basic mock connection that allows subscribing to a channel pattern (psubscribe) """
+    """Basic mock connection that allows subscribing to a channel pattern (psubscribe)"""
 
     def __init__(self, reader, writer, *, address, encoding=None, parser=None, loop=None):
         self._pubsub_channels = CHANNELS
@@ -133,36 +160,36 @@ class FakeAsyncConnection(aioredis.connection.AbcConnection):
         fut = loop.create_future()
         fut.set_result([(None, channel.name, None) for channel in channels])
         return fut
-    
+
     def execute(self, command, *args, encoding=...):
         fut = asyncio.get_running_loop().create_future()
         fut.set_result(True)
         return fut
-    
+
     @property
     def closed(self):
         return False
-    
+
     @property
     def db(self):
         return 0
-    
+
     @property
     def encoding(self):
         return None
-    
+
     @property
     def address(self):
         return "fakehost"
-    
+
     @property
     def in_pubsub(self):
         return True
-    
+
     @property
     def pubsub_channels(self):
         return {}
-    
+
     @property
     def pubsub_patterns(self):
         return CHANNELS

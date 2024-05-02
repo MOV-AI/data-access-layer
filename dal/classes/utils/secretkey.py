@@ -6,13 +6,11 @@
    Developers:
    - Erez Zomer  (erez@mov.ai) - 2022
 """
+
 from movai_core_shared.logger import Log
 from movai_core_shared.common.time import current_time_string
 from movai_core_shared.core.secure import generate_secret_string
-from movai_core_shared.exceptions import (
-    SecretKeyAlreadyExist,
-    SecretKeyDoesNotExist
-)
+from movai_core_shared.exceptions import SecretKeyAlreadyExist, SecretKeyDoesNotExist
 
 from dal.movaidb import MovaiDB
 
@@ -20,16 +18,14 @@ from dal.movaidb import MovaiDB
 class SecretKey:
     log = Log.get_logger(__name__)
     _db = None
-    type_name = 'SecretKey'
-    secret_key_dict = {'KeyLength': '',
-                       'Secret': '',
-                       'LastUpdate': ''}
+    type_name = "SecretKey"
+    secret_key_dict = {"KeyLength": "", "Secret": "", "LastUpdate": ""}
 
     @classmethod
     @property
     def db(cls):
         if cls._db is None:
-            cls._db = MovaiDB(db='global')
+            cls._db = MovaiDB(db="global")
         return cls._db
 
     @classmethod
@@ -43,9 +39,9 @@ class SecretKey:
         Returns:
             dict: The created dictionary.
         """
-        cls.secret_key_dict['KeyLength'] = length
-        cls.secret_key_dict['Secret'] = generate_secret_string(length)
-        cls.secret_key_dict['LastUpdate'] = current_time_string()
+        cls.secret_key_dict["KeyLength"] = length
+        cls.secret_key_dict["Secret"] = generate_secret_string(length)
+        cls.secret_key_dict["LastUpdate"] = current_time_string()
         return cls.secret_key_dict
 
     @classmethod
@@ -58,7 +54,7 @@ class SecretKey:
         Returns:
             bool: True if exist, False otherwise.
         """
-        secret = cls.db.get_value({cls.type_name: {fleet_name: {'Secret': ''}}})
+        secret = cls.db.get_value({cls.type_name: {fleet_name: {"Secret": ""}}})
         return secret is not None
 
     @classmethod
@@ -66,7 +62,7 @@ class SecretKey:
         """creates a new key in the DB
 
         Args:
-            fleet_name (str): The name of the fleet which owns the key. 
+            fleet_name (str): The name of the fleet which owns the key.
             length (int, optional): The length of the key.. Defaults to 32.
 
         Returns:
@@ -82,7 +78,7 @@ class SecretKey:
         """Removes a key from the DB.
 
         Args:
-            fleet_name (str): The name of the fleet which owns the key. 
+            fleet_name (str): The name of the fleet which owns the key.
 
         Returns:
             bool: True if succesfull, False otherwise.
@@ -98,7 +94,7 @@ class SecretKey:
         """updates an existing key in the DB.
 
         Args:
-            fleet_name (str): The name of the fleet which owns the key. 
+            fleet_name (str): The name of the fleet which owns the key.
             length (int, optional): The length of the key.. Defaults to 32.
 
         Returns:
@@ -124,5 +120,5 @@ class SecretKey:
             error_msg = f"The secret key {fleet_name} does not exist."
             cls.log.error(error_msg)
             raise SecretKeyDoesNotExist(error_msg)
-        secret = cls.db.get_value({cls.type_name: {fleet_name: {'Secret': ''}}})
+        secret = cls.db.get_value({cls.type_name: {fleet_name: {"Secret": ""}}})
         return secret
