@@ -64,7 +64,7 @@ try:
         'TaskEntry',
         'TaskTemplate'
     ]
-except ImportError:
+except ModuleNotFoundError:
     enterprise_modules = []
 
 
