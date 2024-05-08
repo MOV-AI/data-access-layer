@@ -22,7 +22,6 @@ class SecretKey:
     secret_key_dict = {"KeyLength": "", "Secret": "", "LastUpdate": ""}
 
     @classmethod
-    @property
     def db(cls):
         if cls._db is None:
             cls._db = MovaiDB(db="global")
@@ -54,7 +53,7 @@ class SecretKey:
         Returns:
             bool: True if exist, False otherwise.
         """
-        secret = cls.db.get_value({cls.type_name: {fleet_name: {"Secret": ""}}})
+        secret = cls.db().get_value({cls.type_name: {fleet_name: {"Secret": ""}}})
         return secret is not None
 
     @classmethod
@@ -71,7 +70,7 @@ class SecretKey:
         if cls.is_exist(fleet_name):
             error_msg = f"The secret key {fleet_name} already exist."
             raise SecretKeyAlreadyExist(error_msg)
-        cls.db.set({cls.type_name: {fleet_name: cls._generate_dict(length)}})
+        cls.db().set({cls.type_name: {fleet_name: cls._generate_dict(length)}})
 
     @classmethod
     def remove(cls, fleet_name: str) -> None:
@@ -87,7 +86,7 @@ class SecretKey:
             error_msg = f"The secret key {fleet_name} does not exist."
             cls.log.error(error_msg)
             raise SecretKeyDoesNotExist(error_msg)
-        cls.db.delete({cls.type_name: {fleet_name: cls.secret_key_dict}})
+        cls.db().delete({cls.type_name: {fleet_name: cls.secret_key_dict}})
 
     @classmethod
     def update(cls, fleet_name: str, length: int = 32) -> None:
@@ -104,7 +103,7 @@ class SecretKey:
             error_msg = f"The secret key {fleet_name} does not exist."
             cls.log.error(error_msg)
             raise SecretKeyDoesNotExist(error_msg)
-        cls.db.set({cls.type_name: {fleet_name: cls._generate_dict(length)}})
+        cls.db().set({cls.type_name: {fleet_name: cls._generate_dict(length)}})
 
     @classmethod
     def get_secret(cls, fleet_name: str) -> str:
@@ -120,5 +119,5 @@ class SecretKey:
             error_msg = f"The secret key {fleet_name} does not exist."
             cls.log.error(error_msg)
             raise SecretKeyDoesNotExist(error_msg)
-        secret = cls.db.get_value({cls.type_name: {fleet_name: {"Secret": ""}}})
+        secret = cls.db().get_value({cls.type_name: {fleet_name: {"Secret": ""}}})
         return secret

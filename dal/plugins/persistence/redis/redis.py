@@ -49,7 +49,7 @@ class RedisPlugin(PersistencePlugin):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._REDIS_MASTER_POOL = ConnectionPool(
-            host=self._REDIS_MASTER_HOST, port=self._REDIS_MASTER_PORT, db=0, connection_class=Connection),
+            host=self._REDIS_MASTER_HOST, port=self._REDIS_MASTER_PORT, db=0, connection_class=Connection)
         self._REDIS_SLAVE_POOL = ConnectionPool(
             host=self._REDIS_SLAVE_HOST, port=self._REDIS_SLAVE_PORT, db=0, connection_class=Connection)
 
@@ -651,7 +651,7 @@ class RedisPlugin(PersistencePlugin):
 
         The data part must comply with the schema of the scope
         """
-        conn = Redis(connection_pool=RedisPlugin._REDIS_MASTER_POOL)
+        conn = Redis(connection_pool=self._REDIS_MASTER_POOL)
 
         if issubclass(type(data), ScopeInstanceVersionNode):
 
