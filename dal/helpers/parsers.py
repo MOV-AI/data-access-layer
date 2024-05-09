@@ -6,14 +6,15 @@
    Developers:
    - Manuel Silva  (manuel.silva@mov.ai) - 2020
 """
-
 import ast
 import re
 import os
+
 from movai_core_shared.logger import Log
-from dal.models.scopestree import scopes
-from dal.models.var import Var
+
 from dal.movaidb import MovaiDB
+from dal.models.var import Var
+from dal.new_models.configuration import Configuration
 
 
 class ParamParser:
@@ -113,6 +114,8 @@ class ParamParser:
                 rf"\$\(({'|'.join(self.mapping.keys())})\s+([\w\.-]+)\)"
             )
             result = pattern.search(expression)
+            if result is None:
+                raise ValueError(f'Invalid expression "{expression}"')
 
             if result is None:
                 raise ValueError(f"Invalid expression, {expression}")
@@ -153,11 +156,7 @@ class ParamParser:
         """
 
         _config_name, _config_param = _config.split(".", 1)
-        try:
-            obj = scopes.from_path(_config_name, scope="Configuration")
-
-        except KeyError as e:
-            raise Exception(f"Configuration {_config_name} does not exist") from e
+        obj = Configuration(_config_name)
 
         output = obj.get_param(_config_param)
 
@@ -265,6 +264,7 @@ def get_string_from_template(template: str, task_entry: object) -> str:
     def _replacer(match):
         try:
             template, enum = match[1].split(".")
+            from dal.models.scopestree import scopes
             return str(
                 scopes()
                 .SharedDataEntry[task_entry.SharedData[template].ID]

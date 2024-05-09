@@ -22,12 +22,13 @@ from movai_core_shared.envvars import DEFAULT_ROLE_NAME
 from movai_core_shared.exceptions import RoleAlreadyExist, RoleDoesNotExist, RoleError
 
 
-from dal.models.scopestree import scopes
-from dal.models.model import Model
-from dal.models.aclobject import AclObject
-from dal.models.remoteuser import RemoteUser
-from dal.models.internaluser import InternalUser
-from dal.models.acl import NewACLManager
+from .scopestree import scopes
+from .model import Model
+from .aclobject import AclObject
+from .remoteuser import RemoteUser
+from .internaluser import InternalUser
+from .acl import NewACLManager
+from dal.scopes.application import Application
 
 
 class Role(Model):
@@ -108,7 +109,7 @@ class Role(Model):
             "AclObject": [READ_PERMISSION],
         }
         resources["Applications"] = [
-            item["ref"] for item in scopes().list_scopes(scope="Application")
+            item for item in Application.get_all()
         ]
         if not Role.is_exist(DEPLOYER_ROLE):
             deployer_role = cls.create(DEPLOYER_ROLE, resources)

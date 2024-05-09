@@ -83,11 +83,12 @@ class AioRedisClient(metaclass=Singleton):
 
     async def shutdown(self):
         """shutdown connections"""
-        for _, conn in type(self)._databases.items():
-            conn.close()
+        for conn, _ in type(self)._databases.items():
+            if getattr(self, conn) is not None:
+                getattr(self, conn).close()
         tasks = [
             getattr(self, db_name).wait_closed()
-            for db_name in type(self)._databases.keys()
+            for db_name in type(self)._databases.keys() if getattr(self, db_name) is not None
         ]
         await asyncio.gather(*tasks, return_exceptions=True)
 
@@ -141,15 +142,15 @@ class Redis(metaclass=Singleton):
     A Singleton class implementing Redis API.
     """
 
-    def __init__(self):
+    def __init__(self, db: int = 0):
         self.master_pool = redis.ConnectionPool(
-            host=MovaiDB.REDIS_MASTER_HOST, port=MovaiDB.REDIS_MASTER_PORT, db=0
+            host=MovaiDB.REDIS_MASTER_HOST, port=MovaiDB.REDIS_MASTER_PORT, db=db
         )
         self.slave_pool = redis.ConnectionPool(
-            host=MovaiDB.REDIS_SLAVE_HOST, port=MovaiDB.REDIS_SLAVE_PORT, db=0
+            host=MovaiDB.REDIS_SLAVE_HOST, port=MovaiDB.REDIS_SLAVE_PORT, db=db
         )
         self.local_pool = redis.ConnectionPool(
-            host=MovaiDB.REDIS_LOCAL_HOST, port=MovaiDB.REDIS_LOCAL_PORT, db=0
+            host=MovaiDB.REDIS_LOCAL_HOST, port=MovaiDB.REDIS_LOCAL_PORT, db=db
         )
 
         self.thread = None

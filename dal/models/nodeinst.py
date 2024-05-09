@@ -44,7 +44,8 @@ class NodeInst(ScopeObjectNode):
         return the current template for this node
         instance
         """
-        return scopes.from_path(self.Template, scope="Node")
+        from dal.new_models import Node
+        return Node(self.Template)
 
     @property
     def namespace(self) -> str:
