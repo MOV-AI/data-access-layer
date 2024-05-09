@@ -19,6 +19,7 @@ import pickle
 import aioredis
 from deepdiff import DeepDiff
 from redis.client import Pipeline
+from redis.connection import Connection
 
 import dal
 from movai_core_shared.logger import Log
@@ -164,11 +165,11 @@ class AioRedisClient(metaclass=Singleton):
                         address = (conn_config["host"], conn_config["port"])
                         if conn_config.get("mode") == "SUB":
                             _conn = await aioredis.create_pool(
-                                address, minsize=1, maxsize=100
+                                address, minsize=1, maxsize=100, pool_cls=aioredis.ConnectionsPool
                             )
                         else:
                             _conn = await aioredis.create_redis_pool(
-                                address, minsize=2, maxsize=100, timeout=1
+                                address, minsize=2, maxsize=100, timeout=1, pool_cls=aioredis.ConnectionsPool
                             )
                     except Exception as e:
                         LOGGER.error(e)
@@ -192,12 +193,15 @@ class Redis(metaclass=Singleton):
 
     def __init__(self):
         self.master_pool = redis.ConnectionPool(
+            connection_class=Connection,
             host=MovaiDB.REDIS_MASTER_HOST, port=MovaiDB.REDIS_MASTER_PORT, db=0
         )
         self.slave_pool = redis.ConnectionPool(
+            connection_class=Connection,
             host=MovaiDB.REDIS_SLAVE_HOST, port=MovaiDB.REDIS_SLAVE_PORT, db=0
         )
         self.local_pool = redis.ConnectionPool(
+            connection_class=Connection,
             host=MovaiDB.REDIS_LOCAL_HOST, port=MovaiDB.REDIS_LOCAL_PORT, db=0
         )
 
@@ -332,7 +336,6 @@ class MovaiDB:
         loop: Optional[asyncio.AbstractEventLoop] = None,
         databases=None,
     ) -> None:
-
         self.movaidb = databases or Redis()
         for attribute, val in self.db_dict[db].items():
             setattr(self, attribute, getattr(self.movaidb, val))

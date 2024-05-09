@@ -13,6 +13,7 @@ import json
 import fnmatch
 from redis.client import ConnectionPool, Redis
 from redis.exceptions import ResponseError
+from redis.connection import Connection
 
 from dal.plugins.classes import Plugin, Persistence, PersistencePlugin
 from dal.data import (
@@ -45,10 +46,12 @@ class RedisPlugin(PersistencePlugin):
     _REDIS_SLAVE_HOST = MovaiDB.REDIS_SLAVE_HOST
     _REDIS_SLAVE_PORT = MovaiDB.REDIS_SLAVE_PORT
 
-    _REDIS_MASTER_POOL = ConnectionPool(
-        host=_REDIS_MASTER_HOST, port=_REDIS_MASTER_PORT, db=0)
-    _REDIS_SLAVE_POOL = ConnectionPool(
-        host=_REDIS_SLAVE_HOST, port=_REDIS_SLAVE_PORT, db=0)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._REDIS_MASTER_POOL = ConnectionPool(
+            host=self._REDIS_MASTER_HOST, port=self._REDIS_MASTER_PORT, db=0, connection_class=Connection)
+        self._REDIS_SLAVE_POOL = ConnectionPool(
+            host=self._REDIS_SLAVE_HOST, port=self._REDIS_SLAVE_PORT, db=0, connection_class=Connection)
 
     def decode_value(self, _value):
         '''Decodes a value from redis'''
@@ -410,7 +413,7 @@ class RedisPlugin(PersistencePlugin):
         to use a "caching" mechanism, probably a set that is updated
         everytime a a scope is added/delete
         """
-        conn = Redis(connection_pool=RedisPlugin._REDIS_SLAVE_POOL)
+        conn = Redis(connection_pool=self._REDIS_SLAVE_POOL)
         scopes = []
         processed = set()
         scope = kwargs.get("scope", "*")
@@ -497,7 +500,7 @@ class RedisPlugin(PersistencePlugin):
         """
         list all existing scopes
         """
-        conn = Redis(connection_pool=RedisPlugin._REDIS_SLAVE_POOL)
+        conn = Redis(connection_pool=self._REDIS_SLAVE_POOL)
         try:
             scope = kwargs["scope"]
             ref = kwargs["ref"]
@@ -543,7 +546,7 @@ class RedisPlugin(PersistencePlugin):
                 raise ValueError("missing scope,ref,version or model") from e
 
         # We are reading so we connect to the slave instance
-        conn = Redis(connection_pool=RedisPlugin._REDIS_SLAVE_POOL)
+        conn = Redis(connection_pool=self._REDIS_SLAVE_POOL)
         out = set()
 
         # We first check if we have cached relations ( see rebuild_indexes )
@@ -648,7 +651,7 @@ class RedisPlugin(PersistencePlugin):
 
         The data part must comply with the schema of the scope
         """
-        conn = Redis(connection_pool=RedisPlugin._REDIS_MASTER_POOL)
+        conn = Redis(connection_pool=self._REDIS_MASTER_POOL)
 
         if issubclass(type(data), ScopeInstanceVersionNode):
 
@@ -759,7 +762,7 @@ class RedisPlugin(PersistencePlugin):
         except KeyError as e:
             raise ValueError("missing scope or name") from e
 
-        conn = Redis(connection_pool=RedisPlugin._REDIS_SLAVE_POOL)
+        conn = Redis(connection_pool=self._REDIS_SLAVE_POOL)
 
         try:
             schema_version = kwargs["schema_version"]
