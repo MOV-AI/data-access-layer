@@ -80,6 +80,7 @@ class WSRedisSub:
         conn = self.connections[conn_id]["subs"]
         asyncio.create_task(conn.wait_closed())
         del self.connections[conn_id]
+        await self.databases.shutdown()
 
     async def close_and_release(self, ws: web.WebSocketResponse, conn_id: str):
         """Closes the socket, cancels active tasks and release db connections.
