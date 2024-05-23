@@ -133,7 +133,6 @@ class AioRedisClient(metaclass=Singleton):
                     _conn = getattr(self, conn_name, None)
                     if not _conn or _conn.closed:
                         try:
-
                             address = (conn_config["host"], conn_config["port"])
                             if conn_config.get("mode") == "SUB":
                                 _conn = await aioredis.create_pool(
@@ -143,6 +142,7 @@ class AioRedisClient(metaclass=Singleton):
                                 _conn = await aioredis.create_redis_pool(
                                     address, minsize=2, maxsize=100, timeout=1
                                 )
+
                         except Exception as e:
                             LOGGER.error(e, exc_info=True)
                 setattr(self, conn_name, _conn)
