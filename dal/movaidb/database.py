@@ -23,6 +23,7 @@ from movai_core_shared.logger import Log
 from movai_core_shared.exceptions import InvalidStructure
 from dal.classes import Singleton
 from dal.plugins.classes import Resource
+import warnings
 
 
 LOGGER = Log.get_logger("dal.mov.ai")
@@ -130,17 +131,19 @@ class AioRedisClient(metaclass=Singleton):
                 _conn = getattr(self, conn_name, None)
                 if not _conn or _conn.closed:
                     try:
-                        address = (conn_config["host"], conn_config["port"])
-                        if conn_config.get("mode") == "SUB":
-                            _conn = await aioredis.create_pool(
-                                address, minsize=1, maxsize=100
-                            )
-                        else:
-                            _conn = await aioredis.create_redis_pool(
-                                address, minsize=2, maxsize=100, timeout=1
-                            )
+                        with warnings.catch_warnings():
+                            warnings.filterwarnings("ignore",category=DeprecationWarning)
+                            address = (conn_config["host"], conn_config["port"])
+                            if conn_config.get("mode") == "SUB":
+                                _conn = await aioredis.create_pool(
+                                    address, minsize=1, maxsize=100
+                                )
+                            else:
+                                _conn = await aioredis.create_redis_pool(
+                                    address, minsize=2, maxsize=100, timeout=1
+                                )
                     except Exception as e:
-                        LOGGER.error(e)
+                        LOGGER.error(e, exc_info=True)
             setattr(self, conn_name, _conn)
 
     @classmethod
