@@ -25,7 +25,6 @@ from dal.classes import Singleton
 from dal.plugins.classes import Resource
 import warnings
 
-
 LOGGER = Log.get_logger("dal.mov.ai")
 
 
@@ -124,15 +123,17 @@ class AioRedisClient(metaclass=Singleton):
 
     async def _init_databases(self):
         """will initialize connection pools"""
-        for conn_name, conn_config in type(self)._databases.items():
-            conn_enabled = conn_config.get("enabled", False)
-            _conn = None
-            if conn_enabled:
-                _conn = getattr(self, conn_name, None)
-                if not _conn or _conn.closed:
-                    try:
-                        with warnings.catch_warnings():
-                            warnings.filterwarnings("ignore",category=DeprecationWarning)
+
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore",category=DeprecationWarning)
+            for conn_name, conn_config in type(self)._databases.items():
+                conn_enabled = conn_config.get("enabled", False)
+                _conn = None
+                if conn_enabled:
+                    _conn = getattr(self, conn_name, None)
+                    if not _conn or _conn.closed:
+                        try:
+
                             address = (conn_config["host"], conn_config["port"])
                             if conn_config.get("mode") == "SUB":
                                 _conn = await aioredis.create_pool(
@@ -142,9 +143,9 @@ class AioRedisClient(metaclass=Singleton):
                                 _conn = await aioredis.create_redis_pool(
                                     address, minsize=2, maxsize=100, timeout=1
                                 )
-                    except Exception as e:
-                        LOGGER.error(e, exc_info=True)
-            setattr(self, conn_name, _conn)
+                        except Exception as e:
+                            LOGGER.error(e, exc_info=True)
+                setattr(self, conn_name, _conn)
 
     @classmethod
     def enable_db(cls, db_name):
@@ -582,22 +583,25 @@ class MovaiDB:
         """Calls a callback every time it gets a message."""
         # Acquires a connection from free pool.
         # Creates new connection if needed.
-        _conn = await self.pubsub.acquire()
-        # Create Redis interface
-        conn = aioredis.Redis(_conn)
-        # Switch connection to Pub/Sub mode and subscribe to specified patterns
-        channel = await conn.psubscribe(key)
-        if port_name and node_name:
-            SubscribeManager().register_sub(node_name + port_name)
-        # Waits for message to become available in channel
-        while await channel[0].wait_message():
-            msg = await channel[0].get(encoding="utf-8")
-            callback(msg)
-        conn.close()
-        await conn.wait_closed()
-        # Delete from cache the subscribed key 
-        if port_name and node_name:
-            SubscribeManager().unregister_sub(node_name + port_name)
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore",category=DeprecationWarning)
+
+            _conn = await self.pubsub.acquire()
+            # Create Redis interface
+            conn = aioredis.Redis(_conn)
+            # Switch connection to Pub/Sub mode and subscribe to specified patterns
+            channel = await conn.psubscribe(key)
+            if port_name and node_name:
+                SubscribeManager().register_sub(node_name + port_name)
+            # Waits for message to become available in channel
+            while await channel[0].wait_message():
+                msg = await channel[0].get(encoding="utf-8")
+                callback(msg)
+            conn.close()
+            await conn.wait_closed()
+            # Delete from cache the subscribed key 
+            if port_name and node_name:
+                SubscribeManager().unregister_sub(node_name + port_name)
 
     # ===================  List and Hashes  ===============================
     def lpush(self, _input: dict, pickl: bool = True):
