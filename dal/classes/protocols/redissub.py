@@ -55,13 +55,8 @@ class Var_Subscriber(gdnode_modules["BaseIport"]):
             raise Exception(
                 "'" + var_type + "' is not a valid scope. Choose between: " + str(scopes)[1:-1])
 
-        prefixes = {
-            "node": _node_name + "@",
-            "robot": "@",
-            "fleet": Robot().RobotName + "@",
-            "global": "@",
-            "flow": "flow@",
-        }
+        prefixes = {'node': _node_name + '@', 'robot': '@',
+                    'fleet': Robot().name + '@', 'global': '@', 'flow': 'flow@'}
 
         prefix = prefixes.get(var_type, '@')
 
