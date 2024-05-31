@@ -6,6 +6,7 @@
    Developers:
    - Manuel Silva  (manuel.silva@mov.ai) - 2020
 """
+from typing import TYPE_CHECKING
 
 from movai_core_shared.logger import Log
 from movai_core_shared.consts import (ROS1_NODELETCLIENT,
@@ -15,6 +16,9 @@ from movai_core_shared.consts import (ROS1_NODELETCLIENT,
                                       MOVAI_TRANSITIONFOR,
                                       MOVAI_TRANSITIONTO)
 from dal.validation import Template
+
+if TYPE_CHECKING:
+    from dal.models import Flow
 
 
 class GFlow:
@@ -32,7 +36,7 @@ class GFlow:
 
     def __init__(self, flow):
 
-        self.flow = flow
+        self.flow: "Flow" = flow
         self.graph = {}
         self.remaps = {}
 
@@ -55,7 +59,7 @@ class GFlow:
 
         self.get_vertex(key)["remap"] = remap
 
-    def forced_remap(self, link: Template) -> str:
+    def forced_remap(self, link) -> str:
         """ Special remap rules """
 
         output = None
@@ -144,6 +148,10 @@ class GFlow:
 
             # port was already remapped ? remap to port["remap"] otherwise to port name.
             remap_to = port["remap"] or port_name
+            if remap_to in self.graph:
+                remap_to_type = self.graph[remap_to]["_type"]
+            else:
+                remap_to_type = "From" if port["_type"] == "To" else "To"
 
             # If any port(in links) was previously remapped we must use that value but
             # if port was already remapped with a different value raise an exception
@@ -169,8 +177,19 @@ class GFlow:
 
             # Do the remap
             for link in port["links"]:
-                # remap the other port
                 port_to_remap = links[link]["To"] if port["_type"] == "From" else links[link]["From"]
+
+                # Don't remap to ports that don't exist
+                if remap_to not in self.graph:
+                    self.logger.warning("Port %s is not in graph!", remap_to)
+                    continue
+
+                # Only remap ports To-From or From-To, not of the same type
+                if port_to_remap != remap_to and port["_type"] != remap_to_type:
+                    self.logger.warning("Can't remap %s to %s!", port_to_remap, remap_to)
+                    continue
+
+                # remap the other port
                 self.graph[port_to_remap]["remap"] = remap_to
 
         return self.graph

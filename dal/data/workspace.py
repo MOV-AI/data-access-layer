@@ -88,8 +88,8 @@ class WorkspaceNode(DictNode, WorkspaceObject):
     we must provide a name, and a underlying plugin
     """
 
-    def __init__(self, workspace, plugin, readonly: bool = False):
-        self._workspace = workspace
+    def __init__(self, workspace: str, plugin, readonly: bool = False):
+        self._workspace: str = workspace
         self._plugin = plugin
         self._readonly = readonly
         super().__init__()

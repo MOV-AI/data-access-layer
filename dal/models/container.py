@@ -6,14 +6,19 @@
    Developers:
    - Manuel Silva  (manuel.silva@mov.ai) - 2020
 """
+from typing import TYPE_CHECKING
 
 from .scopestree import ScopeObjectNode, ScopeNode, scopes
+if TYPE_CHECKING:
+    from dal.models.flow import Flow
 
 
 class Container(ScopeObjectNode):
     """
     A container represents a flow in another flow (aka subflow)
     """
+    ContainerLabel: str
+    ContainerFlow: str
 
     @property
     def flow(self):
@@ -21,7 +26,7 @@ class Container(ScopeObjectNode):
         return self.parent.parent
 
     @property
-    def subflow(self):
+    def subflow(self) -> "Flow":
         """Returns the flow instance (Flow) represented by the container"""
         return scopes.from_path(self.ContainerFlow, scope="Flow")
 
