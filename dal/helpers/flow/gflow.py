@@ -190,14 +190,19 @@ class GFlow:
         # convert graph
         remaps = {}
 
-        for _id, port in self.graph.items():
+        for port_name, port in self.graph.items():
+            remap_port = self.graph.get(port["remap"])
+
+            if remap_port and port_name != port["remap"] and port["_type"] == remap_port["_type"]:
+                self.logger.warning("Ignoring remap. port_name: %s, port['remap']: %s\nport: %s\nremap: %s", port_name, port["remap"], port, remap_port)
+                continue
 
             if port["remap"] not in remaps:
                 remaps[port["remap"]] = {"From": [], "To": []}
 
             #remaps[port["remap"]].setdefault({"From": [], "To": []})
 
-            remaps[port["remap"]][port["_type"]].append(_id)
+            remaps[port["remap"]][port["_type"]].append(port_name)
 
         # cache remaps
         self.remaps = remaps
