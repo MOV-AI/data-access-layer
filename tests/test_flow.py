@@ -1,19 +1,20 @@
+import os
 import unittest
-from unittest.mock import MagicMock, patch
 
-from dal.helpers.flow.gflow import GFlow
 from dal.models.flow import Flow
 from dal.models.scopestree import scopes
+from dal.utils.redis_mocks import fake_redis
+
+
+test_dir = os.path.dirname(__file__)
 
 
 class FlowTests(unittest.TestCase):
     maxDiff = None
 
-    # @patch("dal.models.nodeinst.NodeInst.node_template")
-    def test_no_remap_two_inports(self):  # , mock_node_template: MagicMock):
-        # mock_node_template.is_remappable = True
-        # mock_node_template.get_params = lambda: Exception("get_params")
-
+    @fake_redis("dal.movaidb.database.Connection", recording_dir=test_dir)
+    @fake_redis("dal.plugins.persistence.redis.redis.Connection", recording_dir=test_dir)
+    def test_no_remap_two_inports(self):
         node_pub1 = {
             "Node": {
                 "NodePub1": {

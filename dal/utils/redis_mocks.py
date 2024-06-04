@@ -12,7 +12,7 @@ import aioredis
 
 ### Set to True if you want to record real interactions with Redis
 ### Set to False to mock Redis using pre-saved interactions
-RECORD = True
+RECORD = False
 
 
 logger = logging.getLogger("RedisProxies")
@@ -52,7 +52,7 @@ class _fake_redis(_patch):
 
             def send_command(self, *args, **kwargs) -> None:
                 FakeConnection.__last_out[0] = f"({args}, {kwargs})"
-                logger.info("send_command(%s, %s)", args, kwargs)
+                logger.debug("send_command(%s, %s)", args, kwargs)
                 if RECORD:
                     super().send_command(*args, **kwargs)
                 elif args[0] == "PUBLISH":
@@ -61,7 +61,7 @@ class _fake_redis(_patch):
                     for pattern, channel in CHANNELS.items():
                         pattern_str = pattern.decode("utf-8")
                         if fnmatch(channel_name, pattern_str):
-                            logger.warning(
+                            logger.debug(
                                 "Publishing %s %s to %s(%s) on loop %s",
                                 pattern,
                                 msg,
@@ -83,7 +83,6 @@ class _fake_redis(_patch):
             def read_response(
                 self, *a, **kw
             ):
-                logger.warning("read_response()")
                 if RECORD:
                     try:
                         value = super().read_response(*a, **kw)
@@ -94,7 +93,7 @@ class _fake_redis(_patch):
                     FakeConnection.__responses[FakeConnection.__last_out[0]] = value
                     with open(recording_path, "wb") as f:
                         pickle.dump(FakeConnection.__responses, f)
-                    logger.warning("returning %s", value)
+                    logger.debug("returning %s", value)
                 else:
                     value = FakeConnection.__responses[FakeConnection.__last_out[0]]
 
@@ -151,7 +150,7 @@ class FakeAsyncConnection(aioredis.connection.AbcConnection):
         channels = [aioredis.Channel(ch, is_pattern=True) for ch in channels]
         for channel in channels:
             self._pubsub_channels[channel.name] = channel
-        logger.warning("Subscribe to channels %s", self._pubsub_channels)
+        logger.debug("Subscribe to channels %s", self._pubsub_channels)
         loop = asyncio.get_running_loop()
         if len(RECEIVER_LOOP) == 0:
             RECEIVER_LOOP.append(loop)
