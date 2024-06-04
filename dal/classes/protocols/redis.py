@@ -8,15 +8,20 @@
 
    Redis related protocols to be used in new Mov-Node
 """
+
 import asyncio
+from typing import Callable
+
 from dal.movaidb import MovaiDB
+from dal.movaidb.database import CallbackSubscription
 
 
 class ContextMsg:
     """Message for Context
-        data -> dictionary of full context table
-        changed -> dictionary only of values changed
+    data -> dictionary of full context table
+    changed -> dictionary only of values changed
     """
+
     def __init__(self, id={}, data={}, changed={}):
         self.data = data
         self.changed = changed
@@ -24,20 +29,23 @@ class ContextMsg:
 
 
 class ContextProtocolIn:
-    """_summary_
-    """
-    def __init__(self, callback: callable, params: dict, **ignore) -> None:
+    """Subscribes to context channels and runs a callback when the ID is mentioned"""
+
+    ID: str
+
+    def __init__(self, callback: Callable, params: dict, **ignore) -> None:
         self._callback = callback
         self.stack = params.get('Namespace', '')
         self.loop = asyncio.get_event_loop()
-        self.loop.create_task(self.register_sub())
 
-    async def register_sub(self) -> None:
-        """Subscribe to key."""
-        pattern = {'Var': {'context': {'ID': {self.ID: {'Parameter': '**'}}}}}
+    async def register_sub(self) -> CallbackSubscription:
+        """Subscribe to key asynchronously
+
+        Returns a Task that indicates when it's subscribed"""
+        pattern = {"Var": {"context": {"ID": {self.ID: {"Parameter": "**"}}}}}
         databases = await MovaiDB.AioRedisClient.get_client()
-        await MovaiDB('local', loop=self.loop, databases=databases).\
-            subscribe_channel(pattern, self.callback_wrapper)
+        movaidb = MovaiDB("local", loop=self.loop, databases=databases)
+        return await movaidb.subscribe_channel(pattern, self.callback_wrapper)
 
     def callback_wrapper(self, msg):
         """Executes callback"""
@@ -61,11 +69,11 @@ class ContextClientIn(ContextProtocolIn):
     Args:
         ContextProtocolIn (_type_): _description_
     """
-    def __init__(self, callback: callable, params: dict, **kwargs) -> None:
+    def __init__(self, callback: Callable, params: dict, **kwargs) -> None:
         super().__init__(callback, params, **kwargs)
 
     @property
-    def ID(self):
+    def ID(self) -> str:
         return self.stack + "_TX"
 
 
@@ -75,11 +83,11 @@ class ContextServerIn(ContextProtocolIn):
     Args:
         ContextProtocolIn (_type_): _description_
     """
-    def __init__(self, callback: callable, params: dict, **kwargs) -> None:
+    def __init__(self, callback: Callable, params: dict, **kwargs) -> None:
         super().__init__(callback, params, **kwargs)
 
     @property
-    def ID(self):
+    def ID(self) -> str:
         return self.stack + "_RX"
 
 

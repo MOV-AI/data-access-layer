@@ -6,6 +6,7 @@
    Developers:
    - Erez Zomer  (erez@mov.ai) - 2022
 """
+
 from socket import gethostname
 import uuid
 import jwt
@@ -96,9 +97,15 @@ class EmptyDBToken(dict):
 class TokenManager:
     """A general class for managing tokens in DB."""
 
-    log = Log.get_logger('TokenManger')
-    db = MovaiDB(db="local")
+    log = Log.get_logger("TokenManger")
+    _db = None
     token_type = "Token"
+
+    @classmethod
+    def db(cls):
+        if cls._db is None:
+            cls._db = MovaiDB(db="local")
+        return cls._db
 
     @classmethod
     def is_token_exist(cls, token_id: str) -> bool:
@@ -110,7 +117,7 @@ class TokenManager:
         Returns:
             bool: True if exist, False otherwise.
         """
-        result = cls.db.get(EmptyDBToken(token_id))
+        result = cls.db().get(EmptyDBToken(token_id))
         return len(result.keys()) > 0
 
     @classmethod
@@ -121,10 +128,8 @@ class TokenManager:
             token (TokenObject): The token to remove.
         """
         if cls.is_token_exist(token_id):
-            cls.db.delete(EmptyDBToken(token_id))
-            cls.log.debug(
-                f"The token id {token_id} has been removed from the allowed token list."
-            )
+            cls.db().delete(EmptyDBToken(token_id))
+            cls.log.debug(f"The token id {token_id} has been removed from the allowed token list.")
 
     @classmethod
     def store_token(cls, token: TokenObject) -> None:
@@ -133,17 +138,14 @@ class TokenManager:
         Args:
             token (TokenObject): The token to store.
         """
-        cls.db.set(DBToken(token))
-        cls.log.debug(
-            f"The token id {token.jwt_id} has been added to the allowed token list."
-        )
+        cls.db().set(DBToken(token))
+        cls.log.debug(f"The token id {token.jwt_id} has been added to the allowed token list.")
 
     @classmethod
     def remove_all_tokens(cls):
-        """Removes all token from db.
-        """
+        """Removes all token from db."""
         cls.log.info(f"Removing all tokens from token list.")
-        tokens = cls.db.get(EmptyDBToken(None, cls.token_type))
+        tokens = cls.db().get(EmptyDBToken(None, cls.token_type))
         tokens = tokens.get(cls.token_type)
         if tokens is not None:
             for token_id in tokens.keys():
@@ -155,7 +157,7 @@ class TokenManager:
         time has passed.
         """
         cls.log.info(f"Removing all expired tokens.")
-        tokens = cls.db.get(EmptyDBToken(None, cls.token_type))
+        tokens = cls.db().get(EmptyDBToken(None, cls.token_type))
         tokens = tokens.get(cls.token_type)
         current_time = current_timestamp_int()
         if tokens is not None:
@@ -163,10 +165,11 @@ class TokenManager:
                 if token_data["ExpirationTime"] < current_time:
                     cls.remove_token(token_id)
 
+
 class Token:
     allowed_algorithms = ["HS256", "RS256", "ES256"]
     required_keys = set(["sub", "iss", "iat", "exp", "jti"])
-    log = Log.get_logger('Token')
+    log = Log.get_logger("Token")
     _token_manager = TokenManager
     _issuer = gethostname()
 

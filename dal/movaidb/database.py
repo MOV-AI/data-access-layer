@@ -12,12 +12,15 @@
 import asyncio
 from os import getenv, path
 from re import split
+from typing import Any, Callable, Optional, Tuple, cast
+
 import redis
-from deepdiff import DeepDiff
 import pickle
 import aioredis
+from deepdiff import DeepDiff
 from redis.client import Pipeline
-from typing import Any, Tuple
+from redis.connection import Connection
+
 import dal
 from movai_core_shared.logger import Log
 from movai_core_shared.exceptions import InvalidStructure
@@ -31,22 +34,51 @@ LOGGER = Log.get_logger("dal.mov.ai")
 dal_directory = path.dirname(dal.__file__)
 __SCHEMAS_URL__ = f"file://{dal_directory}/validation/schema"
 
-class SubscribeManager(metaclass=Singleton):
-   
-    _key_map={}
 
-    @classmethod
-    def register_sub(cls, key):
-        cls._key_map[key] = None
+class CallbackSubscription:
+    """ Provides mechanisms to control the subscription to Redis channels """
+    conn: Optional[aioredis.Redis] = None
+    channel: Optional[aioredis.Channel] = None
 
-    @classmethod
-    def unregister_sub(cls, key):
-        del cls._key_map[key]
-    
-    @classmethod    
-    def is_registered(cls, key):
-        return key in cls._key_map
+    def __init__(self, pubsub, key: str, callback: Callable):
+        self.pubsub = pubsub
+        self.key = key
+        self.callback = callback
 
+    async def subscribe(self) -> asyncio.Event:
+        """Start listening to messages and call callback when it receives one
+
+        returns Event that notifies when the subscription is ready
+        """
+        subscription_event = asyncio.Event()
+        asyncio.get_running_loop().create_task(self._run(subscription_event))
+        return subscription_event
+
+    async def _run(self, evt: asyncio.Event):
+        # Acquires a connection from free pool.
+        # Creates new connection if needed.
+        _conn = await self.pubsub.acquire()
+        # Create Redis interface
+        self.conn = aioredis.Redis(_conn)
+        # Switch connection to Pub/Sub mode and subscribe to specified patterns
+        # we use cast() just to help the type checker, it doesn't change anything
+        self.channel = cast(aioredis.Channel, (await self.conn.psubscribe(self.key))[0])
+        # Inform subscription is ready
+        evt.set()
+
+        # Waits for message to become available in channel
+        while await self.channel.wait_message():
+            msg = await self.channel.get(encoding="utf-8")
+            self.callback(msg)
+
+        self.conn.close()
+        await self.conn.wait_closed()
+
+    def unsubscribe(self):
+        """ Unsubscribe from Redis channel """
+        if self.channel and self.conn:
+            self.conn.punsubscribe(self.channel)
+            self.channel = None
 
 
 class AioRedisClient(metaclass=Singleton):
@@ -125,7 +157,7 @@ class AioRedisClient(metaclass=Singleton):
         """will initialize connection pools"""
 
         with warnings.catch_warnings():
-            warnings.filterwarnings("ignore",category=DeprecationWarning)
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
             for conn_name, conn_config in type(self)._databases.items():
                 conn_enabled = conn_config.get("enabled", False)
                 _conn = None
@@ -136,11 +168,18 @@ class AioRedisClient(metaclass=Singleton):
                             address = (conn_config["host"], conn_config["port"])
                             if conn_config.get("mode") == "SUB":
                                 _conn = await aioredis.create_pool(
-                                    address, minsize=1, maxsize=100
+                                    address,
+                                    minsize=1,
+                                    maxsize=100,
+                                    pool_cls=aioredis.ConnectionsPool,
                                 )
                             else:
                                 _conn = await aioredis.create_redis_pool(
-                                    address, minsize=2, maxsize=100, timeout=1
+                                    address,
+                                    minsize=2,
+                                    maxsize=100,
+                                    timeout=1,
+                                    pool_cls=aioredis.ConnectionsPool,
                                 )
 
                         except Exception as e:
@@ -165,12 +204,15 @@ class Redis(metaclass=Singleton):
 
     def __init__(self):
         self.master_pool = redis.ConnectionPool(
+            connection_class=Connection,
             host=MovaiDB.REDIS_MASTER_HOST, port=MovaiDB.REDIS_MASTER_PORT, db=0
         )
         self.slave_pool = redis.ConnectionPool(
+            connection_class=Connection,
             host=MovaiDB.REDIS_SLAVE_HOST, port=MovaiDB.REDIS_SLAVE_PORT, db=0
         )
         self.local_pool = redis.ConnectionPool(
+            connection_class=Connection,
             host=MovaiDB.REDIS_LOCAL_HOST, port=MovaiDB.REDIS_LOCAL_PORT, db=0
         )
 
@@ -192,12 +234,19 @@ class Redis(metaclass=Singleton):
     def slave_pubsub(self) -> redis.client.PubSub:
         return self.db_slave.pubsub()
 
+    @property
     def local_pubsub(self) -> redis.client.PubSub:
         return self.db_local.pubsub()
 
 
 class MovaiDB:
     """Main MovaiDB"""
+
+    loop: asyncio.AbstractEventLoop
+    movaidb: Redis
+    db_read: redis.Redis
+    db_write: redis.Redis
+    pubsub: redis.client.PubSub
 
     class API(dict):
         """
@@ -295,13 +344,9 @@ class MovaiDB:
         db: str = "global",
         _api_version: str = "latest",
         *,
-        loop=None,
+        loop: Optional[asyncio.AbstractEventLoop] = None,
         databases=None,
     ) -> None:
-        self.db_read: redis.Redis = None
-        self.db_write: redis.Redis = None
-        self.pubsub: redis.client.PubSub = None
-
         self.movaidb = databases or Redis()
         for attribute, val in self.db_dict[db].items():
             setattr(self, attribute, getattr(self.movaidb, val))
@@ -316,8 +361,9 @@ class MovaiDB:
         self.api_star = self.template_to_star(self.api_struct)
         # self.validator = Validator(db).val
 
-        self.loop = loop
-        if not self.loop:
+        if loop:
+            self.loop = loop
+        else:
             try:
                 self.loop = asyncio.get_event_loop()
             except Exception:
@@ -559,49 +605,22 @@ class MovaiDB:
 
         return True  # need also local
 
-    # =================== CHECK  SUBSCRIBERS  ===================================
-    def check_registration(self, key: str):
-
-        return SubscribeManager().is_registered(key)
-
     # ===================  SUBSCRIBERS  ===================================
-    async def subscribe_channel(self, _input: dict, function, port_name: str, node_name: str):
+    async def subscribe_channel(self, _input: dict, function) -> CallbackSubscription:
         """Subscribes to a specific channel"""
-        for elem in self.dict_to_keys(_input, validate=False):
-            key, _, _ = elem
-            self.loop.create_task(self.task_subscriber(key + "*", function, port_name, node_name))
+        elem = self.dict_to_keys(_input, validate=False)[0]
+        key, _, _ = elem
+        return CallbackSubscription(self.pubsub, key=key + "*", callback=function)
 
-    async def subscribe(self, _input: dict, function):
+    async def subscribe(self, _input: dict, function) -> None:
         """Subscribes to a KeySpace event"""
-        for elem in self.dict_to_keys(_input, validate=False):
-            key, _, _ = elem
-            self.loop.create_task(
-                self.task_subscriber("__keyspace@*__:%s" % key, function)
-            )
-
-    async def task_subscriber(self, key: str, callback, port_name: str=None, node_name: str=None  ) -> None:
-        """Calls a callback every time it gets a message."""
-        # Acquires a connection from free pool.
-        # Creates new connection if needed.
         with warnings.catch_warnings():
-            warnings.filterwarnings("ignore",category=DeprecationWarning)
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-            _conn = await self.pubsub.acquire()
-            # Create Redis interface
-            conn = aioredis.Redis(_conn)
-            # Switch connection to Pub/Sub mode and subscribe to specified patterns
-            channel = await conn.psubscribe(key)
-            if port_name and node_name:
-                SubscribeManager().register_sub(node_name + port_name)
-            # Waits for message to become available in channel
-            while await channel[0].wait_message():
-                msg = await channel[0].get(encoding="utf-8")
-                callback(msg)
-            conn.close()
-            await conn.wait_closed()
-            # Delete from cache the subscribed key 
-            if port_name and node_name:
-                SubscribeManager().unregister_sub(node_name + port_name)
+            elem = self.dict_to_keys(_input, validate=False)[0]
+            key, _, _ = elem
+            sub = CallbackSubscription(self.pubsub, key=f"__keyspace@*__:{key}", callback=function)
+            await sub.subscribe()
 
     # ===================  List and Hashes  ===============================
     def lpush(self, _input: dict, pickl: bool = True):
