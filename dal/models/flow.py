@@ -135,7 +135,7 @@ class Flow(Model):
             _value: LinkDict = {
                 "From": (f"{prefix}{_from}" if _from.upper() != self.__START__ else _from),
                 "To": f"{prefix}{_to}",
-                "Dependency": value.get("Dependency", self.__DEFAULT_DEPENDENCY__),
+                "Dependency": value.get("Dependency", self.Links.__DEFAULT_DEPENDENCY__),
             }
 
             # required for legacy compatibility

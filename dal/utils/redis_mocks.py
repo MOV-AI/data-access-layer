@@ -47,7 +47,7 @@ class _fake_redis(_patch):
                 else:
                     self.on_connect()
 
-            def can_read(self, timeout: float | None = 0) -> bool:
+            def can_read(self, timeout: Optional[float] = 0) -> bool:
                 return super().can_read(timeout=timeout) if RECORD else False
 
             def send_command(self, *args, **kwargs) -> None:
@@ -81,14 +81,12 @@ class _fake_redis(_patch):
                             )
 
             def read_response(
-                self, disable_decoding: bool = False, *, disconnect_on_error: bool = True
+                self, *a, **kw
             ):
                 logger.warning("read_response()")
                 if RECORD:
                     try:
-                        value = super().read_response(
-                            disable_decoding, disconnect_on_error=disconnect_on_error
-                        )
+                        value = super().read_response(*a, **kw)
                     except Exception as e:
                         logger.warning("GOT EXC: %s", e)
                         value = e
