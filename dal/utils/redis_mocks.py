@@ -10,8 +10,8 @@ import redis
 import aioredis
 
 
-### Set to True if you want to record real interactions with Redis
-### Set to False to mock Redis using pre-saved interactions
+# Set to True if you want to record real interactions with Redis
+# Set to False to mock Redis using pre-saved interactions
 RECORD = False
 
 

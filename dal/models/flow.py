@@ -9,7 +9,7 @@
 """
 import re
 from dataclasses import dataclass, field
-from typing import Any, Dict, Iterable, Iterator, Optional, Tuple, TypedDict, Union, cast, TYPE_CHECKING
+from typing import Any, Dict, Iterable, Optional, Tuple, TypedDict, Union, cast, TYPE_CHECKING
 
 from movai_core_shared.consts import ROS1_NODELETSERVER
 from movai_core_shared.logger import Log
@@ -20,15 +20,13 @@ from .scopestree import scopes
 
 if TYPE_CHECKING:
     from dal.data.tree import DictNode, ObjectNode, PropertyNode
-    from dal.models.container import Container
+    from dal.models.container import Container  # NOSONAR
     from dal.models.node import Node
-    from dal.models.nodeinst import NodeInst
-
-class RefDict(TypedDict):
-    ref: str
+    from dal.models.nodeinst import NodeInst  # NOSONAR
 
 
 class LinkDict(TypedDict):
+    """ Represents a link between two ports """
     From: str
     To: str
     Dependency: int
@@ -36,6 +34,7 @@ class LinkDict(TypedDict):
 
 @dataclass
 class FlowOutput:
+    """ Return format by get_dict() """
     NodeInst: Dict[str, "NodeInst"] = field(default_factory=dict)
     Links: Dict[str, "LinkDict"] = field(default_factory=dict)
 
@@ -113,7 +112,12 @@ class Flow(Model):
         self._graph = self.__GRAPH_GEN__(self)
         return self._graph
 
-    def _with_prefix(self, prefix: str, nodes: Iterable[Tuple[str, "NodeInst"]], links: Iterable[Tuple[str, LinkDict]]) -> FlowOutput:
+    def _with_prefix(
+        self,
+        prefix: str,
+        nodes: Iterable[Tuple[str, "NodeInst"]],
+        links: Iterable[Tuple[str, LinkDict]],
+    ) -> FlowOutput:
         """ "
         Add a prefix to the node instances and also to the links
         """
@@ -143,7 +147,12 @@ class Flow(Model):
 
         return output
 
-    def get_dict(self, data: Optional[FlowOutput] = None, prefix: Optional[str] = None, prev_flows: list = None) -> FlowOutput:
+    def get_dict(
+        self,
+        data: Optional[FlowOutput] = None,
+        prefix: Optional[str] = None,
+        prev_flows: Optional[list] = None,
+    ) -> FlowOutput:
         """
         Aggregate data from the main flow and subflows
         Returns a dictionary with the following format

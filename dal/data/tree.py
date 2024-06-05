@@ -6,9 +6,9 @@
    Developers:
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
 """
-from abc import ABC, abstractmethod, abstractproperty
+from abc import ABC, abstractmethod
 from collections import OrderedDict
-from typing import Dict, Generic, Iterable, List, Literal, Mapping, Optional, Tuple, TypeVar, Union, Any
+from typing import Dict, Generic, List, Mapping, Optional, Tuple, TypeVar, Union
 from dal.data.mixins import ChildrenCmpMixin, ValueCmpMixin
 
 
@@ -271,7 +271,7 @@ class DictNode(TreeNode[VT], ChildrenCmpMixin, Mapping[str, VT]):
     def __iter__(self):
         return self._children.__iter__()
 
-    def get(self, key: str, default: Optional[VT]=None):
+    def get(self, key: str, default: Optional[VT] = None):
         """
         return the value of the element with key
         """

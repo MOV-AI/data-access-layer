@@ -156,8 +156,9 @@ class GFlow:
                 ports_already_remapped += 1
 
             # First we need to check if any connected port was previously remapped
-            for link in port["links"]:
-                port_to_remap = links[link]["To"] if port["_type"] == "From" else links[link]["From"]
+            for link_id in port["links"]:
+                link = links[link_id]
+                port_to_remap = link["To"] if port["_type"] == "From" else link["From"]
 
                 if self.graph[port_to_remap]["remap"] is not None:
 
@@ -172,9 +173,10 @@ class GFlow:
                     ports_already_remapped += 1
 
             # Do the remap
-            for link in port["links"]:
+            for link_id in port["links"]:
                 # remap the other port
-                port_to_remap = links[link]["To"] if port["_type"] == "From" else links[link]["From"]
+                link = links[link_id]
+                port_to_remap = link["To"] if port["_type"] == "From" else link["From"]
                 self.graph[port_to_remap]["remap"] = remap_to
 
         return self.graph
