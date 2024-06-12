@@ -7,18 +7,22 @@
    - Manuel Silva (manuel.silva@mov.ai) - 2020
    - Tiago Paulino (tiago@mov.ai) - 2020
    - Dor Marcus (dor@mov.ai) - 2023
-  
+
    Websocket to Redis Subscriber
 """
 import asyncio
 import json
 import sys
 import uuid
+
 import aioredis
 import yaml
-from aiohttp import WSMsgType, web
+from aiohttp import web
+from aiohttp import WSMsgType
 from movai_core_shared.logger import Log
-from dal.movaidb import MovaiDB, RedisClient
+
+from dal.movaidb import MovaiDB
+from dal.movaidb import RedisClient
 
 try:
     from gd_node.callback import GD_Callback
@@ -80,6 +84,7 @@ class WSRedisSub:
         conn = self.connections[conn_id]["subs"]
         asyncio.create_task(conn.wait_closed())
         del self.connections[conn_id]
+        await self.databases.shutdown()
 
     async def close_and_release(self, ws: web.WebSocketResponse, conn_id: str):
         """Closes the socket, cancels active tasks and release db connections.
@@ -187,7 +192,8 @@ class WSRedisSub:
         except Exception as err:
             LOGGER.error(str(err))
 
-    def convert_pattern(self, _pattern: dict) -> str:
+    def convert_pattern(self, _pattern: dict):
+        """Convert pattern to redis pattern"""
         try:
             pattern = _pattern.copy()
             scope = pattern.pop("Scope")

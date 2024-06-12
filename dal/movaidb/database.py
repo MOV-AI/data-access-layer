@@ -10,6 +10,7 @@
 """
 
 import asyncio
+import warnings
 from os import getenv, path
 from re import split
 from typing import Any, Callable, Optional, Tuple, cast
@@ -76,22 +77,24 @@ class CallbackSubscription:
     async def _run(self, evt: asyncio.Event):
         # Acquires a connection from free pool.
         # Creates new connection if needed.
-        _conn = await self.pubsub.acquire()
-        # Create Redis interface
-        self.conn = aioredis.Redis(_conn)
-        # Switch connection to Pub/Sub mode and subscribe to specified patterns
-        # we use cast() just to help the type checker, it doesn't change anything
-        self.channel = cast(aioredis.Channel, (await self.conn.psubscribe(self.key))[0])
-        # Inform subscription is ready
-        evt.set()
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore",category=DeprecationWarning)
+            _conn = await self.pubsub.acquire()
+            # Create Redis interface
+            self.conn = aioredis.Redis(_conn)
+            # Switch connection to Pub/Sub mode and subscribe to specified patterns
+            # we use cast() just to help the type checker, it doesn't change anything
+            self.channel = cast(aioredis.Channel, (await self.conn.psubscribe(self.key))[0])
+            # Inform subscription is ready
+            evt.set()
 
-        # Waits for message to become available in channel
-        while await self.channel.wait_message():
-            msg = await self.channel.get(encoding="utf-8")
-            self.callback(msg)
+            # Waits for message to become available in channel
+            while await self.channel.wait_message():
+                msg = await self.channel.get(encoding="utf-8")
+                self.callback(msg)
 
-        self.conn.close()
-        await self.conn.wait_closed()
+            self.conn.close()
+            await self.conn.wait_closed()
 
     def unsubscribe(self):
         """ Unsubscribe from Redis channel """
@@ -177,25 +180,31 @@ class AioRedisClient(metaclass=Singleton):
 
     async def _init_databases(self):
         """will initialize connection pools"""
-        for conn_name, conn_config in type(self)._databases.items():
-            conn_enabled = conn_config.get("enabled", False)
-            _conn = None
-            if conn_enabled:
-                _conn = getattr(self, conn_name, None)
-                if not _conn or _conn.closed:
-                    try:
-                        address = (conn_config["host"], conn_config["port"])
-                        if conn_config.get("mode") == "SUB":
-                            _conn = await aioredis.create_pool(
-                                address, minsize=1, maxsize=100, pool_cls=aioredis.ConnectionsPool
-                            )
-                        else:
-                            _conn = await aioredis.create_redis_pool(
-                                address, minsize=2, maxsize=100, timeout=1, pool_cls=aioredis.ConnectionsPool
-                            )
-                    except Exception as e:
-                        LOGGER.error(e)
-            setattr(self, conn_name, _conn)
+
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore",category=DeprecationWarning)
+            for conn_name, conn_config in type(self)._databases.items():
+                conn_enabled = conn_config.get("enabled", False)
+                _conn = None
+                if conn_enabled:
+                    _conn = getattr(self, conn_name, None)
+                    if not _conn or _conn.closed:
+                        try:
+                            address = (conn_config["host"], conn_config["port"])
+                            if conn_config.get("mode") == "SUB":
+                                _conn = await aioredis.create_pool(
+                                    address, minsize=1, maxsize=100,
+                                    pool_cls=aioredis.ConnectionsPool
+                                )
+                            else:
+                                _conn = await aioredis.create_redis_pool(
+                                    address, minsize=2, maxsize=100, timeout=1,
+                                    pool_cls=aioredis.ConnectionsPool
+                                )
+
+                        except Exception as e:
+                            LOGGER.error(e, exc_info=True)
+                setattr(self, conn_name, _conn)
 
     @classmethod
     def enable_db(cls, db_name):
