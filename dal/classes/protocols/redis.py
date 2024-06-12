@@ -64,31 +64,15 @@ class ContextProtocolIn:
 
 
 class ContextClientIn(ContextProtocolIn):
-    """_summary_
-
-    Args:
-        ContextProtocolIn (_type_): _description_
-    """
-    def __init__(self, callback: Callable, params: dict, **kwargs) -> None:
-        super().__init__(callback, params, **kwargs)
-
     @property
     def ID(self) -> str:
-        return self.stack + "_TX"
+        return f"{self.stack}_TX"
 
 
 class ContextServerIn(ContextProtocolIn):
-    """_summary_
-
-    Args:
-        ContextProtocolIn (_type_): _description_
-    """
-    def __init__(self, callback: Callable, params: dict, **kwargs) -> None:
-        super().__init__(callback, params, **kwargs)
-
     @property
     def ID(self) -> str:
-        return self.stack + "_RX"
+        return f"{self.stack}_RX"
 
 
 class ContextProtocolOut:

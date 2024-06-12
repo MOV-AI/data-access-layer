@@ -13,6 +13,7 @@ import asyncio
 from os import getenv, path
 from re import split
 from typing import Any, Callable, Optional, Tuple, cast
+from contextlib import contextmanager
 
 import redis
 import pickle
@@ -33,6 +34,24 @@ LOGGER = Log.get_logger("dal.mov.ai")
 
 dal_directory = path.dirname(dal.__file__)
 __SCHEMAS_URL__ = f"file://{dal_directory}/validation/schema"
+
+
+
+@contextmanager
+def ensure_loop():
+    try:
+        loop = asyncio.get_running_loop()
+        new_loop = False
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        new_loop = True
+
+    try:
+        yield loop
+    finally:
+        if new_loop:
+            loop.close()
 
 
 class CallbackSubscription:
@@ -77,8 +96,11 @@ class CallbackSubscription:
     def unsubscribe(self):
         """ Unsubscribe from Redis channel """
         if self.channel and self.conn:
-            self.conn.punsubscribe(self.channel)
-            self.channel = None
+            with ensure_loop() as loop:
+                def _sub():
+                    self.conn.punsubscribe(self.channel)
+                    self.channel = None
+                loop.call_soon_threadsafe(_sub)
 
 
 class AioRedisClient(metaclass=Singleton):
