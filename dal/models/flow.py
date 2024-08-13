@@ -8,7 +8,8 @@
    - Manuel Silva  (manuel.silva@mov.ai) - 2020
 """
 import re
-from types import SimpleNamespace
+from dataclasses import dataclass, field
+from typing import Any, Dict, Iterable, Optional, Tuple, TypedDict, Union, cast, TYPE_CHECKING
 
 from movai_core_shared.consts import ROS1_NODELETSERVER
 from movai_core_shared.logger import Log
@@ -17,11 +18,35 @@ from dal.helpers.parsers import ParamParser
 from .model import Model
 from .scopestree import scopes
 
+if TYPE_CHECKING:
+    from dal.data.tree import DictNode, ObjectNode, PropertyNode
+    from dal.models.container import Container  # NOSONAR
+    from dal.models.node import Node
+    from dal.models.nodeinst import NodeInst  # NOSONAR
+
+
+class LinkDict(TypedDict):
+    """ Represents a link between two ports """
+    From: str
+    To: str
+    Dependency: int
+
+
+@dataclass
+class FlowOutput:
+    """ Return format by get_dict() """
+    NodeInst: Dict[str, "NodeInst"] = field(default_factory=dict)
+    Links: Dict[str, "LinkDict"] = field(default_factory=dict)
+
 
 class Flow(Model):
     """
     A Flow
     """
+
+    NodeInst: Dict[str, "NodeInst"]
+    Links: "DictNode[Union['ObjectNode', 'PropertyNode']]"
+    Container: Dict[str, "Container"]
 
     __RELATIONS__ = {
         "schemas/1.0/Flow/NodeInst/Template": {
@@ -50,7 +75,7 @@ class Flow(Model):
         self._remaps = None
 
     @property
-    def full(self) -> dict:
+    def full(self) -> FlowOutput:
         """Returns the data from the main flow and all subflows"""
 
         self._full = self._full or self.get_dict()
@@ -87,11 +112,16 @@ class Flow(Model):
         self._graph = self.__GRAPH_GEN__(self)
         return self._graph
 
-    def _with_prefix(self, prefix: str, nodes: dict, links: dict) -> dict:
+    def _with_prefix(
+        self,
+        prefix: str,
+        nodes: Iterable[Tuple[str, "NodeInst"]],
+        links: Iterable[Tuple[str, LinkDict]],
+    ) -> FlowOutput:
         """ "
         Add a prefix to the node instances and also to the links
         """
-        output = SimpleNamespace(NodeInst={}, Links={})
+        output = FlowOutput()
 
         prefix = f"{prefix}__" if prefix else ""
 
@@ -102,23 +132,27 @@ class Flow(Model):
             output.NodeInst.update({pref_id: node_inst})
 
         for _id, value in links:
-
-            _value = {}
             pref_id = f"{prefix}{_id}"
             _from = value["From"]
             _to = value["To"]
 
-            _value["From"] = f"{prefix}{_from}" if _from.upper() != self.__START__ else _from
-
-            _value["To"] = f"{prefix}{_to}"
-            _value["Dependency"] = value.get("Dependency", self.Links.__DEFAULT_DEPENDENCY__)
+            _value: LinkDict = {
+                "From": (f"{prefix}{_from}" if _from.upper() != self.__START__ else _from),
+                "To": f"{prefix}{_to}",
+                "Dependency": value.get("Dependency", self.Links.__DEFAULT_DEPENDENCY__),
+            }
 
             # required for legacy compatibility
             output.Links.update({pref_id: _value})
 
         return output
 
-    def get_dict(self, data: dict = None, prefix: str = None, prev_flows: list = None) -> dict:
+    def get_dict(
+        self,
+        data: Optional[FlowOutput] = None,
+        prefix: Optional[str] = None,
+        prev_flows: Optional[list] = None,
+    ) -> FlowOutput:
         """
         Aggregate data from the main flow and subflows
         Returns a dictionary with the following format
@@ -143,7 +177,7 @@ class Flow(Model):
         for _, container in self.Container.items():
 
             # container.ContainerFlow is expected to have the full path of the doc
-            subflow = scopes.from_path(container.ContainerFlow, scope="Flow")
+            subflow: Flow = cast(Flow, scopes.from_path(container.ContainerFlow, scope="Flow"))
 
             # update prefix
             _prefix = f"{prefix}__" if prefix else ""
@@ -165,7 +199,7 @@ class Flow(Model):
 
         return output
 
-    def get_node_params(self, node_name: str, context: str = None) -> dict:
+    def get_node_params(self, node_name: str, context: Optional[str] = None) -> dict:
         """Returns the parameters of the node instance"""
 
         # TODO rename to get_node_inst_params ?
@@ -177,7 +211,7 @@ class Flow(Model):
 
         return node_inst.get_params(node_name, _context)
 
-    def get_node_inst(self, name: str) -> dict:
+    def get_node_inst(self, name: str) -> "NodeInst":
         """
         Returns a node instance from full flow (subflows included)
         """
@@ -190,7 +224,7 @@ class Flow(Model):
         except KeyError as e:
             raise KeyError(f"Node instance '{name}' does not exist in '{self.ref}'") from e
 
-    def get_container(self, name: str, context: str = None):
+    def get_container(self, name: str, context: Optional[str] = None):
         """Returns an instance of Container"""
 
         # each element represents a container, aka subflow
@@ -202,7 +236,7 @@ class Flow(Model):
         # the context is used to get back to the main flow while
         # checking the parameters of a node instance in a subflow
         if context:
-            _flow = scopes.from_path(context, scope="Flow")
+            _flow: Flow = cast(Flow, scopes.from_path(context, scope="Flow"))
 
         # going up to the main flow using the context allows
         # to get the container down in a subflow
@@ -214,7 +248,7 @@ class Flow(Model):
 
         return _container
 
-    def get_node(self, node_inst_name: str):
+    def get_node(self, node_inst_name: str) -> "Node":
         """
         Returns an instance of Node (template)
         """
@@ -265,7 +299,7 @@ class Flow(Model):
 
         return output
 
-    def get_node_inst_param(self, name: str, key: str, context: str = None) -> any:
+    def get_node_inst_param(self, name: str, key: str, context: str = None) -> Any:
         """Returns the node instance parameter"""
         _context = context or self.ref
 

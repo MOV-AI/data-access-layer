@@ -6,6 +6,7 @@
    Developers:
    - Manuel Silva  (manuel.silva@mov.ai) - 2020
 """
+from typing import TYPE_CHECKING
 
 from movai_core_shared.logger import Log
 from movai_core_shared.consts import (ROS1_NODELETCLIENT,
@@ -15,6 +16,9 @@ from movai_core_shared.consts import (ROS1_NODELETCLIENT,
                                       MOVAI_TRANSITIONFOR,
                                       MOVAI_TRANSITIONTO)
 from dal.validation import Template
+
+if TYPE_CHECKING:
+    from dal.models import Flow
 
 
 class GFlow:
@@ -32,7 +36,7 @@ class GFlow:
 
     def __init__(self, flow):
 
-        self.flow = flow
+        self.flow: "Flow" = flow
         self.graph = {}
         self.remaps = {}
 
@@ -55,7 +59,7 @@ class GFlow:
 
         self.get_vertex(key)["remap"] = remap
 
-    def forced_remap(self, link: Template) -> str:
+    def forced_remap(self, link) -> str:
         """ Special remap rules """
 
         output = None
@@ -152,8 +156,9 @@ class GFlow:
                 ports_already_remapped += 1
 
             # First we need to check if any connected port was previously remapped
-            for link in port["links"]:
-                port_to_remap = links[link]["To"] if port["_type"] == "From" else links[link]["From"]
+            for link_id in port["links"]:
+                link = links[link_id]
+                port_to_remap = link["To"] if port["_type"] == "From" else link["From"]
 
                 if self.graph[port_to_remap]["remap"] is not None:
 
@@ -168,9 +173,10 @@ class GFlow:
                     ports_already_remapped += 1
 
             # Do the remap
-            for link in port["links"]:
+            for link_id in port["links"]:
                 # remap the other port
-                port_to_remap = links[link]["To"] if port["_type"] == "From" else links[link]["From"]
+                link = links[link_id]
+                port_to_remap = link["To"] if port["_type"] == "From" else link["From"]
                 self.graph[port_to_remap]["remap"] = remap_to
 
         return self.graph
@@ -186,14 +192,19 @@ class GFlow:
         # convert graph
         remaps = {}
 
-        for _id, port in self.graph.items():
+        for port_name, port in self.graph.items():
+            remap_port = self.graph.get(port["remap"])
+
+            if remap_port and port_name != port["remap"] and port["_type"] == remap_port["_type"]:
+                self.logger.warning("Ignoring remap. port_name: %s, port['remap']: %s\nport: %s\nremap: %s", port_name, port["remap"], port, remap_port)
+                continue
 
             if port["remap"] not in remaps:
                 remaps[port["remap"]] = {"From": [], "To": []}
 
             #remaps[port["remap"]].setdefault({"From": [], "To": []})
 
-            remaps[port["remap"]][port["_type"]].append(_id)
+            remaps[port["remap"]][port["_type"]].append(port_name)
 
         # cache remaps
         self.remaps = remaps
