@@ -283,6 +283,8 @@ class Token:
         if not isinstance(token, str):
             error_msg = "Token must be a string!"
             raise TokenError(error_msg)
+
+        token_id = None
         try:
             token_id = cls.get_token_id(token)
             #cls.log.debug(f"Verifying token id {token_id}")
@@ -293,7 +295,8 @@ class Token:
         except (jwt.ExpiredSignatureError, jwt.DecodeError, jwt.InvalidTokenError)  as e:
             error_msg = f"Failed to verify token: {e}"
             cls.log.warning(error_msg)
-            cls._token_manager.remove_token(token_id)
+            if token_id is not None:
+                cls._token_manager.remove_token(token_id)
             raise TokenExpired(error_msg)
 
     @classmethod
