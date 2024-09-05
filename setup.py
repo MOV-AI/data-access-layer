@@ -19,7 +19,7 @@ requirements = [
     "py3rosmsgs==1.18.2",
     "redis==4.5.5",
     "rospkg==1.4.0",
-    "tqdm==4.66.1",
+    "tqdm==4.66.5",
     "ulid==1.1",
     "xmltodict==0.13.0",
     "yarl>=1.7.2",
