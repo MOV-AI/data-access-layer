@@ -12,15 +12,13 @@
 import asyncio
 from os import getenv, path
 from re import split
-from typing import Any, Callable, Optional, Tuple, cast
-
 import redis
+from deepdiff import DeepDiff
 import pickle
 import aioredis
-from deepdiff import DeepDiff
 from redis.client import Pipeline
 from redis.connection import Connection
-
+from typing import Any, Callable, Dict, Generator, Optional, Tuple, List, Union, cast
 import dal
 from movai_core_shared.logger import Log
 from movai_core_shared.exceptions import InvalidStructure
@@ -36,7 +34,6 @@ __SCHEMAS_URL__ = f"file://{dal_directory}/validation/schema"
 
 
 class CallbackSubscription:
-    """ Provides mechanisms to control the subscription to Redis channels """
     conn: Optional[aioredis.Redis] = None
     channel: Optional[aioredis.Channel] = None
 
@@ -77,7 +74,6 @@ class CallbackSubscription:
         await self.conn.wait_closed()
 
     def unsubscribe(self):
-        """ Unsubscribe from Redis channel """
         if self.channel and self.conn:
             self.conn.punsubscribe(self.channel)
             self.channel = None

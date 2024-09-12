@@ -11,7 +11,6 @@
 
 import asyncio
 from typing import Callable
-
 from dal.movaidb import MovaiDB
 from dal.movaidb.database import CallbackSubscription
 
@@ -29,9 +28,9 @@ class ContextMsg:
 
 
 class ContextProtocolIn:
-    ID: str
-
-    def __init__(self, callback: Callable, params: dict, **ignore) -> None:
+    """_summary_
+    """
+    def __init__(self, callback: callable, params: dict, **ignore) -> None:
         self._callback = callback
         self.stack = params.get('Namespace', '')
         self.loop = asyncio.get_event_loop()
@@ -67,11 +66,11 @@ class ContextClientIn(ContextProtocolIn):
     Args:
         ContextProtocolIn (_type_): _description_
     """
-    def __init__(self, callback: Callable, params: dict, **kwargs) -> None:
+    def __init__(self, callback: callable, params: dict, **kwargs) -> None:
         super().__init__(callback, params, **kwargs)
 
     @property
-    def ID(self) -> str:
+    def ID(self):
         return self.stack + "_TX"
 
 
@@ -81,11 +80,11 @@ class ContextServerIn(ContextProtocolIn):
     Args:
         ContextProtocolIn (_type_): _description_
     """
-    def __init__(self, callback: Callable, params: dict, **kwargs) -> None:
-        super().__init__(call   back, params, **kwargs)
+    def __init__(self, callback: callable, params: dict, **kwargs) -> None:
+        super().__init__(callback, params, **kwargs)
 
     @property
-    def ID(self) -> str:
+    def ID(self):
         return self.stack + "_RX"
 
 
