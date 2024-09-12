@@ -66,6 +66,8 @@ class CallbackSubscription:
         # Inform subscription is ready
         evt.set()
 
+        LOGGER.warning("Waiting")
+
         # Waits for message to become available in channel
         while await self.channel.wait_message():
             msg = await self.channel.get(encoding="utf-8")
