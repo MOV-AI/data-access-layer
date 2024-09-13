@@ -1147,8 +1147,8 @@ class Exporter(Backup):
 
         try:
             obj = Factory.get_class(scope)(name)
-        except:
-            raise ExportException(f"Can't find {scope}:{name}")
+        except Exception as e:
+            raise ExportException(f"Can't find {scope}:{name} - (Exc: {e})")
 
         json_path = os.path.join(scope, f"{name}.json")
         self.dict2file(obj.get_dict(), json_path)
