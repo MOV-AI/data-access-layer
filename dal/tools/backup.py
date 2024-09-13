@@ -18,6 +18,8 @@ import re
 import sys
 from importlib import import_module
 
+from dal.movaidb import MovaiDB
+
 
 def test_reachable(redis_url):
     """Helper function to test wether a redis_server is reachable or not
@@ -133,6 +135,9 @@ class Backup(object):
         else:
             # prints nothing
             self.log = lambda *args, **kwargs: None
+
+        # Connect to Redis
+        MovaiDB(db="global")
 
     #
     # reads a manifest file and returns
