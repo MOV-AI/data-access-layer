@@ -18,6 +18,8 @@ import re
 import sys
 from importlib import import_module
 
+from dal.movaidb import MovaiDB
+
 
 def test_reachable(redis_url):
     """Helper function to test wether a redis_server is reachable or not
@@ -133,6 +135,9 @@ class Backup(object):
         else:
             # prints nothing
             self.log = lambda *args, **kwargs: None
+
+        # Connect to Redis
+        MovaiDB(db="global")
 
     #
     # reads a manifest file and returns
@@ -1142,8 +1147,8 @@ class Exporter(Backup):
 
         try:
             obj = Factory.get_class(scope)(name)
-        except:
-            raise ExportException(f"Can't find {scope}:{name}")
+        except Exception as e:
+            raise ExportException(f"Can't find {scope}:{name} - (Exc: {e})")
 
         json_path = os.path.join(scope, f"{name}.json")
         self.dict2file(obj.get_dict(), json_path)
