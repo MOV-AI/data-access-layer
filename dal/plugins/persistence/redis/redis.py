@@ -796,7 +796,7 @@ class RedisPlugin(PersistencePlugin):
         If data is not a dict this will erase all keys defined in schema,
         otherwise it will only delete the passed structure
         """
-        conn = Redis(connection_pool=RedisPlugin._REDIS_MASTER_POOL)
+        conn = Redis(connection_pool=self._REDIS_MASTER_POOL)
 
         if issubclass(type(data), ScopeInstanceVersionNode):
 
@@ -853,7 +853,7 @@ class RedisPlugin(PersistencePlugin):
         force the database layer to rebuild
         all indexes, this is a costly operation
         """
-        conn = Redis(connection_pool=RedisPlugin._REDIS_MASTER_POOL)
+        conn = Redis(connection_pool=self._REDIS_MASTER_POOL)
 
         items = self.list_scopes()
 
