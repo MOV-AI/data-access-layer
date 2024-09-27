@@ -97,15 +97,9 @@ class EmptyDBToken(dict):
 class TokenManager:
     """A general class for managing tokens in DB."""
 
-    log = Log.get_logger("TokenManger")
-    _db = None
+    log = Log.get_logger('TokenManger')
+    db = MovaiDB(db="local")
     token_type = "Token"
-
-    @classmethod
-    def db(cls):
-        if cls._db is None:
-            cls._db = MovaiDB(db="local")
-        return cls._db
 
     @classmethod
     def is_token_exist(cls, token_id: str) -> bool:

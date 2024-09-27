@@ -17,15 +17,11 @@ from dal.movaidb import MovaiDB
 
 class SecretKey:
     log = Log.get_logger(__name__)
-    _db = None
-    type_name = "SecretKey"
-    secret_key_dict = {"KeyLength": "", "Secret": "", "LastUpdate": ""}
-
-    @classmethod
-    def db(cls):
-        if cls._db is None:
-            cls._db = MovaiDB(db="global")
-        return cls._db
+    db = MovaiDB(db='global')
+    type_name = 'SecretKey'
+    secret_key_dict = {'KeyLength': '',
+                       'Secret': '',
+                       'LastUpdate': ''}
 
     @classmethod
     def _generate_dict(cls, length: int) -> dict:
