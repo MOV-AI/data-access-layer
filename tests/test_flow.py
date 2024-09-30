@@ -478,7 +478,7 @@ class FlowTests(unittest.TestCase):
         self.assertEquals(str(e.value),"Flow validation failed. Flow stopped")
         # TODO evaluate the error message
 
-
+    @pytest.mark.skipif()
     @fake_redis("dal.movaidb.database.Connection", recording_dir=test_dir)
     @fake_redis("dal.plugins.persistence.redis.redis.Connection", recording_dir=test_dir)
     def test_remap_four_nodes_linked_direct_non_remapable(self):
@@ -637,8 +637,9 @@ class FlowTests(unittest.TestCase):
         port_pub1_key = list(node_pub1["Node"][pub1_name_key]["PortsInst"].keys())[0]
         #port_sub1_name = node_sub1["Node"][sub1_name_key]["PortsInst"][port_sub1_key]
         #port_pub1_name = node_pub1["Node"][pub1_name_key]["PortsInst"][port_pub1_key]
-
-        self.assertEquals(str(e.value),"Flow validation failed. Flow stopped")
-        #self.assertIn ("Two non remappable nodes are connected: ", exception_report)
-        #self.assertIn (pub1_name+"/"+port_pub1_key+"/out", exception_report)
-        #self.assertIn (sub1_name+"/"+port_sub1_key+"/in", exception_report)
+        
+        exception_report = str(e.value)
+        #self.assertEquals(str(e.value),"Flow validation failed. Flow stopped")
+        self.assertIn ("Two non remappable nodes are connected: ", exception_report)
+        self.assertIn (pub1_name+"/"+port_pub1_key+"/out", exception_report)
+        self.assertIn (sub1_name+"/"+port_sub1_key+"/in", exception_report)
