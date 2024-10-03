@@ -10,21 +10,25 @@
 """
 
 import asyncio
+import pickle
+import warnings
 from os import getenv, path
 from re import split
+from typing import Any, Dict, Generator, List, Optional, Tuple, Union
+
+import aioredis
+import dal
 import redis
 from deepdiff import DeepDiff
-import pickle
-import aioredis
 from redis.client import Pipeline
 from redis.connection import Connection
-from typing import Any, Callable, Dict, Generator, Optional, Tuple, List, Union, cast
-import dal
-from movai_core_shared.logger import Log
-from movai_core_shared.exceptions import InvalidStructure
+
 from dal.classes import Singleton
 from dal.plugins.classes import Resource
-import warnings
+from movai_core_shared.exceptions import InvalidStructure
+from movai_core_shared.logger import Log
+
+StrOrDictRecursive = Union[str, None, Dict[str, 'StrOrDictRecursive']]
 
 LOGGER = Log.get_logger("dal.mov.ai")
 
@@ -32,9 +36,9 @@ LOGGER = Log.get_logger("dal.mov.ai")
 dal_directory = path.dirname(dal.__file__)
 __SCHEMAS_URL__ = f"file://{dal_directory}/validation/schema"
 
+
 class SubscribeManager(metaclass=Singleton):
-   
-    _key_map={}
+    _key_map = {}
 
     @classmethod
     def register_sub(cls, key):
@@ -47,7 +51,6 @@ class SubscribeManager(metaclass=Singleton):
     @classmethod    
     def is_registered(cls, key):
         return key in cls._key_map
-
 
 
 class AioRedisClient(metaclass=Singleton):
@@ -215,7 +218,7 @@ class MovaiDB:
         # Represents the API template dict. Can be Imported or saved into Redis
         """
 
-        __API__ = {}
+        __API__: Dict[str, Dict[str, Dict]] = {}  # First key is the Version, the second is the scope
 
         def __init__(self, version: str = "latest", url: str = __SCHEMAS_URL__):
             super(type(self), self).__init__()
@@ -224,15 +227,18 @@ class MovaiDB:
             self.__url = path.join(url, version)
             self.__version = version
             if version not in type(self).__API__:
-                # load builtins schemas
-                current_path = path.join(url, version)
-                type(self).__API__[version] = {
-                    path.splitext(schema_file)[0]: Resource.read_json(
-                        path.join(current_path, schema_file)
-                    )["schema"]
-                    for schema_file in Resource.list_resources(current_path)
-                    if schema_file.endswith(".json")
-                }
+                self.load_schemas_from_files(url, version)
+
+        def load_schemas_from_files(self, url, version):
+            # load builtins schemas
+            current_path = path.join(url, version)
+            type(self).__API__[version] = {
+                path.splitext(schema_file)[0]: Resource.read_json(
+                    path.join(current_path, schema_file)
+                )["schema"]
+                for schema_file in Resource.list_resources(current_path)
+                if schema_file.endswith(".json")
+            }
 
         @property
         def version(self):
@@ -309,9 +315,9 @@ class MovaiDB:
         loop=None,
         databases=None,
     ) -> None:
-        self.db_read: redis.Redis = None
-        self.db_write: redis.Redis = None
-        self.pubsub: redis.client.PubSub = None
+        self.db_read: redis.Redis
+        self.db_write: redis.Redis
+        self.pubsub: redis.client.PubSub
 
         self.movaidb = databases or Redis()
         for attribute, val in self.db_dict[db].items():
@@ -325,7 +331,6 @@ class MovaiDB:
                 version=_api_version, url=__SCHEMAS_URL__
             ).get_api()
         self.api_star = self.template_to_star(self.api_struct)
-        # self.validator = Validator(db).val
 
         self.loop = loop
         if not self.loop:
@@ -339,7 +344,7 @@ class MovaiDB:
         Search redis for a certain structure, returns a list of matching
         keys Meant to be used by other functions in this class
         """
-        patterns = [k for k, _, _ in self.dict_to_keys(_input, validate=False)]
+        patterns = [k for k, _, _ in self.dict_to_keys(_input)]
         keys = list()
         for p in patterns:
             for elem in self.db_read.scan_iter(p, count=1000):
@@ -348,7 +353,7 @@ class MovaiDB:
 
         return keys
 
-    def find(self, _input: dict) -> dict:
+    def find(self, _input: dict) -> Dict[str, Any]:
         """
         Search redis for a certain structure, returns a dict
         with matching result
@@ -356,31 +361,31 @@ class MovaiDB:
         keys_list = self.search(_input)
         return self.keys_to_dict([(key, "") for key in keys_list])
 
-    def search_wild(self, _input: dict, only_pattern=False) -> list:
+    @classmethod
+    def generate_search_wild_key(cls, _input: Dict[str, Any], only_pattern: bool, symbol: str=":", scan_key="") -> str:
+        for key, value in _input.items():
+            if isinstance(value, dict):
+                scan_key += key + symbol
+                symbol = ":" if symbol == "," else ","
+                scan_key = cls.generate_search_wild_key(value, only_pattern, symbol, scan_key)
+            else:
+                if only_pattern:
+                    scan_key += key
+                    continue
+                if value == "*":
+                    scan_key += key + value
+                elif value == "**":
+                    scan_key += key + symbol + "*"
+                else:
+                    scan_key += key + ":" + value
+        return scan_key
+
+    def search_wild(self, _input: dict, only_pattern=False) -> Union[str, List[str]]:
         """
         Accepts a not full structure to search and returns a
         list of matching keys
         """
-
-        def generate_key(_input, symbol, scan_key=""):
-            for key, value in _input.items():
-                if isinstance(value, dict):
-                    scan_key += key + symbol
-                    symbol = ":" if symbol == "," else ","
-                    scan_key = generate_key(value, symbol, scan_key)
-                else:
-                    if only_pattern:
-                        scan_key += key
-                        continue
-                    if value == "*":
-                        scan_key += key + value
-                    elif value == "**":
-                        scan_key += key + symbol + "*"
-                    else:
-                        scan_key += key + ":" + value
-            return scan_key
-
-        scan_key = generate_key(_input, ":")
+        scan_key = self.generate_search_wild_key(_input, only_pattern=only_pattern)
         if only_pattern:
             return scan_key
 
@@ -392,7 +397,7 @@ class MovaiDB:
         keys.sort(key=str.lower)
         return keys
 
-    def get2(self, _input: dict) -> list:
+    def get2(self, _input: dict) -> Dict[str, Any]:
         keys = self.search_wild(_input)
         scan_values = [(keys[idx], "") for idx, _ in enumerate(keys)]
         return self.keys_to_dict(scan_values)
@@ -418,18 +423,19 @@ class MovaiDB:
         except UnicodeDecodeError:
             try:
                 decoded_value = pickle.loads(_value)
-            except:
+            except Exception:
                 return _value
         return decoded_value
 
-    def get(self, _input: dict) -> Tuple[dict, str]:
+    def get(self, _input: dict) -> Dict[str, Any]:
         """
         Receives a full or partial dict and returns the values
         matching in the DB
 
         Returns:
-            (dict, ErrorCode)
+            dict
         """
+        keys: Union[str, List[str]]
         try:
             keys = self.search(_input)
         except:
@@ -461,14 +467,14 @@ class MovaiDB:
         px=None,
         nx=False,
         xx=False,
-        validate=True,
-    ) -> str:
+        validate=True,  # TODO: remove unused parameter
+    ) -> None:
         """
         Set key values in database
         """
 
         # here we validate our dict and get the keys
-        kvs = self.dict_to_keys(_input, validate)
+        kvs = self.dict_to_keys(_input)
 
         db_set = pipe if isinstance(pipe, Pipeline) else self.db_write
         # Save each key value in redis according to template value type
@@ -488,6 +494,7 @@ class MovaiDB:
                         print("More that 1 key in Redis for the same structure value")
                 else:
                     if source == "hash":
+                        assert isinstance(value, dict)
                         value = {
                             hkey: pickle.dumps(hval) for hkey, hval in value.items()
                         }
@@ -495,14 +502,15 @@ class MovaiDB:
                             db_set.delete(key)
                             db_set.hmset(key, value)
                     elif source == "list":
+                        assert isinstance(value, list)
                         for lval in value:
                             if pickl:
                                 lval = pickle.dumps(lval)
                             db_set.rpush(key, lval)
                     else:
                         db_set.set(key, value, ex=ex, px=px, nx=nx, xx=xx)
-            except:
-                print("Something went wrong while saving this in Redis...")
+            except Exception as e:
+                LOGGER.error("Something went wrong while saving this in Redis: %s", e)
 
     def delete(self, _input: dict, pipe=None) -> int:
         """
@@ -513,7 +521,7 @@ class MovaiDB:
         db_del = pipe if isinstance(pipe, Pipeline) else self.db_write
 
         keys = list()
-        for key, _, _ in self.dict_to_keys(_input, validate=False):
+        for key, _, _ in self.dict_to_keys(_input):
             keys.append(key)
 
         if not keys:
@@ -521,19 +529,21 @@ class MovaiDB:
 
         return db_del.delete(*keys)
 
-    def unsafe_delete(self, _input: dict, pipe=None) -> str:
+    def unsafe_delete(self, _input: dict, pipe=None) -> int:
         """
         deletes _input
         Returns:
             number of deleted entries.
         """
+        keys: Union[str, List[str]]
+
         db_del = pipe if isinstance(pipe, Pipeline) else self.db_write
         try:
             keys = self.search(_input)
         except:
             keys = self.search_wild(_input)
         if not keys:
-            return ""
+            return 0
 
         return db_del.delete(*keys)
 
@@ -541,7 +551,7 @@ class MovaiDB:
         """
         assumes it get one or more full keys, no * allowed here
         """
-        keys = [key for key, _, _ in self.dict_to_keys(_input, validate=False)]
+        keys = [key for key, _, _ in self.dict_to_keys(_input)]
         if not keys:
             raise Exception("Invalid input")
         if self.db_read.exists(*keys) == len(keys):
@@ -553,8 +563,8 @@ class MovaiDB:
         """Receives two dicts with same struct to replace one with the other"""
         keys = list()
         try:
-            old_keys = self.dict_to_keys(old_input, validate=False)
-            new_keys = self.dict_to_keys(new_input, validate=True)
+            old_keys = self.dict_to_keys(old_input)
+            new_keys = self.dict_to_keys(new_input)
             # problems of mismatch here if we send large dicts due strange
             # things in sort?, for now is used for single dicts,
             # needs more testing
@@ -578,7 +588,7 @@ class MovaiDB:
     # ===================  SUBSCRIBERS  ===================================
     async def subscribe_channel(self, _input: dict, function, port_name: str, node_name: str):
         """Subscribes to a specific channel"""
-        for elem in self.dict_to_keys(_input, validate=False):
+        for elem in self.dict_to_keys(_input):
             key, _, _ = elem
             self.loop.create_task(self.task_subscriber(key + "*", function, port_name, node_name))
 
@@ -587,13 +597,13 @@ class MovaiDB:
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-            for elem in self.dict_to_keys(_input, validate=False):
+            for elem in self.dict_to_keys(_input):
                 key, _, _ = elem
                 self.loop.create_task(
                     self.task_subscriber("__keyspace@*__:%s" % key, function)
                 )
 
-    async def task_subscriber(self, key: str, callback, port_name: str=None, node_name: str=None  ) -> None:
+    async def task_subscriber(self, key: str, callback, port_name: Optional[str] = None, node_name: Optional[str] = None) -> None:
         """Calls a callback every time it gets a message."""
         # Acquires a connection from free pool.
         # Creates new connection if needed.
@@ -617,7 +627,7 @@ class MovaiDB:
     # ===================  List and Hashes  ===============================
     def lpush(self, _input: dict, pickl: bool = True):
         """Push a value to the left of a Redis list"""
-        kvs = self.dict_to_keys(_input, validate=True)
+        kvs = self.dict_to_keys(_input)
         for key, value, _ in kvs:
             if pickl:
                 value = pickle.dumps(value)
@@ -628,7 +638,7 @@ class MovaiDB:
 
     def push(self, _input: dict, pickl: bool = True):
         """Push a value to the right of a Redis list"""
-        kvs = self.dict_to_keys(_input, validate=True)
+        kvs = self.dict_to_keys(_input)
         for key, value, _ in kvs:
             if pickl:
                 value = pickle.dumps(value)
@@ -669,7 +679,7 @@ class MovaiDB:
             1 if HSET created a new field, otherwise 0
             e.g {'Robot':{'lala':{'Parameters': {'Foo':2, 'Bar':3}}}}
         """
-        kvs = self.dict_to_keys(_input, validate=True)
+        kvs = self.dict_to_keys(_input)
         for key, value, _ in kvs:
             try:
                 for hash_field in value:
@@ -744,7 +754,7 @@ class MovaiDB:
     # https://redislabs.com/redis-best-practices/communication-patterns/distributed-events/
     def hset_pub(self, _input: dict):
         """Same as hset with addition publish in a respective channel"""
-        kvs = self.dict_to_keys(_input, validate=True)
+        kvs = self.dict_to_keys(_input)
         for key, value, _ in kvs:
             value = {hkey: pickle.dumps(hval) for hkey, hval in value.items()}
             changed_hkeys = " ".join([hkey for hkey in value])
@@ -766,67 +776,53 @@ class MovaiDB:
         return pipe.execute()
 
     # ===================  Convert and Validate  ==========================
-    def validate_value(self, value, condition):
-        """Value validation before safe in database"""
-        # can't validate against the new API, so:
-        return  # no validate at all :)
-        # pylint: disable=unreachable
-        function = self.validator.get(condition, False)
-        if function:
-            function(value)
-        else:
-            pass
-
-    def validate(self, d, api, base_key, validate, keys):
+    @classmethod
+    def validate(cls, d: Dict[str, Any], api: Dict[str, Any], base_key: str, keys: List[Tuple[str, Any, Any]]):
         """Validation before safe in database"""
         for (k, v) in d.items():
             key = base_key
             is_ok = False
             for k_api, _ in api.items():
                 if k_api[0] == "$":
-                    if validate:
-                        self.validate_value(k, k_api[1:])
                     key += k + ","
                     temp_api = api[k_api]
                     is_ok = True
                     break
-                else:
-                    if k == k_api:
-                        key += k + ":"
-                        temp_api = api[k]
-                        is_ok = True
-                        break
+                elif k == k_api:
+                    key += k + ":"
+                    temp_api = api[k]
+                    is_ok = True
+                    break
 
             if not is_ok:
                 error_msg = f"Structure provided does not exist: {d}"
                 LOGGER.error(error_msg)
                 raise Exception(error_msg)
             if isinstance(v, dict) and isinstance(temp_api, dict):
-                self.validate(v, temp_api, key, validate, keys)
+                cls.validate(v, temp_api, key, keys)
             else:
                 value = v
                 if temp_api[0] == "&" and v is not None:
-                    if validate:
-                        self.validate_value(v, temp_api[1:])
                     key += v
                     value = ""
-                else:
-                    if validate:
-                        self.validate_value(v, temp_api)
                 key_val = (key, value, temp_api)
                 keys.append(key_val)
 
-    def dict_to_keys(self, _input: dict, validate: bool = True) -> tuple:
-        keys = list()  # careful with class variables...
-        self.validate(_input, self.api_struct, "", validate, keys)
+    def dict_to_keys(self, _input: dict, validate=None):
+        if validate is not None:
+            LOGGER.warning("Parameter 'validate' of dict_to_keys() is deprecated")
+
+        # Keys is a list of tuples with (key, value, source)
+        keys: List[Tuple[str, Any, Any]] = list()  # careful with class variables...
+        self.validate(_input, self.api_struct, "", keys)
         return keys
 
     @staticmethod
-    def keys_to_dict(kv: tuple):
-        kk = dict()
+    def keys_to_dict(kv: List[Tuple[str, Any]]):
+        kk: Dict[str, Any] = dict()
         for k, v in kv:
             o = kk
-            pieces = split("[:,]", k)
+            pieces: List[str] = split("[:,]", k)
             if len(pieces) >= 3:
                 for idx, h in enumerate(pieces):
                     if idx == len(pieces) - 2:
@@ -836,6 +832,8 @@ class MovaiDB:
                             o[h] = pieces[-1]
                         o = o[h]
                         break
+
+                    o.setdefault(h, dict())
                     try:
                         o[h]
                     except Exception:
@@ -845,7 +843,8 @@ class MovaiDB:
                 raise Exception("[keys_to_dict] less than 3 elements provided!!!")
         return kk
 
-    def sort_dict(self, item: dict) -> dict:
+    @classmethod
+    def sort_dict(cls, item: dict) -> dict:
         """
         Sort nested dict.
         Adapted from:
@@ -856,16 +855,16 @@ class MovaiDB:
              Output: {'a': 1, 'b': {'b1': 1, 'b2': 2}, 'c': 3}
         """
         return {
-            k: self.sort_dict(v) if isinstance(v, dict) else v
+            k: cls.sort_dict(v) if isinstance(v, dict) else v
             for k, v in sorted(item.items())
         }
 
     # ===================  By Args stuff  =================================
-    def exists_by_args(self, scope, **kwargs) -> bool:
+    def exists_by_args(self, scope: str, **kwargs) -> bool:
         """Check if some key exists in redis giving arguments"""
         search_dict = self.get_search_dict(scope, **kwargs)
         patterns = list()
-        for k, v, s in self.dict_to_keys(search_dict, validate=False):
+        for k, v, s in self.dict_to_keys(search_dict):
             patterns.append(k)
         # keys = list()
         for p in patterns:
@@ -889,17 +888,18 @@ class MovaiDB:
         search_dict = self.get_search_dict(scope, **kwargs)
         return self.get(search_dict)
 
-    def delete_by_args(self, scope, **kwargs) -> dict:
+    def delete_by_args(self, scope, **kwargs):
         """Delete keys in redis giving arguments"""
         search_dict = self.get_search_dict(scope, **kwargs)
         return self.unsafe_delete(search_dict)
 
-    def subscribe_by_args(self, scope, function, **kwargs) -> dict:
+    def subscribe_by_args(self, scope, function, **kwargs):
         """Subscribe to a redis pattern giving arguments"""
         search_dict = self.get_search_dict(scope, **kwargs)
         self.loop.create_task(self.subscribe(search_dict, function))
 
-    def dict_to_args(self, _input: dict) -> dict:
+    @staticmethod
+    def dict_to_args(_input: dict) -> dict:
         """Get a plain args dict from the nested one"""
         for scope in _input:
             scope_name = scope
@@ -920,7 +920,7 @@ class MovaiDB:
         recursive(_input[scope_name][main_name])
         return final_dict
 
-    def get_search_dict(self, scope, **kwargs) -> dict:
+    def get_search_dict(self, scope: str, **kwargs) -> dict:
         """Get the search dictionary from the args"""
         try:
             kwargs[scope] = kwargs["Name"]
@@ -929,29 +929,30 @@ class MovaiDB:
         star = {scope: self.api_star[scope]}
         return self.args_to_dict(star, kwargs)
 
-    def template_to_star(self, _input: dict) -> dict:
-        new = dict()
-
-        def changeKeys(d, n):
+    @staticmethod
+    def template_to_star(_input: Dict[str, Any]):
+        def changeKeys(d: Dict[str, Any]):
+            n: Dict[str, StrOrDictRecursive] = {}
             for k, v in d.items():
                 key = k
                 if "$" in k:
                     key = "*"
 
                 if isinstance(v, dict):
-                    n[key] = dict()
-                    changeKeys(v, n[key])
+                    n[key] = changeKeys(v)
                 else:
                     n[key] = "*"
+            return n
 
-        changeKeys(_input, new)
+        new = changeKeys(_input)
         return new
 
-    def args_to_dict(self, _input: dict, _replaces: dict) -> dict:
+    @staticmethod
+    def args_to_dict(_input: dict, _replaces: dict) -> dict:
         new = dict()
         repl = _replaces
 
-        def changeKeys(d, n, c):
+        def changeKeys(d: Dict, n: Dict, c):
             got_some = 0
             for k, v in d.items():
                 if isinstance(v, dict):
@@ -976,9 +977,7 @@ class MovaiDB:
                         break
             if got_some == 1:
                 changeKeys(v, nn, change)
-            elif got_some == 2:
-                pass
-            else:
+            elif got_some != 2:
                 star_finish(d, n)
 
         def star_finish(d, n):
@@ -992,7 +991,8 @@ class MovaiDB:
         changeKeys(_input, new, None)
         return new
 
-    def update_dict(self, d: dict, u: dict):
+    @staticmethod
+    def update_dict(d: dict, u: Any):
         def update(d):
             for k, v in d.items():
                 if isinstance(v, dict):
@@ -1009,21 +1009,22 @@ class MovaiDB:
         return d
 
     @staticmethod
-    def get_from_path(base_dict: dict, path: str) -> dict:
-        """Returns dictionary from the specified path"""
+    def get_from_path(base_dict: dict, path: str) -> Any:
+        """Returns value from the specified path"""
         curr = base_dict
         # Gets rid of first '%%' as it's unnecessary
-        path = path.split("%%")[1:]
-        while len(path):
-            key = path.pop(0)
+        pieces = path.split("%%")[1:]
+        while len(pieces) and isinstance(curr, dict):
+            key = pieces.pop(0)
             curr = curr.get(key)
             # Check if path exists
-            if type(curr) is not dict and len(path):
-                return None
+        if len(pieces):
+            LOGGER.warning("Couldn't process %s on dict %s", path, base_dict)
+            return None
         return curr
 
     @staticmethod
-    def set_dict(base: dict, path: str, value: dict) -> None:
+    def set_dict(base: dict, path: str, value: Any) -> None:
         """Appends value to dict with specified path"""
         keys = path.split("%%")[1:]  # Gets rid of first '%%' as it's unnecessary
         latest = keys.pop()
@@ -1032,7 +1033,7 @@ class MovaiDB:
         base.setdefault(latest, value)
 
     @staticmethod
-    def dict_to_paths(value, path: str = "") -> list:
+    def dict_to_paths(value, path: str = "") -> Generator[str, None, None]:
         """Returns list with all dict as string paths"""
         if isinstance(value, dict):
             if not value.items():
@@ -1044,7 +1045,7 @@ class MovaiDB:
             yield path
 
     @staticmethod
-    def break_paths(path: str) -> list:
+    def break_paths(path: Union[List[str], str]) -> List[str]:
         """Return list with paths broken down"""
         if not isinstance(path, list):
             path = path.split("%%")[1:]
@@ -1056,7 +1057,7 @@ class MovaiDB:
         return ["%%" + "%%".join(beginning)] + MovaiDB.break_paths(remaining)
 
     @staticmethod
-    def validate_path(path: str, structure: dict) -> str:
+    def validate_path(path: str, structure: dict) -> Optional[str]:
         # Translate dict to list of paths
         struct_paths = [p for p in MovaiDB.dict_to_paths(structure)]
         p1 = path
@@ -1087,24 +1088,7 @@ class MovaiDB:
         return exists
 
     @staticmethod
-    def merge_dicts(self, a: dict, b: dict, path: str = None) -> dict:
-        """Merges b into a"""
-        if path is None:
-            path = []
-        for key in b:
-            if key in a:
-                if isinstance(a[key], dict) and isinstance(b[key], dict):
-                    self.merge(a[key], b[key], path + [str(key)])
-                elif a[key] == b[key]:
-                    pass  # same leaf value
-                else:
-                    raise Exception("Conflict at %s" % ".".join(path + [str(key)]))
-            else:
-                a[key] = b[key]
-        return a
-
-    @staticmethod
-    def calc_scope_update(old_dict: dict, new_dict: dict, structure: dict) -> list:
+    def calc_scope_update(old_dict: dict, new_dict: dict, structure: dict) -> List[Dict[str, Any]]:
         """Calculate scope updates dicts"""
         # Translate dict to list of paths
         old_dict_paths = [p for p in MovaiDB.dict_to_paths(old_dict)]
@@ -1132,7 +1116,7 @@ class MovaiDB:
             MovaiDB.set_dict(first_dict, path, MovaiDB.get_from_path(old_dict, path))
             second_dict = {}
             MovaiDB.set_dict(second_dict, path, MovaiDB.get_from_path(new_dict, path))
-            to_delete = {}
+            to_delete: Optional[Dict] = {}
 
             diff = DeepDiff(first_dict, second_dict)
             if diff:
