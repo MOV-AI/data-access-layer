@@ -28,7 +28,7 @@ from dal.plugins.classes import Resource
 from movai_core_shared.exceptions import InvalidStructure
 from movai_core_shared.logger import Log
 
-StrOrDictRecursive = Union[str, None, Dict[str, 'StrOrDictRecursive']]
+StrOrDictRecursive = Union[str, None, Dict[str, "StrOrDictRecursive"]]
 
 LOGGER = Log.get_logger("dal.mov.ai")
 
@@ -47,8 +47,8 @@ class SubscribeManager(metaclass=Singleton):
     @classmethod
     def unregister_sub(cls, key):
         del cls._key_map[key]
-    
-    @classmethod    
+
+    @classmethod
     def is_registered(cls, key):
         return key in cls._key_map
 
@@ -109,7 +109,8 @@ class AioRedisClient(metaclass=Singleton):
                 getattr(self, conn).close()
         tasks = [
             getattr(self, db_name).wait_closed()
-            for db_name in type(self)._databases.keys() if getattr(self, db_name) is not None
+            for db_name in type(self)._databases.keys()
+            if getattr(self, db_name) is not None
         ]
         await asyncio.gather(*tasks, return_exceptions=True)
 
@@ -177,15 +178,21 @@ class Redis(metaclass=Singleton):
     def __init__(self):
         self.master_pool = redis.ConnectionPool(
             connection_class=Connection,
-            host=MovaiDB.REDIS_MASTER_HOST, port=MovaiDB.REDIS_MASTER_PORT, db=0
+            host=MovaiDB.REDIS_MASTER_HOST,
+            port=MovaiDB.REDIS_MASTER_PORT,
+            db=0,
         )
         self.slave_pool = redis.ConnectionPool(
             connection_class=Connection,
-            host=MovaiDB.REDIS_SLAVE_HOST, port=MovaiDB.REDIS_SLAVE_PORT, db=0
+            host=MovaiDB.REDIS_SLAVE_HOST,
+            port=MovaiDB.REDIS_SLAVE_PORT,
+            db=0,
         )
         self.local_pool = redis.ConnectionPool(
             connection_class=Connection,
-            host=MovaiDB.REDIS_LOCAL_HOST, port=MovaiDB.REDIS_LOCAL_PORT, db=0
+            host=MovaiDB.REDIS_LOCAL_HOST,
+            port=MovaiDB.REDIS_LOCAL_PORT,
+            db=0,
         )
 
         self.thread = None
@@ -218,7 +225,9 @@ class MovaiDB:
         # Represents the API template dict. Can be Imported or saved into Redis
         """
 
-        __API__: Dict[str, Dict[str, Dict]] = {}  # First key is the Version, the second is the scope
+        __API__: Dict[str, Dict[str, Dict]] = (
+            {}
+        )  # First key is the Version, the second is the scope
 
         def __init__(self, version: str = "latest", url: str = __SCHEMAS_URL__):
             super(type(self), self).__init__()
@@ -327,9 +336,7 @@ class MovaiDB:
             self.api_struct = MovaiDB.API(url=__SCHEMAS_URL__).get_api()
         else:
             # we then need to get this from database!!!!
-            self.api_struct = MovaiDB.API(
-                version=_api_version, url=__SCHEMAS_URL__
-            ).get_api()
+            self.api_struct = MovaiDB.API(version=_api_version, url=__SCHEMAS_URL__).get_api()
         self.api_star = self.template_to_star(self.api_struct)
 
         self.loop = loop
@@ -362,7 +369,9 @@ class MovaiDB:
         return self.keys_to_dict([(key, "") for key in keys_list])
 
     @classmethod
-    def generate_search_wild_key(cls, _input: Dict[str, Any], only_pattern: bool, symbol: str=":", scan_key="") -> str:
+    def generate_search_wild_key(
+        cls, _input: Dict[str, Any], only_pattern: bool, symbol: str = ":", scan_key: str = ""
+    ) -> str:
         for key, value in _input.items():
             if isinstance(value, dict):
                 scan_key += key + symbol
@@ -390,10 +399,7 @@ class MovaiDB:
             return scan_key
 
         # get db keys that match scan_key
-        keys = [
-            elem.decode("utf-8")
-            for elem in self.db_read.scan_iter(scan_key, count=1000)
-        ]
+        keys = [elem.decode("utf-8") for elem in self.db_read.scan_iter(scan_key, count=1000)]
         keys.sort(key=str.lower)
         return keys
 
@@ -495,9 +501,7 @@ class MovaiDB:
                 else:
                     if source == "hash":
                         assert isinstance(value, dict)
-                        value = {
-                            hkey: pickle.dumps(hval) for hkey, hval in value.items()
-                        }
+                        value = {hkey: pickle.dumps(hval) for hkey, hval in value.items()}
                         if value:
                             db_set.delete(key)
                             db_set.hmset(key, value)
@@ -512,7 +516,7 @@ class MovaiDB:
             except Exception as e:
                 LOGGER.error("Something went wrong while saving this in Redis: %s", e)
 
-    def delete(self, _input: dict, pipe=None) -> int:
+    def delete(self, _input: dict, pipe=None) -> Optional[int]:
         """
         deletes _input
         Returns:
@@ -527,9 +531,12 @@ class MovaiDB:
         if not keys:
             return 0
 
-        return db_del.delete(*keys)
+        res = db_del.delete(*keys)
+        # if we're using a Redis pipeline, we won't get
+        # the result until it is executed
+        return res if isinstance(res, int) else None
 
-    def unsafe_delete(self, _input: dict, pipe=None) -> int:
+    def unsafe_delete(self, _input: dict, pipe=None) -> Optional[int]:
         """
         deletes _input
         Returns:
@@ -542,10 +549,14 @@ class MovaiDB:
             keys = self.search(_input)
         except:
             keys = self.search_wild(_input)
+
         if not keys:
             return 0
 
-        return db_del.delete(*keys)
+        res = db_del.delete(*keys)
+        # if we're using a Redis pipeline, we won't get
+        # the result until it is executed
+        return res if isinstance(res, int) else None
 
     def exists(self, _input: dict) -> bool:
         """
@@ -599,11 +610,11 @@ class MovaiDB:
 
             for elem in self.dict_to_keys(_input):
                 key, _, _ = elem
-                self.loop.create_task(
-                    self.task_subscriber("__keyspace@*__:%s" % key, function)
-                )
+                self.loop.create_task(self.task_subscriber("__keyspace@*__:%s" % key, function))
 
-    async def task_subscriber(self, key: str, callback, port_name: Optional[str] = None, node_name: Optional[str] = None) -> None:
+    async def task_subscriber(
+        self, key: str, callback, port_name: Optional[str] = None, node_name: Optional[str] = None
+    ) -> None:
         """Calls a callback every time it gets a message."""
         # Acquires a connection from free pool.
         # Creates new connection if needed.
@@ -620,7 +631,7 @@ class MovaiDB:
             callback(msg)
         conn.close()
         await conn.wait_closed()
-        # Delete from cache the subscribed key 
+        # Delete from cache the subscribed key
         if port_name and node_name:
             SubscribeManager().unregister_sub(node_name + port_name)
 
@@ -777,9 +788,11 @@ class MovaiDB:
 
     # ===================  Convert and Validate  ==========================
     @classmethod
-    def validate(cls, d: Dict[str, Any], api: Dict[str, Any], base_key: str, keys: List[Tuple[str, Any, Any]]):
+    def validate(
+        cls, d: Dict[str, Any], api: Dict[str, Any], base_key: str, keys: List[Tuple[str, Any, Any]]
+    ):
         """Validation before safe in database"""
-        for (k, v) in d.items():
+        for k, v in d.items():
             key = base_key
             is_ok = False
             for k_api, _ in api.items():
@@ -854,10 +867,7 @@ class MovaiDB:
              Input: {'a': 1, 'c': 3, 'b': {'b2': 2, 'b1': 1}}
              Output: {'a': 1, 'b': {'b1': 1, 'b2': 2}, 'c': 3}
         """
-        return {
-            k: cls.sort_dict(v) if isinstance(v, dict) else v
-            for k, v in sorted(item.items())
-        }
+        return {k: cls.sort_dict(v) if isinstance(v, dict) else v for k, v in sorted(item.items())}
 
     # ===================  By Args stuff  =================================
     def exists_by_args(self, scope: str, **kwargs) -> bool:
@@ -931,7 +941,7 @@ class MovaiDB:
 
     @staticmethod
     def template_to_star(_input: Dict[str, Any]):
-        def changeKeys(d: Dict[str, Any]):
+        def change_keys(d: Dict[str, Any]):
             n: Dict[str, StrOrDictRecursive] = {}
             for k, v in d.items():
                 key = k
@@ -939,12 +949,12 @@ class MovaiDB:
                     key = "*"
 
                 if isinstance(v, dict):
-                    n[key] = changeKeys(v)
+                    n[key] = change_keys(v)
                 else:
                     n[key] = "*"
             return n
 
-        new = changeKeys(_input)
+        new = change_keys(_input)
         return new
 
     @staticmethod
@@ -952,7 +962,7 @@ class MovaiDB:
         new = dict()
         repl = _replaces
 
-        def changeKeys(d: Dict, n: Dict, c):
+        def change_keys(d: Dict, n: Dict, c):
             got_some = 0
             for k, v in d.items():
                 if isinstance(v, dict):
@@ -976,7 +986,7 @@ class MovaiDB:
                         nn = n[k]
                         break
             if got_some == 1:
-                changeKeys(v, nn, change)
+                change_keys(v, nn, change)
             elif got_some != 2:
                 star_finish(d, n)
 
@@ -988,7 +998,7 @@ class MovaiDB:
                 else:
                     n[k] = v
 
-        changeKeys(_input, new, None)
+        change_keys(_input, new, None)
         return new
 
     @staticmethod
@@ -1069,14 +1079,14 @@ class MovaiDB:
             p1_split = p1.split("%%")[1:]
             p2_split = p2.split("%%")[1:]
             if len(p2_split) == len(p1_split):
-                for (k, v) in enumerate(p2_split):
+                for k, v in enumerate(p2_split):
                     if "$" in v:
                         p2_split[k] = p1_split[k]
                 if p1_split == p2_split:
                     exists = "%%" + "%%".join(p2_split)
                     break
             elif len(p1_split) > len(p2_split):
-                for (k, v) in enumerate(p2_split):
+                for k, v in enumerate(p2_split):
                     if "$" in v:
                         p2_split[k] = p1_split[k]
                 p1_join = "%%" + "%%".join(p1_split)
@@ -1125,19 +1135,13 @@ class MovaiDB:
                 type_changes_value = type_changes.popitem()[1] if type_changes else None
 
                 # Build to_delete key
-                if (
-                    type_changes_value is None
-                    or not type_changes_value.get("old_value") is None
-                ):
+                if type_changes_value is None or not type_changes_value.get("old_value") is None:
                     MovaiDB.set_dict(to_delete, path, "*")
                 else:
                     to_delete = None
 
                 # Build to_set key
-                if (
-                    type_changes_value is None
-                    or not type_changes_value.get("new_value") is None
-                ):
+                if type_changes_value is None or not type_changes_value.get("new_value") is None:
                     to_set = second_dict
                 else:
                     to_set = None
