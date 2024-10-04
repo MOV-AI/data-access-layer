@@ -1,5 +1,5 @@
-import os
 import pytest
+from os import getenv
 from json import loads as json_loads
 from os.path import join as path_join
 
@@ -37,7 +37,9 @@ def should_run_test():
     some tests (git related) will be hard to test from inside github because of
     credentials issues when clonning.
     """
-    return not (os.environ.get('CI') in ('True', 'true'))
+    if FileSystem.get_home_folder() == "/github/home":
+        return False
+    return True
 
 def test_basic():
     global archive
