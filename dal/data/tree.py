@@ -236,7 +236,7 @@ class ListNode(TreeNode[VT], ChildrenCmpMixin):
         node._parent = None
 
 
-class DictNode(TreeNode[VT], ChildrenCmpMixin, Mapping[str, VT]):
+class DictNode(TreeNode[VT], ChildrenCmpMixin):
     """
     Implements a dict tree node
     """
