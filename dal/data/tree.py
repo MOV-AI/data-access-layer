@@ -8,7 +8,7 @@
 """
 from abc import ABC, abstractmethod
 from collections import OrderedDict
-from typing import Dict, Generic, List, Mapping, Optional, Tuple, TypeVar, Union
+from typing import Dict, Generic, List, Optional, Tuple, TypeVar, Union
 from dal.data.mixins import ChildrenCmpMixin, ValueCmpMixin
 
 
