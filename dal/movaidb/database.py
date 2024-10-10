@@ -822,9 +822,6 @@ class MovaiDB:
                 keys.append(key_val)
 
     def dict_to_keys(self, _input: dict, validate=None):
-        if validate is not None:
-            LOGGER.warning("Parameter 'validate' of dict_to_keys() is deprecated")
-
         # Keys is a list of tuples with (key, value, source)
         keys: List[Tuple[str, Any, Any]] = list()  # careful with class variables...
         self.validate(_input, self.api_struct, "", keys)
