@@ -20,7 +20,6 @@ from dal.validation import Template
 if TYPE_CHECKING:
     from dal.models import Flow
 
-
 class GFlow:
     """
     Graph generator in use to calculate remaps
@@ -59,11 +58,10 @@ class GFlow:
 
         self.get_vertex(key)["remap"] = remap
 
-    def forced_remap(self, link) -> str:
+    def forced_remap(self, link: Template) -> str:
         """ Special remap rules """
 
         output = None
-
         for vertex in [link.From, link.To]:
 
             name = vertex.node_inst
@@ -75,9 +73,9 @@ class GFlow:
             dummy = node_inst.is_dummy
 
             namespace = self.flow.get_node_inst_param(name, "_namespace")
-
             if dummy or not remappable:
                 output = f"{namespace}/{vertex.port_name}" if namespace else vertex.port_name
+
 
         return output
 
@@ -130,6 +128,75 @@ class GFlow:
 
         return self.graph
 
+    def reverse_type(self, port_type : str) -> str :
+        
+        if port_type == "From":
+            return "To"
+        
+        return "From" 
+
+    def check_forced_links(self, port_type: str, link: Template) -> str:
+        
+        wanted_type =self.reverse_type(port_type)
+
+        if wanted_type == "To":
+            edge = link.To
+        else:
+            edge = link.From
+        port_name = edge.str
+        
+        port = self.graph[port_name]
+
+        for link_id in port["links"]:
+            link_in_force_remaps = self.forced_remap(self.flow.Links[link_id])
+            if link_in_force_remaps:
+                return link_in_force_remaps
+        return None
+
+    def iterate_through_links(self, port_type, links: list) -> list:
+        unremappable_nodes = set()
+        for link_id in links:
+            a = self.forced_remap(self.flow.Links[link_id])            
+            forced_link = self.check_forced_links(port_type, self.flow.Links[link_id])
+            if self.check_forced_links(port_type, self.flow.Links[link_id]):
+                from_port = self.flow.Links[link_id].From
+                to_port = self.flow.Links[link_id].To
+
+                remap_from = self.flow.get_node_inst(from_port.node_inst).is_remappable
+                remap_to = self.flow.get_node_inst(to_port.node_inst).is_remappable
+
+                if not remap_from:
+                    unremappable_nodes.add(from_port.node_inst)
+                if not remap_to:
+                    unremappable_nodes.add(to_port.node_inst)
+
+        return unremappable_nodes
+
+    def get_adjacent_unremappable_port(self, port_type, links: list) :
+        unremappable_nodes = []
+
+        for link_id in links:
+
+            if self.check_forced_links(port_type, self.flow.Links[link_id]):
+                from_port = self.flow.Links[link_id].From
+                to_port = self.flow.Links[link_id].To
+
+                remap_from = self.flow.get_node_inst(from_port.node_inst).is_remappable
+                remap_to = self.flow.get_node_inst(to_port.node_inst).is_remappable
+
+                if not remap_from:
+                    port_name = (from_port.port_name)
+                    namespace = (self.flow.NodeInst[from_port.node_inst].get_params()["_namespace"])
+                    full_port_name = namespace + "/" +port_name
+
+                    unremappable_nodes.append(full_port_name)
+                if not remap_to:
+                    unremappable_nodes.append(to_port.node_inst)
+
+        if unremappable_nodes:
+            return unremappable_nodes[0]
+        return None
+
     def generate_remaps(self) -> dict:
         """ Generates the remaps """
 
@@ -138,7 +205,6 @@ class GFlow:
 
         # list of ports sorted by count (nr. of connections)
         ports = self.sort_graph()
-
         links = self.flow.Links.full
 
         # TODO review and refactor
@@ -154,51 +220,76 @@ class GFlow:
             ports_already_remapped = 0
             if port["remap"] is not None:
                 ports_already_remapped += 1
+               
 
             # First we need to check if any connected port was previously remapped
-            for link_id in port["links"]:
-                link = links[link_id]
-                port_to_remap = link["To"] if port["_type"] == "From" else link["From"]
+            for link in port["links"]:
+
+                port_name_fragments = self.flow.Links[link].To.str.split("/")
+                full_port_name = '/'.join(port_name_fragments[1:-1])
+                
+                if not self.flow.get_node_inst(self.flow.Links[link].From.node_inst).is_remappable and not self.flow.get_node_inst(self.flow.Links[link].To.node_inst).is_remappable and self.check_ros_port(self.flow.Links[link].To.node_inst, full_port_name):
+                    raise Exception(f"Two non remappable nodes are connected: {self.flow.Links[link].To.str} and {self.flow.Links[link].From.str}")
+
+                port_to_remap = links[link]["To"] if port["_type"] == "From" else links[link]["From"]
 
                 if self.graph[port_to_remap]["remap"] is not None:
-
                     # A second port previously remapped with a different value was found.
                     if ports_already_remapped > 0 and self.graph[port_to_remap]["remap"] != remap_to:
-                        error_msg = f"Remap could not be solved. More than one port previously " \
-                                    f"remapped with different values. port: {port_to_remap}"
-                        raise Exception(error_msg)
+                        unremappable_nodes = self.iterate_through_links(port["_type"], port['links'])
+                        if len(unremappable_nodes) > 1:
+                            self.logger.error("Flow validator report:\nBad remap pattern detected. The following non-remappable nodes were detected in the same scope (not directly linked):\n - "+ ",\n - ".join(unremappable_nodes) + "\nLeading to the following calculated remaps (topics): \n - "+ ",\n - ".join([self.graph[port_to_remap]['remap'], remap_to]) )
+                            raise Exception("Flow validation failed. Flow stopped")
+
+                        link_in_forced_remap = self.forced_remap(self.flow.Links[link])
+                        if link_in_forced_remap:
+                            remap_to = link_in_forced_remap
+                            port["remap"] = remap_to
+                            ports_already_remapped += 1
+                            break
+                        else:
+                            forced_link = self.check_forced_links(port["_type"], self.flow.Links[link])
+                            if forced_link:
+                                remap_to = forced_link
+                                port["remap"] = remap_to
+                                ports_already_remapped += 1
+                                break
+
+                            else:
+                                port_of_unremapable_if_exists = self.get_adjacent_unremappable_port(port['_type'], port['links'])
+                                if port_of_unremapable_if_exists:
+                                    remap_to = port_of_unremapable_if_exists
+                                    port["remap"] = remap_to
+                                    ports_already_remapped += 1
+                                    break
+
+                                else:                                
+                                    error_msg = f"Remap could not be solved. More than one port previously " \
+                                                f"remapped with different values. port: {port_to_remap}"
+                                    raise Exception(error_msg)
 
                     remap_to = self.graph[port_to_remap]["remap"]
                     port["remap"] = remap_to
                     ports_already_remapped += 1
 
             # Do the remap
-            for link_id in port["links"]:
+            for link in port["links"]:
                 # remap the other port
-                link = links[link_id]
-                port_to_remap = link["To"] if port["_type"] == "From" else link["From"]
+                port_to_remap = links[link]["To"] if port["_type"] == "From" else links[link]["From"]
                 self.graph[port_to_remap]["remap"] = remap_to
 
         return self.graph
 
-    def calc_remaps(self) -> dict:
+    def calc_remaps(self) -> dict: 
         """
         Returns the remaps after calculation
         """
-
         self.generate_graph()
         self.generate_remaps()
-
         # convert graph
         remaps = {}
 
         for port_name, port in self.graph.items():
-            remap_port = self.graph.get(port["remap"])
-
-            if remap_port and port_name != port["remap"] and port["_type"] == remap_port["_type"]:
-                self.logger.warning("Ignoring remap. port_name: %s, port['remap']: %s\nport: %s\nremap: %s", port_name, port["remap"], port, remap_port)
-                continue
-
             if port["remap"] not in remaps:
                 remaps[port["remap"]] = {"From": [], "To": []}
 
@@ -208,7 +299,6 @@ class GFlow:
 
         # cache remaps
         self.remaps = remaps
-
         return self.remaps
 
     def get_remaps(self, force: bool = False) -> dict:
@@ -234,3 +324,16 @@ class GFlow:
         node_template = self.flow.get_node_inst(node_inst).node_template
 
         return node_template.PortsInst[port_name].Template
+
+    def check_ros_port(self, node_name: str, port_name: str) :
+        """
+        function that verifies if a specific port name has a ROS message associated
+            Args:
+                node_name (str): simplified node name (e.g. publisher2)
+                port_name (str): full port name (e.g. publisher2/bool_out/out)
+
+            Returns:
+                bool: True if port name has a ROS message associateds. False otherwise
+        """
+        node_c = self.flow.full.NodeInst[node_name].node_template
+        return node_c.PortsInst[port_name].Template.startswith("ROS")
