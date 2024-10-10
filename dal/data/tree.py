@@ -143,9 +143,6 @@ class TreeNode(ABC, Generic[VT]):
         number of children
         """
 
-    def __len__(self):
-        return self.count
-
     @property
     @abstractmethod
     def path(self):
