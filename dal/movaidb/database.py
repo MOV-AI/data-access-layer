@@ -157,6 +157,7 @@ class AioRedisClient(metaclass=Singleton):
 
                         except Exception as e:
                             LOGGER.error(e, exc_info=True)
+                            raise e
                 setattr(self, conn_name, _conn)
 
     @classmethod
