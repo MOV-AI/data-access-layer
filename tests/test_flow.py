@@ -1,16 +1,18 @@
 import os
 import unittest
 import pytest
+from unittest.mock import Mock, patch
+
 from dal.models.flow import Flow
 from dal.models.scopestree import scopes
 from dal.utils.redis_mocks import fake_redis
-import logging
 
 test_dir = os.path.dirname(__file__)
 
 
 class FlowTests(unittest.TestCase):
     maxDiff = None
+
     @pytest.mark.skipif()  # this validation is currently being done in the flow-initiator repository. Future refactor should centralize all flow validations
     @fake_redis("dal.movaidb.database.Connection", recording_dir=test_dir)
     @fake_redis("dal.plugins.persistence.redis.redis.Connection", recording_dir=test_dir)
@@ -474,7 +476,6 @@ class FlowTests(unittest.TestCase):
         with pytest.raises(Exception) as e:
             Flow("two_pubs_test").graph.calc_remaps()
 
-
         self.assertEquals(str(e.value),"Flow validation failed. Flow stopped")
         # TODO evaluate the error message
 
@@ -631,15 +632,58 @@ class FlowTests(unittest.TestCase):
         pub1_name_key=list(node_pub1["Node"].keys())[0]
         sub1_name = node_sub1["Node"][sub1_name_key]["Label"]
         pub1_name = node_pub1["Node"][pub1_name_key]["Label"]
-        
+
         port_sub1_key = list(node_sub1["Node"][sub1_name_key]["PortsInst"].keys())[0]
 
         port_pub1_key = list(node_pub1["Node"][pub1_name_key]["PortsInst"].keys())[0]
-        #port_sub1_name = node_sub1["Node"][sub1_name_key]["PortsInst"][port_sub1_key]
-        #port_pub1_name = node_pub1["Node"][pub1_name_key]["PortsInst"][port_pub1_key]
-        
+        # port_sub1_name = node_sub1["Node"][sub1_name_key]["PortsInst"][port_sub1_key]
+        # port_pub1_name = node_pub1["Node"][pub1_name_key]["PortsInst"][port_pub1_key]
+
         exception_report = str(e.value)
-        #self.assertEquals(str(e.value),"Flow validation failed. Flow stopped")
+        # self.assertEquals(str(e.value),"Flow validation failed. Flow stopped")
         self.assertIn ("Two non remappable nodes are connected: ", exception_report)
         self.assertIn (pub1_name+"/"+port_pub1_key+"/out", exception_report)
         self.assertIn (sub1_name+"/"+port_sub1_key+"/in", exception_report)
+
+
+class FlowParamsTests(unittest.TestCase):
+    @patch("dal.models.scopestree.Persistence.get_plugin_class")
+    def test_missing_flow_param(self, mock_get_plugin):
+        # Clear existing Redis plugins, if any
+        from dal.models.scopestree import scopes
+        del scopes._children["global"]
+
+        # Set up mocks
+        mock_plugin = Mock()
+        mock_plugin.return_value = Mock()
+        mock_plugin.return_value.read.return_value = Mock()
+        mock_plugin.return_value.read.return_value.get.side_effect = [
+            "1.0",  # getting schema version
+            {
+                "test": {
+                    "Parameter": {
+                        "config_file": {
+                            "Value": "$(config project.configurations.smart)",
+                            "Description": "",
+                            "Type": "any",
+                        }
+                    }
+                }
+            },  # getting Flow data
+            "1.0",  # getting schema version
+            {},  # getting Configuration version
+        ]
+        mock_get_plugin.return_value = mock_plugin
+        flow = Flow("test")
+
+        with self.assertLogs("ParamParser.mov.ai") as cm:
+            flow.get_param("config_file")
+
+        self.assertEqual(
+            cm.output,
+            [
+                'ERROR:ParamParser.mov.ai:Error evaluating "config_file" '
+                'with value "$(config project.configurations.smart)" of '
+                'flow "test"; Configuration project does not exist'
+            ],
+        )

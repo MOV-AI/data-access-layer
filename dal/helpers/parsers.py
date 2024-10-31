@@ -10,10 +10,18 @@
 import ast
 import re
 import os
+from typing import Optional, Protocol
+
 from movai_core_shared.logger import Log
 from dal.models.scopestree import scopes
 from dal.models.var import Var
 from dal.movaidb import MovaiDB
+
+
+class ObjectWithName(Protocol):
+    @property
+    def name(self) -> str:
+        ...
 
 
 class ParamParser:
@@ -43,9 +51,9 @@ class ParamParser:
         self,
         key: str,
         expression: str,
-        node_name: str = None,
-        instance: any = None,
-        context: str = None,
+        node_name: str,
+        instance: ObjectWithName,
+        context: Optional[str] = None,
     ) -> any:
         """
         Returns the parameter value. If the value is a valid expression, it is evaluated.
@@ -87,7 +95,9 @@ class ParamParser:
 
         return expression
 
-    def eval_reference(self, key: str, expression: str, instance: any, node_name: str) -> str:
+    def eval_reference(
+        self, key: str, expression: str, instance: ObjectWithName, node_name: str
+    ) -> str:
         """
         Calls a specific function to evaluate the expression
 
@@ -126,10 +136,17 @@ class ParamParser:
                     f'in subflow "{self.context}" in the context of the flow "{self.flow.ref}"'
                 )
 
-            info = (
-                f'Error evaluating "{key}" with value "{expression}"'
-                f' of node "{instance.name}" {extra_info}'
-            )
+            from dal.models.flow import Flow
+            if isinstance(instance, Flow):
+                info = (
+                    f'Error evaluating "{key}" with value "{expression}"'
+                    f' of flow "{self.flow.ref}"'
+                )
+            else:
+                info = (
+                    f'Error evaluating "{key}" with value "{expression}"'
+                    f' of node "{instance.name}" {extra_info}'
+                )
 
             msg = f"{info}; {error}"
 
