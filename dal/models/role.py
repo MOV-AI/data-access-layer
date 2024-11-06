@@ -144,19 +144,22 @@ class Role(Model):
 
         Raises:
             RoleDoesNotExist: In case there is no Role with that name.
+            RoleError: if the role cannot be deleted for some reason.
         """
         if name == DEFAULT_ROLE_NAME:
             raise RoleError(f"Deleting the {name} role is forbidden!")
+        if RemoteUser.has_any_user_with_role(name) or InternalUser.has_any_user_with_role(name):
+            raise RoleError(f"Role {name} is being used, cannot be deleted.")
+
         try:
-            RemoteUser.remove_role_from_all_users(name)
-            InternalUser.remove_role_from_all_users(name)
-            AclObject.remove_roles_from_all_objects(name)
             role = Role(name)
             scopes().delete(role)
         except KeyError:
             error_msg = "The requested Role does not exist"
             cls.log.error(error_msg)
             raise RoleDoesNotExist(error_msg)
+
+        AclObject.remove_roles_from_all_objects(name)
 
     @staticmethod
     def list_roles_names() -> list:
