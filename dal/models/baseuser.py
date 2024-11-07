@@ -401,7 +401,7 @@ class BaseUser(Model):
         return float(self.LastUpdate)
 
     @classmethod
-    def list_users(cls, domain_name: str) -> list:
+    def list_users(cls, domain_name: str) -> List[str]:
         """lists all the base user fora specified domain
 
         Args:
@@ -418,9 +418,26 @@ class BaseUser(Model):
             if domain_name == user.domain_name:
                 users_names.append(user.account_name)
         cls.log.debug(
-            f"current list of BaseUser records found in the " f"system: {users_names}"
+            f"current list of BaseUser records found in the system: {users_names}"
         )
         return users_names
+
+    @classmethod
+    def has_any_user_with_role(cls, role_name: str) -> bool:
+        """Checks if role is applied to any user
+
+        Args:
+        role_name (str): the name of the role being searched.
+
+        Returns:
+            (bool): whether any user has the role.
+        """
+        for scope in scopes().list_scopes(scope=cls.__name__):
+            principal_name = str(scope["ref"])
+            user = cls.get_user_by_principal_name(principal_name)
+            if role_name in user.roles:
+                return True
+        return False
 
     @classmethod
     def is_exist(cls, domain_name: str, account_name: str):
