@@ -295,7 +295,7 @@ class Flow(Model):
         _context = context or self.ref
 
         # parse the parameter in the context of "_context"
-        output = self.parser.parse(key, param, context=_context)
+        output = self.parser.parse(key, param, "", self, context=_context)
 
         return output
 

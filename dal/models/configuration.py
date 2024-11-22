@@ -8,6 +8,7 @@
    - Moawiya Mograni (moawiya@mov.ai) - 2023
 """
 import pickle
+from typing import Any
 import yaml
 from dal.movaidb import MovaiDB
 from .model import Model
@@ -41,33 +42,27 @@ class Configuration(Model):
         # TODO:We can implement a proper caching system later to save this yaml.load operation
         return yaml.load(self.Yaml, Loader=yaml.FullLoader)
 
-    def get_param(self, param: str) -> any:
+    def get_param(self, param: str) -> Any:
         """Returns the configuration value of a key in the format param.subparam.subsubparam"""
 
-        value = None
-
         dict_value = self.get_value()
-
         fields = param.split(".")
 
         try:
             temp_dict = dict_value
 
             for elem in fields:
-                temp_dict = temp_dict[elem] if elem in temp_dict else None
-
+                temp_dict = temp_dict.get(elem)
                 if temp_dict is None:
                     # this means either temp_dict returned None (happens when key: _empty_) or missing key
                     break
 
-            value = temp_dict
+            return temp_dict
 
         except Exception as exc:
             raise Exception(
                 f'"{param}" is not a valid parameter in configuration "{self.path}"'
             ) from exc
-
-        return value
 
 
 # Register class as model of scope Flow
