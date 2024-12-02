@@ -1,0 +1,15 @@
+{# Add rst-badge after rst-versions for small badge style. #}
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Read the Docs</span>
+        v: {{ current_version }}
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dt>{{ _('Versions') }}</dt>
+        <dl id="docs-versions"></dl>
+        <hr />
+        <a href="https://tech.michaelaltfield.net/2020/07/18/sphinx-rtd-github-pages-1/">Continuous
+            Documentation</a> hosting provided by <a href="https://pages.github.com/">GitHub Pages</a>.
+    </div>
+</div>
