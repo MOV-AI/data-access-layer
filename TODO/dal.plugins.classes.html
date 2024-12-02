@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dal.plugins.classes package &mdash; data-access-layer  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/cropped-Mov.ai-favicon2-32x32.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/versions.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="dal.plugins.persistence package" href="dal.plugins.persistence.html" />
+    <link rel="prev" title="dal.plugins package" href="dal.plugins.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> data-access-layer
+          </a>
+              <div class="version">
+                TODO
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">data-access-layer</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">data-access-layer</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dal.html">dal package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="dal.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="dal.api.html">dal.api package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.archive.html">dal.archive package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.backup.html">dal.backup package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.html">dal.classes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.data.html">dal.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.db_handlers.html">dal.db_handlers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.exceptions.html">dal.exceptions package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.html">dal.helpers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.models.html">dal.models package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.movaidb.html">dal.movaidb package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="dal.plugins.html">dal.plugins package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html">dal.scopes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html">dal.tools package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.utils.html">dal.utils package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html">dal.validation package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.html#module-dal">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">data-access-layer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">data-access-layer</a></li>
+          <li class="breadcrumb-item"><a href="dal.html">dal package</a></li>
+          <li class="breadcrumb-item"><a href="dal.plugins.html">dal.plugins package</a></li>
+      <li class="breadcrumb-item active">dal.plugins.classes package</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/MOV-AI/flows-test-core/blob/TODO/docs/source/dal.plugins.classes.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dal-plugins-classes-package">
+<h1>dal.plugins.classes package<a class="headerlink" href="#dal-plugins-classes-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-dal.plugins.classes.persistence">
+<span id="dal-plugins-classes-persistence-module"></span><h2>dal.plugins.classes.persistence module<a class="headerlink" href="#module-dal.plugins.classes.persistence" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Alexandre Pires  (<a class="reference external" href="mailto:alexandre&#46;pires&#37;&#52;&#48;mov&#46;ai">alexandre<span>&#46;</span>pires<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.plugins.classes.persistence.Persistence">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.plugins.classes.persistence.</span></span><span class="sig-name descname"><span class="pre">Persistence</span></span><a class="headerlink" href="#dal.plugins.classes.persistence.Persistence" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.plugins.classes.plugin.PluginManager" title="dal.plugins.classes.plugin.PluginManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">PluginManager</span></code></a></p>
+<p>Implements an interface for accessing the persistance
+layer</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.plugins.classes.persistence.Persistence.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Logger</span> <span class="pre">persistence.mov.ai</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#dal.plugins.classes.persistence.Persistence.logger" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.persistence.Persistence.plugin_class">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plugin_class</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.persistence.Persistence.plugin_class" title="Permalink to this definition"></a></dt>
+<dd><p>Get current class plugin</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.plugins.classes.persistence.PersistencePlugin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.plugins.classes.persistence.</span></span><span class="sig-name descname"><span class="pre">PersistencePlugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.persistence.PersistencePlugin" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.plugins.classes.plugin.Plugin" title="dal.plugins.classes.plugin.Plugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plugin</span></code></a></p>
+<p>A interface for a workspace plugin</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.persistence.PersistencePlugin.backup">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">backup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.persistence.PersistencePlugin.backup" title="Permalink to this definition"></a></dt>
+<dd><p>archive a scope/scopes into a zip file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.persistence.PersistencePlugin.create_workspace">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_workspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.persistence.PersistencePlugin.create_workspace" title="Permalink to this definition"></a></dt>
+<dd><p>creates a new workspace</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.persistence.PersistencePlugin.delete">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.persistence.PersistencePlugin.delete" title="Permalink to this definition"></a></dt>
+<dd><p>delete data in the persistent layer</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.persistence.PersistencePlugin.delete_workspace">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_workspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.persistence.PersistencePlugin.delete_workspace" title="Permalink to this definition"></a></dt>
+<dd><p>deletes a existing workspace</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.persistence.PersistencePlugin.get_related_objects">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_related_objects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.persistence.PersistencePlugin.get_related_objects" title="Permalink to this definition"></a></dt>
+<dd><p>Get a list of all related objects</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.persistence.PersistencePlugin.get_scope_info">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_scope_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.persistence.PersistencePlugin.get_scope_info" title="Permalink to this definition"></a></dt>
+<dd><p>get the information of a scope</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.persistence.PersistencePlugin.list_scopes">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_scopes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.persistence.PersistencePlugin.list_scopes" title="Permalink to this definition"></a></dt>
+<dd><p>list all existing scopes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.persistence.PersistencePlugin.list_versions">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_versions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.persistence.PersistencePlugin.list_versions" title="Permalink to this definition"></a></dt>
+<dd><p>list all existing scopes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.persistence.PersistencePlugin.list_workspaces">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_workspaces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.persistence.PersistencePlugin.list_workspaces" title="Permalink to this definition"></a></dt>
+<dd><p>list available workspaces</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.persistence.PersistencePlugin.read">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.persistence.PersistencePlugin.read" title="Permalink to this definition"></a></dt>
+<dd><p>read data from the persistent layer</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.persistence.PersistencePlugin.rebuild_indexes">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rebuild_indexes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.persistence.PersistencePlugin.rebuild_indexes" title="Permalink to this definition"></a></dt>
+<dd><p>force the database layer to rebuild
+all indexes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.persistence.PersistencePlugin.restore">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.persistence.PersistencePlugin.restore" title="Permalink to this definition"></a></dt>
+<dd><p>restore a scope/scopes from a zip file</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.plugins.classes.persistence.PersistencePlugin.versioning">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">versioning</span></span><a class="headerlink" href="#dal.plugins.classes.persistence.PersistencePlugin.versioning" title="Permalink to this definition"></a></dt>
+<dd><p>returns if this plugin supports versioning</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.persistence.PersistencePlugin.workspace_info">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">workspace_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.persistence.PersistencePlugin.workspace_info" title="Permalink to this definition"></a></dt>
+<dd><p>get information about a workspace</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.persistence.PersistencePlugin.write">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.persistence.PersistencePlugin.write" title="Permalink to this definition"></a></dt>
+<dd><p>write data to the persistent layer</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.plugins.classes.persistence.PersistentObject">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.plugins.classes.persistence.</span></span><span class="sig-name descname"><span class="pre">PersistentObject</span></span><a class="headerlink" href="#dal.plugins.classes.persistence.PersistentObject" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>This class represents a interface for a persistent object
+A persistent object is a object that can be stored on a
+persistent media like disc, database, key-value store</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.persistence.PersistentObject.delete">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.persistence.PersistentObject.delete" title="Permalink to this definition"></a></dt>
+<dd><p>Delte object from the persistant layer</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.persistence.PersistentObject.write">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.persistence.PersistentObject.write" title="Permalink to this definition"></a></dt>
+<dd><p>Writes object on the persistant layer</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dal.plugins.classes.plugin">
+<span id="dal-plugins-classes-plugin-module"></span><h2>dal.plugins.classes.plugin module<a class="headerlink" href="#module-dal.plugins.classes.plugin" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Alexandre Pires  (<a class="reference external" href="mailto:alexandre&#46;pires&#37;&#52;&#48;mov&#46;ai">alexandre<span>&#46;</span>pires<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.plugins.classes.plugin.Plugin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.plugins.classes.plugin.</span></span><span class="sig-name descname"><span class="pre">Plugin</span></span><a class="headerlink" href="#dal.plugins.classes.plugin.Plugin" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A abstract class for plugins</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.plugins.classes.plugin.Plugin.plugin_name">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plugin_name</span></span><a class="headerlink" href="#dal.plugins.classes.plugin.Plugin.plugin_name" title="Permalink to this definition"></a></dt>
+<dd><p>Get current plugin class</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.plugins.classes.plugin.Plugin.plugin_version">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plugin_version</span></span><a class="headerlink" href="#dal.plugins.classes.plugin.Plugin.plugin_version" title="Permalink to this definition"></a></dt>
+<dd><p>Get current plugin class</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.plugins.classes.plugin.PluginManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.plugins.classes.plugin.</span></span><span class="sig-name descname"><span class="pre">PluginManager</span></span><a class="headerlink" href="#dal.plugins.classes.plugin.PluginManager" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A abstract class for plugin managers</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.plugin.PluginManager.get_plugin">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_plugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.plugin.PluginManager.get_plugin" title="Permalink to this definition"></a></dt>
+<dd><p>Get the plugin implementation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.plugin.PluginManager.get_plugin_class">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_plugin_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.plugin.PluginManager.get_plugin_class" title="Permalink to this definition"></a></dt>
+<dd><p>Get the plugin implementation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.plugin.PluginManager.plugin_class">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plugin_class</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.plugin.PluginManager.plugin_class" title="Permalink to this definition"></a></dt>
+<dd><p>Get current class plugin</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.plugin.PluginManager.register_plugin">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">register_plugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.plugin.PluginManager.register_plugin" title="Permalink to this definition"></a></dt>
+<dd><p>Register a new plugin</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dal.plugins.classes.resource">
+<span id="dal-plugins-classes-resource-module"></span><h2>dal.plugins.classes.resource module<a class="headerlink" href="#module-dal.plugins.classes.resource" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Alexandre Pires  (<a class="reference external" href="mailto:alexandre&#46;pires&#37;&#52;&#48;mov&#46;ai">alexandre<span>&#46;</span>pires<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.plugins.classes.resource.Resource">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.plugins.classes.resource.</span></span><span class="sig-name descname"><span class="pre">Resource</span></span><a class="headerlink" href="#dal.plugins.classes.resource.Resource" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.plugins.classes.plugin.PluginManager" title="dal.plugins.classes.plugin.PluginManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">PluginManager</span></code></a></p>
+<p>This class represents a resources, a resources can be a image file, a
+python script, a map, or any other kind of file that needs to be
+accessed</p>
+<p>A resources might be located on the local filesystem, or a external
+filesystem.</p>
+<p>We provide one interface to implement a plugin to access the physical
+resources</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.resource.Resource.exists">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.resource.Resource.exists" title="Permalink to this definition"></a></dt>
+<dd><p>check if resources exists, returns True/False</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.resource.Resource.get_plugin">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_plugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.resource.Resource.get_plugin" title="Permalink to this definition"></a></dt>
+<dd><p>Get the plugin implementation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.resource.Resource.list_resources">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_resources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.resource.Resource.list_resources" title="Permalink to this definition"></a></dt>
+<dd><p>returns a list of available resources at location, returns a list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.resource.Resource.plugin_class">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plugin_class</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.resource.Resource.plugin_class" title="Permalink to this definition"></a></dt>
+<dd><p>Get current class plugin</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.resource.Resource.read_binary">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_binary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.resource.Resource.read_binary" title="Permalink to this definition"></a></dt>
+<dd><p>load a binary file, returns a BytesIO</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.resource.Resource.read_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.resource.Resource.read_json" title="Permalink to this definition"></a></dt>
+<dd><p>load a json file, returns a dict</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.resource.Resource.read_text">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.resource.Resource.read_text" title="Permalink to this definition"></a></dt>
+<dd><p>load a text file, returns a StringIO</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.resource.Resource.read_yaml">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.resource.Resource.read_yaml" title="Permalink to this definition"></a></dt>
+<dd><p>load a yaml file, returns a dict</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.resource.Resource.validate_url">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.resource.Resource.validate_url" title="Permalink to this definition"></a></dt>
+<dd><p>validate an url (schema)://(net location), ie: <a class="reference external" href="file://node.json">file://node.json</a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.plugins.classes.resource.ResourceException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.plugins.classes.resource.</span></span><span class="sig-name descname"><span class="pre">ResourceException</span></span><a class="headerlink" href="#dal.plugins.classes.resource.ResourceException" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>A resources handling exception</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.plugins.classes.resource.ResourcePlugin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.plugins.classes.resource.</span></span><span class="sig-name descname"><span class="pre">ResourcePlugin</span></span><a class="headerlink" href="#dal.plugins.classes.resource.ResourcePlugin" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.plugins.classes.plugin.Plugin" title="dal.plugins.classes.plugin.Plugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plugin</span></code></a></p>
+<p>Exposes a simple interface to implement a plugin
+to access physical resources</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.resource.ResourcePlugin.exists">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.resource.ResourcePlugin.exists" title="Permalink to this definition"></a></dt>
+<dd><p>check if resources exists, returns True/False</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.resource.ResourcePlugin.list_resources">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_resources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.resource.ResourcePlugin.list_resources" title="Permalink to this definition"></a></dt>
+<dd><p>returns a list of available resources at location, returns a list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.resource.ResourcePlugin.read_binary">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_binary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.resource.ResourcePlugin.read_binary" title="Permalink to this definition"></a></dt>
+<dd><p>read a binary file, returns a IOBytes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.resource.ResourcePlugin.read_json">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.resource.ResourcePlugin.read_json" title="Permalink to this definition"></a></dt>
+<dd><p>read a json file, returns a dict</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.resource.ResourcePlugin.read_text">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.resource.ResourcePlugin.read_text" title="Permalink to this definition"></a></dt>
+<dd><p>read a text file, returns a StringIO</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dal.plugins.classes">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dal.plugins.classes" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Moawiya Mograbi  (<a class="reference external" href="mailto:Moawiya&#37;&#52;&#48;mov&#46;ai">Moawiya<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2022</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.plugins.classes.Persistence">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.plugins.classes.</span></span><span class="sig-name descname"><span class="pre">Persistence</span></span><a class="headerlink" href="#dal.plugins.classes.Persistence" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.plugins.classes.plugin.PluginManager" title="dal.plugins.classes.plugin.PluginManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">PluginManager</span></code></a></p>
+<p>Implements an interface for accessing the persistance
+layer</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.plugins.classes.Persistence.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Logger</span> <span class="pre">persistence.mov.ai</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#dal.plugins.classes.Persistence.logger" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.Persistence.plugin_class">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plugin_class</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.Persistence.plugin_class" title="Permalink to this definition"></a></dt>
+<dd><p>Get current class plugin</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.plugins.classes.PersistencePlugin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.plugins.classes.</span></span><span class="sig-name descname"><span class="pre">PersistencePlugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.PersistencePlugin" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.plugins.classes.plugin.Plugin" title="dal.plugins.classes.plugin.Plugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plugin</span></code></a></p>
+<p>A interface for a workspace plugin</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.PersistencePlugin.backup">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">backup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.PersistencePlugin.backup" title="Permalink to this definition"></a></dt>
+<dd><p>archive a scope/scopes into a zip file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.PersistencePlugin.create_workspace">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_workspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.PersistencePlugin.create_workspace" title="Permalink to this definition"></a></dt>
+<dd><p>creates a new workspace</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.PersistencePlugin.delete">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.PersistencePlugin.delete" title="Permalink to this definition"></a></dt>
+<dd><p>delete data in the persistent layer</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.PersistencePlugin.delete_workspace">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_workspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.PersistencePlugin.delete_workspace" title="Permalink to this definition"></a></dt>
+<dd><p>deletes a existing workspace</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.PersistencePlugin.get_related_objects">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_related_objects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.PersistencePlugin.get_related_objects" title="Permalink to this definition"></a></dt>
+<dd><p>Get a list of all related objects</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.PersistencePlugin.get_scope_info">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_scope_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.PersistencePlugin.get_scope_info" title="Permalink to this definition"></a></dt>
+<dd><p>get the information of a scope</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.PersistencePlugin.list_scopes">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_scopes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.PersistencePlugin.list_scopes" title="Permalink to this definition"></a></dt>
+<dd><p>list all existing scopes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.PersistencePlugin.list_versions">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_versions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.PersistencePlugin.list_versions" title="Permalink to this definition"></a></dt>
+<dd><p>list all existing scopes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.PersistencePlugin.list_workspaces">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_workspaces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.PersistencePlugin.list_workspaces" title="Permalink to this definition"></a></dt>
+<dd><p>list available workspaces</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.PersistencePlugin.read">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.PersistencePlugin.read" title="Permalink to this definition"></a></dt>
+<dd><p>read data from the persistent layer</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.PersistencePlugin.rebuild_indexes">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rebuild_indexes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.PersistencePlugin.rebuild_indexes" title="Permalink to this definition"></a></dt>
+<dd><p>force the database layer to rebuild
+all indexes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.PersistencePlugin.restore">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.PersistencePlugin.restore" title="Permalink to this definition"></a></dt>
+<dd><p>restore a scope/scopes from a zip file</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.plugins.classes.PersistencePlugin.versioning">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">versioning</span></span><a class="headerlink" href="#dal.plugins.classes.PersistencePlugin.versioning" title="Permalink to this definition"></a></dt>
+<dd><p>returns if this plugin supports versioning</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.PersistencePlugin.workspace_info">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">workspace_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.PersistencePlugin.workspace_info" title="Permalink to this definition"></a></dt>
+<dd><p>get information about a workspace</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.PersistencePlugin.write">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.PersistencePlugin.write" title="Permalink to this definition"></a></dt>
+<dd><p>write data to the persistent layer</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.plugins.classes.PersistentObject">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.plugins.classes.</span></span><span class="sig-name descname"><span class="pre">PersistentObject</span></span><a class="headerlink" href="#dal.plugins.classes.PersistentObject" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>This class represents a interface for a persistent object
+A persistent object is a object that can be stored on a
+persistent media like disc, database, key-value store</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.PersistentObject.delete">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.PersistentObject.delete" title="Permalink to this definition"></a></dt>
+<dd><p>Delte object from the persistant layer</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.PersistentObject.write">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.PersistentObject.write" title="Permalink to this definition"></a></dt>
+<dd><p>Writes object on the persistant layer</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.plugins.classes.Plugin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.plugins.classes.</span></span><span class="sig-name descname"><span class="pre">Plugin</span></span><a class="headerlink" href="#dal.plugins.classes.Plugin" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A abstract class for plugins</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.plugins.classes.Plugin.plugin_name">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plugin_name</span></span><a class="headerlink" href="#dal.plugins.classes.Plugin.plugin_name" title="Permalink to this definition"></a></dt>
+<dd><p>Get current plugin class</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.plugins.classes.Plugin.plugin_version">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plugin_version</span></span><a class="headerlink" href="#dal.plugins.classes.Plugin.plugin_version" title="Permalink to this definition"></a></dt>
+<dd><p>Get current plugin class</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.plugins.classes.PluginManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.plugins.classes.</span></span><span class="sig-name descname"><span class="pre">PluginManager</span></span><a class="headerlink" href="#dal.plugins.classes.PluginManager" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A abstract class for plugin managers</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.PluginManager.get_plugin">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_plugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.PluginManager.get_plugin" title="Permalink to this definition"></a></dt>
+<dd><p>Get the plugin implementation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.PluginManager.get_plugin_class">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_plugin_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.PluginManager.get_plugin_class" title="Permalink to this definition"></a></dt>
+<dd><p>Get the plugin implementation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.PluginManager.plugin_class">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plugin_class</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.PluginManager.plugin_class" title="Permalink to this definition"></a></dt>
+<dd><p>Get current class plugin</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.PluginManager.register_plugin">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">register_plugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.PluginManager.register_plugin" title="Permalink to this definition"></a></dt>
+<dd><p>Register a new plugin</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.plugins.classes.Resource">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.plugins.classes.</span></span><span class="sig-name descname"><span class="pre">Resource</span></span><a class="headerlink" href="#dal.plugins.classes.Resource" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.plugins.classes.plugin.PluginManager" title="dal.plugins.classes.plugin.PluginManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">PluginManager</span></code></a></p>
+<p>This class represents a resources, a resources can be a image file, a
+python script, a map, or any other kind of file that needs to be
+accessed</p>
+<p>A resources might be located on the local filesystem, or a external
+filesystem.</p>
+<p>We provide one interface to implement a plugin to access the physical
+resources</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.Resource.exists">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.Resource.exists" title="Permalink to this definition"></a></dt>
+<dd><p>check if resources exists, returns True/False</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.Resource.get_plugin">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_plugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.Resource.get_plugin" title="Permalink to this definition"></a></dt>
+<dd><p>Get the plugin implementation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.Resource.list_resources">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_resources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.Resource.list_resources" title="Permalink to this definition"></a></dt>
+<dd><p>returns a list of available resources at location, returns a list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.Resource.plugin_class">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plugin_class</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.Resource.plugin_class" title="Permalink to this definition"></a></dt>
+<dd><p>Get current class plugin</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.Resource.read_binary">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_binary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.Resource.read_binary" title="Permalink to this definition"></a></dt>
+<dd><p>load a binary file, returns a BytesIO</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.Resource.read_json">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.Resource.read_json" title="Permalink to this definition"></a></dt>
+<dd><p>load a json file, returns a dict</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.Resource.read_text">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.Resource.read_text" title="Permalink to this definition"></a></dt>
+<dd><p>load a text file, returns a StringIO</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.Resource.read_yaml">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.Resource.read_yaml" title="Permalink to this definition"></a></dt>
+<dd><p>load a yaml file, returns a dict</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.Resource.validate_url">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.Resource.validate_url" title="Permalink to this definition"></a></dt>
+<dd><p>validate an url (schema)://(net location), ie: <a class="reference external" href="file://node.json">file://node.json</a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.plugins.classes.ResourceException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.plugins.classes.</span></span><span class="sig-name descname"><span class="pre">ResourceException</span></span><a class="headerlink" href="#dal.plugins.classes.ResourceException" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>A resources handling exception</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.plugins.classes.ResourcePlugin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.plugins.classes.</span></span><span class="sig-name descname"><span class="pre">ResourcePlugin</span></span><a class="headerlink" href="#dal.plugins.classes.ResourcePlugin" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.plugins.classes.plugin.Plugin" title="dal.plugins.classes.plugin.Plugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plugin</span></code></a></p>
+<p>Exposes a simple interface to implement a plugin
+to access physical resources</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.ResourcePlugin.exists">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.ResourcePlugin.exists" title="Permalink to this definition"></a></dt>
+<dd><p>check if resources exists, returns True/False</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.ResourcePlugin.list_resources">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_resources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.ResourcePlugin.list_resources" title="Permalink to this definition"></a></dt>
+<dd><p>returns a list of available resources at location, returns a list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.ResourcePlugin.read_binary">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_binary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.ResourcePlugin.read_binary" title="Permalink to this definition"></a></dt>
+<dd><p>read a binary file, returns a IOBytes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.ResourcePlugin.read_json">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.ResourcePlugin.read_json" title="Permalink to this definition"></a></dt>
+<dd><p>read a json file, returns a dict</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.classes.ResourcePlugin.read_text">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.classes.ResourcePlugin.read_text" title="Permalink to this definition"></a></dt>
+<dd><p>read a text file, returns a StringIO</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dal.plugins.html" class="btn btn-neutral float-left" title="dal.plugins package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dal.plugins.persistence.html" class="btn btn-neutral float-right" title="dal.plugins.persistence package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Backend.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Read the Docs</span>
+        v: TODO
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dt>Versions</dt>
+        <dl id="docs-versions"></dl>
+        <hr />
+        <a href="https://tech.michaelaltfield.net/2020/07/18/sphinx-rtd-github-pages-1/">Continuous
+            Documentation</a> hosting provided by <a href="https://pages.github.com/">GitHub Pages</a>.
+    </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

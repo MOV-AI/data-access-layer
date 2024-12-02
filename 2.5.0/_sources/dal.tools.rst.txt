@@ -1,0 +1,37 @@
+dal.tools package
+=================
+
+Submodules
+----------
+
+dal.tools.backup module
+-----------------------
+
+.. automodule:: dal.tools.backup
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.tools.edit\_yaml module
+---------------------------
+
+.. automodule:: dal.tools.edit_yaml
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.tools.secret\_key module
+----------------------------
+
+.. automodule:: dal.tools.secret_key
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: dal.tools
+   :members:
+   :undoc-members:
+   :show-inheritance:

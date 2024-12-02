@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dal.helpers package &mdash; data-access-layer  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/cropped-Mov.ai-favicon2-32x32.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/versions.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="dal.helpers.flow package" href="dal.helpers.flow.html" />
+    <link rel="prev" title="dal.exceptions package" href="dal.exceptions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> data-access-layer
+          </a>
+              <div class="version">
+                TODO
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">data-access-layer</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">data-access-layer</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dal.html">dal package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="dal.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="dal.api.html">dal.api package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.archive.html">dal.archive package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.backup.html">dal.backup package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.html">dal.classes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.data.html">dal.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.db_handlers.html">dal.db_handlers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.exceptions.html">dal.exceptions package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">dal.helpers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.models.html">dal.models package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.movaidb.html">dal.movaidb package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.html">dal.plugins package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html">dal.scopes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html">dal.tools package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.utils.html">dal.utils package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html">dal.validation package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.html#module-dal">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">data-access-layer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">data-access-layer</a></li>
+          <li class="breadcrumb-item"><a href="dal.html">dal package</a></li>
+      <li class="breadcrumb-item active">dal.helpers package</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/MOV-AI/flows-test-core/blob/TODO/docs/source/dal.helpers.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dal-helpers-package">
+<h1>dal.helpers package<a class="headerlink" href="#dal-helpers-package" title="Permalink to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dal.helpers.flow.html">dal.helpers.flow package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dal.helpers.flow.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dal.helpers.flow.html#module-dal.helpers.flow.gflow">dal.helpers.flow.gflow module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.gflow.GFlow"><code class="docutils literal notranslate"><span class="pre">GFlow</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.gflow.GFlow.add_edge"><code class="docutils literal notranslate"><span class="pre">GFlow.add_edge()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.gflow.GFlow.calc_remaps"><code class="docutils literal notranslate"><span class="pre">GFlow.calc_remaps()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.gflow.GFlow.check_forced_links"><code class="docutils literal notranslate"><span class="pre">GFlow.check_forced_links()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.gflow.GFlow.check_ros_port"><code class="docutils literal notranslate"><span class="pre">GFlow.check_ros_port()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.gflow.GFlow.flow"><code class="docutils literal notranslate"><span class="pre">GFlow.flow</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.gflow.GFlow.forced_remap"><code class="docutils literal notranslate"><span class="pre">GFlow.forced_remap()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.gflow.GFlow.generate_graph"><code class="docutils literal notranslate"><span class="pre">GFlow.generate_graph()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.gflow.GFlow.generate_remaps"><code class="docutils literal notranslate"><span class="pre">GFlow.generate_remaps()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.gflow.GFlow.get_adjacent_unremappable_port"><code class="docutils literal notranslate"><span class="pre">GFlow.get_adjacent_unremappable_port()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.gflow.GFlow.get_port_template"><code class="docutils literal notranslate"><span class="pre">GFlow.get_port_template()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.gflow.GFlow.get_remaps"><code class="docutils literal notranslate"><span class="pre">GFlow.get_remaps()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.gflow.GFlow.get_vertex"><code class="docutils literal notranslate"><span class="pre">GFlow.get_vertex()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.gflow.GFlow.iterate_through_links"><code class="docutils literal notranslate"><span class="pre">GFlow.iterate_through_links()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.gflow.GFlow.logger"><code class="docutils literal notranslate"><span class="pre">GFlow.logger</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.gflow.GFlow.reverse_type"><code class="docutils literal notranslate"><span class="pre">GFlow.reverse_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.gflow.GFlow.set_remap"><code class="docutils literal notranslate"><span class="pre">GFlow.set_remap()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.gflow.GFlow.should_skip"><code class="docutils literal notranslate"><span class="pre">GFlow.should_skip()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.gflow.GFlow.sort_graph"><code class="docutils literal notranslate"><span class="pre">GFlow.sort_graph()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dal.helpers.flow.html#module-dal.helpers.flow">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.GFlow"><code class="docutils literal notranslate"><span class="pre">GFlow</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.GFlow.add_edge"><code class="docutils literal notranslate"><span class="pre">GFlow.add_edge()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.GFlow.calc_remaps"><code class="docutils literal notranslate"><span class="pre">GFlow.calc_remaps()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.GFlow.check_forced_links"><code class="docutils literal notranslate"><span class="pre">GFlow.check_forced_links()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.GFlow.check_ros_port"><code class="docutils literal notranslate"><span class="pre">GFlow.check_ros_port()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.GFlow.flow"><code class="docutils literal notranslate"><span class="pre">GFlow.flow</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.GFlow.forced_remap"><code class="docutils literal notranslate"><span class="pre">GFlow.forced_remap()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.GFlow.generate_graph"><code class="docutils literal notranslate"><span class="pre">GFlow.generate_graph()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.GFlow.generate_remaps"><code class="docutils literal notranslate"><span class="pre">GFlow.generate_remaps()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.GFlow.get_adjacent_unremappable_port"><code class="docutils literal notranslate"><span class="pre">GFlow.get_adjacent_unremappable_port()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.GFlow.get_port_template"><code class="docutils literal notranslate"><span class="pre">GFlow.get_port_template()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.GFlow.get_remaps"><code class="docutils literal notranslate"><span class="pre">GFlow.get_remaps()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.GFlow.get_vertex"><code class="docutils literal notranslate"><span class="pre">GFlow.get_vertex()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.GFlow.iterate_through_links"><code class="docutils literal notranslate"><span class="pre">GFlow.iterate_through_links()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.GFlow.logger"><code class="docutils literal notranslate"><span class="pre">GFlow.logger</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.GFlow.reverse_type"><code class="docutils literal notranslate"><span class="pre">GFlow.reverse_type()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.GFlow.set_remap"><code class="docutils literal notranslate"><span class="pre">GFlow.set_remap()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.GFlow.should_skip"><code class="docutils literal notranslate"><span class="pre">GFlow.should_skip()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.flow.html#dal.helpers.flow.GFlow.sort_graph"><code class="docutils literal notranslate"><span class="pre">GFlow.sort_graph()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-dal.helpers.cache">
+<span id="dal-helpers-cache-module"></span><h2>dal.helpers.cache module<a class="headerlink" href="#module-dal.helpers.cache" title="Permalink to this heading"></a></h2>
+<section id="size-of-each-object-in-bytes-calculated-using-pympler-asizeof">
+<h3># Size of each object in bytes, calculated using pympler asizeof<a class="headerlink" href="#size-of-each-object-in-bytes-calculated-using-pympler-asizeof" title="Permalink to this heading"></a></h3>
+<div class="line-block">
+<div class="line">Type          |   Models      |</div>
+</div>
+<p>│ Flow          |   19.36 MB    |
+│ Configuration |   21.86 MB    |
+│ Ports         |   23.18 MB    |
+| Layout        |   23.04 MB    |
+| Annotation    |   23.04 MB    |
+| GraphicScene  |   22.7  MB    |
+———————————</p>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.helpers.cache.ThreadSafeCache">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.helpers.cache.</span></span><span class="sig-name descname"><span class="pre">ThreadSafeCache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maxsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ttl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10800</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.helpers.cache.ThreadSafeCache" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.cache.ThreadSafeCache.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.helpers.cache.ThreadSafeCache.get" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dal.helpers.helpers">
+<span id="dal-helpers-helpers-module"></span><h2>dal.helpers.helpers module<a class="headerlink" href="#module-dal.helpers.helpers" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Manuel Silva (<a class="reference external" href="mailto:manuel&#46;silva&#37;&#52;&#48;mov&#46;ai">manuel<span>&#46;</span>silva<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020
+- Tiago Paulino (<a class="reference external" href="mailto:tiago&#37;&#52;&#48;mov&#46;ai">tiago<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.helpers.helpers.Helpers">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.helpers.helpers.</span></span><span class="sig-name descname"><span class="pre">Helpers</span></span><a class="headerlink" href="#dal.helpers.helpers.Helpers" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Helper Methods</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.helpers.Helpers.find_by_key">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">find_by_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.helpers.helpers.Helpers.find_by_key" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.helpers.Helpers.get_args">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prev_struct</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#dal.helpers.helpers.Helpers.get_args" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.helpers.Helpers.get_partial_dict">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_partial_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#dal.helpers.helpers.Helpers.get_partial_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Giving a full dict and a beggining return the full dict containing that beggining</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.helpers.Helpers.join_first">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">join_first</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">add_struct</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prev_struct</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#dal.helpers.helpers.Helpers.join_first" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.helpers.Helpers.replace_dict_values">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">replace_dict_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">haystack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">needle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.helpers.helpers.Helpers.replace_dict_values" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.helpers.Helpers.update_dict">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_base_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_add_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#dal.helpers.helpers.Helpers.update_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Join a dictionary with another dictionary</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dal.helpers.helpers.flatten">
+<span class="sig-prename descclassname"><span class="pre">dal.helpers.helpers.</span></span><span class="sig-name descname"><span class="pre">flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">join_char</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#dal.helpers.helpers.flatten" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a list of paths</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em>) – expects a dictionary to start</p></li>
+<li><p><strong>output</strong> (<em>list</em>) – variable to save the list of paths</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – accumulative path</p></li>
+<li><p><strong>join_char</strong> (<em>str</em>) – character to join path entries</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of paths</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>output (list)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-dal.helpers.parsers">
+<span id="dal-helpers-parsers-module"></span><h2>dal.helpers.parsers module<a class="headerlink" href="#module-dal.helpers.parsers" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Manuel Silva  (<a class="reference external" href="mailto:manuel&#46;silva&#37;&#52;&#48;mov&#46;ai">manuel<span>&#46;</span>silva<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.helpers.parsers.ObjectWithName">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.helpers.parsers.</span></span><span class="sig-name descname"><span class="pre">ObjectWithName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.helpers.parsers.ObjectWithName" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.helpers.parsers.ObjectWithName.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dal.helpers.parsers.ObjectWithName.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.helpers.parsers.ParamParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.helpers.parsers.</span></span><span class="sig-name descname"><span class="pre">ParamParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.helpers.parsers.ParamParser" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Parser for the node instance, container and flow parameters
+Supports configuration. parameters, var, flow and env variables</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.parsers.ParamParser.eval_config">
+<span class="sig-name descname"><span class="pre">eval_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">__</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.helpers.parsers.ParamParser.eval_config" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Returns the config expression evaluated</dt><dd><p>$(&lt;contex&gt; &lt;configuration name&gt;.&lt;parameter reference&gt;)
+ex.: $(config name.var1.var2)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>_config</strong> (<em>str</em>) – &lt;configuration name&gt;.&lt;parameter reference&gt;</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the expression evaluated</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>output (any)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.parsers.ParamParser.eval_flow">
+<span class="sig-name descname"><span class="pre">eval_flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_name</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">any</span></span></span><a class="headerlink" href="#dal.helpers.parsers.ParamParser.eval_flow" title="Permalink to this definition"></a></dt>
+<dd><dl>
+<dt>Returns the flow expression evaluated</dt><dd><p>ex.: $(flow myvar)</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>param_name (str): reference to a parameter
+default (str): default value with parsing
+instance (NodeInst || Container): an instance
+node_name (str): node instance name (may be in the context of a subflow)</p>
+</dd>
+<dt>Returns:</dt><dd><p>output (any): the expression evaluated</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.parsers.ParamParser.eval_param">
+<span class="sig-name descname"><span class="pre">eval_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">any</span></span></span><a class="headerlink" href="#dal.helpers.parsers.ParamParser.eval_param" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Returns the param expression evaluated or default</dt><dd><p>ex.: $(param name)</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param_name</strong> (<em>str</em>) – reference to a parameter</p></li>
+<li><p><strong>default</strong> (<em>str</em>) – default value with parsing</p></li>
+<li><p><strong>instance</strong> (<a class="reference internal" href="dal.models.html#dal.models.nodeinst.NodeInst" title="dal.models.nodeinst.NodeInst"><em>NodeInst</em></a><em> |</em><em>| </em><a class="reference internal" href="dal.models.html#dal.models.container.Container" title="dal.models.container.Container"><em>Container</em></a>) – an instance</p></li>
+<li><p><strong>node_name</strong> (<em>str</em>) – node instance name (may be in the context of a subflow)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the value of the parameter or the default</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>output (any)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.parsers.ParamParser.eval_reference">
+<span class="sig-name descname"><span class="pre">eval_reference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expression</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dal.helpers.parsers.ObjectWithName" title="dal.helpers.parsers.ObjectWithName"><span class="pre">ObjectWithName</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dal.helpers.parsers.ParamParser.eval_reference" title="Permalink to this definition"></a></dt>
+<dd><p>Calls a specific function to evaluate the expression</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – name of the requested parameter</p></li>
+<li><p><strong>expression</strong> (<em>str</em>) – the expression to be evaluated
+format: $(context reference)</p></li>
+<li><p><strong>instance</strong> (<a class="reference internal" href="dal.models.html#dal.models.nodeinst.NodeInst" title="dal.models.nodeinst.NodeInst"><em>NodeInst</em></a><em> |</em><em>| </em><a class="reference internal" href="dal.models.html#dal.models.container.Container" title="dal.models.container.Container"><em>Container</em></a>) – an instance</p></li>
+<li><p><strong>node_name</strong> (<em>str</em>) – node instance name (may be in the context of a subflow)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the parameter value after evaluation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>output (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.parsers.ParamParser.eval_var">
+<span class="sig-name descname"><span class="pre">eval_var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reference</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">__</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">any</span></span></span><a class="headerlink" href="#dal.helpers.parsers.ParamParser.eval_var" title="Permalink to this definition"></a></dt>
+<dd><dl>
+<dt>Returns the var expression evaluated</dt><dd><p>ex.: $(var robot.name)</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><dl class="simple">
+<dt>reference (str): reference to</dt><dd><p>a parameter  &lt;fleet or robot&gt;.&lt;parameter reference&gt;</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><p>output (any): the expression evaluated</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.helpers.parsers.ParamParser.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Logger</span> <span class="pre">ParamParser.mov.ai</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#dal.helpers.parsers.ParamParser.logger" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.parsers.ParamParser.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expression</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dal.helpers.parsers.ObjectWithName" title="dal.helpers.parsers.ObjectWithName"><span class="pre">ObjectWithName</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">any</span></span></span><a class="headerlink" href="#dal.helpers.parsers.ParamParser.parse" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the parameter value. If the value is a valid expression, it is evaluated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – name of the requested parameter</p></li>
+<li><p><strong>expression</strong> (<em>str</em>) – the expression to be evaluated
+format: $(context reference)</p></li>
+<li><p><strong>node_name</strong> (<em>str</em>) – the node name</p></li>
+<li><p><strong>instance</strong> (<a class="reference internal" href="dal.models.html#dal.models.nodeinst.NodeInst" title="dal.models.nodeinst.NodeInst"><em>NodeInst</em></a><em> |</em><em>| </em><a class="reference internal" href="dal.models.html#dal.models.container.Container" title="dal.models.container.Container"><em>Container</em></a>) – an instance</p></li>
+<li><p><strong>context</strong> (<em>str</em>) – the context of the evaluation (main flow)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the parameter value after evaluation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>output (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dal.helpers.parsers.get_string_from_template">
+<span class="sig-prename descclassname"><span class="pre">dal.helpers.parsers.</span></span><span class="sig-name descname"><span class="pre">get_string_from_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_entry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dal.helpers.parsers.get_string_from_template" title="Permalink to this definition"></a></dt>
+<dd><p>Applies a task entry into a template</p>
+</dd></dl>
+
+</section>
+<section id="module-dal.helpers">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dal.helpers" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Moawiya Mograbi  (<a class="reference external" href="mailto:moawiya&#37;&#52;&#48;mov&#46;ai">moawiya<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2022</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.helpers.GFlow">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.helpers.</span></span><span class="sig-name descname"><span class="pre">GFlow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.helpers.GFlow" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Graph generator in use to calculate remaps</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.GFlow.add_edge">
+<span class="sig-name descname"><span class="pre">add_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#dal.helpers.GFlow.add_edge" title="Permalink to this definition"></a></dt>
+<dd><p>Add a new edge to the vertex</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.GFlow.calc_remaps">
+<span class="sig-name descname"><span class="pre">calc_remaps</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#dal.helpers.GFlow.calc_remaps" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the remaps after calculation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.GFlow.check_forced_links">
+<span class="sig-name descname"><span class="pre">check_forced_links</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dal.validation.html#dal.validation.template.Template" title="dal.validation.template.Template"><span class="pre">Template</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dal.helpers.GFlow.check_forced_links" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.GFlow.check_ros_port">
+<span class="sig-name descname"><span class="pre">check_ros_port</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.helpers.GFlow.check_ros_port" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>function that verifies if a specific port name has a ROS message associated</dt><dd><dl class="simple">
+<dt>Args:</dt><dd><p>node_name (str): simplified node name (e.g. publisher2)
+port_name (str): full port name (e.g. publisher2/bool_out/out)</p>
+</dd>
+<dt>Returns:</dt><dd><p>bool: True if port name has a ROS message associateds. False otherwise</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.GFlow.forced_remap">
+<span class="sig-name descname"><span class="pre">forced_remap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dal.validation.html#dal.validation.template.Template" title="dal.validation.template.Template"><span class="pre">Template</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dal.helpers.GFlow.forced_remap" title="Permalink to this definition"></a></dt>
+<dd><p>Special remap rules</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.GFlow.generate_graph">
+<span class="sig-name descname"><span class="pre">generate_graph</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#dal.helpers.GFlow.generate_graph" title="Permalink to this definition"></a></dt>
+<dd><p>Generate the graph</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.GFlow.generate_remaps">
+<span class="sig-name descname"><span class="pre">generate_remaps</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#dal.helpers.GFlow.generate_remaps" title="Permalink to this definition"></a></dt>
+<dd><p>Generates the remaps</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.GFlow.get_adjacent_unremappable_port">
+<span class="sig-name descname"><span class="pre">get_adjacent_unremappable_port</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.helpers.GFlow.get_adjacent_unremappable_port" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.GFlow.get_port_template">
+<span class="sig-name descname"><span class="pre">get_port_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_inst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dal.helpers.GFlow.get_port_template" title="Permalink to this definition"></a></dt>
+<dd><p>Get the port template from the node template</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.GFlow.get_remaps">
+<span class="sig-name descname"><span class="pre">get_remaps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#dal.helpers.GFlow.get_remaps" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the calculated remaps</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.GFlow.get_vertex">
+<span class="sig-name descname"><span class="pre">get_vertex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'From'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#dal.helpers.GFlow.get_vertex" title="Permalink to this definition"></a></dt>
+<dd><p>Get or create a new vertex</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.GFlow.iterate_through_links">
+<span class="sig-name descname"><span class="pre">iterate_through_links</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#dal.helpers.GFlow.iterate_through_links" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.helpers.GFlow.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Logger</span> <span class="pre">gflow.mov.ai</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#dal.helpers.GFlow.logger" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.GFlow.reverse_type">
+<span class="sig-name descname"><span class="pre">reverse_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">port_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dal.helpers.GFlow.reverse_type" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.GFlow.set_remap">
+<span class="sig-name descname"><span class="pre">set_remap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.helpers.GFlow.set_remap" title="Permalink to this definition"></a></dt>
+<dd><p>Set the vertex remap value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.GFlow.should_skip">
+<span class="sig-name descname"><span class="pre">should_skip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dal.validation.html#dal.validation.template.Template" title="dal.validation.template.Template"><span class="pre">Template</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.helpers.GFlow.should_skip" title="Permalink to this definition"></a></dt>
+<dd><p>Special rules for including vertex in the graph</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.GFlow.sort_graph">
+<span class="sig-name descname"><span class="pre">sort_graph</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#dal.helpers.GFlow.sort_graph" title="Permalink to this definition"></a></dt>
+<dd><p>Sort the graph by the number of elements in links</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.helpers.Helpers">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.helpers.</span></span><span class="sig-name descname"><span class="pre">Helpers</span></span><a class="headerlink" href="#dal.helpers.Helpers" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Helper Methods</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.Helpers.find_by_key">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">find_by_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.helpers.Helpers.find_by_key" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.Helpers.get_args">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prev_struct</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#dal.helpers.Helpers.get_args" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.Helpers.get_partial_dict">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_partial_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#dal.helpers.Helpers.get_partial_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Giving a full dict and a beggining return the full dict containing that beggining</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.Helpers.join_first">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">join_first</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">add_struct</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prev_struct</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#dal.helpers.Helpers.join_first" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.Helpers.replace_dict_values">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">replace_dict_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">haystack</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">needle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.helpers.Helpers.replace_dict_values" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.helpers.Helpers.update_dict">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_base_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_add_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#dal.helpers.Helpers.update_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Join a dictionary with another dictionary</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dal.helpers.flatten">
+<span class="sig-prename descclassname"><span class="pre">dal.helpers.</span></span><span class="sig-name descname"><span class="pre">flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">join_char</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#dal.helpers.flatten" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a list of paths</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em>) – expects a dictionary to start</p></li>
+<li><p><strong>output</strong> (<em>list</em>) – variable to save the list of paths</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – accumulative path</p></li>
+<li><p><strong>join_char</strong> (<em>str</em>) – character to join path entries</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of paths</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>output (list)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dal.exceptions.html" class="btn btn-neutral float-left" title="dal.exceptions package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dal.helpers.flow.html" class="btn btn-neutral float-right" title="dal.helpers.flow package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Backend.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Read the Docs</span>
+        v: TODO
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dt>Versions</dt>
+        <dl id="docs-versions"></dl>
+        <hr />
+        <a href="https://tech.michaelaltfield.net/2020/07/18/sphinx-rtd-github-pages-1/">Continuous
+            Documentation</a> hosting provided by <a href="https://pages.github.com/">GitHub Pages</a>.
+    </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

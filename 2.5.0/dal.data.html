@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dal.data package &mdash; data-access-layer  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/cropped-Mov.ai-favicon2-32x32.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/versions.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="dal.data.shared package" href="dal.data.shared.html" />
+    <link rel="prev" title="dal.classes.utils package" href="dal.classes.utils.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> data-access-layer
+          </a>
+              <div class="version">
+                2.5.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">data-access-layer</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">data-access-layer</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dal.html">dal package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="dal.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="dal.api.html">dal.api package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.archive.html">dal.archive package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.backup.html">dal.backup package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.html">dal.classes package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">dal.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.db_handlers.html">dal.db_handlers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.exceptions.html">dal.exceptions package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.html">dal.helpers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.models.html">dal.models package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.movaidb.html">dal.movaidb package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.html">dal.plugins package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html">dal.scopes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html">dal.tools package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.utils.html">dal.utils package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html">dal.validation package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.html#module-dal">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">data-access-layer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">data-access-layer</a></li>
+          <li class="breadcrumb-item"><a href="dal.html">dal package</a></li>
+      <li class="breadcrumb-item active">dal.data package</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/MOV-AI/flows-test-core/blob/2.5.0/docs/source/dal.data.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dal-data-package">
+<h1>dal.data package<a class="headerlink" href="#dal-data-package" title="Permalink to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dal.data.shared.html">dal.data.shared package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dal.data.shared.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dal.data.shared.html#module-dal.data.shared.vault">dal.data.shared.vault module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dal.data.shared.html#module-dal.data.shared">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-dal.data.archive">
+<span id="dal-data-archive-module"></span><h2>dal.data.archive module<a class="headerlink" href="#module-dal.data.archive" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Alexandre Pires  (<a class="reference external" href="mailto:alexandre&#46;pires&#37;&#52;&#48;mov&#46;ai">alexandre<span>&#46;</span>pires<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.archive.RemoteArchive">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.archive.</span></span><span class="sig-name descname"><span class="pre">RemoteArchive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.archive.RemoteArchive" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A helper class that encapsulates the async code</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.archive.RemoteArchive.backup">
+<span class="sig-name descname"><span class="pre">backup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">objs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.archive.RemoteArchive.backup" title="Permalink to this definition"></a></dt>
+<dd><p>Backup scopes and dependencies
+objs - a list of the objects to backup</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.archive.RemoteArchive.get_scope">
+<span class="sig-name descname"><span class="pre">get_scope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.archive.RemoteArchive.get_scope" title="Permalink to this definition"></a></dt>
+<dd><p>Get a scope</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.archive.RemoteArchive.list_scopes">
+<span class="sig-name descname"><span class="pre">list_scopes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.archive.RemoteArchive.list_scopes" title="Permalink to this definition"></a></dt>
+<dd><p>Get a list of all scopes in a workspace</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.archive.RemoteArchive.list_workspaces">
+<span class="sig-name descname"><span class="pre">list_workspaces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.archive.RemoteArchive.list_workspaces" title="Permalink to this definition"></a></dt>
+<dd><p>Get a list of all workspaces</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.archive.RemoteArchive.restore">
+<span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.archive.RemoteArchive.restore" title="Permalink to this definition"></a></dt>
+<dd><p>Restore scopes
+source - the restore file</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.archive.RemoteArchiveAsync">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.archive.</span></span><span class="sig-name descname"><span class="pre">RemoteArchiveAsync</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">URL</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.archive.RemoteArchiveAsync" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class implements a remote archive client
+It’s used for the command line tool and also for
+the filesystem to fetch missing data</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.archive.RemoteArchiveAsync.backup">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">backup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">objs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">destination</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.archive.RemoteArchiveAsync.backup" title="Permalink to this definition"></a></dt>
+<dd><p>Download a scope</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.archive.RemoteArchiveAsync.get_scope">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_scope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.archive.RemoteArchiveAsync.get_scope" title="Permalink to this definition"></a></dt>
+<dd><p>List available workspaces</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.archive.RemoteArchiveAsync.list_scopes">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_scopes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.archive.RemoteArchiveAsync.list_scopes" title="Permalink to this definition"></a></dt>
+<dd><p>List scopes in a workspace</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.archive.RemoteArchiveAsync.list_workspaces">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_workspaces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.archive.RemoteArchiveAsync.list_workspaces" title="Permalink to this definition"></a></dt>
+<dd><p>List available workspaces</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.archive.RemoteArchiveAsync.restore">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.archive.RemoteArchiveAsync.restore" title="Permalink to this definition"></a></dt>
+<dd><p>Upload a restore file to the server</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dal.data.mixins">
+<span id="dal-data-mixins-module"></span><h2>dal.data.mixins module<a class="headerlink" href="#module-dal.data.mixins" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.mixins.ChildrenCmpMixin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.mixins.</span></span><span class="sig-name descname"><span class="pre">ChildrenCmpMixin</span></span><a class="headerlink" href="#dal.data.mixins.ChildrenCmpMixin" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Implement _children comparison functions</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.mixins.ValueCmpMixin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.mixins.</span></span><span class="sig-name descname"><span class="pre">ValueCmpMixin</span></span><a class="headerlink" href="#dal.data.mixins.ValueCmpMixin" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Implement _value comparison functions</p>
+</dd></dl>
+
+</section>
+<section id="module-dal.data.schema">
+<span id="dal-data-schema-module"></span><h2>dal.data.schema module<a class="headerlink" href="#module-dal.data.schema" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Alexandre Pires  (<a class="reference external" href="mailto:alexandre&#46;pires&#37;&#52;&#48;mov&#46;ai">alexandre<span>&#46;</span>pires<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.schema.SchemaDeserializer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.schema.</span></span><span class="sig-name descname"><span class="pre">SchemaDeserializer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'1.0'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.schema.SchemaDeserializer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.data.serialization.ObjectDeserializer" title="dal.data.serialization.ObjectDeserializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDeserializer</span></code></a>, <a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.plugin.PluginManager" title="dal.plugins.classes.plugin.PluginManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">PluginManager</span></code></a></p>
+<p>Deserializer through a dict and convert to a tree</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.schema.SchemaDeserializer.deserialize">
+<span class="sig-name descname"><span class="pre">deserialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dal.data.tree.TreeNode" title="dal.data.tree.TreeNode"><span class="pre">TreeNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.schema.SchemaDeserializer.deserialize" title="Permalink to this definition"></a></dt>
+<dd><p>Abstract method to run the data deserializer</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.schema.SchemaDeserializer.plugin_class">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plugin_class</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.schema.SchemaDeserializer.plugin_class" title="Permalink to this definition"></a></dt>
+<dd><p>Get current class plugin</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.schema.SchemaDeserializer.version">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#dal.data.schema.SchemaDeserializer.version" title="Permalink to this definition"></a></dt>
+<dd><p>Get the version of this schema deserializer</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.schema.SchemaNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.schema.</span></span><span class="sig-name descname"><span class="pre">SchemaNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.schema.SchemaNode" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.data.tree.DictNode" title="dal.data.tree.DictNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">DictNode</span></code></a></p>
+<p>Implements a schema node</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.schema.SchemaNode.node_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">node_type</span></span><a class="headerlink" href="#dal.data.schema.SchemaNode.node_type" title="Permalink to this definition"></a></dt>
+<dd><p>the node type</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.schema.SchemaNode.path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#dal.data.schema.SchemaNode.path" title="Permalink to this definition"></a></dt>
+<dd><p>get the tree path</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.schema.SchemaNode.schema">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">schema</span></span><a class="headerlink" href="#dal.data.schema.SchemaNode.schema" title="Permalink to this definition"></a></dt>
+<dd><p>the schema name</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.schema.SchemaNode.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dal.data.tree.PropertyNode" title="dal.data.tree.PropertyNode"><span class="pre">PropertyNode</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.schema.SchemaNode.validate" title="Permalink to this definition"></a></dt>
+<dd><p>Validate a property Node against this schema</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.schema.SchemaNode.version">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#dal.data.schema.SchemaNode.version" title="Permalink to this definition"></a></dt>
+<dd><p>Return the current version</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.schema.SchemaObjectNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.schema.</span></span><span class="sig-name descname"><span class="pre">SchemaObjectNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.schema.SchemaObjectNode" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.data.tree.ObjectNode" title="dal.data.tree.ObjectNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectNode</span></code></a></p>
+<p>Implements a schema object node</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.schema.SchemaObjectNode.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dal.data.tree.PropertyNode" title="dal.data.tree.PropertyNode"><span class="pre">PropertyNode</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.schema.SchemaObjectNode.validate" title="Permalink to this definition"></a></dt>
+<dd><p>Validate a property Node against this schema</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.schema.SchemaPropertyNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.schema.</span></span><span class="sig-name descname"><span class="pre">SchemaPropertyNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.schema.SchemaPropertyNode" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.data.tree.PropertyNode" title="dal.data.tree.PropertyNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">PropertyNode</span></code></a></p>
+<p>Implements a property node</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.data.schema.SchemaPropertyNode.DEFAULT_MAPPING">
+<span class="sig-name descname"><span class="pre">DEFAULT_MAPPING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'str'&gt;:</span> <span class="pre">'',</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;:</span> <span class="pre">0,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;:</span> <span class="pre">0.0,</span> <span class="pre">&lt;class</span> <span class="pre">'dict'&gt;:</span> <span class="pre">{},</span> <span class="pre">&lt;class</span> <span class="pre">'bool'&gt;:</span> <span class="pre">False,</span> <span class="pre">&lt;class</span> <span class="pre">'object'&gt;:</span> <span class="pre">None}</span></em><a class="headerlink" href="#dal.data.schema.SchemaPropertyNode.DEFAULT_MAPPING" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.schema.SchemaPropertyNode.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dal.data.tree.PropertyNode" title="dal.data.tree.PropertyNode"><span class="pre">PropertyNode</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.schema.SchemaPropertyNode.validate" title="Permalink to this definition"></a></dt>
+<dd><p>Validate a property Node against this schema</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.schema.SchemaPropertyNode.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#dal.data.schema.SchemaPropertyNode.value" title="Permalink to this definition"></a></dt>
+<dd><p>return the current value</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.schema.SchemaVersionNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.schema.</span></span><span class="sig-name descname"><span class="pre">SchemaVersionNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.schema.SchemaVersionNode" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.data.version.VersionNode" title="dal.data.version.VersionNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionNode</span></code></a></p>
+<p>A version node of schemas</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.schema.SchemasTree">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.schema.</span></span><span class="sig-name descname"><span class="pre">SchemasTree</span></span><a class="headerlink" href="#dal.data.schema.SchemasTree" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.data.tree.CallableNode" title="dal.data.tree.CallableNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">CallableNode</span></code></a></p>
+<p>Implements a Schema Tree</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.schema.SchemasTree.node_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">node_type</span></span><a class="headerlink" href="#dal.data.schema.SchemasTree.node_type" title="Permalink to this definition"></a></dt>
+<dd><p>the node type</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.schema.SchemasTree.path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#dal.data.schema.SchemasTree.path" title="Permalink to this definition"></a></dt>
+<dd><p>get the tree path</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dal.data.serialization">
+<span id="dal-data-serialization-module"></span><h2>dal.data.serialization module<a class="headerlink" href="#module-dal.data.serialization" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Alexandre Pires (<a class="reference external" href="mailto:alexandre&#46;pires&#37;&#52;&#48;mov&#46;ai">alexandre<span>&#46;</span>pires<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.serialization.ObjectDeserializer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.serialization.</span></span><span class="sig-name descname"><span class="pre">ObjectDeserializer</span></span><a class="headerlink" href="#dal.data.serialization.ObjectDeserializer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>A base data deserializer</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.serialization.ObjectDeserializer.deserialize">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">deserialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dal.data.tree.TreeNode" title="dal.data.tree.TreeNode"><span class="pre">TreeNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.serialization.ObjectDeserializer.deserialize" title="Permalink to this definition"></a></dt>
+<dd><p>Abstract method to run the data deserializer</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.serialization.ObjectSerializer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.serialization.</span></span><span class="sig-name descname"><span class="pre">ObjectSerializer</span></span><a class="headerlink" href="#dal.data.serialization.ObjectSerializer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>A base data serializer</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.serialization.ObjectSerializer.serialize">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dal.data.tree.TreeNode" title="dal.data.tree.TreeNode"><span class="pre">TreeNode</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.serialization.ObjectSerializer.serialize" title="Permalink to this definition"></a></dt>
+<dd><p>Abstract method to run the data deserializer</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.serialization.SerializableObject">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.serialization.</span></span><span class="sig-name descname"><span class="pre">SerializableObject</span></span><a class="headerlink" href="#dal.data.serialization.SerializableObject" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>A serializable object should implement this inteface</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.serialization.SerializableObject.serialize">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.serialization.SerializableObject.serialize" title="Permalink to this definition"></a></dt>
+<dd><p>for internal use only, this method is not supposed to be called by the user</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.serialization.SimpleDeserializer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.serialization.</span></span><span class="sig-name descname"><span class="pre">SimpleDeserializer</span></span><a class="headerlink" href="#dal.data.serialization.SimpleDeserializer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.data.serialization.ObjectDeserializer" title="dal.data.serialization.ObjectDeserializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDeserializer</span></code></a></p>
+<p>Deserializer through a dict and convert to a tree</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.serialization.SimpleDeserializer.deserialize">
+<span class="sig-name descname"><span class="pre">deserialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dal.data.tree.TreeNode" title="dal.data.tree.TreeNode"><span class="pre">TreeNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.serialization.SimpleDeserializer.deserialize" title="Permalink to this definition"></a></dt>
+<dd><p>Abstract method to run the data deserializer</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.serialization.SimpleSerializer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.serialization.</span></span><span class="sig-name descname"><span class="pre">SimpleSerializer</span></span><a class="headerlink" href="#dal.data.serialization.SimpleSerializer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.data.serialization.ObjectSerializer" title="dal.data.serialization.ObjectSerializer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectSerializer</span></code></a></p>
+<p>Serializer through a tree and convert to a dict</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.serialization.SimpleSerializer.serialize">
+<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dal.data.tree.TreeNode" title="dal.data.tree.TreeNode"><span class="pre">TreeNode</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.serialization.SimpleSerializer.serialize" title="Permalink to this definition"></a></dt>
+<dd><p>Abstract method to run the data serializer</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dal.data.tree">
+<span id="dal-data-tree-module"></span><h2>dal.data.tree module<a class="headerlink" href="#module-dal.data.tree" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Alexandre Pires  (<a class="reference external" href="mailto:alexandre&#46;pires&#37;&#52;&#48;mov&#46;ai">alexandre<span>&#46;</span>pires<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.tree.CallableNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.tree.</span></span><span class="sig-name descname"><span class="pre">CallableNode</span></span><a class="headerlink" href="#dal.data.tree.CallableNode" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.data.tree.DictNode" title="dal.data.tree.DictNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">DictNode</span></code></a></p>
+<p>Implements an attribute tree node</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.CallableNode.children">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">children</span></span><a class="headerlink" href="#dal.data.tree.CallableNode.children" title="Permalink to this definition"></a></dt>
+<dd><p>children list</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.CallableNode.count">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">count</span></span><a class="headerlink" href="#dal.data.tree.CallableNode.count" title="Permalink to this definition"></a></dt>
+<dd><p>number of children</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.tree.CallableNode.sort">
+<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.tree.CallableNode.sort" title="Permalink to this definition"></a></dt>
+<dd><p>sort this tree node</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.tree.DictNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.tree.</span></span><span class="sig-name descname"><span class="pre">DictNode</span></span><a class="headerlink" href="#dal.data.tree.DictNode" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.data.tree.TreeNode" title="dal.data.tree.TreeNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeNode</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">VT</span></code>], <a class="reference internal" href="#dal.data.mixins.ChildrenCmpMixin" title="dal.data.mixins.ChildrenCmpMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChildrenCmpMixin</span></code></a></p>
+<p>Implements a dict tree node</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.tree.DictNode.add_child">
+<span class="sig-name descname"><span class="pre">add_child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">VT</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">VT</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.tree.DictNode.add_child" title="Permalink to this definition"></a></dt>
+<dd><p>add a ne child to this node</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.DictNode.children">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">children</span></span><a class="headerlink" href="#dal.data.tree.DictNode.children" title="Permalink to this definition"></a></dt>
+<dd><p>children list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.tree.DictNode.contains">
+<span class="sig-name descname"><span class="pre">contains</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.tree.DictNode.contains" title="Permalink to this definition"></a></dt>
+<dd><p>check if dict contains key</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.DictNode.count">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">count</span></span><a class="headerlink" href="#dal.data.tree.DictNode.count" title="Permalink to this definition"></a></dt>
+<dd><p>number of children</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.tree.DictNode.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">VT</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.tree.DictNode.get" title="Permalink to this definition"></a></dt>
+<dd><p>return the value of the element with key</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.tree.DictNode.items">
+<span class="sig-name descname"><span class="pre">items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.tree.DictNode.items" title="Permalink to this definition"></a></dt>
+<dd><p>access to this dict item</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.tree.DictNode.keys">
+<span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.tree.DictNode.keys" title="Permalink to this definition"></a></dt>
+<dd><p>access to this dict keys</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.tree.DictNode.remove_child">
+<span class="sig-name descname"><span class="pre">remove_child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.tree.DictNode.remove_child" title="Permalink to this definition"></a></dt>
+<dd><p>remove child to this node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.tree.DictNode.sort">
+<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.tree.DictNode.sort" title="Permalink to this definition"></a></dt>
+<dd><p>sort this tree node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.tree.DictNode.values">
+<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.tree.DictNode.values" title="Permalink to this definition"></a></dt>
+<dd><p>acess to this dict values</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.tree.ListNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.tree.</span></span><span class="sig-name descname"><span class="pre">ListNode</span></span><a class="headerlink" href="#dal.data.tree.ListNode" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.data.tree.TreeNode" title="dal.data.tree.TreeNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeNode</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">VT</span></code>], <a class="reference internal" href="#dal.data.mixins.ChildrenCmpMixin" title="dal.data.mixins.ChildrenCmpMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChildrenCmpMixin</span></code></a></p>
+<p>Implements a listed tree node</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.tree.ListNode.add_child">
+<span class="sig-name descname"><span class="pre">add_child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">VT</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.tree.ListNode.add_child" title="Permalink to this definition"></a></dt>
+<dd><p>add child to this node</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.ListNode.children">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">children</span></span><a class="headerlink" href="#dal.data.tree.ListNode.children" title="Permalink to this definition"></a></dt>
+<dd><p>children list</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.ListNode.count">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">count</span></span><a class="headerlink" href="#dal.data.tree.ListNode.count" title="Permalink to this definition"></a></dt>
+<dd><p>number of children</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.tree.ListNode.remove_child">
+<span class="sig-name descname"><span class="pre">remove_child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">VT</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.tree.ListNode.remove_child" title="Permalink to this definition"></a></dt>
+<dd><p>remove child to this node</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.tree.ObjectNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.tree.</span></span><span class="sig-name descname"><span class="pre">ObjectNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.tree.ObjectNode" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.data.tree.TreeNode" title="dal.data.tree.TreeNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeNode</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">VT</span></code>], <a class="reference internal" href="#dal.data.mixins.ChildrenCmpMixin" title="dal.data.mixins.ChildrenCmpMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChildrenCmpMixin</span></code></a></p>
+<p>Implements a object node</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.tree.ObjectNode.add_child">
+<span class="sig-name descname"><span class="pre">add_child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">VT</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">VT</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.tree.ObjectNode.add_child" title="Permalink to this definition"></a></dt>
+<dd><p>add a child node to the node</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.ObjectNode.children">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">children</span></span><a class="headerlink" href="#dal.data.tree.ObjectNode.children" title="Permalink to this definition"></a></dt>
+<dd><p>children list</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.ObjectNode.count">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">count</span></span><a class="headerlink" href="#dal.data.tree.ObjectNode.count" title="Permalink to this definition"></a></dt>
+<dd><p>number of children</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.ObjectNode.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#dal.data.tree.ObjectNode.name" title="Permalink to this definition"></a></dt>
+<dd><p>the object name</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.ObjectNode.node_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">node_type</span></span><a class="headerlink" href="#dal.data.tree.ObjectNode.node_type" title="Permalink to this definition"></a></dt>
+<dd><p>the node type</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.ObjectNode.path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#dal.data.tree.ObjectNode.path" title="Permalink to this definition"></a></dt>
+<dd><p>get the tree path</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.tree.ObjectNode.remove_child">
+<span class="sig-name descname"><span class="pre">remove_child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">VT</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.tree.ObjectNode.remove_child" title="Permalink to this definition"></a></dt>
+<dd><p>remove child in the node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.tree.ObjectNode.sort">
+<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.tree.ObjectNode.sort" title="Permalink to this definition"></a></dt>
+<dd><p>sort this tree node</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.tree.PropertyNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.tree.</span></span><span class="sig-name descname"><span class="pre">PropertyNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.tree.PropertyNode" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.data.tree.TreeNode" title="dal.data.tree.TreeNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">TreeNode</span></code></a>, <a class="reference internal" href="#dal.data.mixins.ValueCmpMixin" title="dal.data.mixins.ValueCmpMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueCmpMixin</span></code></a></p>
+<p>Implements a property node</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.PropertyNode.children">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">children</span></span><a class="headerlink" href="#dal.data.tree.PropertyNode.children" title="Permalink to this definition"></a></dt>
+<dd><p>children list</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.PropertyNode.count">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">count</span></span><a class="headerlink" href="#dal.data.tree.PropertyNode.count" title="Permalink to this definition"></a></dt>
+<dd><p>number of children</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.PropertyNode.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#dal.data.tree.PropertyNode.name" title="Permalink to this definition"></a></dt>
+<dd><p>the property name</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.PropertyNode.node_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">node_type</span></span><a class="headerlink" href="#dal.data.tree.PropertyNode.node_type" title="Permalink to this definition"></a></dt>
+<dd><p>the node type</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.PropertyNode.path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#dal.data.tree.PropertyNode.path" title="Permalink to this definition"></a></dt>
+<dd><p>get the tree path</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.PropertyNode.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#dal.data.tree.PropertyNode.value" title="Permalink to this definition"></a></dt>
+<dd><p>return the current value</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.PropertyNode.value_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value_type</span></span><a class="headerlink" href="#dal.data.tree.PropertyNode.value_type" title="Permalink to this definition"></a></dt>
+<dd><p>return the type of the current value</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.tree.TreeNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.tree.</span></span><span class="sig-name descname"><span class="pre">TreeNode</span></span><a class="headerlink" href="#dal.data.tree.TreeNode" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">VT</span></code>]</p>
+<p>Implements an abstract tree node</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.TreeNode.attributes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">attributes</span></span><a class="headerlink" href="#dal.data.tree.TreeNode.attributes" title="Permalink to this definition"></a></dt>
+<dd><p>Schema custom attributes, this is a dict, and should
+be used to store important information in the beahviour
+when processing this node.</p>
+<p>One use case is on the schema tree there is an attribute
+value_on_key that informs the persistent layer that the
+value should also be present when creating the key for
+storing in redis.</p>
+<p>Another use case is the “is_hash”, which is used for
+telling what schema objects are DictNodes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.tree.TreeNode.cached_attribute">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cached_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.tree.TreeNode.cached_attribute" title="Permalink to this definition"></a></dt>
+<dd><p>A decorator to set use the self.attributes as
+a cache, when using this decorator the property
+will be cached on the attributes of this node</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.TreeNode.children">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">children</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">VT</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#dal.data.tree.TreeNode.children" title="Permalink to this definition"></a></dt>
+<dd><p>children list</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.TreeNode.count">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#dal.data.tree.TreeNode.count" title="Permalink to this definition"></a></dt>
+<dd><p>number of children</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.TreeNode.depth">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">depth</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#dal.data.tree.TreeNode.depth" title="Permalink to this definition"></a></dt>
+<dd><p>return the depth of this node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.tree.TreeNode.from_path">
+<span class="sig-name descname"><span class="pre">from_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.tree.TreeNode.from_path" title="Permalink to this definition"></a></dt>
+<dd><p>get the tree node from a path</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.tree.TreeNode.get_first_parent">
+<span class="sig-name descname"><span class="pre">get_first_parent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.tree.TreeNode.get_first_parent" title="Permalink to this definition"></a></dt>
+<dd><p>get the first parent of type node_type:</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.TreeNode.is_root">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_root</span></span><a class="headerlink" href="#dal.data.tree.TreeNode.is_root" title="Permalink to this definition"></a></dt>
+<dd><p>is_root_node</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.TreeNode.node_type">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">node_type</span></span><a class="headerlink" href="#dal.data.tree.TreeNode.node_type" title="Permalink to this definition"></a></dt>
+<dd><p>the node type</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.TreeNode.parent">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parent</span></span><a class="headerlink" href="#dal.data.tree.TreeNode.parent" title="Permalink to this definition"></a></dt>
+<dd><p>the object reference</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.TreeNode.path">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#dal.data.tree.TreeNode.path" title="Permalink to this definition"></a></dt>
+<dd><p>get the tree path</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.tree.TreeNode.sort">
+<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.tree.TreeNode.sort" title="Permalink to this definition"></a></dt>
+<dd><p>sort this tree node</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.tree.TreeNode.sorted">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sorted</span></span><a class="headerlink" href="#dal.data.tree.TreeNode.sorted" title="Permalink to this definition"></a></dt>
+<dd><p>children list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.tree.TreeNode.to_path">
+<span class="sig-name descname"><span class="pre">to_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.tree.TreeNode.to_path" title="Permalink to this definition"></a></dt>
+<dd><p>get a path representation of this Node</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dal.data.version">
+<span id="dal-data-version-module"></span><h2>dal.data.version module<a class="headerlink" href="#module-dal.data.version" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Alexandre Pires  (<a class="reference external" href="mailto:alexandre&#46;pires&#37;&#52;&#48;mov&#46;ai">alexandre<span>&#46;</span>pires<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.version.VersionNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.version.</span></span><span class="sig-name descname"><span class="pre">VersionNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.version.VersionNode" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.data.tree.CallableNode" title="dal.data.tree.CallableNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">CallableNode</span></code></a>, <a class="reference internal" href="#dal.data.version.VersionObject" title="dal.data.version.VersionObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionObject</span></code></a></p>
+<p>Implements a Schema Versions Node</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.version.VersionNode.node_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">node_type</span></span><a class="headerlink" href="#dal.data.version.VersionNode.node_type" title="Permalink to this definition"></a></dt>
+<dd><p>the node type</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.version.VersionNode.path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#dal.data.version.VersionNode.path" title="Permalink to this definition"></a></dt>
+<dd><p>get the tree path</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.version.VersionNode.version">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#dal.data.version.VersionNode.version" title="Permalink to this definition"></a></dt>
+<dd><p>The current version</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.version.VersionObject">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.version.</span></span><span class="sig-name descname"><span class="pre">VersionObject</span></span><a class="headerlink" href="#dal.data.version.VersionObject" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>A versionable object, it handles different versions of
+the same object</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.version.VersionObject.version">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#dal.data.version.VersionObject.version" title="Permalink to this definition"></a></dt>
+<dd><p>the current version</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dal.data.workspace">
+<span id="dal-data-workspace-module"></span><h2>dal.data.workspace module<a class="headerlink" href="#module-dal.data.workspace" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Alexandre Pires  (<a class="reference external" href="mailto:alexandre&#46;pires&#37;&#52;&#48;mov&#46;ai">alexandre<span>&#46;</span>pires<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.workspace.</span></span><span class="sig-name descname"><span class="pre">WorkspaceManager</span></span><a class="headerlink" href="#dal.data.workspace.WorkspaceManager" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A static class that holds all methods to operate with workspaces</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceManager.create_workspace">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_workspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.workspace.WorkspaceManager.create_workspace" title="Permalink to this definition"></a></dt>
+<dd><p>create a new workspace</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceManager.delete_workspace">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_workspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.workspace.WorkspaceManager.delete_workspace" title="Permalink to this definition"></a></dt>
+<dd><p>create a new workspace</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceManager.list_workspaces">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_workspaces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.workspace.WorkspaceManager.list_workspaces" title="Permalink to this definition"></a></dt>
+<dd><p>get a list of available workspaces</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceManager.workspace_info">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">workspace_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.workspace.WorkspaceManager.workspace_info" title="Permalink to this definition"></a></dt>
+<dd><p>get information about a workspace</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.workspace.</span></span><span class="sig-name descname"><span class="pre">WorkspaceNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plugin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">readonly</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.workspace.WorkspaceNode" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.data.tree.DictNode" title="dal.data.tree.DictNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">DictNode</span></code></a>, <a class="reference internal" href="#dal.data.workspace.WorkspaceObject" title="dal.data.workspace.WorkspaceObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">WorkspaceObject</span></code></a></p>
+<p>Implements a workspace tree node, to define a workspace
+we must provide a name, and a underlying plugin</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceNode.backup">
+<span class="sig-name descname"><span class="pre">backup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.workspace.WorkspaceNode.backup" title="Permalink to this definition"></a></dt>
+<dd><p>backup object from this workspace to a zip file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceNode.create_version">
+<span class="sig-name descname"><span class="pre">create_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version_tag</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.workspace.WorkspaceNode.create_version" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceNode.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.workspace.WorkspaceNode.delete" title="Permalink to this definition"></a></dt>
+<dd><p>delete object from this workspace</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceNode.node_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">node_type</span></span><a class="headerlink" href="#dal.data.workspace.WorkspaceNode.node_type" title="Permalink to this definition"></a></dt>
+<dd><p>the node type</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceNode.path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#dal.data.workspace.WorkspaceNode.path" title="Permalink to this definition"></a></dt>
+<dd><p>get the tree path</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceNode.plugin">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plugin</span></span><a class="headerlink" href="#dal.data.workspace.WorkspaceNode.plugin" title="Permalink to this definition"></a></dt>
+<dd><p>Get the current plugin for this workspace</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceNode.prev_version">
+<span class="sig-name descname"><span class="pre">prev_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.workspace.WorkspaceNode.prev_version" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceNode.pull">
+<span class="sig-name descname"><span class="pre">pull</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.workspace.WorkspaceNode.pull" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceNode.push">
+<span class="sig-name descname"><span class="pre">push</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.workspace.WorkspaceNode.push" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceNode.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.workspace.WorkspaceNode.read" title="Permalink to this definition"></a></dt>
+<dd><p>read object from this workspace</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceNode.readonly">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">readonly</span></span><a class="headerlink" href="#dal.data.workspace.WorkspaceNode.readonly" title="Permalink to this definition"></a></dt>
+<dd><p>The current version</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceNode.reload">
+<span class="sig-name descname"><span class="pre">reload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.workspace.WorkspaceNode.reload" title="Permalink to this definition"></a></dt>
+<dd><p>Reload the cached data on this workspace</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceNode.restore">
+<span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.workspace.WorkspaceNode.restore" title="Permalink to this definition"></a></dt>
+<dd><p>restore a object from a zip file to this workspace</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceNode.unload">
+<span class="sig-name descname"><span class="pre">unload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.workspace.WorkspaceNode.unload" title="Permalink to this definition"></a></dt>
+<dd><p>Unload the cached data on this workspace</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceNode.workspace">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">workspace</span></span><a class="headerlink" href="#dal.data.workspace.WorkspaceNode.workspace" title="Permalink to this definition"></a></dt>
+<dd><p>The current version</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceNode.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.workspace.WorkspaceNode.write" title="Permalink to this definition"></a></dt>
+<dd><p>write object to this workspace</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceObject">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.workspace.</span></span><span class="sig-name descname"><span class="pre">WorkspaceObject</span></span><a class="headerlink" href="#dal.data.workspace.WorkspaceObject" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>This class represents a interface for a workspace object
+A workspace object is a object that belongs to a specific
+Workspacw</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.workspace.WorkspaceObject.workspace">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">workspace</span></span><a class="headerlink" href="#dal.data.workspace.WorkspaceObject.workspace" title="Permalink to this definition"></a></dt>
+<dd><p>the object workspace</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dal.data">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dal.data" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Alexandre Pires  (<a class="reference external" href="mailto:alexandre&#46;pires&#37;&#52;&#48;mov&#46;ai">alexandre<span>&#46;</span>pires<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.ObjectDeserializer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.</span></span><span class="sig-name descname"><span class="pre">ObjectDeserializer</span></span><a class="headerlink" href="#dal.data.ObjectDeserializer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>A base data deserializer</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.ObjectDeserializer.deserialize">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">deserialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dal.data.tree.TreeNode" title="dal.data.tree.TreeNode"><span class="pre">TreeNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.ObjectDeserializer.deserialize" title="Permalink to this definition"></a></dt>
+<dd><p>Abstract method to run the data deserializer</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.ObjectSerializer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.</span></span><span class="sig-name descname"><span class="pre">ObjectSerializer</span></span><a class="headerlink" href="#dal.data.ObjectSerializer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>A base data serializer</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.ObjectSerializer.serialize">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dal.data.tree.TreeNode" title="dal.data.tree.TreeNode"><span class="pre">TreeNode</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.ObjectSerializer.serialize" title="Permalink to this definition"></a></dt>
+<dd><p>Abstract method to run the data deserializer</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.SchemaNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.</span></span><span class="sig-name descname"><span class="pre">SchemaNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.SchemaNode" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.data.tree.DictNode" title="dal.data.tree.DictNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">DictNode</span></code></a></p>
+<p>Implements a schema node</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.SchemaNode.node_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">node_type</span></span><a class="headerlink" href="#dal.data.SchemaNode.node_type" title="Permalink to this definition"></a></dt>
+<dd><p>the node type</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.SchemaNode.path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#dal.data.SchemaNode.path" title="Permalink to this definition"></a></dt>
+<dd><p>get the tree path</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.SchemaNode.schema">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">schema</span></span><a class="headerlink" href="#dal.data.SchemaNode.schema" title="Permalink to this definition"></a></dt>
+<dd><p>the schema name</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.SchemaNode.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dal.data.tree.PropertyNode" title="dal.data.tree.PropertyNode"><span class="pre">PropertyNode</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.SchemaNode.validate" title="Permalink to this definition"></a></dt>
+<dd><p>Validate a property Node against this schema</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.SchemaNode.version">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#dal.data.SchemaNode.version" title="Permalink to this definition"></a></dt>
+<dd><p>Return the current version</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.SchemaObjectNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.</span></span><span class="sig-name descname"><span class="pre">SchemaObjectNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.SchemaObjectNode" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.data.tree.ObjectNode" title="dal.data.tree.ObjectNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectNode</span></code></a></p>
+<p>Implements a schema object node</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.SchemaObjectNode.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dal.data.tree.PropertyNode" title="dal.data.tree.PropertyNode"><span class="pre">PropertyNode</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.SchemaObjectNode.validate" title="Permalink to this definition"></a></dt>
+<dd><p>Validate a property Node against this schema</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.SchemaPropertyNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.</span></span><span class="sig-name descname"><span class="pre">SchemaPropertyNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.SchemaPropertyNode" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.data.tree.PropertyNode" title="dal.data.tree.PropertyNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">PropertyNode</span></code></a></p>
+<p>Implements a property node</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.data.SchemaPropertyNode.DEFAULT_MAPPING">
+<span class="sig-name descname"><span class="pre">DEFAULT_MAPPING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'str'&gt;:</span> <span class="pre">'',</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;:</span> <span class="pre">0,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;:</span> <span class="pre">0.0,</span> <span class="pre">&lt;class</span> <span class="pre">'dict'&gt;:</span> <span class="pre">{},</span> <span class="pre">&lt;class</span> <span class="pre">'bool'&gt;:</span> <span class="pre">False,</span> <span class="pre">&lt;class</span> <span class="pre">'object'&gt;:</span> <span class="pre">None}</span></em><a class="headerlink" href="#dal.data.SchemaPropertyNode.DEFAULT_MAPPING" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.SchemaPropertyNode.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dal.data.tree.PropertyNode" title="dal.data.tree.PropertyNode"><span class="pre">PropertyNode</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.SchemaPropertyNode.validate" title="Permalink to this definition"></a></dt>
+<dd><p>Validate a property Node against this schema</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.SchemaPropertyNode.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#dal.data.SchemaPropertyNode.value" title="Permalink to this definition"></a></dt>
+<dd><p>return the current value</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.SchemasTree">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.</span></span><span class="sig-name descname"><span class="pre">SchemasTree</span></span><a class="headerlink" href="#dal.data.SchemasTree" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.data.tree.CallableNode" title="dal.data.tree.CallableNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">CallableNode</span></code></a></p>
+<p>Implements a Schema Tree</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.SchemasTree.node_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">node_type</span></span><a class="headerlink" href="#dal.data.SchemasTree.node_type" title="Permalink to this definition"></a></dt>
+<dd><p>the node type</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.SchemasTree.path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#dal.data.SchemasTree.path" title="Permalink to this definition"></a></dt>
+<dd><p>get the tree path</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.TreeNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.</span></span><span class="sig-name descname"><span class="pre">TreeNode</span></span><a class="headerlink" href="#dal.data.TreeNode" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">VT</span></code>]</p>
+<p>Implements an abstract tree node</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.TreeNode.attributes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">attributes</span></span><a class="headerlink" href="#dal.data.TreeNode.attributes" title="Permalink to this definition"></a></dt>
+<dd><p>Schema custom attributes, this is a dict, and should
+be used to store important information in the beahviour
+when processing this node.</p>
+<p>One use case is on the schema tree there is an attribute
+value_on_key that informs the persistent layer that the
+value should also be present when creating the key for
+storing in redis.</p>
+<p>Another use case is the “is_hash”, which is used for
+telling what schema objects are DictNodes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.TreeNode.cached_attribute">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cached_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.TreeNode.cached_attribute" title="Permalink to this definition"></a></dt>
+<dd><p>A decorator to set use the self.attributes as
+a cache, when using this decorator the property
+will be cached on the attributes of this node</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.TreeNode.children">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">children</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">VT</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#dal.data.TreeNode.children" title="Permalink to this definition"></a></dt>
+<dd><p>children list</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.TreeNode.count">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#dal.data.TreeNode.count" title="Permalink to this definition"></a></dt>
+<dd><p>number of children</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.TreeNode.depth">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">depth</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#dal.data.TreeNode.depth" title="Permalink to this definition"></a></dt>
+<dd><p>return the depth of this node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.TreeNode.from_path">
+<span class="sig-name descname"><span class="pre">from_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.TreeNode.from_path" title="Permalink to this definition"></a></dt>
+<dd><p>get the tree node from a path</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.TreeNode.get_first_parent">
+<span class="sig-name descname"><span class="pre">get_first_parent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.TreeNode.get_first_parent" title="Permalink to this definition"></a></dt>
+<dd><p>get the first parent of type node_type:</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.TreeNode.is_root">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_root</span></span><a class="headerlink" href="#dal.data.TreeNode.is_root" title="Permalink to this definition"></a></dt>
+<dd><p>is_root_node</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.TreeNode.node_type">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">node_type</span></span><a class="headerlink" href="#dal.data.TreeNode.node_type" title="Permalink to this definition"></a></dt>
+<dd><p>the node type</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.TreeNode.parent">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parent</span></span><a class="headerlink" href="#dal.data.TreeNode.parent" title="Permalink to this definition"></a></dt>
+<dd><p>the object reference</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.TreeNode.path">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#dal.data.TreeNode.path" title="Permalink to this definition"></a></dt>
+<dd><p>get the tree path</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.TreeNode.sort">
+<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.TreeNode.sort" title="Permalink to this definition"></a></dt>
+<dd><p>sort this tree node</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.TreeNode.sorted">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sorted</span></span><a class="headerlink" href="#dal.data.TreeNode.sorted" title="Permalink to this definition"></a></dt>
+<dd><p>children list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.TreeNode.to_path">
+<span class="sig-name descname"><span class="pre">to_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.TreeNode.to_path" title="Permalink to this definition"></a></dt>
+<dd><p>get a path representation of this Node</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.VersionObject">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.</span></span><span class="sig-name descname"><span class="pre">VersionObject</span></span><a class="headerlink" href="#dal.data.VersionObject" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>A versionable object, it handles different versions of
+the same object</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.VersionObject.version">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#dal.data.VersionObject.version" title="Permalink to this definition"></a></dt>
+<dd><p>the current version</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.WorkspaceManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.</span></span><span class="sig-name descname"><span class="pre">WorkspaceManager</span></span><a class="headerlink" href="#dal.data.WorkspaceManager" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A static class that holds all methods to operate with workspaces</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.WorkspaceManager.create_workspace">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_workspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.WorkspaceManager.create_workspace" title="Permalink to this definition"></a></dt>
+<dd><p>create a new workspace</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.WorkspaceManager.delete_workspace">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_workspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.WorkspaceManager.delete_workspace" title="Permalink to this definition"></a></dt>
+<dd><p>create a new workspace</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.WorkspaceManager.list_workspaces">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_workspaces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.WorkspaceManager.list_workspaces" title="Permalink to this definition"></a></dt>
+<dd><p>get a list of available workspaces</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.data.WorkspaceManager.workspace_info">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">workspace_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.data.WorkspaceManager.workspace_info" title="Permalink to this definition"></a></dt>
+<dd><p>get information about a workspace</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.data.WorkspaceObject">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.data.</span></span><span class="sig-name descname"><span class="pre">WorkspaceObject</span></span><a class="headerlink" href="#dal.data.WorkspaceObject" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>This class represents a interface for a workspace object
+A workspace object is a object that belongs to a specific
+Workspacw</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.data.WorkspaceObject.workspace">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">workspace</span></span><a class="headerlink" href="#dal.data.WorkspaceObject.workspace" title="Permalink to this definition"></a></dt>
+<dd><p>the object workspace</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dal.classes.utils.html" class="btn btn-neutral float-left" title="dal.classes.utils package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dal.data.shared.html" class="btn btn-neutral float-right" title="dal.data.shared package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Backend.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Read the Docs</span>
+        v: 2.5.0
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dt>Versions</dt>
+        <dl id="docs-versions"></dl>
+        <hr />
+        <a href="https://tech.michaelaltfield.net/2020/07/18/sphinx-rtd-github-pages-1/">Continuous
+            Documentation</a> hosting provided by <a href="https://pages.github.com/">GitHub Pages</a>.
+    </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

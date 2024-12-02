@@ -1,0 +1,21 @@
+dal.archive package
+===================
+
+Submodules
+----------
+
+dal.archive.basearchive module
+------------------------------
+
+.. automodule:: dal.archive.basearchive
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: dal.archive
+   :members:
+   :undoc-members:
+   :show-inheritance:

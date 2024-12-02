@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dal.plugins package &mdash; data-access-layer  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/cropped-Mov.ai-favicon2-32x32.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/versions.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="dal.plugins.classes package" href="dal.plugins.classes.html" />
+    <link rel="prev" title="dal.movaidb package" href="dal.movaidb.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> data-access-layer
+          </a>
+              <div class="version">
+                TODO
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">data-access-layer</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">data-access-layer</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dal.html">dal package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="dal.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="dal.api.html">dal.api package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.archive.html">dal.archive package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.backup.html">dal.backup package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.html">dal.classes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.data.html">dal.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.db_handlers.html">dal.db_handlers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.exceptions.html">dal.exceptions package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.html">dal.helpers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.models.html">dal.models package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.movaidb.html">dal.movaidb package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">dal.plugins package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html">dal.scopes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html">dal.tools package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.utils.html">dal.utils package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html">dal.validation package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.html#module-dal">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">data-access-layer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">data-access-layer</a></li>
+          <li class="breadcrumb-item"><a href="dal.html">dal package</a></li>
+      <li class="breadcrumb-item active">dal.plugins package</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/MOV-AI/flows-test-core/blob/TODO/docs/source/dal.plugins.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dal-plugins-package">
+<h1>dal.plugins package<a class="headerlink" href="#dal-plugins-package" title="Permalink to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dal.plugins.classes.html">dal.plugins.classes package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dal.plugins.classes.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dal.plugins.classes.html#module-dal.plugins.classes.persistence">dal.plugins.classes.persistence module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.persistence.Persistence"><code class="docutils literal notranslate"><span class="pre">Persistence</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.persistence.Persistence.logger"><code class="docutils literal notranslate"><span class="pre">Persistence.logger</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.persistence.Persistence.plugin_class"><code class="docutils literal notranslate"><span class="pre">Persistence.plugin_class()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.persistence.PersistencePlugin"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.persistence.PersistencePlugin.backup"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.backup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.persistence.PersistencePlugin.create_workspace"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.create_workspace()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.persistence.PersistencePlugin.delete"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.delete()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.persistence.PersistencePlugin.delete_workspace"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.delete_workspace()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.persistence.PersistencePlugin.get_related_objects"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.get_related_objects()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.persistence.PersistencePlugin.get_scope_info"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.get_scope_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.persistence.PersistencePlugin.list_scopes"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.list_scopes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.persistence.PersistencePlugin.list_versions"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.list_versions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.persistence.PersistencePlugin.list_workspaces"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.list_workspaces()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.persistence.PersistencePlugin.read"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.read()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.persistence.PersistencePlugin.rebuild_indexes"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.rebuild_indexes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.persistence.PersistencePlugin.restore"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.restore()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.persistence.PersistencePlugin.versioning"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.versioning</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.persistence.PersistencePlugin.workspace_info"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.workspace_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.persistence.PersistencePlugin.write"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.write()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.persistence.PersistentObject"><code class="docutils literal notranslate"><span class="pre">PersistentObject</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.persistence.PersistentObject.delete"><code class="docutils literal notranslate"><span class="pre">PersistentObject.delete()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.persistence.PersistentObject.write"><code class="docutils literal notranslate"><span class="pre">PersistentObject.write()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dal.plugins.classes.html#module-dal.plugins.classes.plugin">dal.plugins.classes.plugin module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.plugin.Plugin"><code class="docutils literal notranslate"><span class="pre">Plugin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.plugin.Plugin.plugin_name"><code class="docutils literal notranslate"><span class="pre">Plugin.plugin_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.plugin.Plugin.plugin_version"><code class="docutils literal notranslate"><span class="pre">Plugin.plugin_version</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.plugin.PluginManager"><code class="docutils literal notranslate"><span class="pre">PluginManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.plugin.PluginManager.get_plugin"><code class="docutils literal notranslate"><span class="pre">PluginManager.get_plugin()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.plugin.PluginManager.get_plugin_class"><code class="docutils literal notranslate"><span class="pre">PluginManager.get_plugin_class()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.plugin.PluginManager.plugin_class"><code class="docutils literal notranslate"><span class="pre">PluginManager.plugin_class()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.plugin.PluginManager.register_plugin"><code class="docutils literal notranslate"><span class="pre">PluginManager.register_plugin()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dal.plugins.classes.html#module-dal.plugins.classes.resource">dal.plugins.classes.resource module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.resource.Resource"><code class="docutils literal notranslate"><span class="pre">Resource</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.resource.Resource.exists"><code class="docutils literal notranslate"><span class="pre">Resource.exists()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.resource.Resource.get_plugin"><code class="docutils literal notranslate"><span class="pre">Resource.get_plugin()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.resource.Resource.list_resources"><code class="docutils literal notranslate"><span class="pre">Resource.list_resources()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.resource.Resource.plugin_class"><code class="docutils literal notranslate"><span class="pre">Resource.plugin_class()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.resource.Resource.read_binary"><code class="docutils literal notranslate"><span class="pre">Resource.read_binary()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.resource.Resource.read_json"><code class="docutils literal notranslate"><span class="pre">Resource.read_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.resource.Resource.read_text"><code class="docutils literal notranslate"><span class="pre">Resource.read_text()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.resource.Resource.read_yaml"><code class="docutils literal notranslate"><span class="pre">Resource.read_yaml()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.resource.Resource.validate_url"><code class="docutils literal notranslate"><span class="pre">Resource.validate_url()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.resource.ResourceException"><code class="docutils literal notranslate"><span class="pre">ResourceException</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.resource.ResourcePlugin"><code class="docutils literal notranslate"><span class="pre">ResourcePlugin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.resource.ResourcePlugin.exists"><code class="docutils literal notranslate"><span class="pre">ResourcePlugin.exists()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.resource.ResourcePlugin.list_resources"><code class="docutils literal notranslate"><span class="pre">ResourcePlugin.list_resources()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.resource.ResourcePlugin.read_binary"><code class="docutils literal notranslate"><span class="pre">ResourcePlugin.read_binary()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.resource.ResourcePlugin.read_json"><code class="docutils literal notranslate"><span class="pre">ResourcePlugin.read_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.resource.ResourcePlugin.read_text"><code class="docutils literal notranslate"><span class="pre">ResourcePlugin.read_text()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dal.plugins.classes.html#module-dal.plugins.classes">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.Persistence"><code class="docutils literal notranslate"><span class="pre">Persistence</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.Persistence.logger"><code class="docutils literal notranslate"><span class="pre">Persistence.logger</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.Persistence.plugin_class"><code class="docutils literal notranslate"><span class="pre">Persistence.plugin_class()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PersistencePlugin"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PersistencePlugin.backup"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.backup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PersistencePlugin.create_workspace"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.create_workspace()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PersistencePlugin.delete"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.delete()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PersistencePlugin.delete_workspace"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.delete_workspace()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PersistencePlugin.get_related_objects"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.get_related_objects()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PersistencePlugin.get_scope_info"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.get_scope_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PersistencePlugin.list_scopes"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.list_scopes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PersistencePlugin.list_versions"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.list_versions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PersistencePlugin.list_workspaces"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.list_workspaces()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PersistencePlugin.read"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.read()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PersistencePlugin.rebuild_indexes"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.rebuild_indexes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PersistencePlugin.restore"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.restore()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PersistencePlugin.versioning"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.versioning</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PersistencePlugin.workspace_info"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.workspace_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PersistencePlugin.write"><code class="docutils literal notranslate"><span class="pre">PersistencePlugin.write()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PersistentObject"><code class="docutils literal notranslate"><span class="pre">PersistentObject</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PersistentObject.delete"><code class="docutils literal notranslate"><span class="pre">PersistentObject.delete()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PersistentObject.write"><code class="docutils literal notranslate"><span class="pre">PersistentObject.write()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.Plugin"><code class="docutils literal notranslate"><span class="pre">Plugin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.Plugin.plugin_name"><code class="docutils literal notranslate"><span class="pre">Plugin.plugin_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.Plugin.plugin_version"><code class="docutils literal notranslate"><span class="pre">Plugin.plugin_version</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PluginManager"><code class="docutils literal notranslate"><span class="pre">PluginManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PluginManager.get_plugin"><code class="docutils literal notranslate"><span class="pre">PluginManager.get_plugin()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PluginManager.get_plugin_class"><code class="docutils literal notranslate"><span class="pre">PluginManager.get_plugin_class()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PluginManager.plugin_class"><code class="docutils literal notranslate"><span class="pre">PluginManager.plugin_class()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.PluginManager.register_plugin"><code class="docutils literal notranslate"><span class="pre">PluginManager.register_plugin()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.Resource"><code class="docutils literal notranslate"><span class="pre">Resource</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.Resource.exists"><code class="docutils literal notranslate"><span class="pre">Resource.exists()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.Resource.get_plugin"><code class="docutils literal notranslate"><span class="pre">Resource.get_plugin()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.Resource.list_resources"><code class="docutils literal notranslate"><span class="pre">Resource.list_resources()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.Resource.plugin_class"><code class="docutils literal notranslate"><span class="pre">Resource.plugin_class()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.Resource.read_binary"><code class="docutils literal notranslate"><span class="pre">Resource.read_binary()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.Resource.read_json"><code class="docutils literal notranslate"><span class="pre">Resource.read_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.Resource.read_text"><code class="docutils literal notranslate"><span class="pre">Resource.read_text()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.Resource.read_yaml"><code class="docutils literal notranslate"><span class="pre">Resource.read_yaml()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.Resource.validate_url"><code class="docutils literal notranslate"><span class="pre">Resource.validate_url()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.ResourceException"><code class="docutils literal notranslate"><span class="pre">ResourceException</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.ResourcePlugin"><code class="docutils literal notranslate"><span class="pre">ResourcePlugin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.ResourcePlugin.exists"><code class="docutils literal notranslate"><span class="pre">ResourcePlugin.exists()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.ResourcePlugin.list_resources"><code class="docutils literal notranslate"><span class="pre">ResourcePlugin.list_resources()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.ResourcePlugin.read_binary"><code class="docutils literal notranslate"><span class="pre">ResourcePlugin.read_binary()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.ResourcePlugin.read_json"><code class="docutils literal notranslate"><span class="pre">ResourcePlugin.read_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.ResourcePlugin.read_text"><code class="docutils literal notranslate"><span class="pre">ResourcePlugin.read_text()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dal.plugins.persistence.html">dal.plugins.persistence package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dal.plugins.persistence.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.plugins.persistence.filesystem.html">dal.plugins.persistence.filesystem package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.persistence.filesystem.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.persistence.filesystem.html#module-dal.plugins.persistence.filesystem.filesystem">dal.plugins.persistence.filesystem.filesystem module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.persistence.filesystem.html#module-dal.plugins.persistence.filesystem">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.plugins.persistence.git.html">dal.plugins.persistence.git package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.persistence.git.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.persistence.git.html#module-dal.plugins.persistence.git.git">dal.plugins.persistence.git.git module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.persistence.git.html#module-dal.plugins.persistence.git">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.plugins.persistence.redis.html">dal.plugins.persistence.redis package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.persistence.redis.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.persistence.redis.html#module-dal.plugins.persistence.redis.redis">dal.plugins.persistence.redis.redis module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.persistence.redis.html#module-dal.plugins.persistence.redis">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dal.plugins.persistence.html#module-dal.plugins.persistence">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dal.plugins.resources.html">dal.plugins.resources package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dal.plugins.resources.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.plugins.resources.file.html">dal.plugins.resources.file package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.resources.file.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.resources.file.html#module-dal.plugins.resources.file.file">dal.plugins.resources.file.file module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.resources.file.html#module-dal.plugins.resources.file">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.plugins.resources.redis.html">dal.plugins.resources.redis package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.resources.redis.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.resources.redis.html#module-dal.plugins.resources.redis.driver">dal.plugins.resources.redis.driver module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.resources.redis.html#module-dal.plugins.resources.redis">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dal.plugins.resources.html#module-dal.plugins.resources">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dal.plugins.schema.html">dal.plugins.schema package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dal.plugins.schema.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.plugins.schema.version10.html">dal.plugins.schema.version10 package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.schema.version10.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.schema.version10.html#module-dal.plugins.schema.version10.version10">dal.plugins.schema.version10.version10 module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.schema.version10.html#module-dal.plugins.schema.version10">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.plugins.schema.version20.html">dal.plugins.schema.version20 package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.schema.version20.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.schema.version20.html#module-dal.plugins.schema.version20.version20">dal.plugins.schema.version20.version20 module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.schema.version20.html#module-dal.plugins.schema.version20">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dal.plugins.schema.html#module-dal.plugins.schema">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="module-dal.plugins">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dal.plugins" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Moawiya Mograbi  (<a class="reference external" href="mailto:Moawiya&#37;&#52;&#48;mov&#46;ai">Moawiya<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2022</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dal.movaidb.html" class="btn btn-neutral float-left" title="dal.movaidb package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dal.plugins.classes.html" class="btn btn-neutral float-right" title="dal.plugins.classes package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Backend.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Read the Docs</span>
+        v: TODO
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dt>Versions</dt>
+        <dl id="docs-versions"></dl>
+        <hr />
+        <a href="https://tech.michaelaltfield.net/2020/07/18/sphinx-rtd-github-pages-1/">Continuous
+            Documentation</a> hosting provided by <a href="https://pages.github.com/">GitHub Pages</a>.
+    </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

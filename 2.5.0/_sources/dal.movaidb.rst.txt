@@ -1,0 +1,29 @@
+dal.movaidb package
+===================
+
+Submodules
+----------
+
+dal.movaidb.configuration module
+--------------------------------
+
+.. automodule:: dal.movaidb.configuration
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.movaidb.database module
+---------------------------
+
+.. automodule:: dal.movaidb.database
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: dal.movaidb
+   :members:
+   :undoc-members:
+   :show-inheritance:

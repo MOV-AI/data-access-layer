@@ -1,0 +1,20 @@
+dal.plugins.persistence package
+===============================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   dal.plugins.persistence.filesystem
+   dal.plugins.persistence.git
+   dal.plugins.persistence.redis
+
+Module contents
+---------------
+
+.. automodule:: dal.plugins.persistence
+   :members:
+   :undoc-members:
+   :show-inheritance:
