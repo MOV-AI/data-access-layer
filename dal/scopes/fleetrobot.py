@@ -11,6 +11,7 @@
    Module that implements Robot namespace
 """
 import pickle
+from typing import Dict, Optional
 
 from movai_core_shared.common.utils import is_enterprise
 from movai_core_shared.core.message_client import MessageClient
@@ -29,9 +30,15 @@ from .scope import Scope
 
 logger = Log.get_logger("FleetRobot")
 
+ROBOT_STARTED_PARAM = "started"
+START_TIME_VAR = "startTime"
+END_TIME_VAR = "endTime"
+
 
 class FleetRobot(Scope):
     """Represent the Robot scope in the redis-master."""
+    spawner_client: MessageClient
+    Parameter: Dict
 
     def __init__(self, name: str, version="latest", new=False, db="global"):
         """constructor
@@ -161,7 +168,7 @@ class FleetRobot(Scope):
                 logger.warning(f"The field: {field} is missing from alert dictionary")
 
     @staticmethod
-    def get_robot_key_by_ip(ip_address: str, key_name: str) -> bytes:
+    def get_robot_key_by_ip(ip_address: str, key_name: str) -> Optional[bytes]:
         """Finds a key of a robot by the ip address.
 
         Args:
@@ -180,3 +187,59 @@ class FleetRobot(Scope):
             if robot["IP"] == ip_address:
                 return robot[key_name]
         return None
+
+    def set_robot_started(self, value: bool):
+        try:
+            self.Parameter[ROBOT_STARTED_PARAM].Value = value
+        except Exception as e:
+            logger.warning(
+                f"Caught exception in setting {ROBOT_STARTED_PARAM} Parameter with value {value} of robot id {id}",
+                e,
+            )
+            self.add("Parameter", ROBOT_STARTED_PARAM).Value = value
+
+    def ping(self) -> bool:
+        """Ping the robot"""
+
+        req_data = {
+            "dst": {"ip": self.IP, "host": self.RobotName, "id": self.name},
+            "command_data": {
+                "command": "PING",
+            },
+        }
+
+        res = self.spawner_client.send_request(
+            COMMAND_HANDLER_MSG_TYPE, req_data, response_required=True
+        )
+        return res is not None and "response" in res and res["response"] != {}
+
+    @classmethod
+    def list_all(cls):
+        """List all the robots in the fleet"""
+
+        db = MovaiDB("global")
+        all_robots_data = db.search_by_args("Robot")[0]
+        return list(all_robots_data["Robot"].keys())
+
+    @classmethod
+    def remove_entry(cls, robot_id: str, force: bool = False):
+        """Remove the robot from the registry
+
+        robot_id: str
+            the id of the robot to remove
+
+        force: bool
+            if True, the robot will be removed without checking if it is running
+            if not, an exception will be raised if the robot is running
+        """
+
+        if not force and FleetRobot(robot_id).ping():
+            raise Exception(
+                f"Robot {robot_id} is running. Use force=True if you stil want to remove it"
+            )
+
+        db = MovaiDB("global")
+        all_robots_data = db.search_by_args("Robot")[0]
+        robot_to_remove = {"Robot": {robot_id: all_robots_data["Robot"][robot_id]}}
+        deleted_count = db.delete(robot_to_remove)
+        return deleted_count is not None and deleted_count > 0

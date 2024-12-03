@@ -328,7 +328,7 @@ class Token:
 
 class UserToken(Token):
     @classmethod
-    def init_payload(cls, user: BaseUser, subject: str, expiration_delta: timedelta, refresh_id: str) -> None:
+    def init_payload(cls, user: BaseUser, subject: str, expiration_delta: timedelta, refresh_id: str):
         """initializes a dictionary which will be used as a payload
         for token (JWT) generation.
 
@@ -400,7 +400,7 @@ class UserToken(Token):
             str: The generated token decoded in utf-8.
         """
         if not isinstance(user, BaseUser):
-            error_msg = f"The user argument is from unknown type."
+            error_msg = "The user argument is from unknown type."
             raise UserError(error_msg)
         token_payload = cls.init_payload(user, subject, time_delta, refresh_id)
         token_str = cls.encode_token(token_payload)
@@ -434,5 +434,3 @@ class UserToken(Token):
             str: The generated token decoded in utf-8.
         """
         return cls._generate_user_token(user, "Refresh", JWT_REFRESH_EXPIRATION_DELTA)
-
- 
