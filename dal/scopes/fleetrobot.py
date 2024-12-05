@@ -233,7 +233,11 @@ class FleetRobot(Scope):
             if not, an exception will be raised if the robot is running
         """
 
-        if not force and FleetRobot(robot_id).ping():
+        robot = cls(robot_id)
+        if robot.RobotName == DEVICE_NAME:
+            raise ValueError("Cannot remove the manager robot")
+
+        if not force and robot.ping():
             raise Exception(
                 f"Robot {robot_id} is running. Use force=True if you stil want to remove it"
             )
