@@ -246,7 +246,7 @@ class ScopeInstanceVersionNode(
         try:
             attr_schema = self.schema[name]
         except KeyError as e:
-            raise AttributeError from e
+            raise AttributeError(f"No attribute {name}") from e
 
         if isinstance(attr_schema, SchemaPropertyNode):
             try:
