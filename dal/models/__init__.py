@@ -12,7 +12,9 @@ from .aclobject import AclObject
 from .application import Application
 from .baseuser import BaseUser
 from .callback import Callback
+from .configuration import Configuration
 from .container import Container
+from .flow import Flow
 from .flowlinks import FlowLinks
 from .form import Form
 from .internaluser import InternalUser
@@ -47,8 +49,8 @@ try:
         GraphicAsset,
         GraphicScene,
         Layout,
-        SharedDataEntry,
-        SharedDataTemplate,
+        SharedDataEntry, 
+        SharedDataTemplate, 
         TaskEntry,
         TaskTemplate,
     )
@@ -67,7 +69,7 @@ except ImportError:
 
 
 __all__ = [
-    "ACLManager",
+    "ACLManager", 
     "NewACLManager",
     "Configuration",
     "AclObject",
@@ -76,6 +78,7 @@ __all__ = [
     "Callback",
     "Configuration",
     "Container",
+    "Flow",
     "FlowLinks",
     "Form",
     "InternalUser",
@@ -103,3 +106,4 @@ __all__ = [
 ]
 
 __all__.extend(enterprise_modules)
+

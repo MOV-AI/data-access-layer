@@ -6,14 +6,19 @@
    Developers:
    - Manuel Silva  (manuel.silva@mov.ai) - 2020
 """
+from typing import TYPE_CHECKING
 
 from .scopestree import ScopeObjectNode, ScopeNode, scopes
+if TYPE_CHECKING:
+    from dal.models.flow import Flow
 
 
 class Container(ScopeObjectNode):
     """
     A container represents a flow in another flow (aka subflow)
     """
+    ContainerLabel: str
+    ContainerFlow: str
 
     @property
     def flow(self):
@@ -21,7 +26,7 @@ class Container(ScopeObjectNode):
         return self.parent.parent
 
     @property
-    def subflow(self):
+    def subflow(self) -> "Flow":
         """Returns the flow instance (Flow) represented by the container"""
         return scopes.from_path(self.ContainerFlow, scope="Flow")
 
@@ -50,7 +55,8 @@ class Container(ScopeObjectNode):
     def get_param(self, key: str,
                   name: str = None,
                   context=None,
-                  custom_parser: any = None) -> any:
+                  custom_parser: any = None,
+                  default_value: any = None) -> any:
         """
         Returns a specific parameter of the container after
         parsing it
@@ -67,7 +73,7 @@ class Container(ScopeObjectNode):
         try:
             _value = self.Parameter[key].Value
         except KeyError:
-            _value = None
+            _value = default_value
 
         # parse the parameter
         output = _parser.parse(key, str(_value), _name, self, _context)

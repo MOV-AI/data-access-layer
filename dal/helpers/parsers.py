@@ -6,15 +6,22 @@
    Developers:
    - Manuel Silva  (manuel.silva@mov.ai) - 2020
 """
+
 import ast
 import re
 import os
+from typing import Optional, Protocol
 
 from movai_core_shared.logger import Log
-
-from dal.movaidb import MovaiDB
+from dal.models.scopestree import scopes
 from dal.models.var import Var
-from dal.new_models.configuration import Configuration
+from dal.movaidb import MovaiDB
+
+
+class ObjectWithName(Protocol):
+    @property
+    def name(self) -> str:
+        ...
 
 
 class ParamParser:
@@ -44,9 +51,9 @@ class ParamParser:
         self,
         key: str,
         expression: str,
-        node_name: str = None,
-        instance: any = None,
-        context: str = None,
+        node_name: str,
+        instance: ObjectWithName,
+        context: Optional[str] = None,
     ) -> any:
         """
         Returns the parameter value. If the value is a valid expression, it is evaluated.
@@ -89,7 +96,7 @@ class ParamParser:
         return expression
 
     def eval_reference(
-        self, key: str, expression: str, instance: any, node_name: str
+        self, key: str, expression: str, instance: ObjectWithName, node_name: str
     ) -> str:
         """
         Calls a specific function to evaluate the expression
@@ -110,12 +117,8 @@ class ParamParser:
         try:
             # $(<context> <parameter reference>)
             # ex.: $(flow var_A)
-            pattern = re.compile(
-                rf"\$\(({'|'.join(self.mapping.keys())})\s+([\w\.-]+)\)"
-            )
+            pattern = re.compile(rf"\$\(({'|'.join(self.mapping.keys())})\s+([\w\.-]+)\)")
             result = pattern.search(expression)
-            if result is None:
-                raise ValueError(f'Invalid expression "{expression}"')
 
             if result is None:
                 raise ValueError(f"Invalid expression, {expression}")
@@ -129,12 +132,21 @@ class ParamParser:
             extra_info = f'in flow "{self.flow.ref}"'
 
             if self.context != self.flow.ref:
-                extra_info = f'in subflow "{self.context}" in the context of the flow "{self.flow.ref}"'
+                extra_info = (
+                    f'in subflow "{self.context}" in the context of the flow "{self.flow.ref}"'
+                )
 
-            info = (
-                f'Error evaluating "{key}" with value "{expression}"'
-                f' of node "{instance.name}" {extra_info}'
-            )
+            from dal.models.flow import Flow
+            if isinstance(instance, Flow):
+                info = (
+                    f'Error evaluating "{key}" with value "{expression}"'
+                    f' of flow "{self.flow.ref}"'
+                )
+            else:
+                info = (
+                    f'Error evaluating "{key}" with value "{expression}"'
+                    f' of node "{instance.name}" {extra_info}'
+                )
 
             msg = f"{info}; {error}"
 
@@ -156,15 +168,17 @@ class ParamParser:
         """
 
         _config_name, _config_param = _config.split(".", 1)
-        obj = Configuration(_config_name)
+        try:
+            obj = scopes.from_path(_config_name, scope="Configuration")
+
+        except KeyError as exc:
+            raise ValueError(f"Configuration {_config_name} does not exist") from exc
 
         output = obj.get_param(_config_param)
 
         return output
 
-    def eval_param(
-        self, param_name: str, default: str, instance: any, node_name: str
-    ) -> any:
+    def eval_param(self, param_name: str, default: str, instance: any, node_name: str) -> any:
         """
         Returns the param expression evaluated or default
             ex.: $(param name)
@@ -224,8 +238,9 @@ class ParamParser:
         """
 
         node_name_arr = node_name.split("__")
-
-        value = instance.flow.get_param(param_name, self.context)
+        # Check if this is the main flow or a subflow
+        is_subflow = len(node_name_arr) > 1
+        value = instance.flow.get_param(param_name, self.context, is_subflow=is_subflow)
         if value is None:
             value = default
 
@@ -243,8 +258,11 @@ class ParamParser:
                     # get the container instance
                     ctr_instance = self.flow.get_container(_name, self.context)
 
-                    # get the parameter value
-                    ctr_value = ctr_instance.get_param(param_name, _name, self.context)
+                    # get the instance parameter value
+                    # if there is no instance param, set to default
+                    ctr_value = ctr_instance.get_param(
+                        param_name, _name, self.context, default_value=value
+                    )
 
                     value = value if ctr_value is None else ctr_value
 
@@ -264,12 +282,8 @@ def get_string_from_template(template: str, task_entry: object) -> str:
     def _replacer(match):
         try:
             template, enum = match[1].split(".")
-            from dal.models.scopestree import scopes
             return str(
-                scopes()
-                .SharedDataEntry[task_entry.SharedData[template].ID]
-                .Field[enum]
-                .Value
+                scopes().SharedDataEntry[task_entry.SharedData[template].ID].Field[enum].Value
             )
         except Exception:  # pylint: disable=broad-except
             # ValueError from split/unpack

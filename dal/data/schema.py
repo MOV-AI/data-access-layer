@@ -7,6 +7,7 @@
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
 """
 from os import path
+from typing import Optional
 from dal.plugins.classes import PluginManager, Resource
 from .tree import TreeNode, DictNode, ObjectNode, PropertyNode, CallableNode
 from .serialization import ObjectDeserializer
@@ -35,7 +36,6 @@ class SchemaNode(DictNode):
             return self.parent.version
         except (TypeError, AttributeError) as e:
             raise ValueError("No version") from e
-            
 
     @property
     def schema(self):
@@ -142,7 +142,7 @@ class SchemasTree(CallableNode):
 
         return f"{self.parent.path}/schemas"
 
-    def __call__(self, name: str = None, version: str = "1.0"):
+    def __call__(self, name: Optional[str] = None, version: str = "1.0"):
         try:
             return self._children[version] if name is None else self._children[version][name]
         except KeyError:

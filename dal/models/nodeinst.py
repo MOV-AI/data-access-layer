@@ -7,14 +7,20 @@
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
    - Manuel Sila  (manuel.silva@mov.ai) - 2020
 """
+from typing import Optional, TYPE_CHECKING, cast
+
 from .scopestree import ScopeObjectNode, ScopeNode, scopes
 from movai_core_shared.logger import Log
+
+if TYPE_CHECKING:
+    from dal.models.node import Node
 
 
 class NodeInst(ScopeObjectNode):
     """
     A node instance
     """
+    Remappable: bool
 
     logger = Log.get_logger("NodeInst.mov.ai")
 
@@ -39,13 +45,12 @@ class NodeInst(ScopeObjectNode):
         return self.flow.full.NodeInst
 
     @property
-    def node_template(self):
+    def node_template(self) -> "Node":
         """
         return the current template for this node
         instance
         """
-        from dal.new_models import Node
-        return Node(self.Template)
+        return cast("Node", scopes.from_path(self.Template, scope="Node"))
 
     @property
     def namespace(self) -> str:
@@ -131,7 +136,7 @@ class NodeInst(ScopeObjectNode):
         """Returns True if the node is of type plugin"""
         return self.node_template.is_plugin
 
-    def get_params(self, name: str = None, context: str = None) -> dict:
+    def get_params(self, name: str = None, context: Optional[str] = None) -> dict:
         """Returns all the parameters"""
         params = {}
         _name = name or self.name

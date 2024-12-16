@@ -4,8 +4,7 @@
     "$name": {
       "Label": "str",
       "Resources": "hash",
-      "LastUpdate": "any",
-      "Version": "str"
+      "LastUpdate": "any"
     }
   }
 }

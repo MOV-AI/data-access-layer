@@ -5,10 +5,10 @@
 
    Developers:
    - Tiago Teixeira (tiago.teixeira@mov.ai) - 2020
-   - Moawiya Mograni (moawiya@mov.ai) - 2023
 
    Backup a.k.a. Import Export tool
 """
+
 import argparse
 import hashlib
 import json
@@ -16,40 +16,9 @@ import os
 import pickle
 import re
 import sys
-from typing import Dict, List
+from importlib import import_module
 
-from tqdm import tqdm
-
-from movai_core_shared.logger import Log
-
-import dal.new_models
-from dal.new_models.base import MovaiBaseModel
-import dal.scopes
-
-try:
-    import movai_core_enterprise.new_models
-    import movai_core_enterprise.scopes
-
-    ENTERPRISE_AVAILABLE = True
-except ModuleNotFoundError:
-    ENTERPRISE_AVAILABLE = False
-
-
-LOGGER = Log.get_logger(__name__)
-
-
-def get_class(scope_name):
-    if hasattr(dal.new_models, scope_name):
-        scope = getattr(dal.new_models, scope_name)
-    elif ENTERPRISE_AVAILABLE and hasattr(movai_core_enterprise.new_models, scope_name):
-        scope = getattr(movai_core_enterprise.new_models, scope_name)
-    elif hasattr(dal.scopes, scope_name):
-        scope = getattr(dal.scopes, scope_name)
-    elif ENTERPRISE_AVAILABLE and hasattr(movai_core_enterprise.scopes, scope_name):
-        scope = getattr(movai_core_enterprise.scopes, scope_name)
-    else:
-        LOGGER.warning(f"The scope: {scope_name} could not be loaded")
-    return scope
+from dal.movaidb import MovaiDB
 
 
 def test_reachable(redis_url):
@@ -62,7 +31,6 @@ def test_reachable(redis_url):
     """
     try:
         from redis import Redis
-
         r = Redis(redis_url, socket_connect_timeout=1)
         return r.ping()
     except Exception as exc:
@@ -70,25 +38,9 @@ def test_reachable(redis_url):
         return False
 
 
-write_bar = None
-
-
-def setup_progress_bar(objects: Dict[str, List[str]]) -> Dict[str, tqdm]:
-    global write_bar
-    bars = {}
-    pos = 0
-    for model in objects:
-        bars[model] = tqdm(total=len(objects[model]), desc=f"{model} Files", position=pos)
-        if not write_bar:
-            write_bar = bars[model]
-        pos += 1
-    return bars
-
-
 def _from_path(name):
     try:
         from dal.models.scopestree import scopes
-
         return scopes.extract_reference(name)[2]
     except KeyError:
         # not a path and `scope` wasn't passed
@@ -99,7 +51,6 @@ def _from_path(name):
 _re_config = re.compile(r"^\$\(\s*config\s+([${}a-zA-Z0-9_]+)\.?.*\)$")
 _re_envvar = re.compile(r"\$\{?(.+?)\}?$")
 _re_place_holder = re.compile(r"(/)?place_holder(?(1)(/|$)|)")
-bars = None
 
 
 class BackupException(Exception):
@@ -118,6 +69,31 @@ class RemoveException(Exception):
     """Exception used when removing metadata."""
 
     pass
+
+
+#
+# Base class for commonality
+#
+
+
+class Factory:
+    # cache
+    CLASSES_CACHE = {}
+
+    @staticmethod
+    def get_class(scope):
+        """
+        Get the scope
+        """
+        if scope not in Factory.CLASSES_CACHE:
+            mod = import_module("dal.scopes")
+
+            try:
+                Factory.CLASSES_CACHE[scope] = getattr(mod, scope)
+            except AttributeError as exc:
+                raise BackupException(f"Scope does not exists {scope}") from exc
+
+        return Factory.CLASSES_CACHE[scope]
 
 
 class Backup(object):
@@ -159,6 +135,9 @@ class Backup(object):
         else:
             # prints nothing
             self.log = lambda *args, **kwargs: None
+
+        # Connect to Redis
+        MovaiDB(db="global")
 
     #
     # reads a manifest file and returns
@@ -253,7 +232,6 @@ class Importer(Backup):
             ]
         else:
             from dal.movaidb.database import MovaiDB
-
             self._db = MovaiDB()
             self.dry_print = lambda *paths: None
 
@@ -330,7 +308,7 @@ class Importer(Backup):
         if scope not in self._imported:
             self._imported[scope] = []
         if name not in self._imported[scope]:
-            # self.log(f"Imported {scope}:{name}")
+            self.log(f"Imported {scope}:{name}")
             self._imported[scope].append(name)
 
     #
@@ -388,7 +366,6 @@ class Importer(Backup):
     # raises a ImportException if match returns false
     #
     def _get_files(self, scope, names, build=None, match=None):
-        global write_bar
         names = [_from_path(n) for n in names]
 
         if len(names) == 0:
@@ -418,13 +395,11 @@ class Importer(Backup):
             file_path = os.path.join(scope_path, builder(name))
             if not matcher(file_path):
                 _msg = f"{scope}:{name} not found"
-                # self.log(_msg)
-                if write_bar:
-                    write_bar.write(_msg)
+                self.log(_msg)
                 if self.validate:
                     raise ImportException(_msg)
                 else:
-                    # print(_msg)
+                    print(_msg)
                     continue
             files.append((name, file_path))
 
@@ -451,7 +426,6 @@ class Importer(Backup):
     # wrapper around movaidb.set
     #
     def _import_data(self, scope, name, data):
-        global bars
         # remove unwanted keys
         if self._delete:
             try:
@@ -464,39 +438,22 @@ class Importer(Backup):
                 pass
             # delete
             try:
-                obj = get_class(scope)(name)
+                obj = Factory.get_class(scope)(name)
                 # exists
-                if isinstance(obj, MovaiBaseModel):
-                    obj.delete()
-                else:
-                    self._db.delete_by_args(scope, Name=obj.name)
+                self._db.delete_by_args(scope, Name=obj.name)
             except Exception:
                 pass
-        version = "v2"
         try:
-            cls = get_class(scope)
-            if issubclass(cls, MovaiBaseModel):
-                # pydantic callback
-                obj = cls.model_validate(data)
-                obj.save()
-            else:
-                version = "v1"
-                self._db.set(data, validate=self.validate)
+            self._db.set(data, validate=self.validate)
             self.set_imported(scope, name)
-            if bars and scope in bars:
-                write_bar.write(f"{scope} {name} imported (using {version})")
-                bars[scope].update(1)
-        except Exception as e:
-            _msg = f"Failed to import '{scope}:{name}', error: {e}"
+        except Exception:
+            _msg = f"Failed to import '{scope}:{name}'"
             if self.validate:
-                # self.log(_msg)
+                self.log(_msg)
                 raise ImportException(_msg)
             else:
-                pass
                 # force print
-                # print(_msg)
-            if write_bar:
-                write_bar.write(_msg)
+                print(_msg)
 
     #
     # default importer function
@@ -550,7 +507,7 @@ class Importer(Backup):
             try:
                 with open(yaml_path) as file:
                     data["Configuration"][name]["Yaml"] = file.read()
-            except OSError:
+            except:
                 # probably file not found
                 pass
 
@@ -693,15 +650,13 @@ class Importer(Backup):
     # imports ports
     #
     def import_ports(self, names=None):
+        def to_import(ports):
+            return ports in names or ports.split("/")[0] in names
+
         if names is None:
 
             def to_import(ports):
                 return True
-
-        else:
-
-            def to_import(ports):
-                return ports in names or ports.split("/")[0] in names
 
         packages = None
         if names is not None:
@@ -782,7 +737,7 @@ class Importer(Backup):
                         try:
                             self.import_node([template])
                         except AttributeError:
-                            self.import_default("Node", [template])
+                            self.import_default("Flow", [template])
                 # inner flows
                 container_dict = data["Flow"][name].get("Container", {})
                 for key in container_dict:
@@ -1096,7 +1051,7 @@ class Exporter(Backup):
     # get all objects, given a scope
     #
     def get_objs(self, scope):
-        return get_class(scope).get_model_objects()
+        return Factory.get_class(scope).get_all()
 
     #
     # check if it's to override the file
@@ -1180,7 +1135,6 @@ class Exporter(Backup):
         # TODO post actions for Ports
 
     def export_default(self, scope, name):
-        global bars
         name = _from_path(name)
         if self.exported(scope, name):
             # not exporting again
@@ -1192,21 +1146,12 @@ class Exporter(Backup):
             os.makedirs(path)
 
         try:
-            obj = get_class(scope)(name)
-        except Exception:
-            raise ExportException(f"Can't find {scope}:{name}")
+            obj = Factory.get_class(scope)(name)
+        except Exception as e:
+            raise ExportException(f"Can't find {scope}:{name} - (Exc: {e})")
 
-        version = "v2"
-        if isinstance(obj, MovaiBaseModel):
-            dic = obj.model_dump()
-        else:
-            obj.get_dict()
-            version = "v1"
         json_path = os.path.join(scope, f"{name}.json")
-        self.dict2file(dic, json_path)
-        if bars and scope in bars:
-            bars[scope].update(1)
-            write_bar.write(f"{scope} {name} Exported (using {version})")
+        self.dict2file(obj.get_dict(), json_path)
 
         self.set_exported(scope, name)
         # okay
@@ -1221,7 +1166,7 @@ class Exporter(Backup):
         if self.exported("Callback", name):
             return
 
-        Callback = get_class("Callback")
+        Callback = Factory.get_class("Callback")
 
         self.export_default("Callback", name)
         # didn't blow before, so must exist
@@ -1235,7 +1180,7 @@ class Exporter(Backup):
         if self.exported("Package", name):
             return
 
-        Package = get_class("Package")
+        Package = Factory.get_class("Package")
 
         package_path = os.path.join(self.project_path, "Package", name)
         if not os.path.exists(package_path):
@@ -1243,7 +1188,7 @@ class Exporter(Backup):
 
         try:
             package = Package(name)
-        except Exception:
+        except:
             raise ExportException(f"Can't find Package:{name}")
 
         for key in package.File:
@@ -1273,10 +1218,10 @@ class Exporter(Backup):
         if self.exported("Message", name):
             return
 
-        Message = get_class("Message")
+        Message = Factory.get_class("Message")
         try:
             obj = Message(name)
-        except Exception:
+        except:
             raise ExportException(f"Can't find Message:{name}")
 
         message_path = os.path.join(self.project_path, "Message", name)
@@ -1306,11 +1251,11 @@ class Exporter(Backup):
         if self.exported("Flow", name):
             return
 
-        Flow = get_class("Flow")
+        Flow = Factory.get_class("Flow")
 
         try:
             flow = Flow(name)
-        except Exception:
+        except:
             raise ExportException(f"Can't find Flow:{name}")
 
         # export dependencies
@@ -1341,7 +1286,7 @@ class Exporter(Backup):
         if self.exported("TaskTemplate", name):
             return
 
-        TaskTemplate = get_class("TaskTemplate")
+        TaskTemplate = Factory.get_class("TaskTemplate")
 
         try:
             tasktemplate = TaskTemplate(name)
@@ -1358,7 +1303,7 @@ class Exporter(Backup):
         if self.exported("SharedDataEntry", name):
             return
 
-        SharedDataEntry = get_class("SharedDataEntry")
+        SharedDataEntry = Factory.get_class("SharedDataEntry")
 
         try:
             sde = SharedDataEntry(name)
@@ -1380,7 +1325,7 @@ class Exporter(Backup):
         if self.exported("Node", name):
             return
 
-        Node = get_class("Node")
+        Node = Factory.get_class("Node")
 
         try:
             node = Node(name)
@@ -1402,11 +1347,11 @@ class Exporter(Backup):
             return
 
         if self.recursive:
-            StateMachine = get_class("StateMachine")
+            StateMachine = Factory.get_class("StateMachine")
 
             try:
                 sm = StateMachine(name)
-            except Exception:
+            except:
                 raise ExportException(f"Can't find StateMachine:{name}")
 
             for state in sm.State:
@@ -1425,11 +1370,11 @@ class Exporter(Backup):
         if self.exported("Ports", name):
             return
 
-        Ports = get_class("Ports")
+        Ports = Factory.get_class("Ports")
 
         try:
             ports = Ports(name)
-        except Exception:
+        except:
             raise ExportException(f"Can't find Ports:{name}")
 
         if self.recursive:
@@ -1462,7 +1407,7 @@ class Exporter(Backup):
             return
 
         if self.recursive:
-            GraphicScene = get_class("GraphicScene")
+            GraphicScene = Factory.get_class("GraphicScene")
 
             try:
                 scene = GraphicScene(name)
@@ -1500,7 +1445,7 @@ class Exporter(Backup):
         if self.exported("Configuration", name):
             return
 
-        Configuration = get_class("Configuration")
+        Configuration = Factory.get_class("Configuration")
 
         try:
             config = Configuration(name)
@@ -1744,7 +1689,6 @@ class Remover(Backup):
             self.dry_print = lambda *paths: [print(path) for path in paths]
         else:
             from dal.movaidb.database import MovaiDB
-
             self._db = MovaiDB()
             self.dry_print = lambda *paths: None
 
@@ -1830,7 +1774,7 @@ class Remover(Backup):
 
         """
         try:
-            obj = get_class(scope)(name)
+            obj = Factory.get_class(scope)(name)
             # exists
             self._db.delete_by_args(scope, Name=obj.name)
             self.log(f"Removed {scope}:{name}")
@@ -1857,7 +1801,6 @@ class Remover(Backup):
 
 
 def main():
-    global bars
     parser = argparse.ArgumentParser(description="Export/Import/Remove Mov.AI Data")
     parser.add_argument(
         "-a",
@@ -1992,7 +1935,6 @@ def main():
                 objects[args.type] = [args.name]
 
     try:
-        bars = setup_progress_bar(objects)
         tool.run(objects)
         print(args.action.capitalize() + "ed")
         exit(0)
@@ -2013,7 +1955,6 @@ def main():
 
     # not exited before, means exception
     exit(1)
-
 
 if __name__ == "__main__":
     main()

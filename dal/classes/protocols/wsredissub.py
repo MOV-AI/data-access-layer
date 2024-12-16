@@ -7,24 +7,23 @@
    - Manuel Silva (manuel.silva@mov.ai) - 2020
    - Tiago Paulino (tiago@mov.ai) - 2020
    - Dor Marcus (dor@mov.ai) - 2023
-  
+
    Websocket to Redis Subscriber
 """
 import asyncio
 import json
 import sys
-from typing import List
 import uuid
-import yaml
 
 import aioredis
-from aiohttp import WSMsgType, web
-
+import yaml
+from aiohttp import web
+from aiohttp import WSMsgType
 from movai_core_shared.logger import Log
 
-from dal.movaidb import MovaiDB, RedisClient
-from dal.new_models import PYDANTIC_MODELS
-from dal.new_models.base import DEFAULT_VERSION
+from dal.movaidb import MovaiDB
+from dal.movaidb import RedisClient
+
 try:
     from gd_node.callback import GD_Callback
 
@@ -43,11 +42,13 @@ class WSRedisSub:
         self.http_endpoint = "/subscriber"
         self.node_name = _node_name
         self.app = app
+
         self.databases = None
         self.connections = {}
         self.tasks = {}
         self.movaidb = MovaiDB()
         self.loop = asyncio.get_event_loop()
+        self.recovery_mode = False
 
         # API available actions
         self.actions = {
@@ -68,109 +69,152 @@ class WSRedisSub:
         self.databases = await RedisClient.get_client()
 
     async def acquire(self, retries: int = 3):
-        _conn = None
+        """Acquire a Redis connection with retry logic, handle cancellations, health checks, and remove unhealthy connections"""
+        LOGGER.debug(f"Acquiring connection. Retries left: {retries}")
         if retries == 0:
-            return _conn
+            return None
         try:
             await self.connect()
-            _conn = await self.databases.slave_pubsub.acquire()
+            conn = await asyncio.wait_for(self.databases.slave_pubsub.acquire(), timeout=30)
+
+            # Check if the connection is healthy
+            if await conn.execute('PING') != b'PONG':
+                raise Exception("Failed to receive PONG response")
+            return conn
+        except asyncio.CancelledError:
+            LOGGER.debug("Acquire operation was cancelled")
+            return None
+        except asyncio.TimeoutError:
+            LOGGER.error("Acquire operation timed out")
+            return None
         except Exception as e:
-            LOGGER.error(e)
-            await self.connect()
-            _conn = await self.acquire(retries - 1)
-        return _conn
+            LOGGER.error(f"Error acquiring connection: {e}. Retrying...")
+            # Close the connection if it's already acquired but unhealthy
+            if 'conn' in locals() and conn:
+                conn.close()
+                await conn.wait_closed()
+            await asyncio.sleep(2 ** (3 - retries))  # Exponential backoff
+            return await asyncio.wait_for(self.acquire(retries - 1), timeout=60)
 
     async def release(self, conn_id):
         conn = self.connections[conn_id]["subs"]
-        asyncio.create_task(conn.wait_closed())
+        if conn:
+            self.loop.create_task(conn.wait_closed())
         del self.connections[conn_id]
+        if self.recovery_mode:
+            await self.databases.shutdown()
+            self.recovery_mode = False
 
-    async def close_and_release(self, ws: web.WebSocketResponse, conn_id: str):
-        """Closes the socket, cancels active tasks and release db connections.
-
-        Args:
-            ws (web.WebSocketResponse): The websocket to close
-            conn_id (str): the connection id.
-        """
-        await ws.close()
+    async def close(self, ws: web.WebSocketResponse, conn_id: str):
+        """Close the WebSocket and clean up tasks and connections"""
+    
         for task in self.tasks[conn_id]:
             if not task.done():
                 task.cancel()
+                try:
+                    await asyncio.wait_for(task, timeout=2)
+                except asyncio.CancelledError:
+                    LOGGER.debug("[WSRedisSub.close] Task was properly cancelled "+ str(task))
+                except asyncio.TimeoutError:
+                    LOGGER.error("[WSRedisSub.close] Waited 2 seconds for it. Force cancelling! "+ str(task))
 
-        if conn_id in self.tasks:
-            self.tasks.pop(conn_id)
+        self.tasks.pop(conn_id, None)
+        await self.release(conn_id)
+        await ws.close()
+
+    async def print_current_task_count(self):
+        tasks = asyncio.Task.all_tasks(loop=asyncio.get_event_loop())
+        LOGGER.warning(f"Number of current tasks: {len(tasks)}")
 
     async def handler(self, request: web.Request) -> web.WebSocketResponse:
-        """handle websocket connections"""
+        """Handle WebSocket connections"""
+        connection_queue = asyncio.Queue()
+        lock = asyncio.Lock()
+        conn = None
 
         ws_resp = web.WebSocketResponse()
         await ws_resp.prepare(request)
-
-        # acquire db connection
-        conn = None
-        connection_queue = asyncio.Queue()
-        lock = asyncio.Lock()
-        try:
-            _conn = await self.acquire()
-            conn = aioredis.Redis(_conn)
-        except Exception as error:
-            LOGGER.error(str(error))
-            await self.push_to_queue(
-                connection_queue, {"event": "", "patterns": None, "error": str(error)}
-            )
-
+        
         conn_id = uuid.uuid4().hex
+        self.connections[conn_id] = {"conn": connection_queue, "subs": conn, "patterns": []}
 
-        # add connection
-        self.connections.update({conn_id: {"conn": connection_queue, "subs": conn, "patterns": []}})
-
-        # wait for messages
-        write_task = asyncio.create_task(self.write_websocket_loop(ws_resp, connection_queue, lock))
+        # Ensure the loop is running and get it
+        loop = asyncio.get_event_loop()
+        write_task = loop.create_task(self.write_websocket_loop(ws_resp, connection_queue, lock))
         self.tasks[conn_id] = [write_task]
-        async for ws_msg in ws_resp:
-            # check if redis connection is active
-            if not conn or conn.closed:
-                print("redis connection not available")
-            if ws_msg.type == WSMsgType.TEXT:
-                # message should be json
-                try:
-                    if ws_msg.data == "close":
-                        break
-                    data = ws_msg.json()
-                    if "event" in data:
-                        if data.get("event") == "execute":
-                            _config = {
-                                "conn_id": conn_id,
-                                "conn": conn,
-                                "callback": data.get("callback", None),
-                                "func": data.get("func", None),
-                                "data": data.get("data", None),
-                            }
+
+        try:
+            try:
+                #_conn = await self.acquire()
+                _conn = await asyncio.wait_for(self.acquire(), timeout=160)
+                if _conn:
+                    conn = aioredis.Redis(_conn)
+                    self.connections[conn_id]["subs"] = conn
+                    
+                else:
+                    LOGGER.error(f"Error acquiring Redis connection:")
+                    self.recovery_mode = True
+                    raise Exception("Unable to acquire Redis connection") 
+            except Exception as error:
+                LOGGER.error(f"Exception: {error}")
+                output = {"event": None, "patterns": None, "error": "{error}"}
+                await self.push_to_queue(connection_queue, output)
+                raise
+
+            async for ws_msg in ws_resp:
+                if ws_msg.type == WSMsgType.TEXT:
+                    try:
+                        if ws_msg.data == "close":
+                            break
+                        data = ws_msg.json()
+                        if "event" in data:
+                            if data["event"] == "execute":
+                                _config = {
+                                    "conn_id": conn_id,
+                                    "conn": conn,
+                                    "callback": data.get("callback"),
+                                    "func": data.get("func"),
+                                    "data": data.get("data"),
+                                }
+                            else:
+                                _config = {
+                                    "conn_id": conn_id,
+                                    "conn": conn,
+                                    "_pattern": data.get("pattern"),
+                                }
+                            await self.actions[data["event"]](**_config)
                         else:
-                            _config = {
-                                "conn_id": conn_id,
-                                "conn": conn,
-                                "_pattern": data.get("pattern", None),
-                            }
-                        await self.actions[data["event"]](**_config)
-                    else:
-                        raise KeyError("Not all required keys found")
+                            raise KeyError("Missing 'event' key in WebSocket message")
+                    except aioredis.PoolClosedError:
+                        LOGGER.debug("Connection closed while executing.")
+                        output = {"event": None, "patterns": None, "error": "Connection was closed"}
+                        await self.push_to_queue(connection_queue, output)
+                    except Exception as e:
+                        LOGGER.error(f"Error handling WebSocket message: {e}")
+                        output = {"event": None, "patterns": None, "error": str(e)}
+                        await self.push_to_queue(connection_queue, output)
+                elif ws_msg.type == WSMsgType.ERROR:
+                    LOGGER.error(f"WebSocket connection closed with exception: {ws_resp.exception()}")
+                else:
+                    LOGGER.error(f"Unexpected WebSocket message type: {ws_msg.type}")
+        finally:
+            # Drain the messaging queue before closing the connection
+            LOGGER.debug(f"Closing everything and cancelling ongoing async tasks!{conn_id}")
+            attempts = 0
+            while connection_queue.qsize() > 0 and attempts < 5:
+                LOGGER.debug(f"Waiting for websocket writter to drain queued responses.Attempt [{attempts}]. Messaging queue size is :{connection_queue.qsize()}")
+                await asyncio.sleep(2)
+                attempts += 1
 
-                except Exception as e:
-                    LOGGER.error(e)
-                    output = {"event": None, "patterns": None, "error": str(e)}
-
-                    await self.push_to_queue(connection_queue, output)
-
-            elif ws_msg.type == WSMsgType.ERROR:
-                LOGGER.error("ws connection closed with exception %s" % ws_resp.exception())
-        async with lock:
-            await self.close_and_release(ws_resp, conn_id)
-        await self.release(conn_id)
+            async with lock:
+                await self.close(ws_resp, conn_id)
         return ws_resp
-
+        
     async def write_websocket_loop(
-        self, ws_resp: web.WebSocketResponse, connection_queue: asyncio.Queue, lock: asyncio.Lock
+        self,
+        ws_resp: web.WebSocketResponse,
+        connection_queue: asyncio.Queue,
+        lock: asyncio.Lock,
     ):
         """Write messages to websocket.
         args:
@@ -180,18 +224,24 @@ class WSRedisSub:
         try:
             while True:
                 msg = await connection_queue.get()
+                #used for debugging
+                #await self.print_current_task_count()
                 async with lock:
-                    if ws_resp is not None and not ws_resp.closed and not ws_resp._closing:
+                    if (
+                        ws_resp is not None
+                        and not ws_resp.closed
+                        and not ws_resp._closing
+                    ):
                         await ws_resp.send_json(msg)
                     else:
                         break
         except asyncio.CancelledError:
-            LOGGER.debug("Write task is canceled, socket is closing")
-
+            LOGGER.debug("Stopping websocket writter.")
         except Exception as err:
-            LOGGER.error(str(err))
+            LOGGER.error("Writing back to websocket failed! " + str(err))
+            
 
-    def convert_pattern(self, _pattern: dict) -> List[str]:
+    def convert_pattern(self, _pattern: dict) -> str:
         try:
             pattern = _pattern.copy()
             scope = pattern.pop("Scope")
@@ -206,43 +256,25 @@ class WSRedisSub:
             LOGGER.error(e)
             return None
 
-    def convert_pattern_pydantic(self, _pattern: dict) -> str:
-        """This function generate a string pattern suitable for the
-        new models based on pydantic.
-
-        Args:
-            _pattern (dict): The pattern recived from the client.
-
-        Returns:
-            str: The pattern in a string format.
-        """
-        scope = _pattern.get("Scope")
-        name = _pattern.get("Name", "*")
-        version = _pattern.get("Version", DEFAULT_VERSION)
-        pattern = f"global:{scope}:{name}:{version}"
-        return pattern
-
     async def add_pattern(self, conn_id, conn, _pattern, **ignore):
         """Add pattern to subscriber"""
         LOGGER.info(f"add_pattern{_pattern}")
+
+        
         self.connections[conn_id]["patterns"].append(_pattern)
         key_patterns = []
-        
         if isinstance(_pattern, list):
             for patt in _pattern:
                 key_patterns.extend(self.convert_pattern(patt))
         else:
-            if _pattern.get("Scope") in PYDANTIC_MODELS:
-                key_patterns.append(self.convert_pattern_pydantic(_pattern))
-            else:
-                key_patterns.extend(self.convert_pattern(_pattern))
-
+            key_patterns = self.convert_pattern(_pattern)
         keys = []
         tasks = []
         for key_pattern in key_patterns:
             pattern = "__keyspace@*__:%s" % (key_pattern)
             channel = await conn.psubscribe(pattern)
-            read_task = asyncio.create_task(self.wait_message(conn_id, channel[0]))
+            loop = asyncio.get_event_loop()
+            read_task = loop.create_task(self.wait_message(conn_id, channel[0]))
             self.tasks[conn_id].append(read_task)
 
             # add a new get_keys task
@@ -255,29 +287,14 @@ class WSRedisSub:
             for key in value:
                 keys.append(key)
 
-        values = {}
-        if _pattern.get("Scope") in PYDANTIC_MODELS:
-            for key in keys:
-                _, model, name, _ = key.decode().split(":")
-                value = await self.get_json_value(key)
-                if model not in values:
-                    values[model] = {}
-                values[model][name] = value[model][name]
-        else:
         # get all values
-            values = await self.mget(keys)
+        values = await self.mget(keys)
 
         ws = self.connections[conn_id]["conn"]
         await self.push_to_queue(
             ws, {"event": "subscribe", "patterns": [_pattern], "value": values}
         )
 
-    async def get_json_value(self, key):
-        _conn = self.databases.db_slave
-        value = await _conn.execute("json.get", key)
-        value = json.loads(value)
-        return value
-        
     async def remove_pattern(self, conn_id, conn, _pattern, **ignore):
         """Remove pattern from subscriber"""
         LOGGER.debug(f"removing pattern {_pattern} {conn}")
@@ -331,7 +348,6 @@ class WSRedisSub:
                 await self.push_to_queue(ws, output)
         except asyncio.CancelledError:
             LOGGER.debug("Wait task was cancelled, socket is closing!")
-
         except Exception as err:
             LOGGER.error(str(err))
 
@@ -368,22 +384,20 @@ class WSRedisSub:
         return output
 
     async def fetch_value(self, _conn, key):
-        # DEPRECATED
-        type_ = await _conn.type(key)
-        type_ = type_.decode("utf-8")
-        if type_ == "string":
-            value = await _conn.get(key)
-            value = self.movaidb.decode_value(value)
-        elif type_ == "list":
-            value = await _conn.lrange(key, 0, -1)
-            value = self.movaidb.decode_list(value)
-        elif type_ == "hash":
-            value = await _conn.hgetall(key)
-            value = self.movaidb.decode_hash(value)
-        elif type_ == "ReJSON-RL":
-            value = await _conn.execute("json.get", key)
-            #value = self.redis.db_global.json().get
-        
+        try:
+            type_ = await _conn.type(key)
+            type_ = type_.decode("utf-8")
+            if type_ == "string":
+                value = await _conn.get(key)
+                value = self.movaidb.decode_value(value)
+            if type_ == "list":
+                value = await _conn.lrange(key, 0, -1)
+                value = self.movaidb.decode_list(value)
+            if type_ == "hash":
+                value = await _conn.hgetall(key)
+                value = self.movaidb.decode_hash(value)
+        except (aioredis.PoolClosedError, aioredis.ConnectionForcedCloseError):
+            LOGGER.debug("Connection closed while fetching value")
         try:  # Json cannot dump ROS Messages
             json.dumps(value)
         except:
@@ -437,8 +451,6 @@ class WSRedisSub:
             value = await _conn.lrange(key, 0, -1)
         elif type_ == "hash":
             value = await _conn.hgetall(key)
-        elif type_ == "ReJSON-RL":
-            value = await _conn.execute("json.get", key)
         else:
             raise ValueError(f"Unexpected type: {type_} for key: {key}")
 
@@ -453,8 +465,6 @@ class WSRedisSub:
             value = self.movaidb.decode_list(value)
         elif type_ == "hash":
             value = self.movaidb.sort_dict(self.movaidb.decode_hash(value))
-        elif type_ == "ReJSON-RL":
-            value = json.loads(value)
         else:
             raise ValueError(f"Unexpected type: {type_} for value: {value}")
 
@@ -479,7 +489,7 @@ class WSRedisSub:
 
         try:
             # get callback
-            callback = gdnode_modules["GD_Callback"](
+            callback = GD_Callback(
                 callback, self.node_name, "cloud", _update=False
             )
 
@@ -503,7 +513,13 @@ class WSRedisSub:
         except Exception:
             error = f"{str(sys.exc_info()[1])} {sys.exc_info()}"
             await self.push_to_queue(
-                ws, {"event": "execute", "callback": callback, "result": None, "error": error}
+                ws,
+                {
+                    "event": "execute",
+                    "callback": callback,
+                    "result": None,
+                    "error": error,
+                },
             )
 
     async def push_to_queue(self, conn: asyncio.Queue, data):

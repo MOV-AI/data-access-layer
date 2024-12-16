@@ -6,8 +6,8 @@
    Developers:
    - Erez Zomer  (erez@mov.ai) - 2022
 """
-from .model import Model
-from .baseuser import BaseUser
+from dal.models.model import Model
+from dal.models.baseuser import BaseUser
 
 
 class RemoteUser(BaseUser):

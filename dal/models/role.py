@@ -22,13 +22,12 @@ from movai_core_shared.envvars import DEFAULT_ROLE_NAME
 from movai_core_shared.exceptions import RoleAlreadyExist, RoleDoesNotExist, RoleError
 
 
-from .scopestree import scopes
-from .model import Model
-from .aclobject import AclObject
-from .remoteuser import RemoteUser
-from .internaluser import InternalUser
-from .acl import NewACLManager
-from dal.scopes.application import Application
+from dal.models.scopestree import scopes
+from dal.models.model import Model
+from dal.models.aclobject import AclObject
+from dal.models.remoteuser import RemoteUser
+from dal.models.internaluser import InternalUser
+from dal.models.acl import NewACLManager
 
 
 class Role(Model):
@@ -109,7 +108,7 @@ class Role(Model):
             "AclObject": [READ_PERMISSION],
         }
         resources["Applications"] = [
-            item for item in Application.get_all()
+            item["ref"] for item in scopes().list_scopes(scope="Application")
         ]
         if not Role.is_exist(DEPLOYER_ROLE):
             deployer_role = cls.create(DEPLOYER_ROLE, resources)
@@ -145,19 +144,22 @@ class Role(Model):
 
         Raises:
             RoleDoesNotExist: In case there is no Role with that name.
+            RoleError: if the role cannot be deleted for some reason.
         """
         if name == DEFAULT_ROLE_NAME:
             raise RoleError(f"Deleting the {name} role is forbidden!")
+        if RemoteUser.has_any_user_with_role(name) or InternalUser.has_any_user_with_role(name):
+            raise RoleError(f"Role {name} is being used, cannot be deleted.")
+
         try:
-            RemoteUser.remove_role_from_all_users(name)
-            InternalUser.remove_role_from_all_users(name)
-            AclObject.remove_roles_from_all_objects(name)
             role = Role(name)
             scopes().delete(role)
         except KeyError:
             error_msg = "The requested Role does not exist"
             cls.log.error(error_msg)
             raise RoleDoesNotExist(error_msg)
+
+        AclObject.remove_roles_from_all_objects(name)
 
     @staticmethod
     def list_roles_names() -> list:

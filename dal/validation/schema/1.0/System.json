@@ -4,8 +4,6 @@
     "$name": {
       "Value": "any",
       "Label": "str",
-      "Version": "str",
-      "LastUpdate": "any",
       "Parameter": {
         "$name": {
           "Value": "hash"
