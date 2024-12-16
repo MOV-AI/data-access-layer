@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 requirements = [
     "aioredis==1.3.1",
-    "aiohttp==3.8.1",
+    "aiohttp==3.11.10",
     "deepdiff==4.0.9",
     "gitpython==3.1.30",
     "jsonschema==3.2.0",
