@@ -9,6 +9,7 @@
 import re
 from abc import ABC
 from importlib import import_module
+from typing import Optional, cast
 from dal.data.tree import TreeNode, ObjectNode, PropertyNode, CallableNode, DictNode
 from dal.data.serialization import (
     ObjectDeserializer,
@@ -28,8 +29,8 @@ class ScopeInstanceNode(DictNode, WorkspaceObject):
     that contains the data, each instance might have multiple versions
     """
 
-    def __init__(self, ref):
-        self._ref = ref
+    def __init__(self, ref: str):
+        self._ref: str = ref
         super().__init__()
 
     @property
@@ -88,8 +89,8 @@ class ScopeInstanceVersionNode(
         return "scope_version"
 
     @property
-    def workspace(self):
-        workspace = self.get_first_parent("workspace")
+    def workspace(self) -> Optional[str]:
+        workspace = cast(WorkspaceNode, self.get_first_parent("workspace"))
         return None if workspace is None else workspace.workspace
 
     @property
@@ -104,7 +105,7 @@ class ScopeInstanceVersionNode(
         """
         the scope name
         """
-        scope = self.get_first_parent("scope")
+        scope = cast(ScopeNode, self.get_first_parent("scope"))
         return None if scope is None else scope.scope
 
     @property
@@ -112,7 +113,7 @@ class ScopeInstanceVersionNode(
         """
         this object reference
         """
-        instance = self.get_first_parent("scope_instance")
+        instance = cast(ScopeInstanceNode, self.get_first_parent("scope_instance"))
         return None if instance is None else instance.ref
 
     @property

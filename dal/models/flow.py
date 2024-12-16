@@ -7,21 +7,47 @@
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
    - Manuel Silva  (manuel.silva@mov.ai) - 2020
 """
-from types import SimpleNamespace
-from movai_core_shared.consts import (ROS1_NODELETSERVER)
-from movai_core_shared.logger import Log
+import re
+from dataclasses import dataclass, field
+from typing import Any, Dict, Iterable, Optional, Tuple, TypedDict, Union, cast, TYPE_CHECKING
 
-from .flowlinks import FlowLinks
-from .scopestree import scopes
-from ..helpers.flow import GFlow
-from ..helpers.parsers import ParamParser
+from movai_core_shared.consts import ROS1_NODELETSERVER
+from movai_core_shared.logger import Log
+from dal.helpers.flow import GFlow
+from dal.helpers.parsers import ParamParser
 from .model import Model
+from .scopestree import scopes
+
+if TYPE_CHECKING:
+    from dal.data.tree import DictNode, ObjectNode, PropertyNode
+    from dal.models.container import Container  # NOSONAR
+    from dal.models.node import Node
+    from dal.models.nodeinst import NodeInst  # NOSONAR
+
+
+class LinkDict(TypedDict):
+    """ Represents a link between two ports """
+    From: str
+    To: str
+    Dependency: int
+
+
+@dataclass
+class FlowOutput:
+    """ Return format by get_dict() """
+    NodeInst: Dict[str, "NodeInst"] = field(default_factory=dict)
+    Links: Dict[str, "LinkDict"] = field(default_factory=dict)
 
 
 class Flow(Model):
     """
     A Flow
     """
+
+    NodeInst: Dict[str, "NodeInst"]
+    Links: "DictNode[Union['ObjectNode', 'PropertyNode']]"
+    Container: Dict[str, "Container"]
+
     __RELATIONS__ = {
         "schemas/1.0/Flow/NodeInst/Template": {
             "schema_version": "1.0",
@@ -30,7 +56,7 @@ class Flow(Model):
         "schemas/1.0/Flow/Container/ContainerFlow": {
             "schema_version": "1.0",
             "scope": "Flow",
-        }
+        },
     }
 
     __START__ = "START/START/START"
@@ -49,8 +75,8 @@ class Flow(Model):
         self._remaps = None
 
     @property
-    def full(self) -> dict:
-        """ Returns the data from the main flow and all subflows """
+    def full(self) -> FlowOutput:
+        """Returns the data from the main flow and all subflows"""
 
         self._full = self._full or self.get_dict()
 
@@ -58,39 +84,44 @@ class Flow(Model):
 
     @property
     def parser(self) -> ParamParser:
-        """ Get or create and instance of the parser """
+        """Get or create and instance of the parser"""
 
         return self._parser or self._create_parser_instance()
 
     @property
     def graph(self) -> GFlow:
-        """ Get or create an instance of the graph generator """
+        """Get or create an instance of the graph generator"""
 
         return self._graph or self._create_graph_instance()
 
     @property
     def remaps(self) -> dict:
-        """ Get remaps from the graph instance """
+        """Get remaps from the graph instance"""
 
         return self.graph.get_remaps()
 
     def _create_parser_instance(self) -> ParamParser:
-        """ Create and instance of the parser """
+        """Create and instance of the parser"""
 
         self._parser = self.__PARAM_PARSER__(self)
         return self._parser
 
     def _create_graph_instance(self) -> GFlow:
-        """ Create an instance of the graph generator """
+        """Create an instance of the graph generator"""
 
         self._graph = self.__GRAPH_GEN__(self)
         return self._graph
 
-    def _with_prefix(self, prefix: str, nodes: dict, links: dict) -> dict:
-        """"
+    def _with_prefix(
+        self,
+        prefix: str,
+        nodes: Iterable[Tuple[str, "NodeInst"]],
+        links: Iterable[Tuple[str, LinkDict]],
+    ) -> FlowOutput:
+        """ "
         Add a prefix to the node instances and also to the links
         """
-        output = SimpleNamespace(NodeInst={}, Links={})
+        output = FlowOutput()
 
         prefix = f"{prefix}__" if prefix else ""
 
@@ -98,29 +129,30 @@ class Flow(Model):
 
             pref_id = f"{prefix}{_id}"
 
-            output.NodeInst.update(
-                {pref_id: node_inst})
+            output.NodeInst.update({pref_id: node_inst})
 
         for _id, value in links:
-
-            _value = {}
             pref_id = f"{prefix}{_id}"
             _from = value["From"]
             _to = value["To"]
 
-            _value["From"] = f"{prefix}{_from}" if _from.upper(
-            ) != self.__START__ else _from
-
-            _value["To"] = f"{prefix}{_to}"
-            _value["Dependency"] = value.get(
-                "Dependency", self.Links.__DEFAULT_DEPENDENCY__)
+            _value: LinkDict = {
+                "From": (f"{prefix}{_from}" if _from.upper() != self.__START__ else _from),
+                "To": f"{prefix}{_to}",
+                "Dependency": value.get("Dependency", self.Links.__DEFAULT_DEPENDENCY__),
+            }
 
             # required for legacy compatibility
             output.Links.update({pref_id: _value})
 
         return output
 
-    def get_dict(self, data: dict = None, prefix: str = None, prev_flows: list = None) -> dict:
+    def get_dict(
+        self,
+        data: Optional[FlowOutput] = None,
+        prefix: Optional[str] = None,
+        prev_flows: Optional[list] = None,
+    ) -> FlowOutput:
         """
         Aggregate data from the main flow and subflows
         Returns a dictionary with the following format
@@ -137,25 +169,22 @@ class Flow(Model):
         prev_flows = prev_flows or []
 
         if self.ref in prev_flows:
-            raise RecursionError(
-                "Flow already in use, this will lead to infinite recursion")
+            raise RecursionError("Flow already in use, this will lead to infinite recursion")
 
         # start creating the dict
-        output = data or self._with_prefix(
-            "", self.NodeInst.items(), self.Links.items())
+        output = data or self._with_prefix("", self.NodeInst.items(), self.Links.items())
 
         for _, container in self.Container.items():
 
             # container.ContainerFlow is expected to have the full path of the doc
-            subflow = scopes.from_path(container.ContainerFlow, scope="Flow")
+            subflow: Flow = cast(Flow, scopes.from_path(container.ContainerFlow, scope="Flow"))
 
             # update prefix
             _prefix = f"{prefix}__" if prefix else ""
             label = f"{_prefix}{container.ContainerLabel}"
 
             # extract subflow data
-            wprefix = subflow._with_prefix(
-                label, subflow.NodeInst.items(), subflow.Links.items())
+            wprefix = subflow._with_prefix(label, subflow.NodeInst.items(), subflow.Links.items())
 
             # update main dict
             output.NodeInst.update(wprefix.NodeInst)
@@ -170,8 +199,8 @@ class Flow(Model):
 
         return output
 
-    def get_node_params(self, node_name: str, context: str = None) -> dict:
-        ''' Returns the parameters of the node instance '''
+    def get_node_params(self, node_name: str, context: Optional[str] = None) -> dict:
+        """Returns the parameters of the node instance"""
 
         # TODO rename to get_node_inst_params ?
 
@@ -182,7 +211,7 @@ class Flow(Model):
 
         return node_inst.get_params(node_name, _context)
 
-    def get_node_inst(self, name: str) -> dict:
+    def get_node_inst(self, name: str) -> "NodeInst":
         """
         Returns a node instance from full flow (subflows included)
         """
@@ -193,14 +222,13 @@ class Flow(Model):
             return self.full.NodeInst[name]
 
         except KeyError as e:
-            raise KeyError(
-                f"Node instance '{name}' does not exist in '{self.ref}'") from e
+            raise KeyError(f"Node instance '{name}' does not exist in '{self.ref}'") from e
 
-    def get_container(self, name: str, context: str = None):
-        """ Returns an instance of Container """
+    def get_container(self, name: str, context: Optional[str] = None):
+        """Returns an instance of Container"""
 
         # each element represents a container, aka subflow
-        node_name_arr = name.split('__')
+        node_name_arr = name.split("__")
 
         _container = None
         _flow = self
@@ -208,7 +236,7 @@ class Flow(Model):
         # the context is used to get back to the main flow while
         # checking the parameters of a node instance in a subflow
         if context:
-            _flow = scopes.from_path(context, scope="Flow")
+            _flow: Flow = cast(Flow, scopes.from_path(context, scope="Flow"))
 
         # going up to the main flow using the context allows
         # to get the container down in a subflow
@@ -220,18 +248,18 @@ class Flow(Model):
 
         return _container
 
-    def get_node(self, node_inst_name: str):
-        '''
+    def get_node(self, node_inst_name: str) -> "Node":
+        """
         Returns an instance of Node (template)
-        '''
+        """
         # TODO check if method is still in use
 
         return self.NodeInst[node_inst_name].node_template
 
     def get_start_nodes(self) -> list:
-        '''
+        """
         Returns all node instances with a link to the START node
-        '''
+        """
 
         output = []
 
@@ -244,7 +272,7 @@ class Flow(Model):
 
         return output
 
-    def get_param(self, key: str, context: str = None) -> any:
+    def get_param(self, key: str, context: str = None, is_subflow: bool = False) -> any:
         """
         Returns a parameter of the flow after parsing it
         """
@@ -255,22 +283,30 @@ class Flow(Model):
         except KeyError:
             return None
 
+        if is_subflow:
+            # Check if instance is pointing to upper flow
+            # If so, continue to next (upper) flow
+            regex_flow = r"\$\((flow)[^$)]+\)"
+            flow_in_param = re.search(regex_flow, param)
+            if flow_in_param:
+                return param
+
         # main flow context or own context
         _context = context or self.ref
 
         # parse the parameter in the context of "_context"
-        output = self.parser.parse(key, param, context=_context)
+        output = self.parser.parse(key, param, "", self, context=_context)
 
         return output
 
-    def get_node_inst_param(self, name: str, key: str, context: str = None) -> any:
-        """ Returns the node instance parameter """
+    def get_node_inst_param(self, name: str, key: str, context: str = None) -> Any:
+        """Returns the node instance parameter"""
         _context = context or self.ref
 
         return self.get_node_inst(name).get_param(key, name, _context)
 
     def get_lifecycle_nodes(self) -> list:
-        """ List of Ros2 Lifecycle Nodes """
+        """List of Ros2 Lifecycle Nodes"""
         output = []
 
         for _, node_inst in self.full.NodeInst.items():
@@ -283,7 +319,7 @@ class Flow(Model):
         return output
 
     def get_node_transitions(self, node_inst: str, port_name: str = None) -> set:
-        """ Returns a list of nodes to transit to """
+        """Returns a list of nodes to transit to"""
 
         transition_nodes = set()
 
@@ -298,12 +334,12 @@ class Flow(Model):
 
         for link in links:
 
-            _type = link["Type"]   # From or To
+            _type = link["Type"]  # From or To
             # TODO confirm this fix
-            if _type == 'To':
+            if _type == "To":
                 continue
-            _plink = getattr(link["ref"], _type)   # Get partial link from ref
-            _port_type = "In" if _type is "To" else "Out"
+            _plink = getattr(link["ref"], _type)  # Get partial link from ref
+            _port_type = "In" if _type == "To" else "Out"
 
             # get the Ports instance from the Node template
             port_tpl = node_tpl.get_port(_plink.port_name)
@@ -311,11 +347,14 @@ class Flow(Model):
             def filter_by_port(fnport, lnport):
                 return True if fnport is None else fnport == lnport
 
-            if port_tpl.is_transition(_port_type, _plink.port_type) and filter_by_port(port_name, _plink.port_name):
+            if port_tpl.is_transition(_port_type, _plink.port_type) and filter_by_port(
+                port_name, _plink.port_name
+            ):
 
                 # get the node_inst to transit to
-                to_transit = getattr(link["ref"], "From") if _type == "To" else getattr(
-                    link["ref"], "To")
+                to_transit = (
+                    getattr(link["ref"], "From") if _type == "To" else getattr(link["ref"], "To")
+                )
 
                 # FIXME give as models.NodeInst object
                 transition_nodes.add(to_transit.node_inst)
@@ -324,7 +363,7 @@ class Flow(Model):
         return transition_nodes
 
     def get_nodelet_manager(self, node_inst: str) -> str:
-        """ Returns nodelet manager name """
+        """Returns nodelet manager name"""
         output = None
 
         # get the node_inst instance ref
@@ -339,11 +378,11 @@ class Flow(Model):
 
         for link in links:
 
-            if link['ref'].From.node_inst != node_inst:
+            if link["ref"].From.node_inst != node_inst:
                 continue
 
             # Get the manager part (To)
-            _plink = link['ref'].To
+            _plink = link["ref"].To
 
             # get the node inst manager
             node_inst_mng = self.get_node_inst(_plink.node_inst)
@@ -358,9 +397,14 @@ class Flow(Model):
         return output
 
     def get_node_dependencies(
-            self, node_name: str, dependencies_collected: list = None, links_to_skip: list = None,
-            skip_parent_node: str = None, first_level_only: bool = False) -> list:
-        """ Get node dependencies recursively """
+        self,
+        node_name: str,
+        dependencies_collected: list = None,
+        links_to_skip: list = None,
+        skip_parent_node: str = None,
+        first_level_only: bool = False,
+    ) -> list:
+        """Get node dependencies recursively"""
 
         # TODO review and refactor
 
@@ -422,18 +466,18 @@ class Flow(Model):
                     dependencies.append(dependency_name)
                     if not first_level_only:
                         dependencies = self.get_node_dependencies(
-                            dependency_name, dependencies, links_to_skip, skip_parent_node)
+                            dependency_name, dependencies, links_to_skip, skip_parent_node
+                        )
 
         return list(set(dependencies))
 
     def get_node_plugins(self, node_inst: str) -> set:
-        """ Return NodeInst(s) plugins linked to node_inst """
+        """Return NodeInst(s) plugins linked to node_inst"""
 
         output = set()
 
         # get first level node dependencies
-        dependencies = self.get_node_dependencies(
-            node_name=node_inst, first_level_only=True)
+        dependencies = self.get_node_dependencies(node_name=node_inst, first_level_only=True)
 
         for dependency in dependencies:
 

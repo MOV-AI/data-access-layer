@@ -5,7 +5,6 @@
       "Label": "str",
       "User": "str",
       "LastUpdate": "any",
-      "Version": "str",
       "Yaml": "str",
       "Type": "str"
     }

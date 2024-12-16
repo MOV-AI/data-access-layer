@@ -14,7 +14,7 @@ from .redis import (
     ContextServerOut
 )
 from .wsredissub import WSRedisSub
-from .redissub import VarSubscriber
+from .redissub import Var_Subscriber
 
 __all__ = [
     "ContextClientIn",
@@ -22,5 +22,5 @@ __all__ = [
     "ContextServerIn",
     "ContextServerOut",
     "WSRedisSub",
-    "VarSubscriber"
+    "Var_Subscriber"
 ]

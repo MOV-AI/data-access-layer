@@ -26,19 +26,23 @@ logger = Log.get_logger('Lock')
 
 
 class Lock:
-    """Class for user to acquire and release locks
+    """Used to acquire and release locks.
 
-        Args:
-            name: Name of the key to lock
-            scope: The lock can be used in "global" or "local" scopes
-            timeout: Maximum life for the lock in seconds (float or integer)
-            blocking_timeout: Maximum amount of time to spend trying
-                              to acquire the lock
-            queue_level: Priority level (1-5) to be added to the queue.
-                         None to not go to queue
-            persistent: persist after the flow is stopped
+    A lock is in essence the following redis keys:
+        - Lock:<name>,Value: (string) - always created
+        - Lock:<name>,Queue: (sorted set) - created if queue_level is not None
+        - Lock:<name>,Alive: (sorted set) - created if queue_level is not None
+
+    Attributes:
+        _name (str): Name of the key to lock
+        scope (str): The lock scope, global or local
+        timeout (float): Time after which the lock is freed
+        blocking_timeout: Time in seconds to spend trying to acquire the lock
+        queue_level(int, optional): Priority level (1-5) to be added to the queue,
+            if None it is not queued
+        persistent (bool): If true, lock persists after the flow is stopped
+
     """
-
     enabled_locks = []
     HEARTBEAT_MIN_TIMEOUT = 1
     DEFAULT_MAX_RETRIES = 3  # nr. of times we try to reacquire the lock
@@ -50,30 +54,26 @@ class Lock:
                  alive_timeout: float = 5000, _robot_name: str = None,
                  _node_name: str = 'test_node', persistent: bool = False,
                  reacquire: bool = False):
-        """initialize the Lock object
+        """Initialize the Lock object
 
         Args:
-            name (str): name of the lock
-            scope (str, optional): scope. Defaults to 'global'.
-            timeout (float, optional): timeoue which the lock will be
-                                       freed after. Defaults to 0.
-            queue_level (int, optional): [description]. Defaults to None.
-            blocking_timeout (float, optional): indicates the maximum amount of
-                                            time in seconds to spend trying
-                                            to acquire the lock. Defaults to 0.
-            alive_timeout (float, optional): [description]. Defaults to 5000.
-            _robot_name (str, optional): the robot name which created the lock.
-                                         Defaults to None.
-            _node_name (str, optional): the node name which we created the node
-                                        form. Defaults to 'test_node'.
-            persistent (bool, optional): if set to True the lock will be
-                                         remained locked even after
-                                         spawner dies. Defaults to False.
+            name (str): Name of the lock
+            scope (str, optional): The lock scope, global or local
+            timeout (float, optional): Time after which the lock is freed
+            queue_level (int, optional): Priority level (1-5) to be added to the queue,
+                if None it is not queued
+            blocking_timeout (float, optional): Time in seconds to spend trying to acquire the lock
+            alive_timeout (float, optional): Lock timeout in milliseconds after the last heartbeat,
+                if exceeded, the lock attempt is removed from the queue
+            _robot_name (str, optional): Robot ID to associate the lock to
+            _node_name (str, optional): Name of the node name which created the lock, used for local locks
+            persistent (bool, optional): If true, lock persists after the flow is stopped
             reacquire (bool, optional): should we reacquire the lock in the
                                         heartbeat. Defaults to False.
 
         Raises:
             MovaiException: in case it's not a valid scope
+
         """
         if scope not in SCOPES:
             raise MovaiException(f"'{scope}' is not a valid scope. \
@@ -122,17 +122,14 @@ class Lock:
         self.release()
 
     def acquire(self, blocking=None) -> bool:
-        """
-        function to quire the lock
+        """Acquires the lock.
         Args:
-            blocking: indicates whether calling ``acquire`` should block until
-                      the lock has been acquired or to fail immediately,
-                      causing ``acquire`` to return False and the lock not
-                      being acquired.
+            blocking (bool, optional): Whether calling ``acquire`` blocks until
+                the lock has been acquired or if fails immediately
 
         Returns: True, succeeded to acquire
-        """
 
+        """
         if self.is_owned():
             logger.warning(f"Lock {self._name} already owned")
             return True

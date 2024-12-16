@@ -53,11 +53,10 @@ class Node(Scope):
             for _, temp in ports["Node"][self.name]["PortsInst"].items():
                 templs.append(temp["Template"])
         if path:
-            if any("ROS1" in templ for templ in templs):
-                type_to_set = ROS1_NODE
-
             if any("ROS1/PluginClient" in templ for templ in templs):
                 type_to_set = ROS1_PLUGIN
+            else:
+                type_to_set = ROS1_NODE
 
         if any("ROS1/Nodelet" in templ for templ in templs):
             type_to_set = ROS1_NODELET
@@ -74,7 +73,6 @@ class Node(Scope):
         final_params = {}
         node_name = self.name
         params = MovaiDB().get({"Node": {node_name: {attribute: {"*": {"Value": ""}}}}})
-        params = getattr(attribute)
 
         if params:
             for param, _value in params["Node"][node_name][attribute].items():

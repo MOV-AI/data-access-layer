@@ -6,18 +6,22 @@
    Developers:
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
 """
-from abc import ABC, abstractproperty
+from abc import ABC, abstractmethod
 from collections import OrderedDict
+from typing import Dict, Generic, List, Optional, Tuple, TypeVar, Union
 from dal.data.mixins import ChildrenCmpMixin, ValueCmpMixin
 
 
-class TreeNode(ABC):
+VT = TypeVar('VT', bound=Union["TreeNode", "ObjectNode", "PropertyNode"])
+
+
+class TreeNode(ABC, Generic[VT]):
     """
     Implements an abstract tree node
     """
 
     def __init__(self):
-        self._parent = None
+        self._parent: Optional[VT] = None
         self._sorted = True
         self._attributes = {}
 
@@ -69,7 +73,7 @@ class TreeNode(ABC):
         return self._parent
 
     @property
-    def depth(self):
+    def depth(self) -> int:
         """
         return the depth of this node
         """
@@ -87,8 +91,8 @@ class TreeNode(ABC):
             return self
 
         for child in self.children:
-            if child.from_path(path) is not None:
-                return child.from_path(path)
+            if (val := child.from_path(path)) is not None:
+                return val
 
         return None
 
@@ -125,25 +129,29 @@ class TreeNode(ABC):
         """
         return self.parent is None
 
-    @abstractproperty
-    def children(self):
+    @property
+    @abstractmethod
+    def children(self) -> List[VT]:
         """
         children list
         """
 
-    @abstractproperty
-    def count(self):
+    @property
+    @abstractmethod
+    def count(self) -> int:
         """
         number of children
         """
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def path(self):
         """
         get the tree path
         """
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def node_type(self):
         """
         the node type
@@ -178,13 +186,13 @@ class TreeNode(ABC):
         return self.to_path()
 
 
-class ListNode(TreeNode, ChildrenCmpMixin):
+class ListNode(TreeNode[VT], ChildrenCmpMixin):
     """
     Implements a listed tree node
     """
 
     def __init__(self):
-        self._children = []
+        self._children: List[VT] = []
         super().__init__()
 
     @property
@@ -198,13 +206,13 @@ class ListNode(TreeNode, ChildrenCmpMixin):
     def __setitem__(self, key, value):
         raise NotImplementedError
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: int):
         return self._children[key]
 
     def __iter__(self):
         return self._children.__iter__()
 
-    def add_child(self, node):
+    def add_child(self, node: VT):
         """
         add child to this node
         """
@@ -217,7 +225,7 @@ class ListNode(TreeNode, ChildrenCmpMixin):
         node._parent = self
         self._children.append(node)
 
-    def remove_child(self, node):
+    def remove_child(self, node: VT):
         """
         remove child to this node
         """
@@ -228,13 +236,13 @@ class ListNode(TreeNode, ChildrenCmpMixin):
         node._parent = None
 
 
-class DictNode(TreeNode, ChildrenCmpMixin):
+class DictNode(TreeNode[VT], ChildrenCmpMixin):
     """
     Implements a dict tree node
     """
 
     def __init__(self):
-        self._children = {}
+        self._children: Dict[str, VT] = {}
         super().__init__()
 
     @property
@@ -245,7 +253,7 @@ class DictNode(TreeNode, ChildrenCmpMixin):
     def count(self):
         return len(self._children)
 
-    def contains(self, key):
+    def contains(self, key: str):
         """
         check if dict contains key
         """
@@ -254,19 +262,19 @@ class DictNode(TreeNode, ChildrenCmpMixin):
     def __setitem__(self, key, value):
         raise NotImplementedError
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str):
         return self._children[key]
 
     def __iter__(self):
         return self._children.__iter__()
 
-    def get(self, key, default=None):
+    def get(self, key: str, default: Optional[VT] = None):
         """
         return the value of the element with key
         """
         return self._children.get(key, default)
 
-    def add_child(self, node):
+    def add_child(self, node: Union[Tuple[str, VT], VT]):
         """
         add a ne child to this node
         """
@@ -346,7 +354,7 @@ class DictNode(TreeNode, ChildrenCmpMixin):
         return self._children.values()
 
 
-class ObjectNode(TreeNode, ChildrenCmpMixin):
+class ObjectNode(TreeNode[VT], ChildrenCmpMixin):
     """
     Implements a object node
     """
@@ -354,7 +362,7 @@ class ObjectNode(TreeNode, ChildrenCmpMixin):
     def __init__(self, name: str):
         super().__init__()
         self._name = name
-        self._children = {}
+        self._children: Dict[str, VT] = {}
 
     @property
     def node_type(self):
@@ -401,7 +409,7 @@ class ObjectNode(TreeNode, ChildrenCmpMixin):
     def __iter__(self):
         return self._children.__iter__()
 
-    def add_child(self, node):
+    def add_child(self, node: Union[Tuple[str, VT], VT]):
         """
         add a child node to the node
         """
@@ -426,7 +434,7 @@ class ObjectNode(TreeNode, ChildrenCmpMixin):
         node_to_add._parent = self
         self._children[key] = node_to_add
 
-    def remove_child(self, node):
+    def remove_child(self, node: Union[str, VT]):
         """
         remove child in the node
         """

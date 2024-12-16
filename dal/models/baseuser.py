@@ -6,7 +6,9 @@
    Developers:
    - Erez Zomer  (erez@mov.ai) - 2022
 """
-from typing import List
+from __future__ import annotations
+
+from typing import Dict, List, Set, cast
 from datetime import datetime
 
 from movai_core_shared.common.utils import create_principal_name
@@ -17,9 +19,9 @@ from movai_core_shared.exceptions import (
     UserPermissionsError,
 )
 
-from .scopestree import ScopesTree, scopes
-from .model import Model
-from .acl import NewACLManager
+from dal.models.scopestree import ScopesTree, scopes
+from dal.models.model import Model
+from dal.models.acl import NewACLManager
 
 
 class BaseUser(Model):
@@ -401,7 +403,7 @@ class BaseUser(Model):
         return float(self.LastUpdate)
 
     @classmethod
-    def list_users(cls, domain_name: str) -> list:
+    def list_users(cls, domain_name: str) -> List[str]:
         """lists all the base user fora specified domain
 
         Args:
@@ -418,9 +420,26 @@ class BaseUser(Model):
             if domain_name == user.domain_name:
                 users_names.append(user.account_name)
         cls.log.debug(
-            f"current list of BaseUser records found in the " f"system: {users_names}"
+            f"current list of BaseUser records found in the system: {users_names}"
         )
         return users_names
+
+    @classmethod
+    def has_any_user_with_role(cls, role_name: str) -> bool:
+        """Checks if role is applied to any user
+
+        Args:
+        role_name (str): the name of the role being searched.
+
+        Returns:
+            (bool): whether any user has the role.
+        """
+        for scope in scopes().list_scopes(scope=cls.__name__):
+            principal_name = str(scope["ref"])
+            user = cls.get_user_by_principal_name(principal_name)
+            if role_name in user.roles:
+                return True
+        return False
 
     @classmethod
     def is_exist(cls, domain_name: str, account_name: str):
@@ -437,7 +456,7 @@ class BaseUser(Model):
         return account_name in cls.list_users(domain_name)
 
     @classmethod
-    def get_user_by_principal_name(cls, principal_name: str) -> Model:
+    def get_user_by_principal_name(cls, principal_name: str) -> BaseUser:
         """returns a reference of a User, if not exist returns None
 
         Args:
@@ -456,7 +475,7 @@ class BaseUser(Model):
             raise UserDoesNotExist(msg)
 
     @classmethod
-    def get_user_by_name(cls, domain_name: str, account_name: str) -> Model:
+    def get_user_by_name(cls, domain_name: str, account_name: str) -> BaseUser:
         """returns a reference of a User, if not exist returns None
 
         Args:
@@ -483,7 +502,7 @@ class BaseUser(Model):
         self.write()
 
     @classmethod
-    def remove_role_from_all_users(cls, role_name: str) -> set:
+    def remove_role_from_all_users(cls, role_name: str) -> Set[str]:
         """Looks for users with the specified Role, if it finds any
         it removes the role from their attributes.
 
@@ -510,18 +529,6 @@ class BaseUser(Model):
         """
         return int(datetime.now().timestamp())
 
-    @staticmethod
-    def _expiration_time(expiration_delta: int) -> float:
-        """returns a future time in timestamp format.
-
-        Args:
-            expiration_delta (int): the time delta from now.
-
-        Returns:
-            float: a float representing the time delta.
-        """
-        return int((datetime.now() + expiration_delta).timestamp())
-
     def set_acl(self):
         """sets the AClManager as an internal attribute."""
         try:
@@ -530,11 +537,14 @@ class BaseUser(Model):
         except UserPermissionsError as e:
             self.log.debug(e)
 
-    def get_effective_permissions(self) -> dict:
-        permissions = self._acl.which_any(self.roles)
+    def get_effective_permissions(self) -> Dict[str, List[str]]:
+        if self._acl is None:
+            raise Exception("ACL is not set")
+        permissions = cast(Dict[str, Set[str]], self._acl.which_any(self.roles))
+        converted: Dict[str, List[str]] = {}
         for resource in permissions:
-            permissions[resource] = list(permissions[resource])
-        return permissions
+            converted[resource] = list(permissions[resource])
+        return converted
 
     def has_scope_permission(self, user, permission) -> bool:
         """

@@ -9,6 +9,7 @@
 from abc import ABC
 from importlib import import_module
 from datetime import datetime
+from typing import List
 from movai_core_shared.exceptions import DoesNotExist
 from movai_core_shared.logger import Log
 from .scopestree import (
@@ -241,7 +242,7 @@ class Model(ScopeInstanceVersionNode, ABC):
         return Model.get_relations(model=self, depth=depth, search_filter=search_filter)
 
     @classmethod
-    def list_objects_names(cls) -> list:
+    def list_objects_names(cls) -> List[str]:
         objects_names = []
         for obj in scopes().list_scopes(scope=cls.__name__):
             objects_names.append(str(obj['ref']))

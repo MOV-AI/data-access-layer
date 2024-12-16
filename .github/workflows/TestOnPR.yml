@@ -2,12 +2,13 @@ name: "CI - On main/dev/release branches"
 on:
   pull_request:
     branches:
-      - "**/**"
+      - '**/**'
 jobs:
   CI:
     uses: MOV-AI/.github/.github/workflows/py-workflow.yml@v1
     with:
       deploy: 'false'
+      with_docs: true
     secrets:
       auto_commit_user: ${{ secrets.RAISE_BOT_COMMIT_USER }}
       auto_commit_mail: ${{ secrets.RAISE_BOT_COMMIT_MAIL }}
@@ -31,7 +32,7 @@ jobs:
 
     steps:
       - name: Download generated python artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: packages
           path: dist

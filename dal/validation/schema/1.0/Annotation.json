@@ -6,7 +6,6 @@
       "User": "str",
       "LastUpdate": "any",
       "Type": "str",
-      "Version": "str", 
       "Policy": "any",
       "Parameter": "hash",
       "Field": {
