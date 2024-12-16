@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dal.plugins.resources.redis package &mdash; data-access-layer  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/cropped-Mov.ai-favicon2-32x32.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/versions.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="dal.plugins.schema package" href="dal.plugins.schema.html" />
+    <link rel="prev" title="dal.plugins.resources.file package" href="dal.plugins.resources.file.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> data-access-layer
+          </a>
+              <div class="version">
+                main
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">data-access-layer</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">data-access-layer</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dal.html">dal package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="dal.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="dal.api.html">dal.api package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.archive.html">dal.archive package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.backup.html">dal.backup package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.html">dal.classes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.data.html">dal.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.db_handlers.html">dal.db_handlers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.exceptions.html">dal.exceptions package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.html">dal.helpers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.models.html">dal.models package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.movaidb.html">dal.movaidb package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="dal.plugins.html">dal.plugins package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html">dal.scopes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html">dal.tools package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.utils.html">dal.utils package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html">dal.validation package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.html#module-dal">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">data-access-layer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">data-access-layer</a></li>
+          <li class="breadcrumb-item"><a href="dal.html">dal package</a></li>
+          <li class="breadcrumb-item"><a href="dal.plugins.html">dal.plugins package</a></li>
+          <li class="breadcrumb-item"><a href="dal.plugins.resources.html">dal.plugins.resources package</a></li>
+      <li class="breadcrumb-item active">dal.plugins.resources.redis package</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/MOV-AI/flows-test-core/blob/main/docs/source/dal.plugins.resources.redis.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dal-plugins-resources-redis-package">
+<h1>dal.plugins.resources.redis package<a class="headerlink" href="#dal-plugins-resources-redis-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-dal.plugins.resources.redis.driver">
+<span id="dal-plugins-resources-redis-driver-module"></span><h2>dal.plugins.resources.redis.driver module<a class="headerlink" href="#module-dal.plugins.resources.redis.driver" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Alexandre Pires  (<a class="reference external" href="mailto:alexandre&#46;pires&#37;&#52;&#48;mov&#46;ai">alexandre<span>&#46;</span>pires<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.plugins.resources.redis.driver.RedisPlugin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.plugins.resources.redis.driver.</span></span><span class="sig-name descname"><span class="pre">RedisPlugin</span></span><a class="headerlink" href="#dal.plugins.resources.redis.driver.RedisPlugin" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.resource.ResourcePlugin" title="dal.plugins.classes.resource.ResourcePlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResourcePlugin</span></code></a></p>
+<p>Exposes a simple interface to implement a plugin
+to access physical resources</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.resources.redis.driver.RedisPlugin.read_binary">
+<span class="sig-name descname"><span class="pre">read_binary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.resources.redis.driver.RedisPlugin.read_binary" title="Permalink to this definition"></a></dt>
+<dd><p>Read a text file, returns all text in the file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.resources.redis.driver.RedisPlugin.read_json">
+<span class="sig-name descname"><span class="pre">read_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.resources.redis.driver.RedisPlugin.read_json" title="Permalink to this definition"></a></dt>
+<dd><p>Read a text file, returns all text in the file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.resources.redis.driver.RedisPlugin.read_text">
+<span class="sig-name descname"><span class="pre">read_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.resources.redis.driver.RedisPlugin.read_text" title="Permalink to this definition"></a></dt>
+<dd><p>Read a text file, returns all text in the file</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dal.plugins.resources.redis">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dal.plugins.resources.redis" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Alexandre Pires  (<a class="reference external" href="mailto:alexandre&#46;pires&#37;&#52;&#48;mov&#46;ai">alexandre<span>&#46;</span>pires<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.plugins.resources.redis.RedisPlugin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.plugins.resources.redis.</span></span><span class="sig-name descname"><span class="pre">RedisPlugin</span></span><a class="headerlink" href="#dal.plugins.resources.redis.RedisPlugin" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="dal.plugins.classes.html#dal.plugins.classes.resource.ResourcePlugin" title="dal.plugins.classes.resource.ResourcePlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResourcePlugin</span></code></a></p>
+<p>Exposes a simple interface to implement a plugin
+to access physical resources</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.resources.redis.RedisPlugin.read_binary">
+<span class="sig-name descname"><span class="pre">read_binary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.resources.redis.RedisPlugin.read_binary" title="Permalink to this definition"></a></dt>
+<dd><p>Read a text file, returns all text in the file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.resources.redis.RedisPlugin.read_json">
+<span class="sig-name descname"><span class="pre">read_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.resources.redis.RedisPlugin.read_json" title="Permalink to this definition"></a></dt>
+<dd><p>Read a text file, returns all text in the file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.plugins.resources.redis.RedisPlugin.read_text">
+<span class="sig-name descname"><span class="pre">read_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.plugins.resources.redis.RedisPlugin.read_text" title="Permalink to this definition"></a></dt>
+<dd><p>Read a text file, returns all text in the file</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dal.plugins.resources.file.html" class="btn btn-neutral float-left" title="dal.plugins.resources.file package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dal.plugins.schema.html" class="btn btn-neutral float-right" title="dal.plugins.schema package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Backend.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Read the Docs</span>
+        v: main
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dt>Versions</dt>
+        <dl id="docs-versions"></dl>
+        <hr />
+        <a href="https://tech.michaelaltfield.net/2020/07/18/sphinx-rtd-github-pages-1/">Continuous
+            Documentation</a> hosting provided by <a href="https://pages.github.com/">GitHub Pages</a>.
+    </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

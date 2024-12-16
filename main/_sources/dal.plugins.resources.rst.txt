@@ -1,0 +1,19 @@
+dal.plugins.resources package
+=============================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   dal.plugins.resources.file
+   dal.plugins.resources.redis
+
+Module contents
+---------------
+
+.. automodule:: dal.plugins.resources
+   :members:
+   :undoc-members:
+   :show-inheritance:

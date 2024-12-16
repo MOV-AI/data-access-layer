@@ -1,0 +1,21 @@
+dal.plugins package
+===================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   dal.plugins.classes
+   dal.plugins.persistence
+   dal.plugins.resources
+   dal.plugins.schema
+
+Module contents
+---------------
+
+.. automodule:: dal.plugins
+   :members:
+   :undoc-members:
+   :show-inheritance:

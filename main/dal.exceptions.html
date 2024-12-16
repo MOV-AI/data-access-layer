@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dal.exceptions package &mdash; data-access-layer  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="shortcut icon" href="_static/cropped-Mov.ai-favicon2-32x32.png"/>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/versions.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="dal.helpers package" href="dal.helpers.html" />
+    <link rel="prev" title="dal.db_handlers package" href="dal.db_handlers.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> data-access-layer
+          </a>
+              <div class="version">
+                main
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">data-access-layer</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">data-access-layer</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dal.html">dal package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="dal.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="dal.api.html">dal.api package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.archive.html">dal.archive package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.backup.html">dal.backup package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.html">dal.classes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.data.html">dal.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.db_handlers.html">dal.db_handlers package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">dal.exceptions package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.html">dal.helpers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.models.html">dal.models package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.movaidb.html">dal.movaidb package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.html">dal.plugins package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html">dal.scopes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html">dal.tools package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.utils.html">dal.utils package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html">dal.validation package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.html#module-dal">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">data-access-layer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">data-access-layer</a></li>
+          <li class="breadcrumb-item"><a href="dal.html">dal package</a></li>
+      <li class="breadcrumb-item active">dal.exceptions package</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/MOV-AI/flows-test-core/blob/main/docs/source/dal.exceptions.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dal-exceptions-package">
+<h1>dal.exceptions package<a class="headerlink" href="#dal-exceptions-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-dal.exceptions.exceptions">
+<span id="dal-exceptions-exceptions-module"></span><h2>dal.exceptions.exceptions module<a class="headerlink" href="#module-dal.exceptions.exceptions" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Moawiya Mograbi (<a class="reference external" href="mailto:moawiya&#37;&#52;&#48;mov&#46;ai">moawiya<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2022</p>
+<p>DAL Exceptions</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.ArchiveAlreadyRegistered">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">ArchiveAlreadyRegistered</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.exceptions.ArchiveAlreadyRegistered" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.ArchiveException" title="dal.exceptions.exceptions.ArchiveException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArchiveException</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.ArchiveErr">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">ArchiveErr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.exceptions.ArchiveErr" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.ArchiveErr.ARCHIVE_ALREADY_REGISTERED">
+<span class="sig-name descname"><span class="pre">ARCHIVE_ALREADY_REGISTERED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">403</span></em><a class="headerlink" href="#dal.exceptions.exceptions.ArchiveErr.ARCHIVE_ALREADY_REGISTERED" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.ArchiveErr.ARCHIVE_NOT_REGISTERED">
+<span class="sig-name descname"><span class="pre">ARCHIVE_NOT_REGISTERED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">402</span></em><a class="headerlink" href="#dal.exceptions.exceptions.ArchiveErr.ARCHIVE_NOT_REGISTERED" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.ArchiveErr.BASE_ARCHIVE_ERR">
+<span class="sig-name descname"><span class="pre">BASE_ARCHIVE_ERR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">400</span></em><a class="headerlink" href="#dal.exceptions.exceptions.ArchiveErr.BASE_ARCHIVE_ERR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.ArchiveErr.NO_ACTIVE_ARCHIVE_REGISTERED">
+<span class="sig-name descname"><span class="pre">NO_ACTIVE_ARCHIVE_REGISTERED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">401</span></em><a class="headerlink" href="#dal.exceptions.exceptions.ArchiveErr.NO_ACTIVE_ARCHIVE_REGISTERED" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.ArchiveException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">ArchiveException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">error</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.exceptions.ArchiveException" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.DalException" title="dal.exceptions.exceptions.DalException"><code class="xref py py-class docutils literal notranslate"><span class="pre">DalException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.ArchiveNotRegistered">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">ArchiveNotRegistered</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.exceptions.ArchiveNotRegistered" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.ArchiveException" title="dal.exceptions.exceptions.ArchiveException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArchiveException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.BranchAlreadyExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">BranchAlreadyExist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.exceptions.BranchAlreadyExist" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.GitException" title="dal.exceptions.exceptions.GitException"><code class="xref py py-class docutils literal notranslate"><span class="pre">GitException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.DalException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">DalException</span></span><a class="headerlink" href="#dal.exceptions.exceptions.DalException" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.FileDoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">FileDoesNotExist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.exceptions.FileDoesNotExist" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.GitException" title="dal.exceptions.exceptions.GitException"><code class="xref py py-class docutils literal notranslate"><span class="pre">GitException</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.GitErr">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">GitErr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.exceptions.GitErr" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.GitErr.BASE_GIT_ERR">
+<span class="sig-name descname"><span class="pre">BASE_GIT_ERR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#dal.exceptions.exceptions.GitErr.BASE_GIT_ERR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.GitErr.BRANCH_ALREADY_EXIST_ERR">
+<span class="sig-name descname"><span class="pre">BRANCH_ALREADY_EXIST_ERR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">102</span></em><a class="headerlink" href="#dal.exceptions.exceptions.GitErr.BRANCH_ALREADY_EXIST_ERR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.GitErr.FILE_DOES_NOT_EXIST">
+<span class="sig-name descname"><span class="pre">FILE_DOES_NOT_EXIST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">107</span></em><a class="headerlink" href="#dal.exceptions.exceptions.GitErr.FILE_DOES_NOT_EXIST" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.GitErr.GIT_PERMISSION_ERR">
+<span class="sig-name descname"><span class="pre">GIT_PERMISSION_ERR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">109</span></em><a class="headerlink" href="#dal.exceptions.exceptions.GitErr.GIT_PERMISSION_ERR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.GitErr.GIT_USER_ERR">
+<span class="sig-name descname"><span class="pre">GIT_USER_ERR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">106</span></em><a class="headerlink" href="#dal.exceptions.exceptions.GitErr.GIT_USER_ERR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.GitErr.NO_CHANGES_TO_COMMIT_ERR">
+<span class="sig-name descname"><span class="pre">NO_CHANGES_TO_COMMIT_ERR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">103</span></em><a class="headerlink" href="#dal.exceptions.exceptions.GitErr.NO_CHANGES_TO_COMMIT_ERR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.GitErr.REPO_DOES_NOT_EXIST">
+<span class="sig-name descname"><span class="pre">REPO_DOES_NOT_EXIST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">108</span></em><a class="headerlink" href="#dal.exceptions.exceptions.GitErr.REPO_DOES_NOT_EXIST" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.GitErr.SLAVE_MANAGER_CANNOT_CHANGE_ERR">
+<span class="sig-name descname"><span class="pre">SLAVE_MANAGER_CANNOT_CHANGE_ERR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">104</span></em><a class="headerlink" href="#dal.exceptions.exceptions.GitErr.SLAVE_MANAGER_CANNOT_CHANGE_ERR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.GitErr.TAG_ALREADY_EXIST_ERR">
+<span class="sig-name descname"><span class="pre">TAG_ALREADY_EXIST_ERR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">105</span></em><a class="headerlink" href="#dal.exceptions.exceptions.GitErr.TAG_ALREADY_EXIST_ERR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.GitErr.VERSION_DOES_NOT_EXIST_ERR">
+<span class="sig-name descname"><span class="pre">VERSION_DOES_NOT_EXIST_ERR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">101</span></em><a class="headerlink" href="#dal.exceptions.exceptions.GitErr.VERSION_DOES_NOT_EXIST_ERR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.GitException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">GitException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">error</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.exceptions.GitException" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.DalException" title="dal.exceptions.exceptions.DalException"><code class="xref py py-class docutils literal notranslate"><span class="pre">DalException</span></code></a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.GitException.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#dal.exceptions.exceptions.GitException.value" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.GitPermissionErr">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">GitPermissionErr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.exceptions.GitPermissionErr" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.GitException" title="dal.exceptions.exceptions.GitException"><code class="xref py py-class docutils literal notranslate"><span class="pre">GitException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.GitUserErr">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">GitUserErr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.exceptions.GitUserErr" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.GitException" title="dal.exceptions.exceptions.GitException"><code class="xref py py-class docutils literal notranslate"><span class="pre">GitException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.NoActiveArchiveRegistered">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">NoActiveArchiveRegistered</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.exceptions.NoActiveArchiveRegistered" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.ArchiveException" title="dal.exceptions.exceptions.ArchiveException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArchiveException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.NoChangesToCommit">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">NoChangesToCommit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.exceptions.NoChangesToCommit" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.GitException" title="dal.exceptions.exceptions.GitException"><code class="xref py py-class docutils literal notranslate"><span class="pre">GitException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.RepositoryDoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">RepositoryDoesNotExist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.exceptions.RepositoryDoesNotExist" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.GitException" title="dal.exceptions.exceptions.GitException"><code class="xref py py-class docutils literal notranslate"><span class="pre">GitException</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.SchemaErr">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">SchemaErr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.exceptions.SchemaErr" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.SchemaErr.BASE_SCHEMA_ERR">
+<span class="sig-name descname"><span class="pre">BASE_SCHEMA_ERR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">200</span></em><a class="headerlink" href="#dal.exceptions.exceptions.SchemaErr.BASE_SCHEMA_ERR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.SchemaErr.SCHEMA_TYPE_NOT_KNOWN">
+<span class="sig-name descname"><span class="pre">SCHEMA_TYPE_NOT_KNOWN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">202</span></em><a class="headerlink" href="#dal.exceptions.exceptions.SchemaErr.SCHEMA_TYPE_NOT_KNOWN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.SchemaErr.SCHEMA_VERSION_ERR">
+<span class="sig-name descname"><span class="pre">SCHEMA_VERSION_ERR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">201</span></em><a class="headerlink" href="#dal.exceptions.exceptions.SchemaErr.SCHEMA_VERSION_ERR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.SchemaException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">SchemaException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">error</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.exceptions.SchemaException" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.DalException" title="dal.exceptions.exceptions.DalException"><code class="xref py py-class docutils literal notranslate"><span class="pre">DalException</span></code></a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.SchemaException.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#dal.exceptions.exceptions.SchemaException.value" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.SchemaTypeNotKnown">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">SchemaTypeNotKnown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.exceptions.SchemaTypeNotKnown" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.SchemaException" title="dal.exceptions.exceptions.SchemaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">SchemaException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.SchemaVersionError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">SchemaVersionError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.exceptions.SchemaVersionError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.SchemaException" title="dal.exceptions.exceptions.SchemaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">SchemaException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.SlaveManagerCannotChange">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">SlaveManagerCannotChange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.exceptions.SlaveManagerCannotChange" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.GitException" title="dal.exceptions.exceptions.GitException"><code class="xref py py-class docutils literal notranslate"><span class="pre">GitException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.TagAlreadyExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">TagAlreadyExist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.exceptions.TagAlreadyExist" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.GitException" title="dal.exceptions.exceptions.GitException"><code class="xref py py-class docutils literal notranslate"><span class="pre">GitException</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.ValidationErr">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">ValidationErr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.exceptions.ValidationErr" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">IntEnum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.ValidationErr.BASE_VALIDATION_ERR">
+<span class="sig-name descname"><span class="pre">BASE_VALIDATION_ERR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">300</span></em><a class="headerlink" href="#dal.exceptions.exceptions.ValidationErr.BASE_VALIDATION_ERR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.ValidationErr.VALIDATION_ERR">
+<span class="sig-name descname"><span class="pre">VALIDATION_ERR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">301</span></em><a class="headerlink" href="#dal.exceptions.exceptions.ValidationErr.VALIDATION_ERR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.ValidationError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">ValidationError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.exceptions.ValidationError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.ValidationException" title="dal.exceptions.exceptions.ValidationException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidationException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.ValidationException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">ValidationException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">error</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.exceptions.ValidationException" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.DalException" title="dal.exceptions.exceptions.DalException"><code class="xref py py-class docutils literal notranslate"><span class="pre">DalException</span></code></a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.ValidationException.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#dal.exceptions.exceptions.ValidationException.value" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.exceptions.VersionDoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.exceptions.</span></span><span class="sig-name descname"><span class="pre">VersionDoesNotExist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.exceptions.VersionDoesNotExist" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.GitException" title="dal.exceptions.exceptions.GitException"><code class="xref py py-class docutils literal notranslate"><span class="pre">GitException</span></code></a></p>
+</dd></dl>
+
+</section>
+<section id="module-dal.exceptions">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dal.exceptions" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Moawiya Mograbi (<a class="reference external" href="mailto:moawiya&#37;&#52;&#48;mov&#46;ai">moawiya<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2022</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.ArchiveAlreadyRegistered">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.</span></span><span class="sig-name descname"><span class="pre">ArchiveAlreadyRegistered</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.ArchiveAlreadyRegistered" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.ArchiveException" title="dal.exceptions.exceptions.ArchiveException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArchiveException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.ArchiveNotRegistered">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.</span></span><span class="sig-name descname"><span class="pre">ArchiveNotRegistered</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.ArchiveNotRegistered" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.ArchiveException" title="dal.exceptions.exceptions.ArchiveException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArchiveException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.BranchAlreadyExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.</span></span><span class="sig-name descname"><span class="pre">BranchAlreadyExist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.BranchAlreadyExist" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.GitException" title="dal.exceptions.exceptions.GitException"><code class="xref py py-class docutils literal notranslate"><span class="pre">GitException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.FileDoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.</span></span><span class="sig-name descname"><span class="pre">FileDoesNotExist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.FileDoesNotExist" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.GitException" title="dal.exceptions.exceptions.GitException"><code class="xref py py-class docutils literal notranslate"><span class="pre">GitException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.GitPermissionErr">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.</span></span><span class="sig-name descname"><span class="pre">GitPermissionErr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.GitPermissionErr" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.GitException" title="dal.exceptions.exceptions.GitException"><code class="xref py py-class docutils literal notranslate"><span class="pre">GitException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.GitUserErr">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.</span></span><span class="sig-name descname"><span class="pre">GitUserErr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.GitUserErr" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.GitException" title="dal.exceptions.exceptions.GitException"><code class="xref py py-class docutils literal notranslate"><span class="pre">GitException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.NoActiveArchiveRegistered">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.</span></span><span class="sig-name descname"><span class="pre">NoActiveArchiveRegistered</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.NoActiveArchiveRegistered" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.ArchiveException" title="dal.exceptions.exceptions.ArchiveException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArchiveException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.NoChangesToCommit">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.</span></span><span class="sig-name descname"><span class="pre">NoChangesToCommit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.NoChangesToCommit" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.GitException" title="dal.exceptions.exceptions.GitException"><code class="xref py py-class docutils literal notranslate"><span class="pre">GitException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.RepositoryDoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.</span></span><span class="sig-name descname"><span class="pre">RepositoryDoesNotExist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.RepositoryDoesNotExist" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.GitException" title="dal.exceptions.exceptions.GitException"><code class="xref py py-class docutils literal notranslate"><span class="pre">GitException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.SchemaTypeNotKnown">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.</span></span><span class="sig-name descname"><span class="pre">SchemaTypeNotKnown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.SchemaTypeNotKnown" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.SchemaException" title="dal.exceptions.exceptions.SchemaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">SchemaException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.SchemaVersionError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.</span></span><span class="sig-name descname"><span class="pre">SchemaVersionError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.SchemaVersionError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.SchemaException" title="dal.exceptions.exceptions.SchemaException"><code class="xref py py-class docutils literal notranslate"><span class="pre">SchemaException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.SlaveManagerCannotChange">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.</span></span><span class="sig-name descname"><span class="pre">SlaveManagerCannotChange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.SlaveManagerCannotChange" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.GitException" title="dal.exceptions.exceptions.GitException"><code class="xref py py-class docutils literal notranslate"><span class="pre">GitException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.TagAlreadyExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.</span></span><span class="sig-name descname"><span class="pre">TagAlreadyExist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.TagAlreadyExist" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.GitException" title="dal.exceptions.exceptions.GitException"><code class="xref py py-class docutils literal notranslate"><span class="pre">GitException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.ValidationError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.</span></span><span class="sig-name descname"><span class="pre">ValidationError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.ValidationError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.ValidationException" title="dal.exceptions.exceptions.ValidationException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidationException</span></code></a></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.exceptions.VersionDoesNotExist">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.exceptions.</span></span><span class="sig-name descname"><span class="pre">VersionDoesNotExist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.exceptions.VersionDoesNotExist" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.exceptions.exceptions.GitException" title="dal.exceptions.exceptions.GitException"><code class="xref py py-class docutils literal notranslate"><span class="pre">GitException</span></code></a></p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dal.db_handlers.html" class="btn btn-neutral float-left" title="dal.db_handlers package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dal.helpers.html" class="btn btn-neutral float-right" title="dal.helpers package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Backend.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Read the Docs</span>
+        v: main
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dt>Versions</dt>
+        <dl id="docs-versions"></dl>
+        <hr />
+        <a href="https://tech.michaelaltfield.net/2020/07/18/sphinx-rtd-github-pages-1/">Continuous
+            Documentation</a> hosting provided by <a href="https://pages.github.com/">GitHub Pages</a>.
+    </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
