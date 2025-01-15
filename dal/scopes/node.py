@@ -47,25 +47,25 @@ class Node(Scope):
             {"Node": {self.name: {"PortsInst": {"*": {"Template": "*"}}}}}
         )
         path = MovaiDB().get_value({"Node": {self.name: {"Path": ""}}})
-        type_to_set = MOVAI_NODE
         templs = []
         if ports:
             for _, temp in ports["Node"][self.name]["PortsInst"].items():
                 templs.append(temp["Template"])
+
         if path:
             if any("ROS1/PluginClient" in templ for templ in templs):
                 type_to_set = ROS1_PLUGIN
+            elif any("ROS1/Nodelet" in templ for templ in templs):
+                type_to_set = ROS1_NODELET
             else:
                 type_to_set = ROS1_NODE
-
-        if any("ROS1/Nodelet" in templ for templ in templs):
-            type_to_set = ROS1_NODELET
-
-        if any("Http" in templ for templ in templs):
-            type_to_set = MOVAI_SERVER
-
-        if any(templ in (MOVAI_TRANSITIONFOR, MOVAI_TRANSITIONTO) for templ in templs):
-            type_to_set = MOVAI_STATE
+        else:
+            if any("Http" in templ for templ in templs):
+                type_to_set = MOVAI_SERVER
+            elif any(templ in (MOVAI_TRANSITIONFOR, MOVAI_TRANSITIONTO) for templ in templs):
+                type_to_set = MOVAI_STATE
+            else:
+                type_to_set = MOVAI_NODE
 
         MovaiDB().set({"Node": {self.name: {"Type": type_to_set}}})
 
