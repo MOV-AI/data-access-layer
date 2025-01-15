@@ -12,22 +12,6 @@ dal.classes.protocols.redis module
    :undoc-members:
    :show-inheritance:
 
-dal.classes.protocols.redissub module
--------------------------------------
-
-.. automodule:: dal.classes.protocols.redissub
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-dal.classes.protocols.wsredissub module
----------------------------------------
-
-.. automodule:: dal.classes.protocols.wsredissub
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Module contents
 ---------------
 

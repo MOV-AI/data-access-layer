@@ -107,145 +107,199 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
-<section id="dal-classes-protocols-redis-module">
-<h2>dal.classes.protocols.redis module<a class="headerlink" href="#dal-classes-protocols-redis-module" title="Permalink to this heading"></a></h2>
-</section>
-<section id="dal-classes-protocols-redissub-module">
-<h2>dal.classes.protocols.redissub module<a class="headerlink" href="#dal-classes-protocols-redissub-module" title="Permalink to this heading"></a></h2>
-</section>
-<section id="module-dal.classes.protocols.wsredissub">
-<span id="dal-classes-protocols-wsredissub-module"></span><h2>dal.classes.protocols.wsredissub module<a class="headerlink" href="#module-dal.classes.protocols.wsredissub" title="Permalink to this heading"></a></h2>
+<section id="module-dal.classes.protocols.redis">
+<span id="dal-classes-protocols-redis-module"></span><h2>dal.classes.protocols.redis module<a class="headerlink" href="#module-dal.classes.protocols.redis" title="Permalink to this heading"></a></h2>
 <p>Copyright (C) Mov.ai  - All Rights Reserved
 Unauthorized copying of this file, via any medium is strictly prohibited
 Proprietary and confidential</p>
 <p>Developers:
-- Manuel Silva (<a class="reference external" href="mailto:manuel&#46;silva&#37;&#52;&#48;mov&#46;ai">manuel<span>&#46;</span>silva<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020
-- Tiago Paulino (<a class="reference external" href="mailto:tiago&#37;&#52;&#48;mov&#46;ai">tiago<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020
-- Dor Marcus (<a class="reference external" href="mailto:dor&#37;&#52;&#48;mov&#46;ai">dor<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2023</p>
-<p>Websocket to Redis Subscriber</p>
+- Moawiya Mograbi (<a class="reference external" href="mailto:moawiya&#37;&#52;&#48;mov&#46;ai">moawiya<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2022</p>
+<p>Redis related protocols to be used in new Mov-Node</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="dal.classes.protocols.wsredissub.WSRedisSub">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.protocols.wsredissub.</span></span><span class="sig-name descname"><span class="pre">WSRedisSub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Application</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_node_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_ignore</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.wsredissub.WSRedisSub" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextClientIn">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.protocols.redis.</span></span><span class="sig-name descname"><span class="pre">ContextClientIn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.redis.ContextClientIn" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.classes.protocols.redis.ContextProtocolIn" title="dal.classes.protocols.redis.ContextProtocolIn"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContextProtocolIn</span></code></a></p>
+<p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ContextProtocolIn</strong> (<em>_type_</em>) – _description_</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextClientIn.ID">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ID</span></span><a class="headerlink" href="#dal.classes.protocols.redis.ContextClientIn.ID" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextClientOut">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.protocols.redis.</span></span><span class="sig-name descname"><span class="pre">ContextClientOut</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.redis.ContextClientOut" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.classes.protocols.redis.ContextProtocolOut" title="dal.classes.protocols.redis.ContextProtocolOut"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContextProtocolOut</span></code></a></p>
+<p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ContextProtocolOut</strong> (<em>_type_</em>) – _description_</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextClientOut.ID">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ID</span></span><a class="headerlink" href="#dal.classes.protocols.redis.ContextClientOut.ID" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextMsg">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.protocols.redis.</span></span><span class="sig-name descname"><span class="pre">ContextMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">changed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.redis.ContextMsg" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>API for dynamic subscriber to redis</p>
+<p>Message for Context
+data -&gt; dictionary of full context table
+changed -&gt; dictionary only of values changed</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextProtocolIn">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.protocols.redis.</span></span><span class="sig-name descname"><span class="pre">ContextProtocolIn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">ignore</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.redis.ContextProtocolIn" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>_summary_</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="dal.classes.protocols.wsredissub.WSRedisSub.acquire">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">acquire</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">retries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.wsredissub.WSRedisSub.acquire" title="Permalink to this definition"></a></dt>
-<dd><p>Acquire a Redis connection with retry logic, handle cancellations, health checks, and remove unhealthy connections</p>
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextProtocolIn.callback_wrapper">
+<span class="sig-name descname"><span class="pre">callback_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.redis.ContextProtocolIn.callback_wrapper" title="Permalink to this definition"></a></dt>
+<dd><p>Executes callback</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="dal.classes.protocols.wsredissub.WSRedisSub.add_pattern">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conn_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_pattern</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">ignore</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.wsredissub.WSRedisSub.add_pattern" title="Permalink to this definition"></a></dt>
-<dd><p>Add pattern to subscriber</p>
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextProtocolIn.register_sub">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">register_sub</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.classes.protocols.redis.ContextProtocolIn.register_sub" title="Permalink to this definition"></a></dt>
+<dd><p>Subscribe to key.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.classes.protocols.wsredissub.WSRedisSub.close">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ws</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">WebSocketResponse</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.wsredissub.WSRedisSub.close" title="Permalink to this definition"></a></dt>
-<dd><p>Close the WebSocket and clean up tasks and connections</p>
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextProtocolOut">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.protocols.redis.</span></span><span class="sig-name descname"><span class="pre">ContextProtocolOut</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.redis.ContextProtocolOut" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>_summary_</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="dal.classes.protocols.wsredissub.WSRedisSub.connect">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.wsredissub.WSRedisSub.connect" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextProtocolOut.send">
+<span class="sig-name descname"><span class="pre">send</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.redis.ContextProtocolOut.send" title="Permalink to this definition"></a></dt>
+<dd><p>Send function</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextServerIn">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.protocols.redis.</span></span><span class="sig-name descname"><span class="pre">ContextServerIn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.redis.ContextServerIn" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.classes.protocols.redis.ContextProtocolIn" title="dal.classes.protocols.redis.ContextProtocolIn"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContextProtocolIn</span></code></a></p>
+<p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ContextProtocolIn</strong> (<em>_type_</em>) – _description_</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextServerIn.ID">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ID</span></span><a class="headerlink" href="#dal.classes.protocols.redis.ContextServerIn.ID" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.classes.protocols.wsredissub.WSRedisSub.convert_pattern">
-<span class="sig-name descname"><span class="pre">convert_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dal.classes.protocols.wsredissub.WSRedisSub.convert_pattern" title="Permalink to this definition"></a></dt>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextServerOut">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.protocols.redis.</span></span><span class="sig-name descname"><span class="pre">ContextServerOut</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.redis.ContextServerOut" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.classes.protocols.redis.ContextProtocolOut" title="dal.classes.protocols.redis.ContextProtocolOut"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContextProtocolOut</span></code></a></p>
+<p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ContextProtocolOut</strong> (<em>_type_</em>) – _description_</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextServerOut.ID">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ID</span></span><a class="headerlink" href="#dal.classes.protocols.redis.ContextServerOut.ID" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.classes.protocols.wsredissub.WSRedisSub.execute">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conn_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">ignore</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.wsredissub.WSRedisSub.execute" title="Permalink to this definition"></a></dt>
-<dd><p>event: execute
-execute specific callback
-Request implemented in Database.js</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.classes.protocols.wsredissub.WSRedisSub.fetch_value">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_conn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.wsredissub.WSRedisSub.fetch_value" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.classes.protocols.wsredissub.WSRedisSub.get_key_val">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_key_val</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_conn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.wsredissub.WSRedisSub.get_key_val" title="Permalink to this definition"></a></dt>
-<dd><p>get value by type</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.classes.protocols.wsredissub.WSRedisSub.get_keys">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#dal.classes.protocols.wsredissub.WSRedisSub.get_keys" title="Permalink to this definition"></a></dt>
-<dd><p>Get all redis keys in pattern</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.classes.protocols.wsredissub.WSRedisSub.get_patterns">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_patterns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conn_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">ignore</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.wsredissub.WSRedisSub.get_patterns" title="Permalink to this definition"></a></dt>
-<dd><p>Get list of patterns</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.classes.protocols.wsredissub.WSRedisSub.get_value">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.wsredissub.WSRedisSub.get_value" title="Permalink to this definition"></a></dt>
-<dd><p>Get key value</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.classes.protocols.wsredissub.WSRedisSub.handler">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Request</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">WebSocketResponse</span></span></span><a class="headerlink" href="#dal.classes.protocols.wsredissub.WSRedisSub.handler" title="Permalink to this definition"></a></dt>
-<dd><p>Handle WebSocket connections</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.classes.protocols.wsredissub.WSRedisSub.mget">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.wsredissub.WSRedisSub.mget" title="Permalink to this definition"></a></dt>
-<dd><p>get values using redis mget</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.classes.protocols.wsredissub.WSRedisSub.print_current_task_count">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">print_current_task_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.wsredissub.WSRedisSub.print_current_task_count" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.classes.protocols.wsredissub.WSRedisSub.push_to_queue">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">push_to_queue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Queue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.wsredissub.WSRedisSub.push_to_queue" title="Permalink to this definition"></a></dt>
-<dd><p>send json data</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.classes.protocols.wsredissub.WSRedisSub.release">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">release</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conn_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.wsredissub.WSRedisSub.release" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.classes.protocols.wsredissub.WSRedisSub.remove_pattern">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">remove_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conn_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_pattern</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">ignore</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.wsredissub.WSRedisSub.remove_pattern" title="Permalink to this definition"></a></dt>
-<dd><p>Remove pattern from subscriber</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.classes.protocols.wsredissub.WSRedisSub.wait_message">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wait_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conn_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.wsredissub.WSRedisSub.wait_message" title="Permalink to this definition"></a></dt>
-<dd><p>Receive messages from redis subscriber</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.classes.protocols.wsredissub.WSRedisSub.write_websocket_loop">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">write_websocket_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ws_resp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">WebSocketResponse</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_queue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Queue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lock</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Lock</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.wsredissub.WSRedisSub.write_websocket_loop" title="Permalink to this definition"></a></dt>
-<dd><p>Write messages to websocket.
-:param ws_resp: websocket _response
-:param connection_queue: queue to write messages to Websocket</p>
-</dd></dl>
 
 </dd></dl>
 
 </section>
-<section id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this heading"></a></h2>
+<section id="module-dal.classes.protocols">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dal.classes.protocols" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Moawiya Mograbi (<a class="reference external" href="mailto:moawiya&#37;&#52;&#48;mov&#46;ai">moawiya<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2022</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.classes.protocols.ContextClientIn">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.protocols.</span></span><span class="sig-name descname"><span class="pre">ContextClientIn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.ContextClientIn" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.classes.protocols.redis.ContextProtocolIn" title="dal.classes.protocols.redis.ContextProtocolIn"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContextProtocolIn</span></code></a></p>
+<p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ContextProtocolIn</strong> (<em>_type_</em>) – _description_</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.classes.protocols.ContextClientIn.ID">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ID</span></span><a class="headerlink" href="#dal.classes.protocols.ContextClientIn.ID" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.classes.protocols.ContextClientOut">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.protocols.</span></span><span class="sig-name descname"><span class="pre">ContextClientOut</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.ContextClientOut" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.classes.protocols.redis.ContextProtocolOut" title="dal.classes.protocols.redis.ContextProtocolOut"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContextProtocolOut</span></code></a></p>
+<p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ContextProtocolOut</strong> (<em>_type_</em>) – _description_</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.classes.protocols.ContextClientOut.ID">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ID</span></span><a class="headerlink" href="#dal.classes.protocols.ContextClientOut.ID" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.classes.protocols.ContextServerIn">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.protocols.</span></span><span class="sig-name descname"><span class="pre">ContextServerIn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.ContextServerIn" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.classes.protocols.redis.ContextProtocolIn" title="dal.classes.protocols.redis.ContextProtocolIn"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContextProtocolIn</span></code></a></p>
+<p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ContextProtocolIn</strong> (<em>_type_</em>) – _description_</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.classes.protocols.ContextServerIn.ID">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ID</span></span><a class="headerlink" href="#dal.classes.protocols.ContextServerIn.ID" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.classes.protocols.ContextServerOut">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.protocols.</span></span><span class="sig-name descname"><span class="pre">ContextServerOut</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.ContextServerOut" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.classes.protocols.redis.ContextProtocolOut" title="dal.classes.protocols.redis.ContextProtocolOut"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContextProtocolOut</span></code></a></p>
+<p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ContextProtocolOut</strong> (<em>_type_</em>) – _description_</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.classes.protocols.ContextServerOut.ID">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ID</span></span><a class="headerlink" href="#dal.classes.protocols.ContextServerOut.ID" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 
