@@ -5,9 +5,9 @@ on:
       - '**/**'
 jobs:
   CI:
-    uses: MOV-AI/.github/.github/workflows/py-workflow.yml@v1
+    uses: MOV-AI/.github/.github/workflows/py-workflow.yml@v2
     with:
-      deploy: 'false'
+      deploy: false
       with_docs: true
     secrets:
       auto_commit_user: ${{ secrets.RAISE_BOT_COMMIT_USER }}

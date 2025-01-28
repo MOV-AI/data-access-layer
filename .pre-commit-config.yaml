@@ -12,7 +12,6 @@ repos:
     - id: mixed-line-ending         # fixes line files line ending
       args: [--fix=lf]
     - id: trailing-whitespace       # removes trailing whitespaces from text files
-      exclude: .bumpversion.cfg     # a tool edits this file and leaves trailing spaces, must be ignored
 
   - repo: https://github.com/ambv/black     # formats Python code
     rev: 22.8.0
