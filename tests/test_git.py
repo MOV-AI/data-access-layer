@@ -16,6 +16,7 @@ from dal.api.gitapi import GIT_BASE_FOLDER
 
 pytest.skip(allow_module_level=True, reason="These tests were never enabled")
 
+
 # ######################## AUX Functions #################################### #
 def _validate_file(archive: BaseArchive, remote, filename, version, expect: dict):
     path = archive.get(filename, remote, version)
