@@ -1,4 +1,4 @@
-# vTBD
+# v3.0.2
 - [BP-1339](https://movai.atlassian.net/browse/BP-1339): Migrate data-access-layer to py-workflow@v2
 
 # v3.0.1
