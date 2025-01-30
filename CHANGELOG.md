@@ -1,3 +1,6 @@
+# vTBD
+- [BP-1339](https://movai.atlassian.net/browse/BP-1339): Migrate data-access-layer to py-workflow@v2
+
 # v3.0.1
 - [BP-1322](https://movai.atlassian.net/browse/BP-1322): Move WSRedisSub and Var_Subscriber
 
