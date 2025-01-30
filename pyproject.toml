@@ -1,10 +1,78 @@
 [build-system]
 requires = [
-    "setuptools>=42",
-    "wheel"
+    "setuptools>=61",
+    "setuptools-scm>=8.0",
 ]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "data-access-layer"
+version = "3.0.2.1"
+authors = [
+    {name = "Backend team", email = "backend@mov.ai"},
+]
+description = "Data access layer."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "aioredis==1.3.1",
+    "aiohttp==3.8.1",
+    "deepdiff==4.0.9",
+    "gitpython==3.1.30",
+    "jsonschema==3.2.0",
+    "miracle-acl==0.0.4.post1",
+    "pyjwt==1.7.1",
+    "python-box==4.0.4",
+    "redis==3.3.11",
+    "yarl>=1.7.2",
+    "pyros-genmsg==0.5.8",
+    "rospkg==1.4.0",
+    "py3rosmsgs==1.18.2",
+    "cachetools==5.3.1",
+    "movai-core-shared==3.0.2.*"
+]
+
+[project.urls]
+Repository = "https://github.com/MOV-AI/data-access-layer"
+
+[project.scripts]
+dal_backup = "dal.tools.backup:main"
+edit_yaml = "dal.tools.edit_yaml:main"
+secret_key = "dal.tools.secret_key:main"
+
+[tool.setuptools.packages.find]
+include = ["dal*"]
+exclude = ["dal.tests*"]
+
+[tool.setuptools.package-data]
+dal = [
+    'dal/validation/schema/1.0/*.json',
+    'dal/validation/schema/2.0/*.json',
+    'dal/validation/schema/2.4/*.json',
+    'dal/validation/schema/2.4/common/*.json',
+]
 
 [tool.black]
 line-length = 100
 
+[tool.bumpversion]
+current_version = "3.0.2.1"
+parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)?(\\.(?P<build>\\d+))?"
+serialize = ["{major}.{minor}.{patch}.{build}"]
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'
+regex = true
+
+[[tool.bumpversion.files]]
+filename = "CHANGELOG.md"
+search = '# vTBD'
+serialize = ["{major}.{minor}.{patch}"]
+replace = "# v{new_version}"
+regex = true
+ignore_missing_version = true
