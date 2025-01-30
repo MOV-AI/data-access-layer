@@ -5,9 +5,9 @@ on:
 
 jobs:
   CI:
-    uses: MOV-AI/.github/.github/workflows/py-workflow.yml@v1
+    uses: MOV-AI/.github/.github/workflows/py-workflow.yml@v2
     with:
-      release: 'true'
+      release: true
     secrets:
       auto_commit_user: ${{ secrets.RAISE_BOT_COMMIT_USER }}
       auto_commit_mail: ${{ secrets.RAISE_BOT_COMMIT_MAIL }}
@@ -18,4 +18,4 @@ jobs:
       nexus_publisher_password: ${{ secrets.NEXUS_PUBLISHER_PWD }}
       gh_token: ${{ secrets.GITHUB_TOKEN }}
       sonar_token: ${{ secrets.SONAR_TOKEN }}
-      
+
