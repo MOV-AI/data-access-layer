@@ -17,6 +17,8 @@ from dal.helpers.flow import GFlow
 from dal.helpers.parsers import ParamParser
 from .model import Model
 from .scopestree import scopes
+from dal.classes.common.singleton import Singleton
+
 
 if TYPE_CHECKING:
     from dal.data.tree import DictNode, ObjectNode, PropertyNode
@@ -25,6 +27,25 @@ if TYPE_CHECKING:
     from dal.models.nodeinst import NodeInst  # NOSONAR
 
 
+class SingletonDependencyMap(metaclass=Singleton):
+    def __init__(self):
+        self._map = {}
+   
+    def get_dependency(self,node_name):
+        with self.__class__._lock:
+            return self._map[node_name]
+        
+    def set_dependency(self,node_name, dependencies):
+        with self.__class__._lock:
+            self._map[node_name] = dependencies     
+    
+    def is_cached(self,node_name):
+        return node_name in self._map
+    
+    def clean_dependency_cache(self):
+        with self.__class__._lock:
+            self._map = {}
+    
 class LinkDict(TypedDict):
     """ Represents a link between two ports """
     From: str
@@ -206,10 +227,9 @@ class Flow(Model):
 
         # in the context of a another flow or own context
         _context = context or self.ref
-
         node_inst = self.get_node_inst(node_name)
-
-        return node_inst.get_params(node_name, _context)
+        tmp = node_inst.get_params(node_name, _context)
+        return tmp
 
     def get_node_inst(self, name: str) -> "NodeInst":
         """
@@ -295,7 +315,7 @@ class Flow(Model):
         _context = context or self.ref
 
         # parse the parameter in the context of "_context"
-        output = self.parser.parse(key, param, "", self, context=_context)
+        output = self.parser.parse(key, param, context=_context)
 
         return output
 
@@ -318,6 +338,9 @@ class Flow(Model):
 
         return output
 
+    def filter_by_port(self,fnport, lnport):
+        return True if fnport is None else fnport == lnport
+
     def get_node_transitions(self, node_inst: str, port_name: str = None) -> set:
         """Returns a list of nodes to transit to"""
 
@@ -333,21 +356,23 @@ class Flow(Model):
         links = self.Links.get_node_links(node_inst)
 
         for link in links:
-
+            #self.logger.warning(f"link is {link}")
             _type = link["Type"]  # From or To
             # TODO confirm this fix
             if _type == "To":
                 continue
+            
+
             _plink = getattr(link["ref"], _type)  # Get partial link from ref
+            
             _port_type = "In" if _type == "To" else "Out"
 
             # get the Ports instance from the Node template
             port_tpl = node_tpl.get_port(_plink.port_name)
+            
+            
 
-            def filter_by_port(fnport, lnport):
-                return True if fnport is None else fnport == lnport
-
-            if port_tpl.is_transition(_port_type, _plink.port_type) and filter_by_port(
+            if port_tpl.is_transition(_port_type, _plink.port_type) and self.filter_by_port(
                 port_name, _plink.port_name
             ):
 
@@ -360,7 +385,35 @@ class Flow(Model):
                 transition_nodes.add(to_transit.node_inst)
 
         # TODO output is including every node instance even with no transition possible (iport).
+
         return transition_nodes
+
+    def is_node_transitionable(self, node_inst: str) -> bool:
+        # get the node_inst instance ref
+        node_inst_ref = self.get_node_inst(node_inst)
+
+        # get the node_inst node template
+        node_tpl = node_inst_ref.node_template
+
+        # get all the links of the node_inst
+        links = self.Links.get_node_links(node_inst)
+        for link in links:
+            
+            _type = link["Type"]
+            
+            if _type == "To":
+                continue
+            
+            _plink = getattr(link["ref"], _type)
+            
+            _port_type = "In" if _type == "To" else "Out"
+            
+            port_tpl = node_tpl.get_port(_plink.port_name)
+
+            if port_tpl.is_transition(_port_type, _plink.port_type):
+                return True
+            
+        return False
 
     def get_nodelet_manager(self, node_inst: str) -> str:
         """Returns nodelet manager name"""
@@ -406,7 +459,12 @@ class Flow(Model):
     ) -> list:
         """Get node dependencies recursively"""
 
-        # TODO review and refactor
+        # TODO review and refactor - Ongoing
+
+        cache = SingletonDependencyMap()
+
+        if cache.is_cached(node_name):
+            return cache.get_dependency(node_name)
 
         dependencies = dependencies_collected or []
 
@@ -419,7 +477,7 @@ class Flow(Model):
         node_transitions = self.get_node_transitions(node_name)
 
         links = self.Links.get_node_links(node_name)
-
+        
         for link in links:
 
             if link["id"] in links_to_skip:
@@ -468,8 +526,11 @@ class Flow(Model):
                         dependencies = self.get_node_dependencies(
                             dependency_name, dependencies, links_to_skip, skip_parent_node
                         )
-
-        return list(set(dependencies))
+                        
+                        
+        dependency_result = list(set(dependencies))
+        cache.set_dependency(node_name, dependency_result)
+        return dependency_result.copy()
 
     def get_node_plugins(self, node_inst: str) -> set:
         """Return NodeInst(s) plugins linked to node_inst"""
