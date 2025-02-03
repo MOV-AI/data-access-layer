@@ -228,8 +228,7 @@ class Flow(Model):
         # in the context of a another flow or own context
         _context = context or self.ref
         node_inst = self.get_node_inst(node_name)
-        tmp = node_inst.get_params(node_name, _context)
-        return tmp
+        return node_inst.get_params(node_name, _context)
 
     def get_node_inst(self, name: str) -> "NodeInst":
         """
@@ -315,7 +314,7 @@ class Flow(Model):
         _context = context or self.ref
 
         # parse the parameter in the context of "_context"
-        output = self.parser.parse(key, param, context=_context)
+        output = self.parser.parse(key, param,"", self, context=_context)
 
         return output
 
@@ -356,21 +355,17 @@ class Flow(Model):
         links = self.Links.get_node_links(node_inst)
 
         for link in links:
-            #self.logger.warning(f"link is {link}")
             _type = link["Type"]  # From or To
             # TODO confirm this fix
             if _type == "To":
                 continue
-            
 
             _plink = getattr(link["ref"], _type)  # Get partial link from ref
-            
+
             _port_type = "In" if _type == "To" else "Out"
 
             # get the Ports instance from the Node template
             port_tpl = node_tpl.get_port(_plink.port_name)
-            
-            
 
             if port_tpl.is_transition(_port_type, _plink.port_type) and self.filter_by_port(
                 port_name, _plink.port_name
@@ -389,6 +384,14 @@ class Flow(Model):
         return transition_nodes
 
     def is_node_transitionable(self, node_inst: str) -> bool:
+        """ Function to be used to check if a node instance is transitionable.
+
+        Args:
+            node_inst (str): Node instance.
+
+        Returns:
+            bool: True if transitionable, False otherwise.
+        """
         # get the node_inst instance ref
         node_inst_ref = self.get_node_inst(node_inst)
 
@@ -477,7 +480,7 @@ class Flow(Model):
         node_transitions = self.get_node_transitions(node_name)
 
         links = self.Links.get_node_links(node_name)
-        
+
         for link in links:
 
             if link["id"] in links_to_skip:
