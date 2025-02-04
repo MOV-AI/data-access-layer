@@ -5,7 +5,7 @@ on:
       - '**/**'
 jobs:
   CI:
-    uses: MOV-AI/.github/.github/workflows/py-workflow.yml@v2
+    uses: MOV-AI/.github/.github/workflows/py-workflow.yml@fix-new-code-on-branch
     with:
       deploy: false
       with_docs: true
