@@ -32,7 +32,7 @@ dependencies = [
     "rospkg==1.4.0",
     "py3rosmsgs==1.18.2",
     "cachetools==5.3.1",
-    "movai-core-shared>=3.0.2.*"
+    "movai-core-shared>=3.0.2"
 ]
 
 [project.urls]
