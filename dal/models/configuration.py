@@ -60,7 +60,7 @@ class Configuration(Model):
             # Yaml is the name of the field
             return self.Yaml
 
-        config_dict = ConfigirationCache().yaml_load(self.ref, self.Yaml)
+        config_dict = ConfigurationCache().yaml_load(self.ref, self.Yaml)
         return config_dict
 
     def get_param(self, param: str) -> any:
