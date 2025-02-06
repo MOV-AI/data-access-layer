@@ -17,7 +17,7 @@ from dal.classes.common.singleton import Singleton
 
 LOGGER = Log.get_logger("ParamParser.mov.ai")
 
-class ConfigirationCache(metaclass=Singleton):
+class ConfigurationCache(metaclass=Singleton):
     def __init__(self):
         self._map = {}
 
