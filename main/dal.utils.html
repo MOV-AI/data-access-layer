@@ -106,6 +106,111 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
+<section id="module-dal.utils.callback">
+<span id="dal-utils-callback-module"></span><h2>dal.utils.callback module<a class="headerlink" href="#module-dal.utils.callback" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Manuel Silva (<a class="reference external" href="mailto:manuel&#46;silva&#37;&#52;&#48;mov&#46;ai">manuel<span>&#46;</span>silva<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020
+- Tiago Paulino (<a class="reference external" href="mailto:tiago&#37;&#52;&#48;mov&#46;ai">tiago<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.utils.callback.Callback">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.utils.callback.</span></span><span class="sig-name descname"><span class="pre">Callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_cb_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_node_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_port_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_update</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.utils.callback.Callback" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Callback class used by GD_Node to execute code</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_cb_name</strong> – The name of the callback</p></li>
+<li><p><strong>_node_name</strong> – The name of the node instance</p></li>
+<li><p><strong>_port_name</strong> – The name of the input port</p></li>
+<li><p><strong>_update</strong> – Real time update of the callback code</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.callback.Callback.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.utils.callback.Callback.execute" title="Permalink to this definition"></a></dt>
+<dd><p>Executes the code</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>msg</strong> – Message received in the callback</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.callback.Callback.robot">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">robot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="dal.scopes.html#dal.scopes.robot.Robot" title="dal.scopes.robot.Robot"><span class="pre">Robot</span></a></span></span><a class="headerlink" href="#dal.utils.callback.Callback.robot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.callback.Callback.scene">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scene</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GraphicScene</span></span></span><a class="headerlink" href="#dal.utils.callback.Callback.scene" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.callback.Callback.set_transitioning">
+<span class="sig-name descname"><span class="pre">set_transitioning</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.utils.callback.Callback.set_transitioning" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.callback.Callback.set_user_functions">
+<span class="sig-name descname"><span class="pre">set_user_functions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_cb_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_node_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_port_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.utils.callback.Callback.set_user_functions" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.callback.Callback.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">globais</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.utils.callback.Callback.start" title="Permalink to this definition"></a></dt>
+<dd><p>Executes the code</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>msg</strong> – Message received in the callback</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.utils.callback.UserFunctions">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.utils.callback.</span></span><span class="sig-name descname"><span class="pre">UserFunctions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_cb_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_node_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_port_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_libraries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SUPER'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.utils.callback.UserFunctions" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class that provides functions to the callback execution</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.utils.callback.UserFunctions.globals">
+<span class="sig-name descname"><span class="pre">globals</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#dal.utils.callback.UserFunctions.globals" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.callback.UserFunctions.load_classes">
+<span class="sig-name descname"><span class="pre">load_classes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_node_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_port_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_user</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.utils.callback.UserFunctions.load_classes" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.callback.UserFunctions.load_libraries">
+<span class="sig-name descname"><span class="pre">load_libraries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">libraries</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.utils.callback.UserFunctions.load_libraries" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.callback.UserFunctions.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cb_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.utils.callback.UserFunctions.run" title="Permalink to this definition"></a></dt>
+<dd><p>Run another callback from a callback</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.callback.UserFunctions.user_print">
+<span class="sig-name descname"><span class="pre">user_print</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.utils.callback.UserFunctions.user_print" title="Permalink to this definition"></a></dt>
+<dd><p>Method to redirect the print function into logger</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="dal-utils-middleware-module">
+<h2>dal.utils.middleware module<a class="headerlink" href="#dal-utils-middleware-module" title="Permalink to this heading"></a></h2>
+</section>
 <section id="module-dal.utils.redis_mocks">
 <span id="dal-utils-redis-mocks-module"></span><h2>dal.utils.redis_mocks module<a class="headerlink" href="#module-dal.utils.redis_mocks" title="Permalink to this heading"></a></h2>
 <dl class="py class">

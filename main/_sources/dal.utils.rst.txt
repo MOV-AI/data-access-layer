@@ -4,6 +4,22 @@ dal.utils package
 Submodules
 ----------
 
+dal.utils.callback module
+-------------------------
+
+.. automodule:: dal.utils.callback
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.utils.middleware module
+---------------------------
+
+.. automodule:: dal.utils.middleware
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dal.utils.redis\_mocks module
 -----------------------------
 
