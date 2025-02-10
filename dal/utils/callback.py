@@ -7,6 +7,7 @@
    - Manuel Silva (manuel.silva@mov.ai) - 2020
    - Tiago Paulino (tiago@mov.ai) - 2020
 """
+import inspect
 import sys
 import copy
 import time
@@ -170,6 +171,110 @@ class Callback:
                 )
                 # TODO We can't kill the node if callbacks blow up. Some callbacks are not critical.
                 # sys.exit(1)
+
+    def set_transitioning(self):
+        pass
+
+
+class AsyncCallback:
+    """Callback class used to execute user code
+
+    Args:
+        _cb_name: The name of the callback
+        _node_name: The name of the node instance
+        _port_name: The name of the input port
+        _update: Real time update of the callback code
+    """
+
+    _robot = None
+    _scene = None
+
+    def __init__(
+        self, _cb_name: str, _node_name: str, _port_name: str, _update: bool = False
+    ) -> None:
+        """Init"""
+        self.name = _cb_name
+        self.node_name = _node_name
+        self.port_name = _port_name
+        self.updated_globals = {}
+
+        self.callback = ScopesTree().from_path(_cb_name, scope="Callback")
+
+        self.compiled_code = compile(self.callback.Code, _cb_name, "exec")
+        self.user = UserFunctions(
+            _cb_name,
+            _node_name,
+            _port_name,
+            self.callback.Py3Lib,
+            self.callback.Message,
+        )
+        self.count = 0
+
+        self._debug = eval(getenv("DEBUG_CB", "False"))
+
+    async def execute(self, msg: Any = None) -> None:
+        """Executes the code
+
+        Args:
+            msg: Message received in the callback
+        Returns:
+            Result from the callback function, if any
+        """
+
+        self.user.globals.update({"msg": msg})
+        self.user.globals.update({"count": self.count})
+        globais = copy.copy(self.user.globals)
+        await self.start(self.compiled_code, globais)
+        self.count += 1
+        self.updated_globals = globais
+        if (
+            "response" in globais
+            and isinstance(globais["response"], dict)
+            and "status_code" in globais["response"]
+        ):
+            self.updated_globals["status_code"] = globais["response"]["status_code"]
+            del globais["response"]["status_code"]
+
+    async def start(self, code, globais):
+        """Executes the code
+
+        Args:
+            msg: Message received in the callback
+        """
+        try:
+            t_init = time.perf_counter()
+            if self._debug:
+                import linecache
+
+                linecache.cache[self.name] = (
+                    len(self.callback.Code),
+                    None,
+                    self.callback.Code.splitlines(True),
+                    self.name,
+                )
+            exec(code, globais)
+            if "start" in globais and inspect.iscoroutinefunction(globais["start"]):
+                globais["response"] = await globais["start"]()
+            t_delta = time.perf_counter() - t_init
+            if t_delta > 0.5:
+                LOGGER.debug(
+                    f"{self.node_name}/{self.port_name}/{self.callback.Label} took: {t_delta}"
+                )
+        except TransitionException:
+            LOGGER.debug("Transitioning...")
+            self.set_transitioning()
+        except CancelledError:
+            raise CancelledError("cancelled task")
+        except KeyboardInterrupt:
+            LOGGER.warning(f"[KILLED] Callback forcefully killed (node: {self.node_name}, callback={self.name})")
+            sys.exit(1)
+        except Exception:
+            LOGGER.error(
+                f"Error in executing callback. Node: {self.node_name} Callback: {self.name}",
+                exc_info=True,
+            )
+            # TODO We can't kill the node if callbacks blow up. Some callbacks are not critical.
+            # sys.exit(1)
 
     def set_transitioning(self):
         pass
