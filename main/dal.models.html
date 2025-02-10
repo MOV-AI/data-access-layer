@@ -1175,7 +1175,7 @@ Proprietary and confidential</p>
 <p>Provides xml or yaml configuration</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.models.configuration.Configuration.get_param">
-<span class="sig-name descname"><span class="pre">get_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#dal.models.configuration.Configuration.get_param" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">any</span></span></span><a class="headerlink" href="#dal.models.configuration.Configuration.get_param" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the configuration value of a key in the format param.subparam.subsubparam</p>
 </dd></dl>
 
@@ -1184,6 +1184,27 @@ Proprietary and confidential</p>
 <span class="sig-name descname"><span class="pre">get_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#dal.models.configuration.Configuration.get_value" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a dictionary with the configuration values</p>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.configuration.Configuration.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Logger</span> <span class="pre">ParamParser.mov.ai</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#dal.models.configuration.Configuration.logger" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.models.configuration.ConfigurationCache">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.models.configuration.</span></span><span class="sig-name descname"><span class="pre">ConfigurationCache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.configuration.ConfigurationCache" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.models.configuration.ConfigurationCache.clean_config_cache">
+<span class="sig-name descname"><span class="pre">clean_config_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.configuration.ConfigurationCache.clean_config_cache" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.models.configuration.ConfigurationCache.yaml_load">
+<span class="sig-name descname"><span class="pre">yaml_load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yaml_str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.configuration.ConfigurationCache.yaml_load" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -1276,6 +1297,11 @@ Proprietary and confidential</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dal.models.flow.Flow.NodeInst">
 <span class="sig-name descname"><span class="pre">NodeInst</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#dal.models.nodeinst.NodeInst" title="dal.models.nodeinst.NodeInst"><span class="pre">NodeInst</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#dal.models.flow.Flow.NodeInst" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.models.flow.Flow.filter_by_port">
+<span class="sig-name descname"><span class="pre">filter_by_port</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fnport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lnport</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.flow.Flow.filter_by_port" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
@@ -1437,6 +1463,32 @@ Returns a dictionary with the following format
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dal.models.flow.LinkDict.To">
 <span class="sig-name descname"><span class="pre">To</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dal.models.flow.LinkDict.To" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.models.flow.SingletonDependencyMap">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.models.flow.</span></span><span class="sig-name descname"><span class="pre">SingletonDependencyMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.flow.SingletonDependencyMap" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.models.flow.SingletonDependencyMap.clean_dependency_cache">
+<span class="sig-name descname"><span class="pre">clean_dependency_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.flow.SingletonDependencyMap.clean_dependency_cache" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.models.flow.SingletonDependencyMap.get_dependency">
+<span class="sig-name descname"><span class="pre">get_dependency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.flow.SingletonDependencyMap.get_dependency" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.models.flow.SingletonDependencyMap.is_cached">
+<span class="sig-name descname"><span class="pre">is_cached</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.flow.SingletonDependencyMap.is_cached" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.models.flow.SingletonDependencyMap.set_dependency">
+<span class="sig-name descname"><span class="pre">set_dependency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dependencies</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.flow.SingletonDependencyMap.set_dependency" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -4544,7 +4596,7 @@ needs an update.</p>
 <p>Provides xml or yaml configuration</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.models.Configuration.get_param">
-<span class="sig-name descname"><span class="pre">get_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#dal.models.Configuration.get_param" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">any</span></span></span><a class="headerlink" href="#dal.models.Configuration.get_param" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the configuration value of a key in the format param.subparam.subsubparam</p>
 </dd></dl>
 
@@ -4553,6 +4605,11 @@ needs an update.</p>
 <span class="sig-name descname"><span class="pre">get_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#dal.models.Configuration.get_value" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a dictionary with the configuration values</p>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.Configuration.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Logger</span> <span class="pre">ParamParser.mov.ai</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#dal.models.Configuration.logger" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -4628,6 +4685,11 @@ parsing it</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dal.models.Flow.NodeInst">
 <span class="sig-name descname"><span class="pre">NodeInst</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#dal.models.NodeInst" title="dal.models.NodeInst"><span class="pre">NodeInst</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#dal.models.Flow.NodeInst" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.models.Flow.filter_by_port">
+<span class="sig-name descname"><span class="pre">filter_by_port</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fnport</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lnport</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.Flow.filter_by_port" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
