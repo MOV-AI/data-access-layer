@@ -9,6 +9,7 @@
 """
 import copy
 import re
+import time
 from movai_core_shared.exceptions import AlreadyExist
 from dal.movaidb import MovaiDB
 from dal.helpers import Helpers
@@ -144,16 +145,28 @@ class Struct:
         ]:
             return super().__getattribute__(name)
 
+        db = MovaiDB(self.db)
+        if name == "Value" and "TTL" in self.attrs:
+            TTL = db.get_value(
+                Helpers.join_first({"TTL": "*"}, self.prev_struct)
+            )
+            if TTL:
+                last_update = db.get_value(
+                    Helpers.join_first({"_timestamp": "*"}, self.prev_struct)
+                )
+                if last_update is not None and last_update + TTL < time.time():
+                    return None
+
         if name in self.attrs:
-            return MovaiDB(self.db).get_value(
+            return db.get_value(
                 Helpers.join_first({name: "*"}, self.prev_struct)
             )
         elif name in self.lists:
-            list_value = MovaiDB(self.db).get_list(
+            list_value = db.get_list(
                 Helpers.join_first({name: "*"}, self.prev_struct))
             return List(name, list_value, self.db, self.prev_struct)
         elif name in self.hashs:
-            hash_value = MovaiDB(self.db).get_hash(
+            hash_value = db.get_hash(
                 Helpers.join_first({name: "*"}, self.prev_struct))
             return Hash(name, hash_value, self.db, self.prev_struct)
         else:
@@ -163,7 +176,7 @@ class Struct:
             temp = copy.deepcopy(self.prev_struct)
 
             final = {}
-            result = MovaiDB(self.db).get2(
+            result = db.get2(
                 Helpers.join_first({name: "*"}, self.prev_struct))
             if not result:
                 return super().__getattribute__(name)
@@ -215,6 +228,9 @@ class Struct:
             self.__dict__[name] = value
             MovaiDB(self.db).set(Helpers.join_first(
                 {name: value}, self.prev_struct))
+            if "TTL" in self.attrs:
+                MovaiDB(self.db).set(Helpers.join_first(
+                    {"_timestamp": time.time()}, self.prev_struct))
         elif name in self.lists:
             raise AttributeError(f"'{name}' is a list not an attribute")
         elif name in self.hashs:
