@@ -60,7 +60,9 @@ class FleetRobot(Scope):
             server = f"tcp://message-server:{MESSAGE_SERVER_PORT}"
 
         self.__dict__["spawner_client"] = MessageClient(server_addr=server, robot_id=self.RobotName)
-        self.__dict__["async_spawner_client"] = AsyncMessageClient(server_addr=server, robot_id=self.RobotName)
+        self.__dict__["async_spawner_client"] = AsyncMessageClient(
+            server_addr=server, robot_id=self.RobotName
+        )
 
     def send_cmd(
         self, command: str, *, flow: str = None, node: str = None, port=None, data=None

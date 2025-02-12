@@ -9,8 +9,8 @@
 
    Module that implements Robot namespace
 """
+from typing import Optional
 import asyncio
-from typing import Any, Optional
 import uuid
 import pickle
 
@@ -110,9 +110,11 @@ class Robot(Scope):
             command_data = pickle.dumps(command_data)
             self.Actions.append(command_data)
 
-    async def async_send_cmd(self, command, *, flow=None, node=None, port=None, data=None, wait_for_status=False) -> Optional[dict]:
+    async def async_send_cmd(
+        self, command, *, flow=None, node=None, port=None, data=None, wait_for_status=False
+    ) -> Optional[dict]:
         """Send an action command to the Robot
-        
+
         if wait_for_status is True, we assume the Robot will return a message"""
         command_data = {}
         if command:
