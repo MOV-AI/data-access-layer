@@ -53,14 +53,16 @@ class Configuration(Model):
         """
         return pickle.loads(self.db.get(f"Configuration:{self.ref},Yaml:"))
 
-    def get_value(self) -> dict:
+    def get_value(self, cached=True) -> dict:
         """Returns a dictionary with the configuration values"""
         
         if self.Type == "xml":
             # Yaml is the name of the field
             return self.Yaml
-
-        config_dict = ConfigurationCache().yaml_load(self.ref, self.Yaml)
+        if cached:
+            config_dict = ConfigurationCache().yaml_load(self.ref, self.Yaml)
+        else:
+            config_dict = yaml.load(self.Yaml, Loader=yaml.FullLoader)
         return config_dict
 
     def get_param(self, param: str) -> any:
