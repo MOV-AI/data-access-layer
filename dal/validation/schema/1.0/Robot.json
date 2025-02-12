@@ -12,7 +12,9 @@
       "Status": "hash",
       "Parameter": {
         "$name": {
-          "Value": "any"
+          "Value": "any",
+          "TTL": "int",
+          "_timestamp": "float"
         }
       }
     }
