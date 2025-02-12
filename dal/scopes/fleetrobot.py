@@ -14,7 +14,7 @@ import pickle
 from typing import Dict, Optional
 
 from movai_core_shared.common.utils import is_enterprise
-from movai_core_shared.core.message_client import MessageClient
+from movai_core_shared.core.message_client import MessageClient, AsyncMessageClient
 from movai_core_shared.consts import COMMAND_HANDLER_MSG_TYPE
 from movai_core_shared.envvars import (
     DEVICE_NAME,
@@ -38,6 +38,7 @@ END_TIME_VAR = "endTime"
 class FleetRobot(Scope):
     """Represent the Robot scope in the redis-master."""
     spawner_client: MessageClient
+    async_spawner_client: AsyncMessageClient
     Parameter: Dict
 
     def __init__(self, name: str, version="latest", new=False, db="global"):
@@ -59,6 +60,9 @@ class FleetRobot(Scope):
             server = f"tcp://message-server:{MESSAGE_SERVER_PORT}"
 
         self.__dict__["spawner_client"] = MessageClient(server_addr=server, robot_id=self.RobotName)
+        self.__dict__["async_spawner_client"] = AsyncMessageClient(
+            server_addr=server, robot_id=self.RobotName
+        )
 
     def send_cmd(
         self, command: str, *, flow: str = None, node: str = None, port=None, data=None
@@ -110,6 +114,73 @@ class FleetRobot(Scope):
             ):
                 # success if response is not required or if required, is well formed
                 logger.info("Sent command %s to robot %s", command_data, self.RobotName)
+            else:
+                logger.debug(
+                    "Failed to send command %s %s, response: %s", command_data, self.RobotName, res
+                )
+                send_to_redis = True
+        else:
+            logger.debug("Spawner client not found for %s", self.RobotName)
+            send_to_redis = True
+
+        if send_to_redis:
+            logger.info("Command %s, published in redis for robot %s", command_data, self.RobotName)
+            command_data = pickle.dumps(command_data)
+            self.Actions.append(command_data)
+
+    async def async_send_cmd(
+        self, command: str, *, flow: str = None, node: str = None, port=None, data=None,
+        response_required=False
+    ) -> None:
+        """Send an action command to the Robot.
+
+        See flow-initiator/flow_initiator/spawner/spawner.py for possible commands.
+
+        """
+        dst = {"ip": self.IP, "host": self.RobotName, "id": self.name}
+
+        command_data = {}
+
+        if command:
+            command_data["command"] = command
+
+        if flow:
+            command_data["flow"] = flow
+
+        if node:
+            command_data["node"] = node
+
+        if port:
+            command_data["port"] = port
+
+        if data:
+            command_data["data"] = data
+
+        req_data = {"dst": dst, "command_data": command_data}
+
+        # For retro-compatibility, if the dest robot is a fleet robot
+        # then the response is required since the forward by message-server might fail
+        # in this case, the command will be published to redis
+        send_to_redis = False
+        if self.RobotName != DEVICE_NAME and is_enterprise():
+            logger.debug("%s is a fleet member", self.RobotName)
+            response_required = True
+
+        if hasattr(self, "async_spawner_client") and self.async_spawner_client is not None:
+            res = await self.async_spawner_client.send_request(
+                COMMAND_HANDLER_MSG_TYPE, req_data, response_required=response_required
+            )
+            if not response_required:
+                # success if response is not required or if required, is well formed
+                logger.info("Sent command %s to robot %s", command_data, self.RobotName)
+            elif (
+                res is not None
+                and "response" in res
+                and res["response"] != {}
+            ):
+                # success if response is not required or if required, is well formed
+                logger.info("Sent command %s to robot %s", command_data, self.RobotName)
+                return res["response"]
             else:
                 logger.debug(
                     "Failed to send command %s %s, response: %s", command_data, self.RobotName, res
