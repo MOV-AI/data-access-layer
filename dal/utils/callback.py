@@ -37,11 +37,22 @@ from dal.scopes.message import Message
 from dal.scopes.robot import Robot
 from dal.scopes.statemachine import StateMachine
 
-if TYPE_CHECKING:
-    try:
-        from movai_core_enterprise.models.graphicscene import GraphicScene
-    except ImportError:
-        pass
+
+try:
+    from movai_core_enterprise.message_client_handlers.alerts import Alerts
+    from movai_core_enterprise.models.annotation import Annotation
+    from movai_core_enterprise.models.graphicasset import GraphicAsset
+    from movai_core_enterprise.models.graphicscene import GraphicScene
+    from movai_core_enterprise.models.layout import Layout
+    from movai_core_enterprise.scopes.task import Task
+    from movai_core_enterprise.models.taskentry import TaskEntry
+    from movai_core_enterprise.models.tasktemplate import TaskTemplate
+    from movai_core_enterprise.message_client_handlers.metrics import Metrics
+
+    enterprise = True
+except ImportError:
+    enterprise = False
+
 
 LOGGER = Log.get_logger("spawner.mov.ai")
 
@@ -347,6 +358,22 @@ class UserFunctions:
                     "Configuration": Configuration,
                 }
             )
+
+            if enterprise:
+                metrics = Metrics()
+                self.globals.update(
+                    {
+                        "Alerts": Alerts,
+                        "Annotation": Annotation,
+                        "GraphicAsset": GraphicAsset,
+                        "GraphicScene": GraphicScene,
+                        "Layout": Layout,
+                        "metrics": metrics,
+                        "Task": Task,
+                        "TaskEntry": TaskEntry,
+                        "TaskTemplate": TaskTemplate,
+                    }
+                )
 
     def load_libraries(self, libraries):
         for lib in libraries:
