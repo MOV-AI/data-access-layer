@@ -1,4 +1,4 @@
-# vTBD
+# v3.0.3
 - [BP-1360](https://movai.atlassian.net/browse/BP-1360): Metrics no longer available when running cloud function
 
 # v3.0.2
