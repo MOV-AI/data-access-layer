@@ -146,17 +146,6 @@ class Struct:
             return super().__getattribute__(name)
 
         db = MovaiDB(self.db)
-        if name == "Value" and "TTL" in self.attrs:
-            TTL = db.get_value(
-                Helpers.join_first({"TTL": "*"}, self.prev_struct)
-            )
-            if TTL:
-                last_update = db.get_value(
-                    Helpers.join_first({"_timestamp": "*"}, self.prev_struct)
-                )
-                if last_update is not None and last_update + TTL < time.time():
-                    return None
-
         if name in self.attrs:
             return db.get_value(
                 Helpers.join_first({name: "*"}, self.prev_struct)
@@ -223,14 +212,15 @@ class Struct:
         return result
 
     def __setattr__(self, name, value):
-
         if name in self.attrs:
             self.__dict__[name] = value
-            MovaiDB(self.db).set(Helpers.join_first(
-                {name: value}, self.prev_struct))
-            if "TTL" in self.attrs:
-                MovaiDB(self.db).set(Helpers.join_first(
-                    {"_timestamp": time.time()}, self.prev_struct))
+            db = MovaiDB(self.db)
+            TTL = (
+                db.get_value(Helpers.join_first({"TTL": "*"}, self.prev_struct))
+                if name == "Value"
+                else None
+            )
+            db.set(Helpers.join_first({name: value}, self.prev_struct), ex=TTL)
         elif name in self.lists:
             raise AttributeError(f"'{name}' is a list not an attribute")
         elif name in self.hashs:
