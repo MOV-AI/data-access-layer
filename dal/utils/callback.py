@@ -57,6 +57,126 @@ except ImportError:
 LOGGER = Log.get_logger("spawner.mov.ai")
 
 
+class UserFunctions:
+    """Class that provides functions to the callback execution"""
+    globals: Dict[str, Any]
+
+    def __init__(
+        self,
+        _cb_name: str,
+        _node_name: str,
+        _port_name: str,
+        _libraries: list,
+        _message: str,
+        _user="SUPER",
+    ) -> None:
+        """Init"""
+
+        self.globals = {"run": self.run}
+        self.cb_name = _cb_name
+        self.node_name = _node_name
+        # self.globals['redis_sub'] = GD_Message('movai_msgs/redis_sub', _type='msg').get()
+
+        self.load_libraries(_libraries)
+        self.load_classes(_node_name, _port_name, _user)
+
+    def load_classes(self, _node_name, _port_name, _user):
+        _robot_id: str = Callback.robot().name
+
+        class UserVar(Var):
+            """Class for user to set and get vars"""
+
+            def __init__(self, scope: str = "Node", robot_name=_robot_id):
+                super().__init__(
+                    scope=scope,
+                    _robot_name=robot_name,
+                    _node_name=_node_name,
+                    _port_name=_port_name,
+                )
+
+        class UserLock(Lock):
+            """Class for user to use locks"""
+
+            def __init__(self, name, **kwargs):
+                kwargs.update({"_node_name": _node_name, "_robot_name": _robot_id})
+                super().__init__(name, **kwargs)
+
+        if _user == "SUPER":
+            logger = Log.get_callback_logger("GD_Callback", self.node_name, self.cb_name)
+            self.globals.update(
+                {
+                    "scopes": scopes,
+                    "Package": Package,
+                    "Message": Message,
+                    "Ports": Ports,
+                    "StateMachine": StateMachine,  # TODO implement model
+                    "Var": UserVar,
+                    "Robot": Callback.robot(),
+                    "FleetRobot": FleetRobot,
+                    "logger": logger,
+                    "PortName": _port_name,
+                    "Callback": CallbackModel,
+                    "Lock": UserLock,
+                    "print": self.user_print,
+                    "Scene": Callback.scene(),
+                    "NodeInst": NodeInst,
+                    "Container": Container,
+                    "Configuration": Configuration,
+                }
+            )
+
+            if enterprise:
+                metrics = Metrics()
+                self.globals.update(
+                    {
+                        "Alerts": Alerts,
+                        "Annotation": Annotation,
+                        "GraphicAsset": GraphicAsset,
+                        "GraphicScene": GraphicScene,
+                        "Layout": Layout,
+                        "metrics": metrics,
+                        "Task": Task,
+                        "TaskEntry": TaskEntry,
+                        "TaskTemplate": TaskTemplate,
+                    }
+                )
+
+    def load_libraries(self, libraries):
+        for lib in libraries:
+            try:
+                mod = importlib.import_module(libraries[lib].Module)
+                try:
+                    self.globals[lib] = getattr(mod, libraries[lib].Class)
+                except TypeError:  # Class is not defined
+                    self.globals[lib] = mod
+            except CancelledError:
+                raise CancelledError("cancelled task")
+            except (ImportError, AttributeError, LookupError):
+                LOGGER.error(
+                    f"Import {lib} in callback blew up. Node: {self.node_name} Callback: {self.cb_name}",
+                    exc_info=True,
+                )
+                # TODO We can't kill the node if callbacks blow up. Some callbacks are not critical.
+                # sys.exit(1)
+
+    def user_print(self, *args):
+        """Method to redirect the print function into logger"""
+        to_send = " ".join([str(arg) for arg in args])
+        logger = Log.get_callback_logger("GD_Callback", self.node_name, self.cb_name)
+        logger.debug(to_send)
+
+    def run(self, cb_name, msg):
+        """Run another callback from a callback"""
+        callback = scopes.from_path(cb_name, scope="Callback")
+        compiled_code = compile(callback.Code, cb_name, "exec")
+        user = UserFunctions("", "", "", callback.Py3Lib, callback.Message)
+
+        user.globals.update({"msg": msg})
+        globais = user.globals
+
+        exec(compiled_code, globais)
+
+
 class Callback:
     """Callback class used by GD_Node to execute code
 
@@ -69,9 +189,10 @@ class Callback:
 
     _robot = None
     _scene = None
+    _user_functions_class = UserFunctions
 
     def __init__(
-        self, _cb_name: str, _node_name: str, _port_name: str, _update: bool = False
+        self, _cb_name: str, _node_name: str, _port_name: str, _update: bool = False,
     ) -> None:
         self.name = _cb_name
         self.node_name = _node_name
@@ -81,7 +202,13 @@ class Callback:
         self.callback = ScopesTree().from_path(_cb_name, scope="Callback")
 
         self.compiled_code = compile(self.callback.Code, _cb_name, "exec")
-        self.set_user_functions(_cb_name, _node_name, _port_name)
+        self.user = self._user_functions_class(
+            _cb_name,
+            _node_name,
+            _port_name,
+            self.callback.Py3Lib,
+            self.callback.Message,
+        )
         self.count = 0
 
         self._debug = eval(getenv("DEBUG_CB", "False"))
@@ -105,15 +232,6 @@ class Callback:
                 except:
                     LOGGER.error(f'Scene "{scene_name}" was not found')
         return cls._scene
-
-    def set_user_functions(self, _cb_name, _node_name, _port_name):
-        self.user = UserFunctions(
-            _cb_name,
-            _node_name,
-            _port_name,
-            self.callback.Py3Lib,
-            self.callback.Message,
-        )
 
     def execute(self, msg: Any = None) -> None:
         """Executes the code
@@ -289,123 +407,3 @@ class AsyncCallback:
 
     def set_transitioning(self):
         pass
-
-
-class UserFunctions:
-    """Class that provides functions to the callback execution"""
-    globals: Dict[str, Any]
-
-    def __init__(
-        self,
-        _cb_name: str,
-        _node_name: str,
-        _port_name: str,
-        _libraries: list,
-        _message: str,
-        _user="SUPER",
-    ) -> None:
-        """Init"""
-
-        self.globals = {"run": self.run}
-        self.cb_name = _cb_name
-        self.node_name = _node_name
-        # self.globals['redis_sub'] = GD_Message('movai_msgs/redis_sub', _type='msg').get()
-
-        self.load_libraries(_libraries)
-        self.load_classes(_node_name, _port_name, _user)
-
-    def load_classes(self, _node_name, _port_name, _user):
-        _robot_id: str = Callback.robot().name
-
-        class UserVar(Var):
-            """Class for user to set and get vars"""
-
-            def __init__(self, scope: str = "Node", robot_name=_robot_id):
-                super().__init__(
-                    scope=scope,
-                    _robot_name=robot_name,
-                    _node_name=_node_name,
-                    _port_name=_port_name,
-                )
-
-        class UserLock(Lock):
-            """Class for user to use locks"""
-
-            def __init__(self, name, **kwargs):
-                kwargs.update({"_node_name": _node_name, "_robot_name": _robot_id})
-                super().__init__(name, **kwargs)
-
-        if _user == "SUPER":
-            logger = Log.get_callback_logger("GD_Callback", self.node_name, self.cb_name)
-            self.globals.update(
-                {
-                    "scopes": scopes,
-                    "Package": Package,
-                    "Message": Message,
-                    "Ports": Ports,
-                    "StateMachine": StateMachine,  # TODO implement model
-                    "Var": UserVar,
-                    "Robot": Callback.robot(),
-                    "FleetRobot": FleetRobot,
-                    "logger": logger,
-                    "PortName": _port_name,
-                    "Callback": CallbackModel,
-                    "Lock": UserLock,
-                    "print": self.user_print,
-                    "Scene": Callback.scene(),
-                    "NodeInst": NodeInst,
-                    "Container": Container,
-                    "Configuration": Configuration,
-                }
-            )
-
-            if enterprise:
-                metrics = Metrics()
-                self.globals.update(
-                    {
-                        "Alerts": Alerts,
-                        "Annotation": Annotation,
-                        "GraphicAsset": GraphicAsset,
-                        "GraphicScene": GraphicScene,
-                        "Layout": Layout,
-                        "metrics": metrics,
-                        "Task": Task,
-                        "TaskEntry": TaskEntry,
-                        "TaskTemplate": TaskTemplate,
-                    }
-                )
-
-    def load_libraries(self, libraries):
-        for lib in libraries:
-            try:
-                mod = importlib.import_module(libraries[lib].Module)
-                try:
-                    self.globals[lib] = getattr(mod, libraries[lib].Class)
-                except TypeError:  # Class is not defined
-                    self.globals[lib] = mod
-            except CancelledError:
-                raise CancelledError("cancelled task")
-            except (ImportError, AttributeError, LookupError):
-                LOGGER.error(
-                    f"Import {lib} in callback blew up. Node: {self.node_name} Callback: {self.cb_name}",
-                    exc_info=True,
-                )
-                # TODO We can't kill the node if callbacks blow up. Some callbacks are not critical.
-                # sys.exit(1)
-
-    def user_print(self, *args):
-        """Method to redirect the print function into logger"""
-        to_send = " ".join([str(arg) for arg in args])
-        logger = Log.get_callback_logger("GD_Callback", self.node_name, self.cb_name)
-        logger.debug(to_send)
-
-    def run(self, cb_name, msg):
-        """Run another callback from a callback"""
-        callback = scopes.from_path(cb_name, scope="Callback")
-        compiled_code = compile(callback.Code, cb_name, "exec")
-        user = UserFunctions("", "", "", callback.Py3Lib, callback.Message)
-
-        user.globals.update({"msg": msg})
-        globais = user.globals
-
-        exec(compiled_code, globais)
