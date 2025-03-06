@@ -1,3 +1,6 @@
+# vTBD
+- Revert BP-1310
+
 # v3.0.4
 - [BP-1371](https://movai.atlassian.net/browse/BP-1371): NameError: name 'gd' is not defined
 
