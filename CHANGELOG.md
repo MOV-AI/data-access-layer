@@ -1,4 +1,4 @@
-# vTBD
+# v3.0.4
 - [BP-1371](https://movai.atlassian.net/browse/BP-1371): NameError: name 'gd' is not defined
 
 # v3.0.3
