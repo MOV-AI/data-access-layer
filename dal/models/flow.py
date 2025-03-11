@@ -27,25 +27,6 @@ if TYPE_CHECKING:
     from dal.models.nodeinst import NodeInst  # NOSONAR
 
 
-class SingletonDependencyMap(metaclass=Singleton):
-    def __init__(self):
-        self._map = {}
-   
-    def get_dependency(self,node_name):
-        with self.__class__._lock:
-            return self._map[node_name]
-        
-    def set_dependency(self,node_name, dependencies):
-        with self.__class__._lock:
-            self._map[node_name] = dependencies     
-    
-    def is_cached(self,node_name):
-        return node_name in self._map
-    
-    def clean_dependency_cache(self):
-        with self.__class__._lock:
-            self._map = {}
-    
 class LinkDict(TypedDict):
     """ Represents a link between two ports """
     From: str
@@ -429,11 +410,6 @@ class Flow(Model):
 
         # TODO review and refactor - Ongoing
 
-        cache = SingletonDependencyMap()
-
-        if cache.is_cached(node_name):
-            return cache.get_dependency(node_name)
-
         dependencies = dependencies_collected or []
 
         links_to_skip = links_to_skip or []
@@ -494,11 +470,8 @@ class Flow(Model):
                         dependencies = self.get_node_dependencies(
                             dependency_name, dependencies, links_to_skip, skip_parent_node
                         )
-                        
-                        
-        dependency_result = list(set(dependencies))
-        cache.set_dependency(node_name, dependency_result)
-        return dependency_result.copy()
+
+        return list(set(dependencies))
 
     def get_node_plugins(self, node_inst: str) -> set:
         """Return NodeInst(s) plugins linked to node_inst"""
