@@ -5,6 +5,8 @@
       "Label": "str",
       "RobotName": "&name",
       "IP": "ip_add",
+      "RobotType": "str",
+      "RobotModel": "str",
       "Info": "str",
       "Actions": "list",
       "Notifications": "list",
