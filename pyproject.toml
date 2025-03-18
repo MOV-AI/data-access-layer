@@ -23,6 +23,7 @@ dependencies = [
     "deepdiff==4.0.9",
     "gitpython==3.1.30",
     "jsonschema==3.2.0",
+    "lark==1.2.2",
     "miracle-acl==0.0.4.post1",
     "pyjwt==1.7.1",
     "python-box==4.0.4",
