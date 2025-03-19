@@ -60,10 +60,10 @@ class Robot(Scope):
 
             self.__dict__["fleet"] = FleetRobot(unique_id.hex, new=True)
             self.fleet.RobotName = "robot_" + unique_id.hex[0:6]
-            self.RobotType = "robotType"
-            self.fleet.RobotType = "robotType"
-            self.RobotModel = "robotModel"
-            self.fleet.RobotModel = "robotModel"
+            self.RobotType = ""
+            self.fleet.RobotType = ""
+            self.RobotModel = ""
+            self.fleet.RobotModel = ""
         # default : ipc:///opt/mov.ai/comm/SpawnerServer-{DEVICE_NAME}-{FLEET_NAME}.sock"
         server = SPAWNER_BIND_ADDR
         self.__dict__["spawner_client"] = MessageClient(server_addr=server, robot_id=self.name)
