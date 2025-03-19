@@ -1,3 +1,7 @@
+# v3.0.6
+- [RP-3269](https://movai.atlassian.net/browse/RP-3269): Have HFM working on the real lab
+  - Add robot type and robot model to robot class
+
 # v3.0.5
 - Revert BP-1310
 
