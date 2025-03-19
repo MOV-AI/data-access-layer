@@ -60,7 +60,10 @@ class Robot(Scope):
 
             self.__dict__["fleet"] = FleetRobot(unique_id.hex, new=True)
             self.fleet.RobotName = "robot_" + unique_id.hex[0:6]
-
+            self.RobotType = ""
+            self.fleet.RobotType = ""
+            self.RobotModel = ""
+            self.fleet.RobotModel = ""
         # default : ipc:///opt/mov.ai/comm/SpawnerServer-{DEVICE_NAME}-{FLEET_NAME}.sock"
         server = SPAWNER_BIND_ADDR
         self.__dict__["spawner_client"] = MessageClient(server_addr=server, robot_id=self.name)
@@ -77,6 +80,16 @@ class Robot(Scope):
         """Set the Name of the Robot"""
         self.RobotName = name
         self.fleet.RobotName = name
+        
+    def set_type(self, rType: str):
+        """Set the Type of the Robot"""
+        self.RobotType = rType
+        self.fleet.RobotType = rType
+        
+    def set_model(self, model: str):
+        """Set the Model of the Robot"""
+        self.RobotModel = model
+        self.fleet.RobotModel = model
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot
