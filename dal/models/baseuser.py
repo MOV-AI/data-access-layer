@@ -18,10 +18,13 @@ from movai_core_shared.exceptions import (
     UserDoesNotExist,
     UserPermissionsError,
 )
+from movai_core_shared.consts import EXECUTE_PERMISSION
 
 from dal.models.scopestree import ScopesTree, scopes
 from dal.models.model import Model
 from dal.models.acl import NewACLManager
+from dal.scopes.application import Application
+from dal.models.acl import ResourceType, ApplicationsType
 
 
 class BaseUser(Model):
@@ -574,11 +577,6 @@ class BaseUser(Model):
         if not skip_superuser and self.super_user:
             return True
 
-        permission_name = permission_name.lower()
-
-        if f"{self.ref}.read".lower() == permission_name:
-            return True
-
         try:
             self.set_acl()
             for role_name in self.roles:
@@ -588,3 +586,21 @@ class BaseUser(Model):
         except Exception as e:
             self.log.debug(e)
             return False
+
+    def has_permission_callback_execute(self, callback_name: str) -> bool:
+        """Check if user has permission to execute a callback.
+
+        TODO Added because frontend apps execute callbacks, remove after migration to endpoints
+
+        """
+        if self.has_permission(ResourceType.Callback.value, EXECUTE_PERMISSION):
+            return True
+
+        # allow to run callbacks from allowed applications
+        for app_name in [app.value for app in ApplicationsType]:
+            if self.has_permission(ResourceType.Applications.value, app_name):
+                ca = Application(name=app_name)
+                if ca.Callbacks and callback_name in ca.Callbacks:
+                    return True
+
+        return False
