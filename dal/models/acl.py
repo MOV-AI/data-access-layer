@@ -9,20 +9,55 @@
 """
 
 from typing import List, Dict
+from enum import Enum
 
 from miracle import Acl
 
 from movai_core_shared.consts import (
     READ_PERMISSION,
-    UPDATE_PERMISSION, 
-    CREATE_PERMISSION, 
-    DELETE_PERMISSION, 
+    UPDATE_PERMISSION,
+    CREATE_PERMISSION,
+    DELETE_PERMISSION,
     EXECUTE_PERMISSION,
     RESET_PERMISSION,
 )
 from movai_core_shared.envvars import REST_SCOPES
 from movai_core_shared.logger import Log
 from dal.models.scopestree import ScopesTree, scopes
+
+
+class ResourceType(Enum):
+    AclObject = "AclObject"
+    Annotation = "Annotation"
+    Application = "Application"
+    Applications = "Applications"
+    Callback = "Callback"
+    Configuration = "Configuration"
+    EmailsAlertsConfig = "EmailsAlertsConfig"
+    EmailsAlertsRecipients = "EmailsAlertsRecipients"
+    Flow = "Flow"
+    Form = "Form"
+    GraphicScene = "GraphicScene"
+    InternalUser = "InternalUser"
+    Layout = "Layout"
+    LdapConfig = "LdapConfig"
+    Node = "Node"
+    Package = "Package"
+    RemoteUser = "RemoteUser"
+    Role = "Role"
+    SharedDataEntry = "SharedDataEntry"
+    SharedDataTemplate = "SharedDataTemplate"
+    StateMachine = "StateMachine"
+    TaskEntry = "TaskEntry"
+    TaskTemplate = "TaskTemplate"
+
+
+class ApplicationsType(Enum):
+    AdminBoard = "AdminBoard"
+    FleetBoard = "FleetBoard"
+    IDE = "mov-fe-app-ide"
+    Launcher = "mov-fe-app-launcher"
+    TaskManager = "mov-fe-app-taskmanager"
 
 
 class ACLManager:

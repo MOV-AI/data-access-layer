@@ -40,19 +40,6 @@ class Callback(Scope):
 
         return self.template_depends(force)
 
-    def has_permission(self, user, permission, app_name):
-        """Override has_permission for the Scope Callback"""
-        has_perm = super().has_scope_permission(user, permission)
-        if not has_perm:
-            # Check if user has the Callback on the authorized Applications Callbacks list.
-            # If the user has authorization on the Application that is calling the callback, then authorize.
-            if app_name in user.get_permissions("Applications"):
-                ca = Application(name=app_name)
-                if ca.Callbacks and self.name in ca.Callbacks:
-                    has_perm = True
-
-        return has_perm
-
     @staticmethod
     def get_modules() -> list:
         modules_list = [x[1] for x in pkgutil.iter_modules()]
