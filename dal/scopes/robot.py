@@ -9,12 +9,14 @@
 
    Module that implements Robot namespace
 """
+
 from typing import Optional
 import asyncio
 import uuid
 import pickle
 
 from movai_core_shared.core.message_client import MessageClient, AsyncMessageClient
+from movai_core_shared.messages.command_data import Command, CommandData
 from movai_core_shared.exceptions import DoesNotExist
 from movai_core_shared.consts import COMMAND_HANDLER_MSG_TYPE, TIMEOUT_SEND_CMD_RESPONSE
 from movai_core_shared.envvars import SPAWNER_BIND_ADDR, DEVICE_NAME
@@ -27,6 +29,7 @@ from .configuration import Configuration
 
 class Robot(Scope):
     """Robot class that deals with robot related stuff"""
+
     spawner_client: MessageClient
     async_spawner_client: AsyncMessageClient
 
@@ -80,12 +83,12 @@ class Robot(Scope):
         """Set the Name of the Robot"""
         self.RobotName = name
         self.fleet.RobotName = name
-        
+
     def set_type(self, rType: str):
         """Set the Type of the Robot"""
         self.RobotType = rType
         self.fleet.RobotType = rType
-        
+
     def set_model(self, model: str):
         """Set the Model of the Robot"""
         self.RobotModel = model
@@ -95,6 +98,20 @@ class Robot(Scope):
         """Send an action command to the Robot
 
         if wait_for_status is True, we assume the Robot will return a message"""
+
+        command_data, req_obj = self._generate_command_request(command, flow, node, port, data)
+
+        if (
+            self.RobotName == DEVICE_NAME
+            and hasattr(self, "spawner_client")
+            and self.spawner_client is not None
+        ):
+            self.spawner_client.send_request(COMMAND_HANDLER_MSG_TYPE, req_obj.model_dump())
+        else:
+            command_data = pickle.dumps(command_data)
+            self.Actions.append(command_data)
+
+    def _generate_command_request(self, command, flow, node, port, data):
         command_data = {}
         if command:
             command_data["command"] = command
@@ -111,17 +128,8 @@ class Robot(Scope):
         if data:
             command_data["data"] = data
 
-        req_data = {"command_data": command_data}
-
-        if (
-            self.RobotName == DEVICE_NAME
-            and hasattr(self, "spawner_client")
-            and self.spawner_client is not None
-        ):
-            self.spawner_client.send_request(COMMAND_HANDLER_MSG_TYPE, req_data)
-        else:
-            command_data = pickle.dumps(command_data)
-            self.Actions.append(command_data)
+        req_obj = Command(command_data=CommandData(**command_data), dst=None)
+        return command_data, req_obj
 
     async def async_send_cmd(
         self, command, *, flow=None, node=None, port=None, data=None, wait_for_status=False
@@ -129,23 +137,7 @@ class Robot(Scope):
         """Send an action command to the Robot
 
         if wait_for_status is True, we assume the Robot will return a message"""
-        command_data = {}
-        if command:
-            command_data["command"] = command
-
-        if flow:
-            command_data["flow"] = flow
-
-        if node:
-            command_data["node"] = node
-
-        if port:
-            command_data["port"] = port
-
-        if data:
-            command_data["data"] = data
-
-        req_data = {"command_data": command_data}
+        command_data, req_obj = self._generate_command_request(command, flow, node, port, data)
 
         if (
             self.RobotName == DEVICE_NAME
@@ -155,7 +147,9 @@ class Robot(Scope):
             try:
                 response = await asyncio.wait_for(
                     self.async_spawner_client.send_request(
-                        COMMAND_HANDLER_MSG_TYPE, req_data, response_required=wait_for_status
+                        COMMAND_HANDLER_MSG_TYPE,
+                        req_obj.model_dump(),
+                        response_required=wait_for_status,
                     ),
                     timeout=TIMEOUT_SEND_CMD_RESPONSE,
                 )
