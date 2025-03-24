@@ -1,11 +1,10 @@
-"""
-   Copyright (C) Mov.ai  - All Rights Reserved
-   Unauthorized copying of this file, via any medium is strictly prohibited
-   Proprietary and confidential
+"""Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential
 
-   Developers:
-   - Manuel Silva (manuel.silva@mov.ai) - 2020
-   - Telmo Martinho (telmo.martinho@mov.ai) - 2020
+Developers:
+ * Manuel Silva (manuel.silva@mov.ai) - 2020
+ * Telmo Martinho (telmo.martinho@mov.ai) - 2020
 """
 
 from typing import List, Dict

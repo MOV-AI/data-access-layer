@@ -27,6 +27,7 @@ extensions = [
     "sphinx.ext.todo",  # Catch and show TODOs within docstrings
     "sphinx_mdinclude",  # Markdown to rst
     "sphinx.ext.inheritance_diagram",  # Classes inheritance diagram
+    "sphinx.ext.autosectionlabel",  # Allows to ref other sections
 ]
 
 # display TODOs
