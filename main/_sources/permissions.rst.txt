@@ -28,7 +28,7 @@ The available permissions are:
 Resources
 ---------
 
-See available roles in: :ref:`ResourceType<dal.models package>`.
+See available resources in: :ref:`ResourceType<dal.models package>`.
 
 Roles
 -----
