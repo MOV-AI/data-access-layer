@@ -73,6 +73,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="permissions.html">Resource permissions</a></li>
 </ul>
 
         </div>
@@ -111,9 +112,13 @@
 <p>Copyright (C) Mov.ai  - All Rights Reserved
 Unauthorized copying of this file, via any medium is strictly prohibited
 Proprietary and confidential</p>
-<p>Developers:
-- Manuel Silva (<a class="reference external" href="mailto:manuel&#46;silva&#37;&#52;&#48;mov&#46;ai">manuel<span>&#46;</span>silva<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020
-- Telmo Martinho (<a class="reference external" href="mailto:telmo&#46;martinho&#37;&#52;&#48;mov&#46;ai">telmo<span>&#46;</span>martinho<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p>
+<dl class="simple">
+<dt>Developers:</dt><dd><ul class="simple">
+<li><p>Manuel Silva (<a class="reference external" href="mailto:manuel&#46;silva&#37;&#52;&#48;mov&#46;ai">manuel<span>&#46;</span>silva<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p></li>
+<li><p>Telmo Martinho (<a class="reference external" href="mailto:telmo&#46;martinho&#37;&#52;&#48;mov&#46;ai">telmo<span>&#46;</span>martinho<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="dal.models.acl.ACLManager">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.models.acl.</span></span><span class="sig-name descname"><span class="pre">ACLManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.acl.ACLManager" title="Permalink to this definition"></a></dt>
@@ -159,6 +164,38 @@ Proprietary and confidential</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="dal.models.acl.ApplicationsType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.models.acl.</span></span><span class="sig-name descname"><span class="pre">ApplicationsType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.acl.ApplicationsType" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ApplicationsType.AdminBoard">
+<span class="sig-name descname"><span class="pre">AdminBoard</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'AdminBoard'</span></em><a class="headerlink" href="#dal.models.acl.ApplicationsType.AdminBoard" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ApplicationsType.FleetBoard">
+<span class="sig-name descname"><span class="pre">FleetBoard</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'FleetBoard'</span></em><a class="headerlink" href="#dal.models.acl.ApplicationsType.FleetBoard" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ApplicationsType.IDE">
+<span class="sig-name descname"><span class="pre">IDE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'mov-fe-app-ide'</span></em><a class="headerlink" href="#dal.models.acl.ApplicationsType.IDE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ApplicationsType.Launcher">
+<span class="sig-name descname"><span class="pre">Launcher</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'mov-fe-app-launcher'</span></em><a class="headerlink" href="#dal.models.acl.ApplicationsType.Launcher" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ApplicationsType.TaskManager">
+<span class="sig-name descname"><span class="pre">TaskManager</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'mov-fe-app-taskmanager'</span></em><a class="headerlink" href="#dal.models.acl.ApplicationsType.TaskManager" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="dal.models.acl.NewACLManager">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.models.acl.</span></span><span class="sig-name descname"><span class="pre">NewACLManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.acl.NewACLManager" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dal.models.acl.ACLManager" title="dal.models.acl.ACLManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">ACLManager</span></code></a></p>
@@ -188,6 +225,128 @@ Proprietary and confidential</p>
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_resources</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="headerlink" href="#dal.models.acl.NewACLManager.get_resources" title="Permalink to this definition"></a></dt>
 <dd><p>:returns list with available resources</p>
 </dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.models.acl.</span></span><span class="sig-name descname"><span class="pre">ResourceType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.acl.ResourceType" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType.AclObject">
+<span class="sig-name descname"><span class="pre">AclObject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'AclObject'</span></em><a class="headerlink" href="#dal.models.acl.ResourceType.AclObject" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType.Annotation">
+<span class="sig-name descname"><span class="pre">Annotation</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Annotation'</span></em><a class="headerlink" href="#dal.models.acl.ResourceType.Annotation" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType.Application">
+<span class="sig-name descname"><span class="pre">Application</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Application'</span></em><a class="headerlink" href="#dal.models.acl.ResourceType.Application" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType.Applications">
+<span class="sig-name descname"><span class="pre">Applications</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Applications'</span></em><a class="headerlink" href="#dal.models.acl.ResourceType.Applications" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType.Callback">
+<span class="sig-name descname"><span class="pre">Callback</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Callback'</span></em><a class="headerlink" href="#dal.models.acl.ResourceType.Callback" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType.Configuration">
+<span class="sig-name descname"><span class="pre">Configuration</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Configuration'</span></em><a class="headerlink" href="#dal.models.acl.ResourceType.Configuration" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType.EmailsAlertsConfig">
+<span class="sig-name descname"><span class="pre">EmailsAlertsConfig</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'EmailsAlertsConfig'</span></em><a class="headerlink" href="#dal.models.acl.ResourceType.EmailsAlertsConfig" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType.EmailsAlertsRecipients">
+<span class="sig-name descname"><span class="pre">EmailsAlertsRecipients</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'EmailsAlertsRecipients'</span></em><a class="headerlink" href="#dal.models.acl.ResourceType.EmailsAlertsRecipients" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType.Flow">
+<span class="sig-name descname"><span class="pre">Flow</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Flow'</span></em><a class="headerlink" href="#dal.models.acl.ResourceType.Flow" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType.Form">
+<span class="sig-name descname"><span class="pre">Form</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Form'</span></em><a class="headerlink" href="#dal.models.acl.ResourceType.Form" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType.GraphicScene">
+<span class="sig-name descname"><span class="pre">GraphicScene</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'GraphicScene'</span></em><a class="headerlink" href="#dal.models.acl.ResourceType.GraphicScene" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType.InternalUser">
+<span class="sig-name descname"><span class="pre">InternalUser</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'InternalUser'</span></em><a class="headerlink" href="#dal.models.acl.ResourceType.InternalUser" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType.Layout">
+<span class="sig-name descname"><span class="pre">Layout</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Layout'</span></em><a class="headerlink" href="#dal.models.acl.ResourceType.Layout" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType.LdapConfig">
+<span class="sig-name descname"><span class="pre">LdapConfig</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'LdapConfig'</span></em><a class="headerlink" href="#dal.models.acl.ResourceType.LdapConfig" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType.Node">
+<span class="sig-name descname"><span class="pre">Node</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Node'</span></em><a class="headerlink" href="#dal.models.acl.ResourceType.Node" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType.Package">
+<span class="sig-name descname"><span class="pre">Package</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Package'</span></em><a class="headerlink" href="#dal.models.acl.ResourceType.Package" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType.RemoteUser">
+<span class="sig-name descname"><span class="pre">RemoteUser</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'RemoteUser'</span></em><a class="headerlink" href="#dal.models.acl.ResourceType.RemoteUser" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType.Role">
+<span class="sig-name descname"><span class="pre">Role</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Role'</span></em><a class="headerlink" href="#dal.models.acl.ResourceType.Role" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType.SharedDataEntry">
+<span class="sig-name descname"><span class="pre">SharedDataEntry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SharedDataEntry'</span></em><a class="headerlink" href="#dal.models.acl.ResourceType.SharedDataEntry" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType.SharedDataTemplate">
+<span class="sig-name descname"><span class="pre">SharedDataTemplate</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SharedDataTemplate'</span></em><a class="headerlink" href="#dal.models.acl.ResourceType.SharedDataTemplate" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType.StateMachine">
+<span class="sig-name descname"><span class="pre">StateMachine</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'StateMachine'</span></em><a class="headerlink" href="#dal.models.acl.ResourceType.StateMachine" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType.TaskEntry">
+<span class="sig-name descname"><span class="pre">TaskEntry</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TaskEntry'</span></em><a class="headerlink" href="#dal.models.acl.ResourceType.TaskEntry" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.acl.ResourceType.TaskTemplate">
+<span class="sig-name descname"><span class="pre">TaskTemplate</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TaskTemplate'</span></em><a class="headerlink" href="#dal.models.acl.ResourceType.TaskTemplate" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -858,6 +1017,13 @@ attribute or not. Defaults to False.</p></li>
 <dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.models.baseuser.BaseUser.has_permission_callback_execute">
+<span class="sig-name descname"><span class="pre">has_permission_callback_execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.models.baseuser.BaseUser.has_permission_callback_execute" title="Permalink to this definition"></a></dt>
+<dd><p>Check if user has permission to execute a callback.</p>
+<p>TODO Added because frontend apps execute callbacks, remove after migration to endpoints</p>
 </dd></dl>
 
 <dl class="py method">
@@ -4245,6 +4411,13 @@ attribute or not. Defaults to False.</p></li>
 <dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.models.BaseUser.has_permission_callback_execute">
+<span class="sig-name descname"><span class="pre">has_permission_callback_execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.models.BaseUser.has_permission_callback_execute" title="Permalink to this definition"></a></dt>
+<dd><p>Check if user has permission to execute a callback.</p>
+<p>TODO Added because frontend apps execute callbacks, remove after migration to endpoints</p>
 </dd></dl>
 
 <dl class="py method">

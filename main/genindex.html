@@ -46,6 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="readme.html">data-access-layer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">data-access-layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="permissions.html">Resource permissions</a></li>
 </ul>
 
         </div>
@@ -140,6 +141,8 @@
       <ul>
         <li><a href="dal.models.html#dal.models.aclobject.AclObject">(class in dal.models.aclobject)</a>
 </li>
+        <li><a href="dal.models.html#dal.models.acl.ResourceType.AclObject">(dal.models.acl.ResourceType attribute)</a>
+</li>
       </ul></li>
       <li><a href="dal.models.html#dal.models.aclobject.AclUser">AclUser (class in dal.models.aclobject)</a>
 </li>
@@ -209,6 +212,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.utils.html#dal.utils.redis_mocks.FakeAsyncConnection.address">address (dal.utils.redis_mocks.FakeAsyncConnection property)</a>
 </li>
+      <li><a href="dal.models.html#dal.models.acl.ApplicationsType.AdminBoard">AdminBoard (dal.models.acl.ApplicationsType attribute)</a>
+</li>
       <li><a href="dal.movaidb.html#dal.movaidb.database.AioRedisClient">AioRedisClient (class in dal.movaidb.database)</a>
 </li>
       <li><a href="dal.models.html#dal.models.NodeInst.all">all (dal.models.NodeInst property)</a>
@@ -218,6 +223,8 @@
 </li>
       </ul></li>
       <li><a href="dal.classes.utils.html#dal.classes.utils.token.Token.allowed_algorithms">allowed_algorithms (dal.classes.utils.token.Token attribute)</a>
+</li>
+      <li><a href="dal.models.html#dal.models.acl.ResourceType.Annotation">Annotation (dal.models.acl.ResourceType attribute)</a>
 </li>
       <li><a href="dal.scopes.html#dal.scopes.structures.List.append">append() (dal.scopes.structures.List method)</a>
 </li>
@@ -230,7 +237,13 @@
 </li>
         <li><a href="dal.scopes.html#dal.scopes.application.Application">(class in dal.scopes.application)</a>
 </li>
+        <li><a href="dal.models.html#dal.models.acl.ResourceType.Application">(dal.models.acl.ResourceType attribute)</a>
+</li>
       </ul></li>
+      <li><a href="dal.models.html#dal.models.acl.ResourceType.Applications">Applications (dal.models.acl.ResourceType attribute)</a>
+</li>
+      <li><a href="dal.models.html#dal.models.acl.ApplicationsType">ApplicationsType (class in dal.models.acl)</a>
+</li>
       <li><a href="dal.plugins.persistence.git.html#dal.plugins.persistence.git.git.GitPlugin.archive">archive (dal.plugins.persistence.git.git.GitPlugin attribute)</a>
 
       <ul>
@@ -426,6 +439,8 @@
 </li>
         <li><a href="dal.utils.html#dal.utils.callback.Callback">(class in dal.utils.callback)</a>
 </li>
+        <li><a href="dal.models.html#dal.models.acl.ResourceType.Callback">(dal.models.acl.ResourceType attribute)</a>
+</li>
       </ul></li>
       <li><a href="dal.classes.protocols.html#dal.classes.protocols.redis.ContextProtocolIn.callback_wrapper">callback_wrapper() (dal.classes.protocols.redis.ContextProtocolIn method)</a>
 </li>
@@ -566,6 +581,8 @@
 </li>
         <li><a href="dal.scopes.html#dal.scopes.configuration.Configuration">(class in dal.scopes.configuration)</a>
 </li>
+        <li><a href="dal.models.html#dal.models.acl.ResourceType.Configuration">(dal.models.acl.ResourceType attribute)</a>
+</li>
       </ul></li>
       <li><a href="dal.models.html#dal.models.Container">Container (class in dal.models)</a>
 
@@ -605,10 +622,10 @@
       </ul></li>
       <li><a href="dal.classes.protocols.html#dal.classes.protocols.redis.ContextMsg">ContextMsg (class in dal.classes.protocols.redis)</a>
 </li>
-      <li><a href="dal.classes.protocols.html#dal.classes.protocols.redis.ContextProtocolIn">ContextProtocolIn (class in dal.classes.protocols.redis)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dal.classes.protocols.html#dal.classes.protocols.redis.ContextProtocolIn">ContextProtocolIn (class in dal.classes.protocols.redis)</a>
+</li>
       <li><a href="dal.classes.protocols.html#dal.classes.protocols.redis.ContextProtocolOut">ContextProtocolOut (class in dal.classes.protocols.redis)</a>
 </li>
       <li><a href="dal.classes.protocols.html#dal.classes.protocols.ContextServerIn">ContextServerIn (class in dal.classes.protocols)</a>
@@ -2086,6 +2103,10 @@
         <li><a href="dal.models.html#dal.models.baseuser.BaseUser.email">(dal.models.baseuser.BaseUser property)</a>
 </li>
       </ul></li>
+      <li><a href="dal.models.html#dal.models.acl.ResourceType.EmailsAlertsConfig">EmailsAlertsConfig (dal.models.acl.ResourceType attribute)</a>
+</li>
+      <li><a href="dal.models.html#dal.models.acl.ResourceType.EmailsAlertsRecipients">EmailsAlertsRecipients (dal.models.acl.ResourceType attribute)</a>
+</li>
       <li><a href="dal.classes.utils.html#dal.classes.utils.token.EmptyDBToken">EmptyDBToken (class in dal.classes.utils.token)</a>
 </li>
       <li><a href="dal.movaidb.html#dal.movaidb.database.AioRedisClient.enable_db">enable_db() (dal.movaidb.database.AioRedisClient class method)</a>
@@ -2380,20 +2401,22 @@
         <li><a href="dal.movaidb.html#dal.movaidb.MovaiDB.find">(dal.movaidb.MovaiDB method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.helpers.html#dal.helpers.Helpers.find_by_key">find_by_key() (dal.helpers.Helpers static method)</a>
 
       <ul>
         <li><a href="dal.helpers.html#dal.helpers.helpers.Helpers.find_by_key">(dal.helpers.helpers.Helpers static method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.helpers.html#dal.helpers.flatten">flatten() (in module dal.helpers)</a>
 
       <ul>
         <li><a href="dal.helpers.html#dal.helpers.helpers.flatten">(in module dal.helpers.helpers)</a>
 </li>
       </ul></li>
+      <li><a href="dal.models.html#dal.models.acl.ApplicationsType.FleetBoard">FleetBoard (dal.models.acl.ApplicationsType attribute)</a>
+</li>
       <li><a href="dal.scopes.html#dal.scopes.FleetRobot">FleetRobot (class in dal.scopes)</a>
 
       <ul>
@@ -2415,8 +2438,12 @@
       <ul>
         <li><a href="dal.helpers.flow.html#dal.helpers.flow.gflow.GFlow.flow">(dal.helpers.flow.gflow.GFlow attribute)</a>
 </li>
-        <li><a href="dal.models.html#dal.models.Container.flow">(dal.models.Container property)</a>
+      </ul></li>
+      <li><a href="dal.models.html#dal.models.acl.ResourceType.Flow">Flow (dal.models.acl.ResourceType attribute)</a>
 </li>
+      <li><a href="dal.models.html#dal.models.Container.flow">flow (dal.models.Container property)</a>
+
+      <ul>
         <li><a href="dal.models.html#dal.models.container.Container.flow">(dal.models.container.Container property)</a>
 </li>
         <li><a href="dal.models.html#dal.models.FlowLinks.flow">(dal.models.FlowLinks property)</a>
@@ -2454,6 +2481,8 @@
         <li><a href="dal.scopes.html#dal.scopes.Form">(class in dal.scopes)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.form.Form">(class in dal.scopes.form)</a>
+</li>
+        <li><a href="dal.models.html#dal.models.acl.ResourceType.Form">(dal.models.acl.ResourceType attribute)</a>
 </li>
       </ul></li>
       <li><a href="dal.models.html#dal.models.flow.LinkDict.From">From (dal.models.flow.LinkDict attribute)</a>
@@ -3372,6 +3401,8 @@
         <li><a href="dal.models.html#dal.models.flow.Flow.graph">(dal.models.flow.Flow property)</a>
 </li>
       </ul></li>
+      <li><a href="dal.models.html#dal.models.acl.ResourceType.GraphicScene">GraphicScene (dal.models.acl.ResourceType attribute)</a>
+</li>
       <li><a href="dal.models.html#dal.models.LdapConfig.groups_dn">groups_dn (dal.models.LdapConfig property)</a>
 
       <ul>
@@ -3403,13 +3434,15 @@
 </li>
         <li><a href="dal.models.html#dal.models.user.User.has_permission">(dal.models.user.User method)</a>
 </li>
-        <li><a href="dal.scopes.html#dal.scopes.Callback.has_permission">(dal.scopes.Callback method)</a>
-</li>
-        <li><a href="dal.scopes.html#dal.scopes.callback.Callback.has_permission">(dal.scopes.callback.Callback method)</a>
-</li>
         <li><a href="dal.scopes.html#dal.scopes.User.has_permission">(dal.scopes.User method)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.user.User.has_permission">(dal.scopes.user.User method)</a>
+</li>
+      </ul></li>
+      <li><a href="dal.models.html#dal.models.BaseUser.has_permission_callback_execute">has_permission_callback_execute() (dal.models.BaseUser method)</a>
+
+      <ul>
+        <li><a href="dal.models.html#dal.models.baseuser.BaseUser.has_permission_callback_execute">(dal.models.baseuser.BaseUser method)</a>
 </li>
       </ul></li>
       <li><a href="dal.models.html#dal.models.BaseUser.has_scope_permission">has_scope_permission() (dal.models.BaseUser method)</a>
@@ -3514,6 +3547,8 @@
         <li><a href="dal.classes.protocols.html#dal.classes.protocols.redis.ContextServerOut.ID">(dal.classes.protocols.redis.ContextServerOut property)</a>
 </li>
       </ul></li>
+      <li><a href="dal.models.html#dal.models.acl.ApplicationsType.IDE">IDE (dal.models.acl.ApplicationsType attribute)</a>
+</li>
       <li><a href="dal.models.html#dal.models.AclObject.identifier">identifier (dal.models.AclObject property)</a>
 
       <ul>
@@ -3576,6 +3611,8 @@
 
       <ul>
         <li><a href="dal.models.html#dal.models.internaluser.InternalUser">(class in dal.models.internaluser)</a>
+</li>
+        <li><a href="dal.models.html#dal.models.acl.ResourceType.InternalUser">(dal.models.acl.ResourceType attribute)</a>
 </li>
       </ul></li>
       <li><a href="dal.models.html#dal.models.Package.is_checksum_valid">is_checksum_valid() (dal.models.Package method)</a>
@@ -3888,10 +3925,16 @@
         <li><a href="dal.models.html#dal.models.ldapconfig.LdapConfig.last_validated">(dal.models.ldapconfig.LdapConfig property)</a>
 </li>
       </ul></li>
+      <li><a href="dal.models.html#dal.models.acl.ApplicationsType.Launcher">Launcher (dal.models.acl.ApplicationsType attribute)</a>
+</li>
+      <li><a href="dal.models.html#dal.models.acl.ResourceType.Layout">Layout (dal.models.acl.ResourceType attribute)</a>
+</li>
       <li><a href="dal.models.html#dal.models.LdapConfig">LdapConfig (class in dal.models)</a>
 
       <ul>
         <li><a href="dal.models.html#dal.models.ldapconfig.LdapConfig">(class in dal.models.ldapconfig)</a>
+</li>
+        <li><a href="dal.models.html#dal.models.acl.ResourceType.LdapConfig">(dal.models.acl.ResourceType attribute)</a>
 </li>
       </ul></li>
       <li><a href="dal.models.html#dal.models.FlowLinks.LINK_REGEX">LINK_REGEX (dal.models.FlowLinks attribute)</a>
@@ -4558,6 +4601,8 @@
 </li>
         <li><a href="dal.scopes.html#dal.scopes.node.Node">(class in dal.scopes.node)</a>
 </li>
+        <li><a href="dal.models.html#dal.models.acl.ResourceType.Node">(dal.models.acl.ResourceType attribute)</a>
+</li>
       </ul></li>
       <li><a href="dal.scopes.html#dal.scopes.Node.node_inst_depends">node_inst_depends() (dal.scopes.Node method)</a>
 
@@ -4571,6 +4616,8 @@
         <li><a href="dal.models.html#dal.models.nodeinst.NodeInst.node_template">(dal.models.nodeinst.NodeInst property)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.data.html#dal.data.schema.SchemaNode.node_type">node_type (dal.data.schema.SchemaNode property)</a>
 
       <ul>
@@ -4609,8 +4656,6 @@
         <li><a href="dal.models.html#dal.models.scopestree.ScopesTree.node_type">(dal.models.scopestree.ScopesTree property)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.models.html#dal.models.NodeInst">NodeInst (class in dal.models)</a>
 
       <ul>
@@ -4677,6 +4722,8 @@
         <li><a href="dal.scopes.html#dal.scopes.Package">(class in dal.scopes)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.package.Package">(class in dal.scopes.package)</a>
+</li>
+        <li><a href="dal.models.html#dal.models.acl.ResourceType.Package">(dal.models.acl.ResourceType attribute)</a>
 </li>
       </ul></li>
       <li><a href="dal.models.html#dal.models.PackageFile">PackageFile (class in dal.models)</a>
@@ -5330,6 +5377,8 @@
       <ul>
         <li><a href="dal.models.html#dal.models.remoteuser.RemoteUser">(class in dal.models.remoteuser)</a>
 </li>
+        <li><a href="dal.models.html#dal.models.acl.ResourceType.RemoteUser">(dal.models.acl.ResourceType attribute)</a>
+</li>
       </ul></li>
       <li><a href="dal.classes.utils.html#dal.classes.utils.secretkey.SecretKey.remove">remove() (dal.classes.utils.secretkey.SecretKey class method)</a>
 
@@ -5511,6 +5560,8 @@
         <li><a href="dal.plugins.classes.html#dal.plugins.classes.resource.ResourcePlugin">(class in dal.plugins.classes.resource)</a>
 </li>
       </ul></li>
+      <li><a href="dal.models.html#dal.models.acl.ResourceType">ResourceType (class in dal.models.acl)</a>
+</li>
       <li><a href="dal.data.html#dal.data.archive.RemoteArchive.restore">restore() (dal.data.archive.RemoteArchive method)</a>
 
       <ul>
@@ -5583,6 +5634,8 @@
         <li><a href="dal.scopes.html#dal.scopes.Role">(class in dal.scopes)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.role.Role">(class in dal.scopes.role)</a>
+</li>
+        <li><a href="dal.models.html#dal.models.acl.ResourceType.Role">(dal.models.acl.ResourceType attribute)</a>
 </li>
       </ul></li>
       <li><a href="dal.models.html#dal.models.User.role">role (dal.models.User property)</a>
@@ -6089,6 +6142,10 @@
         <li><a href="dal.scopes.html#dal.scopes.robot.Robot.set_type">(dal.scopes.robot.Robot method)</a>
 </li>
       </ul></li>
+      <li><a href="dal.models.html#dal.models.acl.ResourceType.SharedDataEntry">SharedDataEntry (dal.models.acl.ResourceType attribute)</a>
+</li>
+      <li><a href="dal.models.html#dal.models.acl.ResourceType.SharedDataTemplate">SharedDataTemplate (dal.models.acl.ResourceType attribute)</a>
+</li>
       <li><a href="dal.helpers.flow.html#dal.helpers.flow.GFlow.should_skip">should_skip() (dal.helpers.flow.GFlow method)</a>
 
       <ul>
@@ -6208,6 +6265,8 @@
       <ul>
         <li><a href="dal.scopes.html#dal.scopes.statemachine.StateMachine">(class in dal.scopes.statemachine)</a>
 </li>
+        <li><a href="dal.models.html#dal.models.acl.ResourceType.StateMachine">(dal.models.acl.ResourceType attribute)</a>
+</li>
       </ul></li>
       <li><a href="dal.classes.utils.html#dal.classes.utils.token.TokenManager.store_token">store_token() (dal.classes.utils.token.TokenManager class method)</a>
 </li>
@@ -6283,6 +6342,12 @@
         <li><a href="dal.movaidb.html#dal.movaidb.MovaiDB.task_subscriber">(dal.movaidb.MovaiDB method)</a>
 </li>
       </ul></li>
+      <li><a href="dal.models.html#dal.models.acl.ResourceType.TaskEntry">TaskEntry (dal.models.acl.ResourceType attribute)</a>
+</li>
+      <li><a href="dal.models.html#dal.models.acl.ApplicationsType.TaskManager">TaskManager (dal.models.acl.ApplicationsType attribute)</a>
+</li>
+      <li><a href="dal.models.html#dal.models.acl.ResourceType.TaskTemplate">TaskTemplate (dal.models.acl.ResourceType attribute)</a>
+</li>
       <li><a href="dal.validation.html#dal.validation.Template">Template (class in dal.validation)</a>
 
       <ul>
@@ -6309,6 +6374,8 @@
         <li><a href="dal.movaidb.html#dal.movaidb.MovaiDB.template_to_star">(dal.movaidb.MovaiDB static method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.tools.html#dal.tools.backup.test_reachable">test_reachable() (in module dal.tools.backup)</a>
 </li>
       <li><a href="dal.models.html#dal.models.Lock.th_reacquire">th_reacquire() (dal.models.Lock method)</a>
@@ -6317,8 +6384,6 @@
         <li><a href="dal.models.html#dal.models.lock.Lock.th_reacquire">(dal.models.lock.Lock method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.helpers.html#dal.helpers.cache.ThreadSafeCache">ThreadSafeCache (class in dal.helpers.cache)</a>
 </li>
       <li><a href="dal.models.html#dal.models.Lock.timeout">timeout (dal.models.Lock attribute)</a>
