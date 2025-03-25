@@ -10,11 +10,13 @@
 
    Module that implements Robot namespace
 """
+
 import pickle
 from typing import Dict, Optional
 
 from movai_core_shared.common.utils import is_enterprise
 from movai_core_shared.core.message_client import MessageClient, AsyncMessageClient
+from movai_core_shared.messages.command_data import CommandData, Destination, Command
 from movai_core_shared.consts import COMMAND_HANDLER_MSG_TYPE
 from movai_core_shared.envvars import (
     DEVICE_NAME,
@@ -37,6 +39,7 @@ END_TIME_VAR = "endTime"
 
 class FleetRobot(Scope):
     """Represent the Robot scope in the redis-master."""
+
     spawner_client: MessageClient
     async_spawner_client: AsyncMessageClient
     Parameter: Dict
@@ -72,26 +75,7 @@ class FleetRobot(Scope):
         See flow-initiator/flow_initiator/spawner/spawner.py for possible commands.
 
         """
-        dst = {"ip": self.IP, "host": self.RobotName, "id": self.name}
-
-        command_data = {}
-
-        if command:
-            command_data["command"] = command
-
-        if flow:
-            command_data["flow"] = flow
-
-        if node:
-            command_data["node"] = node
-
-        if port:
-            command_data["port"] = port
-
-        if data:
-            command_data["data"] = data
-
-        req_data = {"dst": dst, "command_data": command_data}
+        command_data, req_obj = self._generate_command_request(command, flow, node, port, data)
 
         # For retro-compatibility, if the dest robot is a fleet robot
         # then the response is required since the forward by message-server might fail
@@ -104,7 +88,7 @@ class FleetRobot(Scope):
 
         if hasattr(self, "spawner_client") and self.spawner_client is not None:
             res = self.spawner_client.send_request(
-                COMMAND_HANDLER_MSG_TYPE, req_data, response_required=response_required
+                COMMAND_HANDLER_MSG_TYPE, req_obj.model_dump(), response_required=response_required
             )
             if (not response_required) or (
                 response_required
@@ -128,16 +112,8 @@ class FleetRobot(Scope):
             command_data = pickle.dumps(command_data)
             self.Actions.append(command_data)
 
-    async def async_send_cmd(
-        self, command: str, *, flow: str = None, node: str = None, port=None, data=None,
-        response_required=False
-    ) -> None:
-        """Send an action command to the Robot.
-
-        See flow-initiator/flow_initiator/spawner/spawner.py for possible commands.
-
-        """
-        dst = {"ip": self.IP, "host": self.RobotName, "id": self.name}
+    def _generate_command_request(self, command, flow, node, port, data):
+        dst = Destination(ip=str(self.IP), host=str(self.RobotName), id=str(self.name))
 
         command_data = {}
 
@@ -156,7 +132,25 @@ class FleetRobot(Scope):
         if data:
             command_data["data"] = data
 
-        req_data = {"dst": dst, "command_data": command_data}
+        req_obj = Command(dst=dst, command_data=CommandData(**command_data))
+        return command_data, req_obj
+
+    async def async_send_cmd(
+        self,
+        command: str,
+        *,
+        flow: str = None,
+        node: str = None,
+        port=None,
+        data=None,
+        response_required=False,
+    ) -> None:
+        """Send an action command to the Robot.
+
+        See flow-initiator/flow_initiator/spawner/spawner.py for possible commands.
+
+        """
+        command_data, req_obj = self._generate_command_request(command, flow, node, port, data)
 
         # For retro-compatibility, if the dest robot is a fleet robot
         # then the response is required since the forward by message-server might fail
@@ -168,16 +162,12 @@ class FleetRobot(Scope):
 
         if hasattr(self, "async_spawner_client") and self.async_spawner_client is not None:
             res = await self.async_spawner_client.send_request(
-                COMMAND_HANDLER_MSG_TYPE, req_data, response_required=response_required
+                COMMAND_HANDLER_MSG_TYPE, req_obj.model_dump(), response_required=response_required
             )
             if not response_required:
                 # success if response is not required or if required, is well formed
                 logger.info("Sent command %s to robot %s", command_data, self.RobotName)
-            elif (
-                res is not None
-                and "response" in res
-                and res["response"] != {}
-            ):
+            elif res is not None and "response" in res and res["response"] != {}:
                 # success if response is not required or if required, is well formed
                 logger.info("Sent command %s to robot %s", command_data, self.RobotName)
                 return res["response"]
@@ -272,15 +262,13 @@ class FleetRobot(Scope):
     def ping(self) -> bool:
         """Ping the robot"""
 
-        req_data = {
-            "dst": {"ip": self.IP, "host": self.RobotName, "id": self.name},
-            "command_data": {
-                "command": "PING",
-            },
-        }
+        req_obj = Command(
+            dst=Destination(ip=str(self.IP), host=str(self.RobotName), id=str(self.name)),
+            command_data=CommandData(command="PING"),
+        )
 
         res = self.spawner_client.send_request(
-            COMMAND_HANDLER_MSG_TYPE, req_data, response_required=True
+            COMMAND_HANDLER_MSG_TYPE, req_obj.model_dump(), response_required=True
         )
         return res is not None and "response" in res and res["response"] != {}
 
