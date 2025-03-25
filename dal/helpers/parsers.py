@@ -1,21 +1,33 @@
-"""
-   Copyright (C) Mov.ai  - All Rights Reserved
-   Unauthorized copying of this file, via any medium is strictly prohibited
-   Proprietary and confidential
-
-   Developers:
-   - Manuel Silva  (manuel.silva@mov.ai) - 2020
-"""
-
 import ast
-import re
+from functools import partial
 import os
-from typing import Optional, Protocol
+import re
+import types
+from typing import Protocol, Optional, Any, cast
+
+from lark import Lark, Transformer
+import lark.exceptions
 
 from movai_core_shared.logger import Log
 from dal.models.scopestree import scopes
 from dal.models.var import Var
 from dal.movaidb import MovaiDB
+
+grammar = r"""
+    start: expr
+
+    expr: command_call
+        | VAL
+
+    command_call: "$(" IDENTIFIER expr* ")"  // First token is the command name
+
+    IDENTIFIER: /[a-zA-Z_][a-zA-Z0-9_]*/  // Command or variable names (e.g., flow, param)
+    VAL: /[a-zA-Z_][a-zA-Z0-9_.]*/     // Simple values like debug treated as strings
+
+    %ignore " "  // Ignore spaces
+"""
+
+logger = Log.get_logger("ParamParser.mov.ai")
 
 
 class ObjectWithName(Protocol):
@@ -24,28 +36,50 @@ class ObjectWithName(Protocol):
         ...
 
 
+class PythonASTTransformer(Transformer):
+    """ Transform the Parameter configuration syntax into Python AST
+
+    We essentially transform an expression like:
+
+        $(config $(flow debug).var1)
+
+    into the equivalent Python code:
+
+        config(flow("debug").var1)
+
+    Then, we tell the Python interpreter to execute that code.
+
+    (Note: we don't actually generate Python code, we generate a
+    Python Abstract Syntax Tree (AST) """
+
+    def expr(self, items):
+        return items[0]  # Return the expression
+
+    def command_call(self, items):
+        # The first item is the command name (treated as a Name)
+        command = ast.Name(id=items[0].value, ctx=ast.Load(), lineno=items[0].line, col_offset=items[0].column)
+        args = items[1:]
+
+        # Create the Call AST node, adding a lineno and col_offset from the first token (command)
+        return ast.Call(
+            func=command,
+            args=args,  # Arguments (simple values)
+            keywords=[],
+            lineno=command.lineno,
+            col_offset=command.col_offset
+        )
+
+    def VAL(self, token):
+        # Return the value as a Constant
+        return ast.Constant(value=token.value, kind=None, lineno=token.line, col_offset=token.column)
+
+
+_parser = Lark(grammar, start="expr", parser="lalr", transformer=PythonASTTransformer())
+
+
 class ParamParser:
-    """
-    Parser for the node instance, container and flow parameters
-    Supports configuration. parameters, var, flow and env variables
-    """
-
-    logger = Log.get_logger("ParamParser.mov.ai")
-
-    __REGEX__ = r"\$\((param|config|var|flow)[^$)]+\)"
-
     def __init__(self, flow):
-        self.mapping = {
-            "config": self.eval_config,
-            "param": self.eval_param,
-            "var": self.eval_var,
-            "flow": self.eval_flow,
-        }
-        self.flow = flow  # instance of a flow
-
-        # context is required in order to the parse the expression $(flow varA) correctly
-        # context is used to go up from a subflow instance to the main flow
-        self.context = None
+        self.flow = flow
 
     def parse(
         self,
@@ -54,107 +88,61 @@ class ParamParser:
         node_name: str,
         instance: ObjectWithName,
         context: Optional[str] = None,
-    ) -> any:
-        """
-        Returns the parameter value. If the value is a valid expression, it is evaluated.
+    ) -> Any:
 
-        Parameters:
-            key (str): name of the requested parameter
-            expression (str): the expression to be evaluated
-                format: $(context reference)
-            node_name (str): the node name
-            instance (NodeInst || Container): an instance
-            context (str): the context of the evaluation (main flow)
+        # Support env vars
+        expression_ = os.path.expandvars(expression)
+        context = context or self.flow.ref
 
-        Returns:
-            output (str): the parameter value after evaluation
-        """
+        # The transformer will always return an AST expression
+        try:
+            parsed_ast = cast(ast.expr, _parser.parse(expression_))
+        except lark.exceptions.LarkError as error:
+            self._log_expression_error(key, expression, instance, context, error)
+            return None
 
-        # support env vars
-        expression = os.path.expandvars(expression)
+        # Define the available commands
+        # we use partial to transparently pass some extra arguments
+        eval_context = {
+            "param": partial(self.eval_param, instance=instance, node_name=node_name, context=context),
+            "config": self.eval_config,
+            "var": self.eval_var,
+            "flow": partial(self.eval_flow, instance=instance, node_name=node_name, context=context),
+        }
 
-        # assign a different context if needed
-        self.context = context or self.flow.ref
+        # Validate and compile the Parameter expression
+        try:
+            code_obj = compile(ast.Expression(body=parsed_ast), expression, "eval")
+        except TypeError as error:
+            self._log_expression_error(key, expression, instance, context, error)
+        else:
+            return eval(code_obj, eval_context)
 
-        while 1:
-            temp_param = expression
+    def _log_expression_error(self, key, expression, instance, context, error):
+        extra_info = f'in flow "{self.flow.ref}"'
 
-            expression = re.sub(
-                self.__REGEX__,
-                lambda m: self.eval_reference(key, m.group(), instance, node_name),
-                expression,
+        if context != self.flow.ref:
+            extra_info = (
+                f'in subflow "{context}" in the context of the flow "{self.flow.ref}"'
             )
 
-            if expression == temp_param:
-                try:
-                    # try to eval str as python literal ex.: "[1,2,3,4]"
-                    return ast.literal_eval(expression)
+        from dal.models.flow import Flow
+        if isinstance(instance, Flow):
+            info = (
+                f'Error evaluating "{key}" with value "{expression}"'
+                f' of flow "{self.flow.ref}"'
+            )
+        else:
+            info = (
+                f'Error evaluating "{key}" with value "{expression}"'
+                f' of node "{instance.name}" {extra_info}'
+            )
 
-                except (ValueError, SyntaxError):
-                    return expression
+        msg = f"{info}; {error}"
 
-        return expression
+        logger.error(msg)
 
-    def eval_reference(
-        self, key: str, expression: str, instance: ObjectWithName, node_name: str
-    ) -> str:
-        """
-        Calls a specific function to evaluate the expression
-
-        Parameters:
-            key (str): name of the requested parameter
-            expression (str): the expression to be evaluated
-                format: $(context reference)
-            instance (NodeInst || Container): an instance
-            node_name (str): node instance name (may be in the context of a subflow)
-
-
-        Returns:
-            output (str): the parameter value after evaluation
-        """
-        output = expression
-
-        try:
-            # $(<context> <parameter reference>)
-            # ex.: $(flow var_A)
-            pattern = re.compile(rf"\$\(({'|'.join(self.mapping.keys())})\s+([\w\.-]+)\)")
-            result = pattern.search(expression)
-
-            if result is None:
-                raise ValueError(f"Invalid expression, {expression}")
-            # get the function to call from the mapping dict
-            func = self.mapping.get(result.group(1))
-
-            # call
-            output = func(result.group(2), expression, instance, node_name)
-
-        except ValueError as error:
-            extra_info = f'in flow "{self.flow.ref}"'
-
-            if self.context != self.flow.ref:
-                extra_info = (
-                    f'in subflow "{self.context}" in the context of the flow "{self.flow.ref}"'
-                )
-
-            from dal.models.flow import Flow
-            if isinstance(instance, Flow):
-                info = (
-                    f'Error evaluating "{key}" with value "{expression}"'
-                    f' of flow "{self.flow.ref}"'
-                )
-            else:
-                info = (
-                    f'Error evaluating "{key}" with value "{expression}"'
-                    f' of node "{instance.name}" {extra_info}'
-                )
-
-            msg = f"{info}; {error}"
-
-            self.logger.error(msg)
-
-        return str(output)
-
-    def eval_config(self, _config: str, *__):
+    def eval_config(self, _config: str):
         """
         Returns the config expression evaluated
             $(<contex> <configuration name>.<parameter reference>)
@@ -178,14 +166,13 @@ class ParamParser:
 
         return output
 
-    def eval_param(self, param_name: str, default: str, instance: any, node_name: str) -> any:
+    def eval_param(self, param_name: str, instance, node_name, context) -> Any:
         """
         Returns the param expression evaluated or default
             ex.: $(param name)
 
         Parameters:
             param_name (str): reference to a parameter
-            default (str): default value with parsing
             instance (NodeInst || Container): an instance
             node_name (str): node instance name (may be in the context of a subflow)
 
@@ -193,11 +180,9 @@ class ParamParser:
             output (any): the value of the parameter or the default
         """
 
-        output = instance.get_param(param_name, node_name, self.context) or default
+        return instance.get_param(param_name, node_name, context)
 
-        return output
-
-    def eval_var(self, reference: str, *__) -> any:
+    def eval_var(self, reference: str) -> Any:
         """
         Returns the var expression evaluated
             ex.: $(var robot.name)
@@ -222,14 +207,13 @@ class ParamParser:
 
         return output
 
-    def eval_flow(self, param_name, default, instance, node_name) -> any:
+    def eval_flow(self, param_name, instance, node_name, context) -> Any:
         """
         Returns the flow expression evaluated
             ex.: $(flow myvar)
 
             Parameters:
                 param_name (str): reference to a parameter
-                default (str): default value with parsing
                 instance (NodeInst || Container): an instance
                 node_name (str): node instance name (may be in the context of a subflow)
 
@@ -240,11 +224,8 @@ class ParamParser:
         node_name_arr = node_name.split("__")
         # Check if this is the main flow or a subflow
         is_subflow = len(node_name_arr) > 1
-        value = instance.flow.get_param(param_name, self.context, is_subflow=is_subflow)
-        if value is None:
-            value = default
 
-        if len(node_name_arr) > 1:
+        if is_subflow:
             # instance is not in the main flow
 
             # not using istance bc import
@@ -256,21 +237,23 @@ class ParamParser:
                     _name = "__".join(ctr_arr)
 
                     # get the container instance
-                    ctr_instance = self.flow.get_container(_name, self.context)
+                    ctr_instance = self.flow.get_container(_name, context)
 
                     # get the instance parameter value
                     # if there is no instance param, set to default
-                    ctr_value = ctr_instance.get_param(
-                        param_name, _name, self.context, default_value=value
+                    ctr_expr = ctr_instance.get_param_expr(
+                        param_name, _name, context
                     )
 
-                    value = value if ctr_value is None else ctr_value
+                    if ctr_expr:
+                        return self.parse(param_name, ctr_expr, _name, ctr_instance, context)
 
             else:
                 msg = f'Instance type "{type(instance).__name__}" not supported'
                 raise ValueError(msg)
 
-        return value
+        # No param in top flow, read from current flow
+        return instance.flow.get_param(param_name, context, is_subflow=is_subflow)
 
 
 def get_string_from_template(template: str, task_entry: object) -> str:
