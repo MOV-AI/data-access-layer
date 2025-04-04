@@ -20,6 +20,7 @@ class NodeInst(ScopeObjectNode):
     """
     A node instance
     """
+
     Remappable: bool
 
     logger = Log.get_logger("NodeInst.mov.ai")
@@ -147,7 +148,6 @@ class NodeInst(ScopeObjectNode):
             if value is not None:
                 params.update({key: value})
 
-
         return params
 
     def get_param(
@@ -165,15 +165,13 @@ class NodeInst(ScopeObjectNode):
         _context = context or self.flow.ref
 
         # get the template value
-        tpl_value = self.node_template.get_params().get(
-            key, None
-        )  # Parameter[key].Value
+        tpl_value = self.node_template.get_params().get(key, None)  # Parameter[key].Value
 
         # get the instance value
         try:
             inst_value = self.Parameter[key].Value
             if inst_value is None:
-                #param is disabled, and we return None
+                # param is disabled, and we return None
                 return None
 
         except KeyError:

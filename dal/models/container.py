@@ -9,6 +9,7 @@
 from typing import TYPE_CHECKING
 
 from .scopestree import ScopeObjectNode, ScopeNode, scopes
+
 if TYPE_CHECKING:
     from dal.models.flow import Flow
 
@@ -17,6 +18,7 @@ class Container(ScopeObjectNode):
     """
     A container represents a flow in another flow (aka subflow)
     """
+
     ContainerLabel: str
     ContainerFlow: str
 
@@ -47,16 +49,18 @@ class Container(ScopeObjectNode):
         _name = name or self.name
 
         for key in self.Parameter.keys():
-
             params.update({key: self.get_param(key, _name)})
 
         return params
 
-    def get_param(self, key: str,
-                  name: str = None,
-                  context=None,
-                  custom_parser: any = None,
-                  default_value: any = None) -> any:
+    def get_param(
+        self,
+        key: str,
+        name: str = None,
+        context=None,
+        custom_parser: any = None,
+        default_value: any = None,
+    ) -> any:
         """
         Returns a specific parameter of the container after
         parsing it

@@ -26,52 +26,53 @@ from .user import User
 from .widget import Widget
 
 __all__ = [
-   "Application",
-   "Callback",
-   "Config",
-   "Configuration",
-   "FleetRobot",
-   "Flow",
-   "Form",
-   "Message",
-   "Node",
-   "Package",
-   "Ports",
-   "Robot",
-   "Role",
-   "Scope",
-   "StateMachine",
-   "SMVars",
-   "Struct",
-   "System",
-   "User",
-   "Widget",
+    "Application",
+    "Callback",
+    "Config",
+    "Configuration",
+    "FleetRobot",
+    "Flow",
+    "Form",
+    "Message",
+    "Node",
+    "Package",
+    "Ports",
+    "Robot",
+    "Role",
+    "Scope",
+    "StateMachine",
+    "SMVars",
+    "Struct",
+    "System",
+    "User",
+    "Widget",
 ]
 
 try:
-   from movai_core_enterprise.scopes import(
-      Annotation,
-      GraphicAsset,
-      GraphicScene,
-      Layout,
-      SharedDataEntry, 
-      SharedDataTemplate,
-      Task,
-      TaskEntry,
-      TaskTemplate,
+    from movai_core_enterprise.scopes import (
+        Annotation,
+        GraphicAsset,
+        GraphicScene,
+        Layout,
+        SharedDataEntry,
+        SharedDataTemplate,
+        Task,
+        TaskEntry,
+        TaskTemplate,
     )
-   enterprise_modules = [
-        'Annotation',
-        'GraphicAsset',
-        'GraphicScene',
-        'Layout',
-        'SharedDataEntry',
-        'SharedDataTemplate',
+
+    enterprise_modules = [
+        "Annotation",
+        "GraphicAsset",
+        "GraphicScene",
+        "Layout",
+        "SharedDataEntry",
+        "SharedDataTemplate",
         "Task",
-        'TaskEntry',
-        'TaskTemplate'
+        "TaskEntry",
+        "TaskTemplate",
     ]
 except ImportError:
-   enterprise_modules = []
+    enterprise_modules = []
 
 __all__.extend(enterprise_modules)

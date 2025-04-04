@@ -14,22 +14,21 @@ from os import getenv
 from os.path import join as path_join
 from os.path import expanduser
 from pathlib import Path
-from git import (Repo,
-                 InvalidGitRepositoryError,
-                 GitError,
-                 GitCommandError)
+from git import Repo, InvalidGitRepositoryError, GitError, GitCommandError
 from git.index import IndexFile
 from git.refs import HEAD
 from git.refs.tag import TagReference
 from git.remote import PushInfo
-from dal.exceptions import (NoChangesToCommit,
-                            SlaveManagerCannotChange,
-                            TagAlreadyExist,
-                            VersionDoesNotExist,
-                            BranchAlreadyExist,
-                            FileDoesNotExist,
-                            RepositoryDoesNotExist,
-                            GitPermissionErr)
+from dal.exceptions import (
+    NoChangesToCommit,
+    SlaveManagerCannotChange,
+    TagAlreadyExist,
+    VersionDoesNotExist,
+    BranchAlreadyExist,
+    FileDoesNotExist,
+    RepositoryDoesNotExist,
+    GitPermissionErr,
+)
 from dal.classes.filesystem import FileSystem
 from dal.classes.common.gitlink import GitLink
 from dal.archive.basearchive import BaseArchive
@@ -39,15 +38,14 @@ from movai_core_shared.logger import Log
 MOVAI_FOLDER_NAME = ".movai"
 MOVAI_BASE_FOLDER = path_join(FileSystem.get_home_folder(), MOVAI_FOLDER_NAME)
 MOVAI_BASE_FOLDER = getenv("MOVAI_USERSPACE", MOVAI_BASE_FOLDER)
-GIT_BASE_FOLDER = path_join(MOVAI_BASE_FOLDER, 'database', 'git')
+GIT_BASE_FOLDER = path_join(MOVAI_BASE_FOLDER, "database", "git")
 logger = Log.get_logger("movai.git")
 
 
 class GitRepo:
-    """ class representing single repository"""
+    """class representing single repository"""
 
-    def __init__(self, remote: str, username: str,
-                 local_path: str, version: str):
+    def __init__(self, remote: str, username: str, local_path: str, version: str):
         """initialze new repository.
            creates local folder and clone the repo with the path
            /repo_name/branch/commit
@@ -82,8 +80,7 @@ class GitRepo:
         try:
             self._repo_object.git.rev_parse(revision)
         except GitCommandError as e:
-            if e.stderr.find(
-                    "unknown revision or path not in the working tree"):
+            if e.stderr.find("unknown revision or path not in the working tree"):
                 return False
         return True
 
@@ -154,7 +151,7 @@ class GitRepo:
         return self._repo_object.git
 
     @property
-    def head(self) -> 'HEAD':
+    def head(self) -> "HEAD":
         """will return HEAD object of the current repo
 
         Returns:
@@ -163,7 +160,7 @@ class GitRepo:
         return self._repo_object.head
 
     @property
-    def index(self) -> 'IndexFile':
+    def index(self) -> "IndexFile":
         """will return IndexFile of the current working tree
 
         Returns:
@@ -172,14 +169,10 @@ class GitRepo:
         return self._repo_object.index
 
     def fetch(self):
-        """run fetch on the local repository
-        """
+        """run fetch on the local repository"""
         self._repo_object.git.fetch()
 
-    def commit(self,
-               filename: str = None,
-               new_branch: str = None,
-               message: str = None) -> str:
+    def commit(self, filename: str = None, new_branch: str = None, message: str = None) -> str:
         """will commit file changes to current branch in case it's not
            detached HEAD, or create new branch if specified
            in case it's new file it will be added.
@@ -196,8 +189,7 @@ class GitRepo:
         Returns:
             str: the newly committed commit sha
         """
-        if self._repo_object.head.is_detached \
-           and new_branch is None:
+        if self._repo_object.head.is_detached and new_branch is None:
             # TODO: maybe we should commit either way and warn the user
             # that this commit might be lost because it's on a detached head
             raise Exception("detached HEAD and no branch specified")
@@ -254,9 +246,8 @@ class GitRepo:
             str: commit sha1 hash
         """
         remote_alias = str(self._repo_object.remote())
-        commits_log = self._repo_object.git.log(
-            f"{remote_alias}/{self._branch}", "--oneline")
-        commit = commits_log.split('\n')[0].split(' ')[0]
+        commits_log = self._repo_object.git.log(f"{remote_alias}/{self._branch}", "--oneline")
+        commit = commits_log.split("\n")[0].split(" ")[0]
         return self._repo_object.git.rev_parse(commit)
 
     def branch_exist(self, branch: str, fetch: bool = False) -> bool:
@@ -308,8 +299,13 @@ class GitRepo:
         try:
             self._repo_object.git.checkout(version)
         except GitCommandError as e:
-            if e.stderr.find("Your local changes to the following files \
-                              would be overwritten by checkout") != -1:
+            if (
+                e.stderr.find(
+                    "Your local changes to the following files \
+                              would be overwritten by checkout"
+                )
+                != -1
+            ):
                 # TODO add log
                 self._repo_object.git.stash()
                 self._repo_object.git.checkout(version)
@@ -338,7 +334,7 @@ class GitRepo:
         FileSystem.create_folder_recursively(self._local_path)
         # TODO: change in the future and use permission class.
         id_rsa = ""
-        if not FileSystem.is_exist(expanduser('~/.ssh/id_rsa')):
+        if not FileSystem.is_exist(expanduser("~/.ssh/id_rsa")):
             logger.debug("~/.ssh/id_rsa does not exist")
         else:
             id_rsa = expanduser("~/.ssh/id_rsa")
@@ -347,21 +343,19 @@ class GitRepo:
         except InvalidGitRepositoryError:
             # local Repository does not exist, creating one.
             try:
-                args = {
-                    "no_checkout": no_checkout
-                }
+                args = {"no_checkout": no_checkout}
                 if id_rsa:
                     args.update({"env": dict(GIT_SSH_COMMAND=f"ssh -i {id_rsa}")})
                 if shallow:
                     args.update({"depth": 1})
                     # args["filter"] = ["tree:0", "blob:none"]
 
-                repo = Repo.clone_from(self._git_link.repo_ssh_link,
-                                       self._local_path,
-                                       **args)
+                repo = Repo.clone_from(self._git_link.repo_ssh_link, self._local_path, **args)
             except GitCommandError as e:
                 FileSystem.delete(self._local_path)
-                raise RepositoryDoesNotExist(f"repository {self._git_link.owner}/{self._git_link.repo} does not exist, {e.stderr}")
+                raise RepositoryDoesNotExist(
+                    f"repository {self._git_link.owner}/{self._git_link.repo} does not exist, {e.stderr}"
+                )
             self._default_branch = repo.active_branch.name
         except GitError as e:
             print(f"Error {e}")
@@ -375,7 +369,7 @@ class GitRepo:
             list: list of file names
         """
         file_names = []
-        for diff in self._repo_object.head.commit.diff(None).iter_change_type('M'):
+        for diff in self._repo_object.head.commit.diff(None).iter_change_type("M"):
             file_names.append(diff.a_path)
         return file_names
 
@@ -400,8 +394,7 @@ class GitRepo:
         """
         return self._repo_object.git.diff(filename)
 
-    def push(self, remote_name: str, tag_name: str,
-             only_tag: bool) -> PushInfo:
+    def push(self, remote_name: str, tag_name: str, only_tag: bool) -> PushInfo:
         """push current repo state to remote repo.
 
         Args:
@@ -442,9 +435,11 @@ class GitRepo:
 
     def _update_versions(self) -> None:
         """update _version and _branches accordingly from remote repo and save
-           them locally in object.
+        them locally in object.
         """
-        self._versions = sorted(self._repo_object.tags, key=lambda t: t.commit.committed_datetime, reverse=True)
+        self._versions = sorted(
+            self._repo_object.tags, key=lambda t: t.commit.committed_datetime, reverse=True
+        )
         self._branches = [ref.name for ref in self._repo_object.remote().refs]
 
     def list_versions(self, is_branches: bool) -> list:
@@ -482,8 +477,7 @@ class GitRepo:
 
 class GitManager(BaseArchive, id="Git"):
     _username = "MOVAI_USER"
-    _repos = {"slave": {},
-              "master": {}}
+    _repos = {"slave": {}, "master": {}}
     SLAVE = "slave"
     MASTER = "master"
     DEFAULT_REPO_ID = "default"
@@ -516,8 +510,7 @@ class GitManager(BaseArchive, id="Git"):
         manager_uri = getenv("MOVAI_MANAGER_URI", "localhost")
 
         client = None
-        if "localhost" in manager_uri.lower().strip() or \
-           "127.0.0.1" in manager_uri.lower().strip():
+        if "localhost" in manager_uri.lower().strip() or "127.0.0.1" in manager_uri.lower().strip():
             # this is a manager
             client = MasterGitManager(username)
         else:
@@ -567,9 +560,11 @@ class GitManager(BaseArchive, id="Git"):
         repo = None
         if repo_name in GitManager._repos[self._mode]:
             repo = GitManager._repos[self._mode][repo_name]
-        elif self._mode == GitManager.MASTER \
-            and self._username in GitManager._repos[self._mode] \
-                and repo_name in GitManager._repos[self._mode][self._username]:
+        elif (
+            self._mode == GitManager.MASTER
+            and self._username in GitManager._repos[self._mode]
+            and repo_name in GitManager._repos[self._mode][self._username]
+        ):
             repo = GitManager._repos[self._mode][self._username][repo_name]
         return repo
 
@@ -587,8 +582,7 @@ class GitManager(BaseArchive, id="Git"):
         repo_name = git_link.repo
         repo = self._get_repo(repo_name)
         if repo is None:
-            repo = GitRepo(remote, self._username,
-                           self._get_local_path(remote), "")
+            repo = GitRepo(remote, self._username, self._get_local_path(remote), "")
             self._register_repo(repo_name, repo)
         # TODO: maybe we need to activate this in the future
         # else:
@@ -596,9 +590,7 @@ class GitManager(BaseArchive, id="Git"):
 
         return repo
 
-    def _get_or_add_version(self,
-                            remote: str,
-                            version: str="") -> GitRepo:
+    def _get_or_add_version(self, remote: str, version: str = "") -> GitRepo:
         """will get the desired version repo if exists
            if not will create a new one and returns it.
 
@@ -658,10 +650,7 @@ class GitManager(BaseArchive, id="Git"):
         repo = self._get_or_add_repo(remote)
         return repo.list_models()
 
-    def get(self,
-            obj_name: str,
-            remote: str,
-            version: str) -> Path:
+    def get(self, obj_name: str, remote: str, version: str) -> Path:
         """Get a File from repository with specific version
 
         Args:
@@ -674,19 +663,21 @@ class GitManager(BaseArchive, id="Git"):
             Path: the local path of the requested File.
         """
         # TODO: check filename extension "json"
-        if not obj_name.endswith('.json') and not obj_name.endswith('.py'):
-            obj_name = obj_name + '.json'
+        if not obj_name.endswith(".json") and not obj_name.endswith(".py"):
+            obj_name = obj_name + ".json"
         repo = self._get_or_add_version(remote, version)
         file_path = repo.checkout_file(obj_name)
 
         return Path(file_path)
 
-    def commit(self,
-               obj_name: str,
-               remote: str,
-               new_version: str = None,
-               base_version: str = None,
-               message: str = "") -> str:
+    def commit(
+        self,
+        obj_name: str,
+        remote: str,
+        new_version: str = None,
+        base_version: str = None,
+        message: str = "",
+    ) -> str:
         """will commit/save the specified obj locally.
 
         Args:
@@ -708,16 +699,13 @@ class GitManager(BaseArchive, id="Git"):
         """
         repo = self._get_or_add_version(remote, base_version)
         # TODO: check filename extension
-        if obj_name.find('.json') == -1:
-            obj_name += '.json'
-        if obj_name not in repo.get_modified_files() \
-           and obj_name not in repo.get_untracked_files():
+        if obj_name.find(".json") == -1:
+            obj_name += ".json"
+        if obj_name not in repo.get_modified_files() and obj_name not in repo.get_untracked_files():
             raise NoChangesToCommit()
         return repo.commit(obj_name, new_version, message)
 
-    def diff_file(self,
-                  remote: str,
-                  filename: str) -> str:
+    def diff_file(self, remote: str, filename: str) -> str:
         """return git diff string
 
         Args:
@@ -732,11 +720,7 @@ class GitManager(BaseArchive, id="Git"):
             return ""
         return repo.diff_file(filename)
 
-    def create_tag(self,
-                   remote: str,
-                   base_version: str,
-                   tag: str,
-                   message: str = "") -> bool:
+    def create_tag(self, remote: str, base_version: str, tag: str, message: str = "") -> bool:
         """will create a tag based on the given commit.
 
         Args:
@@ -755,13 +739,15 @@ class GitManager(BaseArchive, id="Git"):
             raise TagAlreadyExist(f"Tag {tag} already exist in Repository")
         tag_reference = repo.tag(base_version, tag, message)
         return tag_reference is not None
-    
-    def create_obj(self,
-                   remote: str,
-                   relative_path: str,
-                   content: str,
-                   base_version: str = None,
-                   is_json: bool = True) -> None:
+
+    def create_obj(
+        self,
+        remote: str,
+        relative_path: str,
+        content: str,
+        base_version: str = None,
+        is_json: bool = True,
+    ) -> None:
         """will create new file in repository locally using the relative path
            of the local repository path.
            this function neede because external user is not fully aware of the
@@ -782,11 +768,7 @@ class GitManager(BaseArchive, id="Git"):
             FileSystem.delete(new_file_path)
         FileSystem.write(new_file_path, content, is_json)
 
-    def delete(self,
-               remote: str,
-               obj_name: str,
-               version: str,
-               **kwargs) -> str:
+    def delete(self, remote: str, obj_name: str, version: str, **kwargs) -> str:
         """deletes an object.
 
         Args:
@@ -798,8 +780,8 @@ class GitManager(BaseArchive, id="Git"):
             str: new version hash.
         """
         # TODO: check filename extension "json"
-        if not obj_name.endswith('.json') and not obj_name.endswith('.py'):
-            obj_name = obj_name + '.json'
+        if not obj_name.endswith(".json") and not obj_name.endswith(".py"):
+            obj_name = obj_name + ".json"
         repo = self._get_or_add_version(remote, version)
         file_path = path_join(repo.local_path, obj_name)
         if not FileSystem.is_exist(file_path):
@@ -844,8 +826,9 @@ class GitManager(BaseArchive, id="Git"):
         prev_version = self.prev_version(remote, version)
         return self.get(obj_name, remote, prev_version)
 
-    def push(self, remote: str, remote_name: str, tag_name: str = None,
-             only_tag: bool = False) -> PushInfo:
+    def push(
+        self, remote: str, remote_name: str, tag_name: str = None, only_tag: bool = False
+    ) -> PushInfo:
         """will push repository defined by remote to remote_name repository
 
         Args:
@@ -879,9 +862,10 @@ class GitManager(BaseArchive, id="Git"):
 
 class SlaveGitManager(GitManager):
     """a class to manage Slave Git Manager
-       basically this class will be used mainly to fetch and get information
-       without having the ability to change or create new content
+    basically this class will be used mainly to fetch and get information
+    without having the ability to change or create new content
     """
+
     def __init__(self, username: str):
         super().__init__(username, mode=GitManager.SLAVE)
 
@@ -906,9 +890,10 @@ class SlaveGitManager(GitManager):
 
 class MasterGitManager(GitManager):
     """a class to manage Master Git Manager
-       different from Slave Git Manager, this class will be able to make
-       changes, pull/push/commit/tag ...
+    different from Slave Git Manager, this class will be able to make
+    changes, pull/push/commit/tag ...
     """
+
     def __init__(self, username: str):
         super().__init__(username, mode=GitManager.MASTER)
 

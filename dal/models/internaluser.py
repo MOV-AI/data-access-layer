@@ -129,9 +129,7 @@ class InternalUser(BaseUser):
         """
         self.password = self.secure.create_salted_hash(password)
 
-    def _validate_password_has_changed(
-        self, current_password: str, new_password: str
-    ) -> None:
+    def _validate_password_has_changed(self, current_password: str, new_password: str) -> None:
         """validates that both passwords match
 
         Args:
@@ -145,9 +143,7 @@ class InternalUser(BaseUser):
             error_msg = "new password must not match current password"
             raise PasswordError(error_msg)
 
-    def _validate_confirmation_password(
-        self, new_password: str, confirm_password: str
-    ) -> None:
+    def _validate_confirmation_password(self, new_password: str, confirm_password: str) -> None:
         """validates that both passwords match
 
         Args:
@@ -249,9 +245,7 @@ class InternalUser(BaseUser):
             raise ValueError(error_msg)
 
         if not self.verify_password(current_password):
-            error_msg = (
-                "Current password validation failed. " "Could not change user password"
-            )
+            error_msg = "Current password validation failed. " "Could not change user password"
             self.log.error(error_msg)
             raise PasswordError(error_msg)
 

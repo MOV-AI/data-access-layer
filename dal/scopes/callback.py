@@ -138,7 +138,6 @@ class Callback(Scope):
 
     @staticmethod
     def get_full_modules() -> dict:
-
         module_description = {}
 
         mods = Callback.get_modules()
@@ -268,7 +267,6 @@ class Callback(Scope):
 
                 # get classes
                 for key, value in inspect.getmembers(i_mod, inspect.isclass):
-
                     # ignore __var__ like __these__
                     # probably simpler than re.match()
                     if key[:2] == "__" and key[-2:] == "__":
@@ -287,7 +285,6 @@ class Callback(Scope):
 
                 # get methods
                 for key, value in inspect.getmembers(i_mod, inspect.isroutine):
-
                     # ignore __var__ like __these__
                     if key[:2] == "__" and key[-2:] == "__":
                         continue
@@ -305,7 +302,6 @@ class Callback(Scope):
 
                 # get data/constants
                 for key, value in inspect.getmembers(i_mod, pydoc.isdata):
-
                     # ignore __var__ like __these__
                     if key[:2] == "__" and key[-2:] == "__":
                         continue
@@ -416,15 +412,10 @@ class Callback(Scope):
         return mods["System"]["PyModules"]["Value"]
 
     def template_depends(self, force=False):
-
         # this will give a list of tuples (node_name, node_inst_name, iport_name)
         replaced_cbs = []
         full_node_list = MovaiDB().search(
-            {
-                "Node": {
-                    "*": {"PortsInst": {"*": {"In": {"*": {"Callback": self.name}}}}}
-                }
-            }
+            {"Node": {"*": {"PortsInst": {"*": {"In": {"*": {"Callback": self.name}}}}}}}
         )
 
         for node_key in full_node_list:

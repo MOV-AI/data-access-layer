@@ -18,10 +18,4 @@ SCHEMA_FOLDER_PATH = f"file://{dir}/schema"
 default_version = "2.3"
 
 
-__all__ = [
-    "Schema",
-    "JsonValidator",
-    "Template",
-    "SCHEMA_FOLDER_PATH",
-    "default_version"
-]
+__all__ = ["Schema", "JsonValidator", "Template", "SCHEMA_FOLDER_PATH", "default_version"]

@@ -15,6 +15,7 @@ for example:
 """
 from os import getenv
 from .basearchive import BaseArchive
+
 # in order to register Git Archive
 from dal.api.gitapi import GitManager
 
@@ -22,6 +23,4 @@ from dal.api.gitapi import GitManager
 BaseArchive.set_active_archive(getenv("ACTIVE_ARCHIVE", "Git"))
 Archive = BaseArchive()
 
-__all__ = [
-    "Archive"
-]
+__all__ = ["Archive"]

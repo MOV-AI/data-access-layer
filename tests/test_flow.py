@@ -316,16 +316,18 @@ class FlowTests(unittest.TestCase):
         scope.write(node_pub2, scope="Node", ref="Node1NonRemapable1", version="__UNVERSIONED__")
         scope.write(node_sub1, scope="Node", ref="Node1Remapable2", version="__UNVERSIONED__")
         scope.write(node_sub2, scope="Node", ref="Node1Remapable3", version="__UNVERSIONED__")
-        scope.write(flow, scope="Flow", ref="one_remapable_in_linked_star_remap", version="__UNVERSIONED__")
+        scope.write(
+            flow, scope="Flow", ref="one_remapable_in_linked_star_remap", version="__UNVERSIONED__"
+        )
 
         remaps = Flow("one_remapable_in_linked_star_remap").graph.calc_remaps()
 
-        pub2_name_key=list(node_pub2["Node"].keys())[0]
+        pub2_name_key = list(node_pub2["Node"].keys())[0]
         pub2_name = node_pub2["Node"][pub2_name_key]["Label"]
 
         port_pub2_key = list(node_pub2["Node"][pub2_name_key]["PortsInst"].keys())[0]
 
-        self.assertEqual(list(remaps.keys())[0],port_pub2_key)
+        self.assertEqual(list(remaps.keys())[0], port_pub2_key)
 
     @fake_redis("dal.movaidb.database.Connection", recording_dir=test_dir)
     @fake_redis("dal.plugins.persistence.redis.redis.Connection", recording_dir=test_dir)
@@ -476,7 +478,7 @@ class FlowTests(unittest.TestCase):
         with pytest.raises(Exception) as e:
             Flow("two_pubs_test").graph.calc_remaps()
 
-        self.assertEquals(str(e.value),"Flow validation failed. Flow stopped")
+        self.assertEquals(str(e.value), "Flow validation failed. Flow stopped")
         # TODO evaluate the error message
 
     @pytest.mark.skipif()
@@ -628,8 +630,8 @@ class FlowTests(unittest.TestCase):
 
         with pytest.raises(Exception) as e:
             Flow("two_pubs_test").graph.calc_remaps()
-        sub1_name_key=list(node_sub1["Node"].keys())[0]
-        pub1_name_key=list(node_pub1["Node"].keys())[0]
+        sub1_name_key = list(node_sub1["Node"].keys())[0]
+        pub1_name_key = list(node_pub1["Node"].keys())[0]
         sub1_name = node_sub1["Node"][sub1_name_key]["Label"]
         pub1_name = node_pub1["Node"][pub1_name_key]["Label"]
 
@@ -641,9 +643,9 @@ class FlowTests(unittest.TestCase):
 
         exception_report = str(e.value)
         # self.assertEquals(str(e.value),"Flow validation failed. Flow stopped")
-        self.assertIn ("Two non remappable nodes are connected: ", exception_report)
-        self.assertIn (pub1_name+"/"+port_pub1_key+"/out", exception_report)
-        self.assertIn (sub1_name+"/"+port_sub1_key+"/in", exception_report)
+        self.assertIn("Two non remappable nodes are connected: ", exception_report)
+        self.assertIn(pub1_name + "/" + port_pub1_key + "/out", exception_report)
+        self.assertIn(sub1_name + "/" + port_sub1_key + "/in", exception_report)
 
 
 class FlowParamsTests(unittest.TestCase):
@@ -651,6 +653,7 @@ class FlowParamsTests(unittest.TestCase):
     def test_missing_flow_param(self, mock_get_plugin):
         # Clear existing Redis plugins, if any
         from dal.models.scopestree import scopes
+
         del scopes._children["global"]
 
         # Set up mocks

@@ -12,7 +12,7 @@ from typing import Dict, Generic, List, Optional, Tuple, TypeVar, Union
 from dal.data.mixins import ChildrenCmpMixin, ValueCmpMixin
 
 
-VT = TypeVar('VT', bound=Union["TreeNode", "ObjectNode", "PropertyNode"])
+VT = TypeVar("VT", bound=Union["TreeNode", "ObjectNode", "PropertyNode"])
 
 
 class TreeNode(ABC, Generic[VT]):
@@ -42,6 +42,7 @@ class TreeNode(ABC, Generic[VT]):
             except KeyError:
                 self.attributes[method.__name__] = method()
                 return self.attributes[method.__name__]
+
         return inner
 
     @staticmethod
@@ -163,7 +164,7 @@ class TreeNode(ABC, Generic[VT]):
         """
         r = ""
         if self.node_type == "property":
-            r = '{}\n'.format(str(self.path))
+            r = "{}\n".format(str(self.path))
 
         for child in self.children:
             r += f"{child.to_path()}"
@@ -387,7 +388,7 @@ class ObjectNode(TreeNode[VT], ChildrenCmpMixin):
         if self.parent is None:
             return self._name
 
-        return f'{self.parent.path}/{self._name}'
+        return f"{self.parent.path}/{self._name}"
 
     @property
     def children(self):
@@ -463,11 +464,9 @@ class ObjectNode(TreeNode[VT], ChildrenCmpMixin):
         for child in self.children:
             child.sort()
 
-        self._children = OrderedDict(
-            sorted(self._children.items()))
+        self._children = OrderedDict(sorted(self._children.items()))
 
     def __setattr__(self, name: str, value: object):
-
         try:
             node = self.__dict__["_children"][name]
             if not isinstance(node, PropertyNode):
@@ -481,6 +480,7 @@ class ObjectNode(TreeNode[VT], ChildrenCmpMixin):
             return self._children[name]
         except KeyError as e:
             raise AttributeError from e
+
 
 class PropertyNode(TreeNode, ValueCmpMixin):
     """
@@ -517,7 +517,7 @@ class PropertyNode(TreeNode, ValueCmpMixin):
     @value.setter
     def value(self, value):
         # FIXME this should validate (also, for some reason it isn't)
-        #if not isinstance(value, self.value_type):
+        # if not isinstance(value, self.value_type):
         #    raise ValueError
         self._value = value
 
@@ -536,7 +536,7 @@ class PropertyNode(TreeNode, ValueCmpMixin):
         if self.parent is None:
             return f"{self._name}"
 
-        return f'{self.parent.path}/{self.name}'
+        return f"{self.parent.path}/{self.name}"
 
     @property
     def children(self):
@@ -594,8 +594,7 @@ class CallableNode(DictNode):
         for child in self.children:
             child.sort()
 
-        self.__dict__["_children"] = OrderedDict(
-            sorted(self.__dict__["_children"].items()))
+        self.__dict__["_children"] = OrderedDict(sorted(self.__dict__["_children"].items()))
 
     def __call__(self, key: str):
         return self._children[key]

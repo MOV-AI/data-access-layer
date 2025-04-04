@@ -7,17 +7,19 @@
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
 """
 from dal.plugins.classes import Plugin
-from dal.data import (ObjectDeserializer,
-                      TreeNode,
-                      SchemaPropertyNode,
-                      SchemaObjectNode,
-                      SchemaDeserializer)
+from dal.data import (
+    ObjectDeserializer,
+    TreeNode,
+    SchemaPropertyNode,
+    SchemaObjectNode,
+    SchemaDeserializer,
+)
 
 __DRIVER_NAME__ = "Movai Schema Version 1.0 Plugin"
 __DRIVER_VERSION__ = "0.0.1"
 
 
-class SchemaAttributeDeserializer():
+class SchemaAttributeDeserializer:
     """
     Deserializer through a dict and convert to a tree
     """
@@ -31,23 +33,19 @@ class SchemaAttributeDeserializer():
         Abstract method to run the data deserializer
         """
         for key, value in data.items():
-
             if key == "$name":
                 root.attributes["is_hash"] = True
                 root.attributes["is_id"] = True
                 root.attributes["value_on_key"] = True
-                SchemaAttributeDeserializer(
-                    self._schema, self._relations).deserialize(root, value)
+                SchemaAttributeDeserializer(self._schema, self._relations).deserialize(root, value)
                 continue
 
             if isinstance(value, dict):
                 node = SchemaObjectNode(key)
-                SchemaAttributeDeserializer(
-                    self._schema, self._relations).deserialize(node, value)
+                SchemaAttributeDeserializer(self._schema, self._relations).deserialize(node, value)
             else:
-                node = SchemaPropertyNode(
-                    key, SchemaV1Deserializer.get_python_type(value))
-                if str.startswith(value,"&"):
+                node = SchemaPropertyNode(key, SchemaV1Deserializer.get_python_type(value))
+                if str.startswith(value, "&"):
                     node.attributes["value_on_key"] = True
 
             root.add_child(node)
@@ -58,13 +56,7 @@ class SchemaV1Deserializer(ObjectDeserializer, Plugin):
     Deserializer through a dict and convert to a tree
     """
 
-    SCHEMA_TYPE_MAPPING = {
-        "str": str,
-        "bool": bool,
-        "float": float,
-        "hash": dict,
-        "any": object
-    }
+    SCHEMA_TYPE_MAPPING = {"str": str, "bool": bool, "float": float, "hash": dict, "any": object}
 
     @Plugin.plugin_name.getter
     def plugin_name(self):
@@ -107,8 +99,7 @@ class SchemaV1Deserializer(ObjectDeserializer, Plugin):
 
         relations = data.get("relations", {})
 
-        SchemaAttributeDeserializer(
-            schema, relations).deserialize(root, schema)
+        SchemaAttributeDeserializer(schema, relations).deserialize(root, schema)
 
 
 SchemaDeserializer.register_plugin("version10", SchemaV1Deserializer)

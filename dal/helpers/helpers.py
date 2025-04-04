@@ -65,6 +65,7 @@ class Helpers:
                     key = s_key
                 if isinstance(s_value, dict):
                     iterate(s_value, key)
+
         iterate(tmp_truct)
         return args
 
@@ -74,7 +75,7 @@ class Helpers:
 
     @staticmethod
     def replace_dict_values(haystack: dict, needle: any, value: any) -> None:
-        for (k, v) in haystack.items():
+        for k, v in haystack.items():
             if isinstance(v, dict):
                 Helpers.replace_dict_values(v, needle, value)
             elif v == needle:
@@ -95,22 +96,21 @@ class Helpers:
                             yield result
 
 
-def flatten(data: dict, output: list, path: str, join_char: str = '.')->list:
-    '''
-        Returns a list of paths
+def flatten(data: dict, output: list, path: str, join_char: str = ".") -> list:
+    """
+    Returns a list of paths
 
-        Parameters:
-            data (dict): expects a dictionary to start
-            output (list): variable to save the list of paths
-            path (str): accumulative path
-            join_char (str): character to join path entries
+    Parameters:
+        data (dict): expects a dictionary to start
+        output (list): variable to save the list of paths
+        path (str): accumulative path
+        join_char (str): character to join path entries
 
-        Returns:
-            output (list): a list of paths
-    '''
+    Returns:
+        output (list): a list of paths
+    """
     if isinstance(data, (dict, list)):
         for key in data:
-
             if isinstance(data, dict):
                 flatten(data[key], output, path + f"{key}{join_char}", join_char)
 

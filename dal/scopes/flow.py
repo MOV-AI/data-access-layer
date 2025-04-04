@@ -91,12 +91,8 @@ class Flow(Scope):
             prev_flows.append(self.name)
             for container in temp_dict["Flow"][self.name].get("Container", {}):
                 prev_flows_copy = prev_flows.copy()
-                flow = temp_dict["Flow"][self.name]["Container"][container][
-                    "ContainerFlow"
-                ]
-                label = temp_dict["Flow"][self.name]["Container"][container][
-                    "ContainerLabel"
-                ]
+                flow = temp_dict["Flow"][self.name]["Container"][container]["ContainerFlow"]
+                label = temp_dict["Flow"][self.name]["Container"][container]["ContainerLabel"]
                 container = self.expand_container(label, flow, prev_flows_copy)
                 temp_dict["Flow"][self.name].setdefault("Links", {}).update(
                     container.get("Links", {})
@@ -169,10 +165,7 @@ class Flow(Scope):
                 or "START/START/START" in value["To"].upper()
             ):
                 continue
-            if (
-                "END/END/END" in value["From"].upper()
-                or "END/END/END" in value["To"].upper()
-            ):
+            if "END/END/END" in value["From"].upper() or "END/END/END" in value["To"].upper():
                 continue
             # ignore nodelets links
             types_to_skip = [
@@ -189,12 +182,9 @@ class Flow(Scope):
             p_to = re.findall(LINK_REGEX, value["To"])
             node_inst_to, _, port_name_to, _, _ = p_to[0]
             if (
-                self.get_node_port_template(node_inst_from, port_name_from)
-                in types_to_skip
-                or self.get_node_port_template(node_inst_to, port_name_to)
-                in types_to_skip
+                self.get_node_port_template(node_inst_from, port_name_from) in types_to_skip
+                or self.get_node_port_template(node_inst_to, port_name_to) in types_to_skip
             ):
-
                 continue
 
             data_port_from = data.get(
@@ -204,9 +194,7 @@ class Flow(Scope):
             data_port_from["links"].append(link)
             # node_inst = value["From"].split("/")[0]
 
-            if self.is_node_dummy(node_inst_from) or not self.is_node_remmapable(
-                node_inst_from
-            ):
+            if self.is_node_dummy(node_inst_from) or not self.is_node_remmapable(node_inst_from):
                 namespace = self.get_node_namespace(node_inst_from)
                 if namespace:
                     data_port_from["remap"] = "%s/%s" % (namespace, port_name_from)
@@ -219,9 +207,7 @@ class Flow(Scope):
             )
             data_port_to["count"] += 1
             data_port_to["links"].append(link)
-            if self.is_node_dummy(node_inst_to) or not self.is_node_remmapable(
-                node_inst_to
-            ):
+            if self.is_node_dummy(node_inst_to) or not self.is_node_remmapable(node_inst_to):
                 namespace = self.get_node_namespace(node_inst_to)
                 if namespace:
                     data_port_from["remap"] = "%s/%s" % (namespace, port_name_to)
@@ -246,15 +232,10 @@ class Flow(Scope):
 
             # First we need to check if any connected port was previously remapped
             for link in port["links"]:
-                port_to_remap = (
-                    links[link]["To"] if port["type"] == "From" else links[link]["From"]
-                )
+                port_to_remap = links[link]["To"] if port["type"] == "From" else links[link]["From"]
                 if data[port_to_remap]["remap"] is not None:
                     # A second port previously remapped with a different value was found.
-                    if (
-                        ports_already_remapped > 0
-                        and data[port_to_remap]["remap"] != remap_to
-                    ):
+                    if ports_already_remapped > 0 and data[port_to_remap]["remap"] != remap_to:
                         error_msg = (
                             f"Remap could not be solved. More than one port previously "
                             f"remapped with different values. port: {port_to_remap}"
@@ -268,9 +249,7 @@ class Flow(Scope):
             # Do the remap
             for link in port["links"]:
                 # remap the other port
-                port_to_remap = (
-                    links[link]["To"] if port["type"] == "From" else links[link]["From"]
-                )
+                port_to_remap = links[link]["To"] if port["type"] == "From" else links[link]["From"]
                 data[port_to_remap]["remap"] = remap_to
 
         # collect remaps to a dictionary
@@ -290,9 +269,7 @@ class Flow(Scope):
         output = []
         if self.__dict__["cache_dict"] is None:
             self.__dict__["cache_dict"] = self.get_dict(recursive=True)
-        for _link_name, link in (
-            self.cache_dict["Flow"][self.name].get("Links", {}).items()
-        ):
+        for _link_name, link in self.cache_dict["Flow"][self.name].get("Links", {}).items():
             port_from = link["From"]
             port_to = link["To"]
             if "START/START/START" in port_from.upper():
@@ -359,9 +336,7 @@ class Flow(Scope):
             # 2: check dependencies only To -> From
             # 3: do not check dependencies
             dependencies_level = links[link_name].get("Dependency", 0)
-            dependencies_level = (
-                dependencies_level if (3 >= dependencies_level >= 0) else 0
-            )
+            dependencies_level = dependencies_level if (3 >= dependencies_level >= 0) else 0
 
             # do not check link dependencies
             if dependencies_level == 3:
@@ -372,10 +347,7 @@ class Flow(Scope):
 
             dependency_name = None
             # start is not a dependency
-            if (
-                "START/START/START" in port_from.upper()
-                or "END/END/END" in port_to.upper()
-            ):
+            if "START/START/START" in port_from.upper() or "END/END/END" in port_to.upper():
                 links_to_skip.append(link_name)
                 continue
 
@@ -409,9 +381,7 @@ class Flow(Scope):
         """Return NodeInst(s) of type ROS1_PLUGIN linked to node_name"""
         output = []
         # get first level node dependencies
-        dependencies = self.get_node_dependencies(
-            node_name=node_name, first_level_only=True
-        )
+        dependencies = self.get_node_dependencies(node_name=node_name, first_level_only=True)
         for dependency in dependencies:
             if self.get_node_type(dependency) == ROS1_PLUGIN:
                 output.append(dependency)
@@ -422,9 +392,7 @@ class Flow(Scope):
     # node_template = node_inst.node_template
     # envvars = node_template.EnvVar
     # port part of the code to the flowmonitor (related w the type)
-    def get_node_attributes(
-        self, node_name: str, attr: str, only_values: bool = False
-    ) -> dict:
+    def get_node_attributes(self, node_name: str, attr: str, only_values: bool = False) -> dict:
         """ "Generic method to get node attributes"""
         output = {}
         if self.__dict__["cache_dict"] is None:
@@ -442,9 +410,7 @@ class Flow(Scope):
             else:
                 if node_template.get("Type", None) == ROS1_PLUGIN:
                     plugin_name = node_template["Path"].split("/")[-1]
-                    output.update(
-                        {param: "_%s/%s:=%s" % (plugin_name, param, value["Value"])}
-                    )
+                    output.update({param: "_%s/%s:=%s" % (plugin_name, param, value["Value"])})
                 else:
                     output.update({param: "%s:=%s" % (param, value["Value"])})
 
@@ -458,9 +424,7 @@ class Flow(Scope):
 
         if self.__dict__["cache_dict"] is None:
             self.__dict__["cache_dict"] = self.get_dict(recursive=True)
-        params = self.cache_dict["Flow"][self.name]["NodeInst"][node_name].get(
-            attribute, {}
-        )
+        params = self.cache_dict["Flow"][self.name]["NodeInst"][node_name].get(attribute, {})
         return {key: value["Value"] for key, value in params.items()}
 
     # ported -> NodeInst.params (property)
@@ -483,14 +447,11 @@ class Flow(Scope):
                 except:
                     # If literal eval failed we check if the String has references
                     try:
-                        params[key] = self.parse_param(
-                            output[key], output, node_name, key
-                        )
+                        params[key] = self.parse_param(output[key], output, node_name, key)
                     except:
                         # In older versions params were not stored as Strings
                         LOGGER.warning(
-                            "Parameter %s of node %s is not saved correctly!"
-                            % (key, node_name)
+                            "Parameter %s of node %s is not saved correctly!" % (key, node_name)
                         )
                         params[key] = output[key]
             self.__dict__["cache_node_params"].update({node_name: params})
@@ -498,9 +459,7 @@ class Flow(Scope):
         return params
 
     # ported -> ParamParser
-    def eval_reference(
-        self, param_value: str, node_name: str, full_params: dict, param_name: str
-    ):
+    def eval_reference(self, param_value: str, node_name: str, full_params: dict, param_name: str):
         """
         Returns the parameter value. If the value is a valid expression, it is evaluated.
 
@@ -559,9 +518,7 @@ class Flow(Scope):
         return output
 
     # ported -> ParamParser
-    def eval_param(
-        self, param_ref: str, param: str, node_name: str, full_params: dict, *__
-    ) -> any:
+    def eval_param(self, param_ref: str, param: str, node_name: str, full_params: dict, *__) -> any:
         """
         Returns the param expression evaluated
             ex.: $(param name)
@@ -658,9 +615,7 @@ class Flow(Scope):
 
             else:
                 # get the value from the flow parameter
-                flow_params = {
-                    key: value.Value for key, value in self.Parameter.items()
-                }
+                flow_params = {key: value.Value for key, value in self.Parameter.items()}
 
                 # override the parameters with the parent flow parameters previously set
                 flow_params.update(self.__dict__["parent_parameters"])
@@ -671,14 +626,8 @@ class Flow(Scope):
                 raise Exception
 
         except:
-
             # get the value from the node template
-            output = (
-                self.get_node(node_name)
-                .get("Parameter", {})
-                .get(reference, {})
-                .get("Value")
-            )
+            output = self.get_node(node_name).get("Parameter", {}).get(reference, {}).get("Value")
 
         if not output:
             raise Exception(f'"{reference}" is not a valid flow parameter')
@@ -700,16 +649,13 @@ class Flow(Scope):
         params = self.__dict__["cache_container_params"].get(node_name, None)
 
         if not params:
-
             container = self.Container.get(node_name)
 
             params = {}
 
             try:
                 # get the parameter from the container parameters
-                _params = {
-                    key: value.Value for key, value in container.Parameter.items()
-                }
+                _params = {key: value.Value for key, value in container.Parameter.items()}
 
                 # Parameters are saved as strings so they need to be evaluated into its original type
                 for key, value in _params.items():
@@ -718,14 +664,11 @@ class Flow(Scope):
                     except:
                         # If literal eval failed we check if the String has references
                         try:
-                            params[key] = self.parse_param(
-                                _params[key], _params, node_name, key
-                            )
+                            params[key] = self.parse_param(_params[key], _params, node_name, key)
                         except:
                             # In older versions params were not stored as Strings
                             LOGGER.warning(
-                                "Parameter %s of node %s is not saved correctly!"
-                                % (key, node_name)
+                                "Parameter %s of node %s is not saved correctly!" % (key, node_name)
                             )
                             params[key] = _params[key]
 
@@ -774,9 +717,9 @@ class Flow(Scope):
         if not template_name:
             if self.__dict__["cache_dict"] is None:
                 self.__dict__["cache_dict"] = self.get_dict(recursive=True)
-            template_name = self.cache_dict["Flow"][self.name]["NodeInst"][
-                node_inst_name
-            ]["Template"]
+            template_name = self.cache_dict["Flow"][self.name]["NodeInst"][node_inst_name][
+                "Template"
+            ]
             self.cache_node_insts.update({node_inst_name: template_name})
         return template_name
 
@@ -787,9 +730,9 @@ class Flow(Scope):
 
         node_template = self.cache_node_templates.get(template_name)
         if not node_template:
-            node_template = MovaiDB(db=self.db).get({"Node": {template_name: "**"}})[
-                "Node"
-            ][template_name]
+            node_template = MovaiDB(db=self.db).get({"Node": {template_name: "**"}})["Node"][
+                template_name
+            ]
             self.cache_node_templates.update({template_name: node_template})
 
         return node_template
@@ -826,9 +769,7 @@ class Flow(Scope):
         """Return node persistance"""
         if self.__dict__["cache_dict"] is None:
             self.__dict__["cache_dict"] = self.get_dict(recursive=True)
-        persist = self.cache_dict["Flow"][self.name]["NodeInst"][node_name].get(
-            "Persistent"
-        )
+        persist = self.cache_dict["Flow"][self.name]["NodeInst"][node_name].get("Persistent")
         if persist is not None:
             return persist
         return self.get_node(node_name).get("Persistent", None)
@@ -837,9 +778,7 @@ class Flow(Scope):
     def get_nodelet_manager(self, node_name: str, port: str = None) -> str:
         """Returns nodelet manager name"""
         if self.get_node_type(node_name) == ROS1_NODELET:
-            for link_value, port_template, _ in self.get_node_ports_gen(
-                node_name, port
-            ):
+            for link_value, port_template, _ in self.get_node_ports_gen(node_name, port):
                 if port_template == ROS1_NODELETCLIENT:
                     return link_value.split("/")[0]
         return None
@@ -907,9 +846,7 @@ class Flow(Scope):
         """Return node dummy"""
         if self.__dict__["cache_dict"] is None:
             self.__dict__["cache_dict"] = self.get_dict(recursive=True)
-        dummy_inst = self.cache_dict["Flow"][self.name]["NodeInst"][node_name].get(
-            "Dummy"
-        )
+        dummy_inst = self.cache_dict["Flow"][self.name]["NodeInst"][node_name].get("Dummy")
         if dummy_inst is not None:
             return dummy_inst
         return self.get_node(node_name).get("Dummy", False)
@@ -979,7 +916,6 @@ class Flow(Scope):
 
             # delete NodeInst or Container Links
             if result > 0 and key in ["NodeInst", "Container"]:
-
                 # string to check will be nodeInst1/nodeInst2
                 # name can be nodeInst or nodeInst__otherName
                 pattern = f"^{name}/.+|^{name}__.*/|/{name}$|/{name}__.*$"
@@ -987,9 +923,7 @@ class Flow(Scope):
                 for link, value in self.Links.items():
                     # split From and To by / to get the nodeInst
                     # expected format is nodeInst/portInst/portName
-                    values = [
-                        prop.split("/", 1)[0] for prop in [value["From"], value["To"]]
-                    ]
+                    values = [prop.split("/", 1)[0] for prop in [value["From"], value["To"]]]
 
                     # join the values into one string
                     # if pattern found delete link
@@ -1153,26 +1087,16 @@ class Flow(Scope):
 
         # Loop flows that have subflows
         for flow_name, flow_containers in flows_with_containers.get("Flow", {}).items():
-
             # Loop throught subflows
             for flow_container in next(iter(flow_containers.values())).values():
-
                 # check if the subflow is referencing me
                 if flow_container.get("ContainerFlow", "") == self.name:
-
                     try:
-
                         container_label = flow_container.get("ContainerLabel", "")
-                        _port_prefix = (
-                            f"{container_label}__{prefix}"
-                            if prefix
-                            else container_label
-                        )
+                        _port_prefix = f"{container_label}__{prefix}" if prefix else container_label
 
                         _join_char = join_char or (
-                            "__"
-                            if (self.Container.get(node_inst_name, None) or prefix)
-                            else "/"
+                            "__" if (self.Container.get(node_inst_name, None) or prefix) else "/"
                         )
 
                         # we do not care about the in/out of the port bc port names are unique in the Node
@@ -1207,9 +1131,7 @@ class Flow(Scope):
                                 else port_name
                             )
 
-                            flow.delete_exposed_port(
-                                f"__{self.name}", _port_name, container_label
-                            )
+                            flow.delete_exposed_port(f"__{self.name}", _port_name, container_label)
 
                         # check Flows using 'flow' as a subflow
                         flow.delete_exposed_port_links(
@@ -1265,12 +1187,9 @@ class Flow(Scope):
 
         # convert diff back to initial format
         for port_to_delete in diff:
-
             template, node_instance, port = port_to_delete.split(path_char)
 
-            to_delete.setdefault(template, {}).setdefault(node_instance, []).append(
-                port
-            )
+            to_delete.setdefault(template, {}).setdefault(node_instance, []).append(port)
 
         return [{key: value} for key, value in to_delete.items()]
 
@@ -1298,11 +1217,7 @@ class Flow(Scope):
                 new_node.update(options)
 
             MovaiDB(db=self.db).set(
-                {
-                    self.__class__.__name__: {
-                        self.name: {org_type: {copy_name: new_node}}
-                    }
-                }
+                {self.__class__.__name__: {self.name: {org_type: {copy_name: new_node}}}}
             )
 
         except Exception as error:

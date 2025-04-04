@@ -8,6 +8,4 @@
 """
 from .git import GitPlugin
 
-__all__ = [
-    "GitPlugin"
-]
+__all__ = ["GitPlugin"]

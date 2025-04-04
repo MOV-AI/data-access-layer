@@ -12,11 +12,7 @@ from datetime import datetime
 from typing import List
 from movai_core_shared.exceptions import DoesNotExist
 from movai_core_shared.logger import Log
-from .scopestree import (
-    ScopeInstanceVersionNode,
-    ScopesTree,
-    ScopeNode,
-    scopes)
+from .scopestree import ScopeInstanceVersionNode, ScopesTree, ScopeNode, scopes
 from dal.data import TreeNode, SchemaPropertyNode
 
 
@@ -42,14 +38,16 @@ class Model(ScopeInstanceVersionNode, ABC):
     __FORWARD_RELATIONS__ = {}
     log = Log.get_logger(__name__)
 
-    def __new__(cls, ref_or_path: str, workspace: str = 'global', version: str = '__UNVERSIONED__'):
-        return scopes.from_path(ref_or_path, scope=cls.__name__, workspace=workspace, version=version)
+    def __new__(cls, ref_or_path: str, workspace: str = "global", version: str = "__UNVERSIONED__"):
+        return scopes.from_path(
+            ref_or_path, scope=cls.__name__, workspace=workspace, version=version
+        )
 
     def __init__(self, *args, **kwargs):
         # FIXME workaround not pretty
         try:
             # if it has already been initialized, ignore it
-            object.__getattribute__(self, '_parent')
+            object.__getattribute__(self, "_parent")
         except AttributeError:
             super().__init__(*args, **kwargs)
 
@@ -57,8 +55,15 @@ class Model(ScopeInstanceVersionNode, ABC):
         pass
 
     @staticmethod
-    def _get_relations_list(relations: dict, schema: TreeNode, data: dict, out: set, level: int, depth: int = 0,
-                            search_filter: list = None):
+    def _get_relations_list(
+        relations: dict,
+        schema: TreeNode,
+        data: dict,
+        out: set,
+        level: int,
+        depth: int = 0,
+        search_filter: list = None,
+    ):
         """
         This method is a last resort to search for data relations,
         if the driver fails to return this relations
@@ -68,9 +73,7 @@ class Model(ScopeInstanceVersionNode, ABC):
         quick to access this information, use this method as last resources
         """
         try:
-
             if isinstance(schema, SchemaPropertyNode):
-
                 try:
                     # the relation must exists in the relations dict
                     schema_scope = relations[schema.path]["scope"]
@@ -79,7 +82,8 @@ class Model(ScopeInstanceVersionNode, ABC):
 
                 # get the workspace, scope, ref, version
                 workspace, scope, ref, version = ScopesTree.extract_reference(
-                    data[schema.name], scope=schema_scope)
+                    data[schema.name], scope=schema_scope
+                )
 
                 # We add the found related object in the list
                 # if we passed a search filter we check if scope
@@ -94,14 +98,17 @@ class Model(ScopeInstanceVersionNode, ABC):
                 # If we want to go deeper in the relations, the deeper we search
                 # the costly it gets, we should avoid deep searches
                 if level < depth:
-                    obj = getattr(
-                        scopes(workspace=workspace),
-                        scope
-                    )[ref, version]
+                    obj = getattr(scopes(workspace=workspace), scope)[ref, version]
                     try:
                         Model._get_relations_list(
-                            type(obj).__RELATIONS__, obj.schema, obj.serialize(),
-                            out, level + 1, depth, search_filter)
+                            type(obj).__RELATIONS__,
+                            obj.schema,
+                            obj.serialize(),
+                            out,
+                            level + 1,
+                            depth,
+                            search_filter,
+                        )
                     except AttributeError:
                         pass
                 return
@@ -110,23 +117,26 @@ class Model(ScopeInstanceVersionNode, ABC):
             if schema.attributes.get("is_hash", True):
                 for name in data[schema.name].keys():
                     for child in schema.children:
-                        Model._get_relations_list(relations,
-                                                  child, data[schema.name][name],
-                                                  out, level, depth, search_filter)
+                        Model._get_relations_list(
+                            relations,
+                            child,
+                            data[schema.name][name],
+                            out,
+                            level,
+                            depth,
+                            search_filter,
+                        )
                 return
 
             # I don't think we have cases where we reach this code, never the less
             # we need to assume that this might happen
             for child in schema.children:
-                Model._get_relations_list(
-                    relations, child, data[schema.name], out, level, depth)
+                Model._get_relations_list(relations, child, data[schema.name], out, level, depth)
 
         except (KeyError, AttributeError):
-
             # No schema! check in this node children if any
             for child in schema.children:
-                Model._get_relations_list(
-                    relations, child, data, out, level, depth)
+                Model._get_relations_list(relations, child, data, out, level, depth)
 
     @staticmethod
     def register_model_class(scope: str, cls: type):
@@ -228,7 +238,14 @@ class Model(ScopeInstanceVersionNode, ABC):
         obj = getattr(workspace, scope)[ref, version]
         try:
             Model._get_relations_list(
-                type(obj).__RELATIONS__, obj.schema, obj.serialize(), out, level, depth, search_filter)
+                type(obj).__RELATIONS__,
+                obj.schema,
+                obj.serialize(),
+                out,
+                level,
+                depth,
+                search_filter,
+            )
         except AttributeError:
             pass
         return out
@@ -245,7 +262,7 @@ class Model(ScopeInstanceVersionNode, ABC):
     def list_objects_names(cls) -> List[str]:
         objects_names = []
         for obj in scopes().list_scopes(scope=cls.__name__):
-            objects_names.append(str(obj['ref']))
+            objects_names.append(str(obj["ref"]))
         return objects_names
 
     @classmethod
@@ -259,16 +276,13 @@ class Model(ScopeInstanceVersionNode, ABC):
         return datetime.now().strftime("%d/%m/%Y at %H:%M:%S")
 
     def update_time(self) -> None:
-        """update the LastUpdate field in the Model entry with current time.
-        """
+        """update the LastUpdate field in the Model entry with current time."""
         self.LastUpdate = {"date": Model._current_time()}
         self.write()
-    
+
     def track_object(self, username: str) -> None:
-        """update the LastUpdate field in the Model entry with current time.
-        """
-        self.LastUpdate = {"date": Model._current_time(),
-                           "user": username}
+        """update the LastUpdate field in the Model entry with current time."""
+        self.LastUpdate = {"date": Model._current_time(), "user": username}
         self.write()
 
     @classmethod
@@ -288,4 +302,3 @@ class Model(ScopeInstanceVersionNode, ABC):
         except KeyError:
             msg = f"Failed to find {cls.__name__} named: {name}"
             raise DoesNotExist(msg)
-

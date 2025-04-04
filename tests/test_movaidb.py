@@ -68,10 +68,13 @@ class TestMovaiDB(unittest.TestCase):
         self.assertEqual(MovaiDB.keys_to_dict(kv), expected_output)
 
     def test_dict_to_keys(self):
-        _input = {'Var': {'context': {'ID': {"TID": {'Parameter': "msg"}}}}}
-        expected_output = [('Var:context,ID:TID,Parameter:', 'msg', 'hash')]
+        _input = {"Var": {"context": {"ID": {"TID": {"Parameter": "msg"}}}}}
+        expected_output = [("Var:context,ID:TID,Parameter:", "msg", "hash")]
         self.assertEqual(MovaiDB("local").dict_to_keys(_input), expected_output)
 
     def test_generate_search_wild_key(self):
-        _input = {'Package': {'mov-fe-app-ide': {'File': '*'}}}
-        self.assertEqual(MovaiDB.generate_search_wild_key(_input, only_pattern=False), "Package:mov-fe-app-ide,File*")
+        _input = {"Package": {"mov-fe-app-ide": {"File": "*"}}}
+        self.assertEqual(
+            MovaiDB.generate_search_wild_key(_input, only_pattern=False),
+            "Package:mov-fe-app-ide,File*",
+        )

@@ -15,13 +15,12 @@ from dal.classes.protocols import (
     ContextClientIn,
     ContextServerIn,
     ContextClientOut,
-    ContextServerOut
+    ContextServerOut,
 )
 
 
 class DAL(ABC):
-    """Data Access Layer Main class API
-    """
+    """Data Access Layer Main class API"""
 
     @abstractmethod
     def __init__(self, user: str, schema_version: str) -> None:
@@ -51,11 +50,10 @@ class DAL(ABC):
                         - status: True if succeeded otherwise False
                         - message: error or success message
                         - path: the path of the error in case there is one
-            """
+        """
         return self.validator.validate(file_path)
 
-    def get(self, filename: str, remote: str, version: str,
-            should_validate: bool = True) -> str:
+    def get(self, filename: str, remote: str, version: str, should_validate: bool = True) -> str:
         """will get a file from remote with required version number
            will perform schema validation on the file according to it's type
 
@@ -74,12 +72,14 @@ class DAL(ABC):
 
         return path
 
-    def commit(self,
-               filename: str,
-               remote: str,
-               new_branch: str = None,
-               base_branch: str = None,
-               message: str = "") -> str:
+    def commit(
+        self,
+        filename: str,
+        remote: str,
+        new_branch: str = None,
+        base_branch: str = None,
+        message: str = "",
+    ) -> str:
         """will commit the specified file locally.
 
         Args:
@@ -104,12 +104,16 @@ class DAL(ABC):
             # validation FAILED, add log
             print(validation["message"])
             print(validation["path"])
-            return ''
-        return self.manager.commit_file(remote, filename, new_branch,
-                                        base_branch, message)
+            return ""
+        return self.manager.commit_file(remote, filename, new_branch, base_branch, message)
 
-    def push(self, repo_link: str, remote_alias: str = 'origin',
-             tag_to_push: str = None, only_tag: bool = False):
+    def push(
+        self,
+        repo_link: str,
+        remote_alias: str = "origin",
+        tag_to_push: str = None,
+        only_tag: bool = False,
+    ):
         """pushed local repository changes remotely to remote name
 
         Args:
@@ -125,10 +129,9 @@ class DAL(ABC):
             PushInfo: Carries information about the result of a push operation
                       of a single head
         """
-        return self.manager.push(repo_link, remote_alias,
-                                 tag_to_push, only_tag)
+        return self.manager.push(repo_link, remote_alias, tag_to_push, only_tag)
 
-    def pull(self, repo_link: str, remote_alias: str = 'origin'):
+    def pull(self, repo_link: str, remote_alias: str = "origin"):
         """Pull changes from remote, being the same as a fetch followed
            by a merge of branch with your local branch.
 
@@ -162,14 +165,15 @@ class DAL(ABC):
         """
         return self.manager._get_local_path(remote)
 
-    def create_file(self,
-                    remote: str,
-                    relative_path: str,
-                    content: str,
-                    base_version: str = None,
-                    is_json: bool = True) -> None:
-        self.manager.create_file(remote, relative_path, content,
-                                 base_version, is_json)
+    def create_file(
+        self,
+        remote: str,
+        relative_path: str,
+        content: str,
+        base_version: str = None,
+        is_json: bool = True,
+    ) -> None:
+        self.manager.create_file(remote, relative_path, content, base_version, is_json)
 
     def release(self):
         pass
@@ -179,40 +183,32 @@ class DAL(ABC):
 
 
 class RedisProtocols:
-    """organize all of Redis related Protocols
-    """
+    """organize all of Redis related Protocols"""
+
     @staticmethod
-    def context_client_in(callback: callable, params: dict,
-                          **kwargs) -> ContextClientIn:
+    def context_client_in(callback: callable, params: dict, **kwargs) -> ContextClientIn:
         return ContextClientIn(callback, params, **kwargs)
 
     @staticmethod
-    def context_client_out(node_name: str,
-                           params: dict) -> ContextClientOut:
+    def context_client_out(node_name: str, params: dict) -> ContextClientOut:
         return ContextClientOut(node_name, params)
 
     @staticmethod
-    def context_server_in(callback: callable, params: dict,
-                          **kwargs) -> ContextServerIn:
+    def context_server_in(callback: callable, params: dict, **kwargs) -> ContextServerIn:
         return ContextServerIn(callback, params, **kwargs)
 
     @staticmethod
-    def context_server_out(node_name: str,
-                           params: dict) -> ContextServerOut:
+    def context_server_out(node_name: str, params: dict) -> ContextServerOut:
         return ContextServerOut(node_name, params)
 
 
 class SlaveDAL(DAL):
-    def __init__(self,
-                 user: str,
-                 schema_version: str = validation.default_version) -> None:
+    def __init__(self, user: str, schema_version: str = validation.default_version) -> None:
         super().__init__(user, schema_version)
         self.manager = SlaveGitManager(user)
 
 
 class MasterDAL(DAL):
-    def __init__(self,
-                 user: str,
-                 schema_version: str = validation.default_version) -> None:
+    def __init__(self, user: str, schema_version: str = validation.default_version) -> None:
         super().__init__(user, schema_version)
         self.manager = MasterGitManager(user)

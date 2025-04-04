@@ -8,6 +8,4 @@
 """
 from .version20 import SchemaV2Deserializer
 
-__all__ = [
-    "SchemaV2Deserializer"
-]
+__all__ = ["SchemaV2Deserializer"]

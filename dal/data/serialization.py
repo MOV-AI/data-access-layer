@@ -14,6 +14,7 @@ class SerializableObject(ABC):
     """
     A serializable object should implement this inteface
     """
+
     @abstractmethod
     def serialize(self, **kwargs):
         """
@@ -57,7 +58,6 @@ class SimpleDeserializer(ObjectDeserializer):
         Abstract method to run the data deserializer
         """
         for key, value in data.items():
-
             if isinstance(value, dict):
                 node = ObjectNode(key)
                 SimpleDeserializer().deserialize(node, value)
@@ -78,7 +78,6 @@ class SimpleSerializer(ObjectSerializer):
         """
         data = {}
         for child in root.children:
-
             if issubclass(type(child), ObjectNode):
                 key = child.name
                 value = SimpleSerializer().serialize(child)

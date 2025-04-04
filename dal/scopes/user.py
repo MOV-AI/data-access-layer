@@ -98,7 +98,6 @@ class User(Scope):
         return result
 
     def user_permissions(self) -> dict:
-
         data = {
             "role": self.get_value(key="Role"),
             "all_roles": ACLManager.get_roles(),
@@ -107,19 +106,14 @@ class User(Scope):
 
         resources_parsed_data = {}
         for resource, permissions in data["all_resources_permissions"].items():
-
             role = data["role"]
 
             has_role_resource = False
-            if (
-                resource
-                in data.get("all_roles", {}).get(role, {}).get("Resources", {}).keys()
-            ):
+            if resource in data.get("all_roles", {}).get(role, {}).get("Resources", {}).keys():
                 has_role_resource = data["all_roles"][role]["Resources"][resource]
 
             user_permissions = []
             for perm in permissions:
-
                 role_perm_value = has_role_resource and (perm in has_role_resource)
 
                 perm_value = self.has_permission(

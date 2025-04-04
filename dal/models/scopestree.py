@@ -65,9 +65,7 @@ class ScopeInstanceNode(DictNode, WorkspaceObject):
         return None if workspace is None else workspace.workspace
 
 
-class ScopeInstanceVersionNode(
-    ObjectNode, VersionObject, WorkspaceObject, PersistentObject, ABC
-):
+class ScopeInstanceVersionNode(ObjectNode, VersionObject, WorkspaceObject, PersistentObject, ABC):
     """
     This class represents a instance version, the instance version is the
     object that actually contains the data
@@ -204,7 +202,6 @@ class ScopeInstanceVersionNode(
             attr.attributes["schema"] = attr_schema
             self.add_child(attr)
         elif isinstance(attr_schema, SchemaObjectNode):
-
             if not isinstance(value, dict):
                 raise ValueError("Invalid value must be a dict")
 
@@ -215,9 +212,7 @@ class ScopeInstanceVersionNode(
                     attr_child = ScopeObjectNode(k)
                     attr_child.attributes["schema"] = attr_schema
                     for node_attr in attr_schema.children:
-                        ScopeAttributeDeserializer._deserialize(
-                            node_attr, attr_child, v
-                        )
+                        ScopeAttributeDeserializer._deserialize(node_attr, attr_child, v)
                     attr.add_child(attr_child)
                 self.add_child((name, attr))
                 return
@@ -232,7 +227,6 @@ class ScopeInstanceVersionNode(
             self.add_child(attr)
 
     def __getattribute__(self, name):
-
         try:
             attr = super().__getattribute__(name)
         except AttributeError:
@@ -264,7 +258,6 @@ class ScopeInstanceVersionNode(
             return getattr(self, name)
 
         if isinstance(attr_schema, SchemaObjectNode):
-
             # A dict
             if attr_schema.attributes.get("is_hash", False):
                 attr = ScopeDictNode(name)
@@ -379,17 +372,13 @@ class ScopeDictNode(DictNode, SerializableObject):
         try:
             for data_key in data:
                 try:
-                    ScopeAttributeDeserializer._deserialize(
-                        schema[data_key], attr, data
-                    )
+                    ScopeAttributeDeserializer._deserialize(schema[data_key], attr, data)
                 except KeyError:
                     # not defined on schema, ignore
                     pass
         except AttributeError as e:
             # looks like data is not `dict`
-            raise TypeError(
-                "Can't deserialize given object (should be an `dict`)"
-            ) from e
+            raise TypeError("Can't deserialize given object (should be an `dict`)") from e
         except TypeError:
             # data is `None`
             pass
@@ -450,7 +439,6 @@ class ScopeObjectNode(ObjectNode, SerializableObject, ABC):
             return None if scope_instance is None else scope_instance.schema
 
     def __setattr__(self, name: str, value: object):
-
         try:
             if name not in ScopeObjectNode.__PROTECTED__:
                 _ = super().__getattribute__(name)
@@ -469,7 +457,6 @@ class ScopeObjectNode(ObjectNode, SerializableObject, ABC):
             attr.attributes["schema"] = attr_schema
             self.add_child(attr)
         elif isinstance(attr_schema, SchemaObjectNode):
-
             if not isinstance(value, dict):
                 raise ValueError("Invalid value must be a dict")
 
@@ -480,9 +467,7 @@ class ScopeObjectNode(ObjectNode, SerializableObject, ABC):
                     attr_child = ScopeObjectNode(k)
                     attr_child.attributes["schema"] = attr_schema
                     for node_attr in attr_schema.children:
-                        ScopeAttributeDeserializer._deserialize(
-                            node_attr, attr_child, v
-                        )
+                        ScopeAttributeDeserializer._deserialize(node_attr, attr_child, v)
                     attr.add_child(attr_child)
                 self.add_child((name, attr))
                 return
@@ -497,7 +482,6 @@ class ScopeObjectNode(ObjectNode, SerializableObject, ABC):
             self.add_child(attr)
 
     def __getattribute__(self, name):
-
         try:
             attr = super().__getattribute__(name)
         except AttributeError:
@@ -529,7 +513,6 @@ class ScopeObjectNode(ObjectNode, SerializableObject, ABC):
             return getattr(self, name)
 
         if isinstance(attr_schema, SchemaObjectNode):
-
             # A dict
             if attr_schema.attributes.get("is_hash", False):
                 attr = ScopeDictNode(name)
@@ -658,7 +641,6 @@ class ScopeNode(DictNode, WorkspaceObject):
         return workspace.workspace
 
     def __getitem__(self, key):
-
         if isinstance(key, tuple):
             version = key[1]
             key = key[0]
@@ -828,9 +810,7 @@ class ScopeWorkspace(WorkspaceNode):
         """
         return self._plugin.list_versions(workspace=self.workspace, scope=scope, ref=ref)
 
-    def create(
-        self, scope: str, ref: str, version="__UNVERSIONED__", overwrite: bool = False
-    ):
+    def create(self, scope: str, ref: str, version="__UNVERSIONED__", overwrite: bool = False):
         """
         create a new scope
         """
@@ -921,19 +901,17 @@ class ScopesTree(CallableNode):
     A scopes tree is an interface to access the stored
     data in mov.ai
     """
+
     _instance = None
 
     reference_regexes = [
         # split pattern 1: git/<scope>(<owner>/<project>)/(<ref>/<ref>/..)/<version>
         # (1)git  (2)github.com:remote/owner/project  (3)path  (4)version
         r"^(git)/([a-zA-Z0-9_.-]+[:/][a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+)/([/a-zA-Z0-9_.-]+)/([a-zA-Z0-9_.-]+)$",
-
         # split pattern 2: <workspace>/<scope>/(<ref>/<ref>/..)/<version>
         r"^([a-zA-Z0-9-_.]+)/([a-zA-Z0-9_.]+)/([a-zA-Z0-9_.-]+[/a-zA-Z0-9_.-]*)/([a-zA-Z0-9_.]+)$",
-
         # split pattern 3: <workspace>/<scope>/<ref>/<version>
         r"^([a-zA-Z0-9-_.]+)/([a-zA-Z0-9_.]+)/([a-zA-Z0-9_.-]+)/([/a-zA-Z0-9_.]+)$",
-
         # split pattern 4: <workspace>/<scope>/<ref>
         r"^([a-zA-Z0-9-_.]+)/([a-zA-Z0-9_.]+)/([a-zA-Z0-9_.-]+)$",
     ]
@@ -953,9 +931,14 @@ class ScopesTree(CallableNode):
                 workspace, scope, ref = m.groups()[0:3]
                 if scope.find(":") == -1:
                     # replace first / with : in order to have remote:owner/project
-                    scope = scope.replace('/', ":", 1)
+                    scope = scope.replace("/", ":", 1)
                 return workspace, scope, ref, version
-        return kwargs.get("workspace", "global"), kwargs["scope"], path, kwargs.get("version", "__UNVERSIONED__")
+        return (
+            kwargs.get("workspace", "global"),
+            kwargs["scope"],
+            path,
+            kwargs.get("version", "__UNVERSIONED__"),
+        )
 
     @property
     def node_type(self):
@@ -976,9 +959,7 @@ class ScopesTree(CallableNode):
         Read a document from a specified path
         """
         try:
-            workspace, scope, ref, version = ScopesTree.extract_reference(
-                path, **kwargs
-            )
+            workspace, scope, ref, version = ScopesTree.extract_reference(path, **kwargs)
             return self(workspace=workspace).read(scope=scope, ref=ref, version=version)
         except KeyError as e:
             raise ValueError("Invalid path") from e
@@ -996,9 +977,7 @@ class ScopesTree(CallableNode):
             Model: a Model Object representing the entitiy requested
         """
         try:
-            workspace, scope, ref, version = ScopesTree.extract_reference(
-                path, **kwargs
-            )
+            workspace, scope, ref, version = ScopesTree.extract_reference(path, **kwargs)
             scope_workspace: ScopeWorkspace = self(workspace=workspace)
             node: ScopeNode = getattr(scope_workspace, scope)
             return node[ref, version]
@@ -1010,12 +989,8 @@ class ScopesTree(CallableNode):
         Read a document from a specified path
         """
         try:
-            workspace, scope, ref, version = ScopesTree.extract_reference(
-                path, **kwargs
-            )
-            return self(workspace=workspace).backup(
-                scope=scope, ref=ref, version=version, **kwargs
-            )
+            workspace, scope, ref, version = ScopesTree.extract_reference(path, **kwargs)
+            return self(workspace=workspace).backup(scope=scope, ref=ref, version=version, **kwargs)
         except KeyError as e:
             raise ValueError("Invalid path") from e
 
@@ -1024,9 +999,7 @@ class ScopesTree(CallableNode):
         Read a document from a specified path
         """
         try:
-            workspace, scope, ref, version = ScopesTree.extract_reference(
-                path, **kwargs
-            )
+            workspace, scope, ref, version = ScopesTree.extract_reference(path, **kwargs)
             return self(workspace=workspace).restore(
                 scope=scope, ref=ref, version=version, **kwargs
             )
@@ -1103,7 +1076,6 @@ class ScopeAttributeDeserializer(ObjectDeserializer):
         # have the "is_hash" flag, in that case means that the property is
         # a dictionary that holds more than one object
         if issubclass(type(schema), SchemaObjectNode):
-
             # A dict
             if schema.attributes.get("is_hash", False):
                 try:
@@ -1123,9 +1095,7 @@ class ScopeAttributeDeserializer(ObjectDeserializer):
                             attr = attr_class(key)
                             attr.attributes["schema"] = schema
                             for node_attr in node_attrs:
-                                ScopeAttributeDeserializer._deserialize(
-                                    node_attr, attr, value
-                                )
+                                ScopeAttributeDeserializer._deserialize(node_attr, attr, value)
                             node.add_child(attr)
                         except KeyError:
                             pass
@@ -1189,7 +1159,6 @@ class ScopeAttributeSerializer(ObjectSerializer):
 
         data = {}
         for child in root.children:
-
             key = child.name
             if issubclass(type(child), (ScopeObjectNode, ScopeDictNode)):
                 value = ScopeAttributeSerializer(self._schema).serialize(child)

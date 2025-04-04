@@ -37,7 +37,9 @@ class BaseArchive:
         if not user:
             user = getenv("MOVAI_GIT_USERNAME") or DEFAULT_MOVAI_GIT_USER
         if user == DEFAULT_MOVAI_GIT_USER:
-            LOGGER.debug("user for movai git not provided ($MOVAI_GIT_USERNAME), using 'MOVAI_TEMP_USER' instead")
+            LOGGER.debug(
+                "user for movai git not provided ($MOVAI_GIT_USERNAME), using 'MOVAI_TEMP_USER' instead"
+            )
         if BaseArchive.active_archive is None:
             raise NoActiveArchiveRegistered("")
         return BaseArchive.active_archive.get_client(user)
@@ -163,9 +165,7 @@ class BaseArchive:
         """
 
     @abstractmethod
-    def create_version(
-        self, remote: str, base_version: str, new_version: str, **kwargs
-    ) -> bool:
+    def create_version(self, remote: str, base_version: str, new_version: str, **kwargs) -> bool:
         """create a new version based on another version.
 
         Args:
