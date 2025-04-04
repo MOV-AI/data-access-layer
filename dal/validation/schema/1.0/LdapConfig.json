@@ -9,7 +9,7 @@
         "SSLVersion": "int",
         "Username": "str",
         "Password": "str",
-        "DomainName": "str",      
+        "DomainName": "str",
         "UsersDN": "str",
         "GroupsDN": "str",
         "SecretKey": "str",
@@ -18,4 +18,4 @@
       }
     }
   }
-  
+

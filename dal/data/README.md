@@ -1,8 +1,8 @@
 # Mov.ai Database Module
 
-This is part of Mov.ai and is responsible for implementing the access to the database layer. 
+This is part of Mov.ai and is responsible for implementing the access to the database layer.
 
-- [Block Diagram](../../../../architecture/2.0/datalayer/blocks.uxf)  
+- [Block Diagram](../../../../architecture/2.0/datalayer/blocks.uxf)
 - [Class Diagram](../../../../architecture/2.0/datalayer/classes.uxf)
 
 ## Implementation
@@ -21,7 +21,7 @@ Classes Available:
 - WorkspaceNode
 - SchemaNode, SchemaVersionNode, SchemaObjectNode, SchemaPropertyNode, SchemasTree, SchemaDeserializer
 - ScopeInstanceNode, ScopeInstanceVersionNode, ScopeDictNode, ScopeObjectNode, ScopePropertyNode, ScopeNode, ScopeWorkspace, ScopesTree, ScopeAttributeDeserializer, ScopeAttributeSerializer
-  
+
 Singletons:
 - WorkspaceManager
 - Persistence
@@ -30,7 +30,7 @@ Singletons:
 
 ## TreeNode, ListNode, DictNode, ObjectNode, PropertyNode, CallableNode
 
-This classes represent generic nodes in a tree, with TreeNode as the most top abstract class, see [Block Diagram](../../../../architecture/2.0/datalayer/blocks.uxf)  
+This classes represent generic nodes in a tree, with TreeNode as the most top abstract class, see [Block Diagram](../../../../architecture/2.0/datalayer/blocks.uxf)
 
 ## VersionNode, VersionObject
 
@@ -116,10 +116,10 @@ print(flow_schema)
 - **WorkspaceObject** : Interface for objects with the workspace attributr
 
 ### Notes:
-- The ```global``` is the Redis workspace and is a builtin workspace it cannot be deleted. 
+- The ```global``` is the Redis workspace and is a builtin workspace it cannot be deleted.
 - A workspace has always a persistent plugin associated with:
   - ```global``` : Redis
-  - ```All other workspaces``` : Filesystem 
+  - ```All other workspaces``` : Filesystem
 
 Code Snippets:
 ```
@@ -240,9 +240,9 @@ Again if we want to map the tree nodes from ```scopes/global/Flow/mapping/__UNVE
 - **ScopeNode**: A scope node (Flow, Node, etc)
 - **ScopeInstanceNode**: A instance of a scopes, it must have a unique ```ref```
 - **ScopeInstanceVersionNode**: A version of a instance, a instance might have multiple versions
-- **ScopeDictNode**: A dict object in the schema, 
+- **ScopeDictNode**: A dict object in the schema,
 - **ScopeObjectNode**: A object in the schema, normally this objects are stored in the **ScopeDictNode**
-- **ScopePropertyNode**: The leaf of branch, a terminal element is always of this type 
+- **ScopePropertyNode**: The leaf of branch, a terminal element is always of this type
 - **ScopeAttributeDeserializer** : The implementation of the deserialization of a scope
 - **ScopeAttributeSerializer** : The implementation of the serialization of a scope
 - **scopes** : Access to the schemas is done by this singleton
@@ -252,7 +252,7 @@ Again if we want to map the tree nodes from ```scopes/global/Flow/mapping/__UNVE
 # Read flow from the global workspace
 mapping = scopes().Flow["mapping"]
 
-# write a version of the flow mapping into "myworkspace" 
+# write a version of the flow mapping into "myworkspace"
 scopes(workspace="myworkspace").write(mapping,version="1.2.3")
 
 # Read flow with version 1.2.3 from "myworkspace"
@@ -261,7 +261,7 @@ mapping = scopes(workspace="myworkspace").Flow["mapping","1.2.3"]
 # Read node AMCL from the global workspace
 amcl = scopes().Node["amcl"]
 
-# Change the template for the NodeInst["lights_ready"] 
+# Change the template for the NodeInst["lights_ready"]
 mapping.NodeInst["lights_ready"].Template = "my_template"
 
 # Write into the global database a flow using a dict as source, this will replace the data in the database ( only supported in REDIS )
@@ -289,4 +289,3 @@ flow.NodeInst["my_node"].Template = "amcl"
 
 ## Notes:
 - In mov.ai data is created dynamically, when you create a new scope instance ie.```my_mapping```you just need to set the attributes according to the schema and the API will automatically add the correct nodes to the tree
-

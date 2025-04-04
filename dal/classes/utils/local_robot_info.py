@@ -2,7 +2,7 @@
    Copyright (C) Mov.ai  - All Rights Reserved
    Unauthorized copying of this file, via any medium is strictly prohibited
    Proprietary and confidential
-   
+
    Usage:
         a basic class for getting robot information.
 

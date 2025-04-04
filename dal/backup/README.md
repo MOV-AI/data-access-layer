@@ -15,7 +15,7 @@ Currently we implement 4 classes:
 - Each xxxxJob class represents a Job that was created by the xxxxManager
 - Each Job is related to a folder in the filesystem
 - The location on the filesystem is: ```_ROOT_PATH = os.path.join(os.getenv('MOVAI_USERSPACE', ""), "backups|restore")```
-- Each xxxxJob have an unique id (uuid4) which matches the folder name 
+- Each xxxxJob have an unique id (uuid4) which matches the folder name
 - Each xxxxJob have a state file ```state.json```
 - Each xxxxJob have a log file
 - BackupJob requires a list of scopes to backup, metadata and shallow flag is optional, ```create_job(manifest: list, shallow: bool = True, metadata: dict = None)```
@@ -44,7 +44,7 @@ with open("/tmp/backup.zip", "wb") as f:
 with open("/tmp/backup.log", "wb") as f:
     BackupManager.write_log(job_id, f)
 ```
-  
+
 ### Using RestoreManager
 ```
 from dal.backup import RestoreManager
@@ -59,4 +59,4 @@ RestoreManager.start_job(job_id)
 with open("/tmp/restore.log", "w") as f:
     RestoreManager.write_log(job_id, f)
 ```
-  
+
