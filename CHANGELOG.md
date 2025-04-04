@@ -1,4 +1,4 @@
-# vTBD
+# v3.1.1
 - [BP-1399](https://movai.atlassian.net/browse/BP-1399): Format code
 
 # v3.1.0
