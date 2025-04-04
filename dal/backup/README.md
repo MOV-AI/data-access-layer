@@ -59,4 +59,3 @@ RestoreManager.start_job(job_id)
 with open("/tmp/restore.log", "w") as f:
     RestoreManager.write_log(job_id, f)
 ```
-
