@@ -4,23 +4,26 @@ from movai_core_shared.core.secure import generate_secret_string
 from movai_core_shared.exceptions import (
     LdapConfigAlreadyExist,
     LdapConfigDoesNotExist,
-    LdapConfigMissingParameter)
+    LdapConfigMissingParameter,
+)
 
 from .model import Model
 from .scopestree import ScopesTree, scopes
 
 
-
 class LdapConfig(Model):
     """This class represents an ldap configuration saved in the DB.
     The name of the configuratin will be the same as the domain"""
-    mandatory_parameters = ('DomainName',
-                            'PrimaryHost',
-                            'PrimaryPort',
-                            'Username',
-                            'Password',
-                            'UsersDN',
-                            'GroupsDN')
+
+    mandatory_parameters = (
+        "DomainName",
+        "PrimaryHost",
+        "PrimaryPort",
+        "Username",
+        "Password",
+        "UsersDN",
+        "GroupsDN",
+    )
 
     @classmethod
     def create(cls, ldap_parameters: dict) -> Model:
@@ -53,23 +56,21 @@ class LdapConfig(Model):
         """
         for parameter in cls.mandatory_parameters:
             if parameter not in ldap_parameters:
-                error_msg = f"The key: \"{parameter}\" is missing in the "\
-                            f"supplied dictionary"
+                error_msg = f'The key: "{parameter}" is missing in the ' f"supplied dictionary"
                 cls.log.error(error_msg)
                 raise LdapConfigMissingParameter(error_msg)
-        config_name = ldap_parameters['DomainName']
+        config_name = ldap_parameters["DomainName"]
         try:
             config = scopes().create(scope=cls.__name__, ref=config_name)
-            config.DomainName = ldap_parameters['DomainName']
+            config.DomainName = ldap_parameters["DomainName"]
             config.SecretKey = generate_secret_string(LDAP_KEY_LENGTH)
             config.set_attributes(ldap_parameters)
-            config.last_validated = ''
+            config.last_validated = ""
             config.update_validation(False)
             cls.log.info(f"creating LdapConfig entry named {config_name}")
             return config
         except ValueError:
-            error_msg = f"The Ldap configuration named {config_name}"\
-                    " is already exist."
+            error_msg = f"The Ldap configuration named {config_name}" " is already exist."
             cls.log.error(error_msg)
             raise LdapConfigAlreadyExist(error_msg)
 
@@ -122,7 +123,7 @@ class LdapConfig(Model):
         """
         current_configs = []
         for config in scopes().list_scopes(scope=cls.__name__):
-            current_configs.append(config['ref'])
+            current_configs.append(config["ref"])
         return config_name in current_configs
 
     @classmethod
@@ -141,7 +142,7 @@ class LdapConfig(Model):
             Model: An LdapConfig object
         """
         try:
-            config = ScopesTree().from_path(config_name, scope='LdapConfig')
+            config = ScopesTree().from_path(config_name, scope="LdapConfig")
             return config
         except KeyError:
             error_msg = f"LdapConfig named {config_name} Does not exist"
@@ -157,7 +158,7 @@ class LdapConfig(Model):
         """
         configs = []
         for config in scopes().list_scopes(scope=cls.__name__):
-            configs.append(config['ref'])
+            configs.append(config["ref"])
         cls.log.debug(f"current LdapConfig entries: {configs}")
         return configs
 
@@ -168,38 +169,33 @@ class LdapConfig(Model):
             ldap_parameters (dict): a dictionary with the relevant values to
                 set.
         """
-        self.primary_host = ldap_parameters.get('PrimaryHost',
-                                                self.primary_host)
-        self.primary_port = ldap_parameters.get('PrimaryPort',
-                                                self.primary_port)
-        self.secondary_host = ldap_parameters.get('SecondaryHost',
-                                                  self.secondary_host)
-        self.secondary_port = ldap_parameters.get('SecondaryPort',
-                                                  self.secondary_port)
-        self.ssl_version = ldap_parameters.get('SSLVersion',
-                                               self.ssl_version)
-        self.username = ldap_parameters.get('Username', self.username)
-        self.password = ldap_parameters.get('Password', self.password)
-        self.users_dn = ldap_parameters.get('UsersDN', self.users_dn)
-        self.groups_dn = ldap_parameters.get('GroupsDN', self.groups_dn)
+        self.primary_host = ldap_parameters.get("PrimaryHost", self.primary_host)
+        self.primary_port = ldap_parameters.get("PrimaryPort", self.primary_port)
+        self.secondary_host = ldap_parameters.get("SecondaryHost", self.secondary_host)
+        self.secondary_port = ldap_parameters.get("SecondaryPort", self.secondary_port)
+        self.ssl_version = ldap_parameters.get("SSLVersion", self.ssl_version)
+        self.username = ldap_parameters.get("Username", self.username)
+        self.password = ldap_parameters.get("Password", self.password)
+        self.users_dn = ldap_parameters.get("UsersDN", self.users_dn)
+        self.groups_dn = ldap_parameters.get("GroupsDN", self.groups_dn)
         self.write()
 
     def convert_to_dict(self) -> dict:
         """convert the object to dictionary representation.
 
         Returns:
-            (dict): a dictionary with fields as defined in scheme.        
+            (dict): a dictionary with fields as defined in scheme.
         """
         config_info = {}
-        config_info['PrimaryHost'] = self.PrimaryHost
-        config_info['PrimaryPort'] = self.PrimaryPort
-        config_info['SecondaryHost'] = self.SecondaryHost
-        config_info['SecondaryPort'] = self.SecondaryPort
-        config_info['SSLVersion'] = self.SSLVersion
-        config_info['Username'] = self.Username
-        config_info['DomainName'] = self.DomainName
-        config_info['UsersDN'] = self.UsersDN
-        config_info['GroupsDN'] = self.GroupsDN
+        config_info["PrimaryHost"] = self.PrimaryHost
+        config_info["PrimaryPort"] = self.PrimaryPort
+        config_info["SecondaryHost"] = self.SecondaryHost
+        config_info["SecondaryPort"] = self.SecondaryPort
+        config_info["SSLVersion"] = self.SSLVersion
+        config_info["Username"] = self.Username
+        config_info["DomainName"] = self.DomainName
+        config_info["UsersDN"] = self.UsersDN
+        config_info["GroupsDN"] = self.GroupsDN
         return config_info
 
     def update_validation(self, status: bool) -> None:
@@ -306,7 +302,7 @@ class LdapConfig(Model):
 
         Raises:
             ValueError: in case the argument is not in the correct type.
-        """        
+        """
         if not isinstance(port, int):
             raise ValueError("port argument must be of type int.")
         self.SecondaryPort = port
@@ -384,7 +380,7 @@ class LdapConfig(Model):
 
         Raises:
             ValueError: in case the argument is not in the correct type.
-        """        
+        """
         if not isinstance(secret, str):
             raise ValueError("secret argument must be of type str.")
         secure = SecurePassword(self.SecretKey)
@@ -420,7 +416,7 @@ class LdapConfig(Model):
 
         Raises:
             ValueError: in case the argument is not in the correct type.
-        """        
+        """
         if not isinstance(dn, str):
             raise ValueError("dn argument must be of type str.")
         self.UsersDN = dn
@@ -445,7 +441,7 @@ class LdapConfig(Model):
 
         Raises:
             ValueError: in case the argument is not in the correct type.
-        """          
+        """
         if not isinstance(dn, str):
             raise ValueError("dn argument must be of type str.")
         self.GroupsDN = dn
@@ -458,7 +454,7 @@ class LdapConfig(Model):
             bool: True in case it was validated, False otherwise.
         """
         status = bool(self.ValidationStatus)
-        return status 
+        return status
 
     @validation_status.setter
     def validation_status(self, status: bool) -> None:
@@ -469,7 +465,7 @@ class LdapConfig(Model):
 
         Raises:
             ValueError: in case the argument is not in the correct type.
-        """          
+        """
         if not isinstance(status, bool):
             raise ValueError("status argument must be of type bool.")
         self.ValidationStatus = status
@@ -493,7 +489,7 @@ class LdapConfig(Model):
 
         Raises:
             ValueError: in case the argument is not in the correct type.
-        """          
+        """
         if not isinstance(validation_time, str):
             raise ValueError("validation_time argument must be of type str.")
         self.LastValidated = validation_time
@@ -507,5 +503,6 @@ class LdapConfig(Model):
         """
         bind_username = f"{self.username}@{self.domain_name}"
         return bind_username
+
 
 Model.register_model_class("LdapConfig", LdapConfig)

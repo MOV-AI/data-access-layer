@@ -18,5 +18,5 @@ __all__ = [
     "PluginManager",
     "Resource",
     "ResourceException",
-    "ResourcePlugin"
+    "ResourcePlugin",
 ]

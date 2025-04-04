@@ -27,6 +27,7 @@ from .configuration import Configuration
 
 class Robot(Scope):
     """Robot class that deals with robot related stuff"""
+
     spawner_client: MessageClient
     async_spawner_client: AsyncMessageClient
 
@@ -80,12 +81,12 @@ class Robot(Scope):
         """Set the Name of the Robot"""
         self.RobotName = name
         self.fleet.RobotName = name
-        
+
     def set_type(self, rType: str):
         """Set the Type of the Robot"""
         self.RobotType = rType
         self.fleet.RobotType = rType
-        
+
     def set_model(self, model: str):
         """Set the Model of the Robot"""
         self.RobotModel = model

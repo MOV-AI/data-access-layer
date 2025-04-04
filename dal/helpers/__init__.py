@@ -16,5 +16,5 @@ __all__ = [
     "GFlow",
     # "get_string_from_template",
     "Helpers",
-    "flatten"
+    "flatten",
 ]

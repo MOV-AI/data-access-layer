@@ -59,6 +59,7 @@ LOGGER = Log.get_logger("spawner.mov.ai")
 
 class UserFunctions:
     """Class that provides functions to the callback execution"""
+
     globals: Dict[str, Any]
 
     def __init__(
@@ -192,7 +193,11 @@ class Callback:
     _user_functions_class = UserFunctions
 
     def __init__(
-        self, _cb_name: str, _node_name: str, _port_name: str, _update: bool = False,
+        self,
+        _cb_name: str,
+        _node_name: str,
+        _port_name: str,
+        _update: bool = False,
     ) -> None:
         self.name = _cb_name
         self.node_name = _node_name
@@ -227,7 +232,9 @@ class Callback:
                 try:
                     cls._scene = scopes.from_path(scene_name, scope="GraphicScene")
                 except KeyboardInterrupt:
-                    LOGGER.warning(f"[KILLED] Callback forcefully killed while initializing. It was trying to load Scene {scene_name}. Callback: {_cb_name} , Node: {_node_name}")
+                    LOGGER.warning(
+                        f"[KILLED] Callback forcefully killed while initializing. It was trying to load Scene {scene_name}. Callback: {_cb_name} , Node: {_node_name}"
+                    )
                     sys.exit(1)
                 except:
                     LOGGER.error(f'Scene "{scene_name}" was not found')
@@ -282,7 +289,9 @@ class Callback:
         except CancelledError:
             raise CancelledError("cancelled task")
         except KeyboardInterrupt:
-            LOGGER.warning(f"[KILLED] Callback forcefully killed (node: {self.node_name}, callback={self.name})")
+            LOGGER.warning(
+                f"[KILLED] Callback forcefully killed (node: {self.node_name}, callback={self.name})"
+            )
             sys.exit(1)
         except Exception as e:
             # check if the exception is a ROSException (or an exception that
@@ -395,7 +404,9 @@ class AsyncCallback:
         except CancelledError:
             raise CancelledError("cancelled task")
         except KeyboardInterrupt:
-            LOGGER.warning(f"[KILLED] Callback forcefully killed (node: {self.node_name}, callback={self.name})")
+            LOGGER.warning(
+                f"[KILLED] Callback forcefully killed (node: {self.node_name}, callback={self.name})"
+            )
             sys.exit(1)
         except Exception:
             LOGGER.error(

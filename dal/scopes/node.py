@@ -43,9 +43,7 @@ class Node(Scope):
         return True
 
     def set_type(self):
-        ports = MovaiDB().get(
-            {"Node": {self.name: {"PortsInst": {"*": {"Template": "*"}}}}}
-        )
+        ports = MovaiDB().get({"Node": {self.name: {"PortsInst": {"*": {"Template": "*"}}}}})
         path = MovaiDB().get_value({"Node": {self.name: {"Path": ""}}})
         templs = []
         if ports:
@@ -92,14 +90,12 @@ class Node(Scope):
         return True
 
     def is_port_remappable(self, portinst):
-
         remappable = self.PortsInst[portinst].Remappable
         if remappable is None:
             return True
         return remappable
 
     def delete(self, key, name, force=False):
-
         if key in ["PortsInst", "PortInst"]:
             # If PortsInst then search for Flow links where the port exists and delete those entries
             from dal.scopes.flow import Flow
@@ -112,9 +108,7 @@ class Node(Scope):
                     dep_keys = dependence.get("Flow").get(flow_name).keys()
                     try:
                         if "Links" in dep_keys:
-                            links_dict = (
-                                dependence.get("Flow").get(flow_name).get("Links")
-                            )
+                            links_dict = dependence.get("Flow").get(flow_name).get("Links")
                             link_id = next(iter(links_dict.keys()))
                             Flow(flow_name).delete_link(link_id)
                         elif "ExposedPorts" in dep_keys:
@@ -129,7 +123,6 @@ class Node(Scope):
         super().delete(key, name)
 
     def remove(self, force=False) -> bool:
-
         # Check if Node has instances on existing Flows
         node_inst_ref_keys = self.node_inst_depends()
 
@@ -137,14 +130,10 @@ class Node(Scope):
         ports_inst = {}
         has_port_inst_dependencies = False
         for port_inst_name in self.PortsInst.keys():
-            port_node_instance_links = self.get_port_node_instance_links(
-                port_name=port_inst_name
-            )
+            port_node_instance_links = self.get_port_node_instance_links(port_name=port_inst_name)
             ports_inst[port_inst_name] = port_node_instance_links
             has_port_inst_dependencies = (
-                True
-                if not has_port_inst_dependencies and port_node_instance_links
-                else False
+                True if not has_port_inst_dependencies and port_node_instance_links else False
             )
 
         if not force and (node_inst_ref_keys or has_port_inst_dependencies):
@@ -164,9 +153,7 @@ class Node(Scope):
                 for node_inst_ref_key in node_inst_ref_keys:
                     flow_name = next(iter(node_inst_ref_key.get("Flow")))
                     node_inst_name = next(
-                        iter(
-                            node_inst_ref_key.get("Flow").get(flow_name).get("NodeInst")
-                        )
+                        iter(node_inst_ref_key.get("Flow").get(flow_name).get("NodeInst"))
                     )
 
                     try:
@@ -184,13 +171,10 @@ class Node(Scope):
         return result
 
     def rename(self, key, old_name, new_name):
-
         if key == "PortsInst":
             old_depends, _ = self.port_inst_depends(old_name)
 
-            new_depends = eval(
-                str(old_depends).replace("/" + old_name + "/", "/" + new_name + "/")
-            )
+            new_depends = eval(str(old_depends).replace("/" + old_name + "/", "/" + new_name + "/"))
 
             super().rename(key, old_name, new_name)
 
@@ -201,7 +185,6 @@ class Node(Scope):
         super().rename(key, old_name, new_name)
 
     def template_depends(self, force=False):  # TODO use Links hash
-
         # this will give a list of tuples (flow_name, node_inst_name)
         deleted_nodes = []
         # this will give a list of tuples (flow_name, link_id?)
@@ -222,9 +205,7 @@ class Node(Scope):
 
             deleted_nodes.append((flow_name, node_inst_name))
 
-            node_dict = MovaiDB().search_by_args(
-                "Flow", Name=flow_name, NodeInst=node_inst_name
-            )
+            node_dict = MovaiDB().search_by_args("Flow", Name=flow_name, NodeInst=node_inst_name)
 
             try:
                 full_dict_to_delete["Flow"][flow_name]["NodeInst"].update(
@@ -234,29 +215,17 @@ class Node(Scope):
                 full_dict_to_delete["Flow"].update(node_dict[0]["Flow"])
 
             links_from = MovaiDB().search(
-                {
-                    "Flow": {
-                        flow_name: {"Link": {"*": {"From": "*" + node_inst_name + "*"}}}
-                    }
-                }
+                {"Flow": {flow_name: {"Link": {"*": {"From": "*" + node_inst_name + "*"}}}}}
             )
             links_to = MovaiDB().search(
-                {
-                    "Flow": {
-                        flow_name: {"Link": {"*": {"To": "*" + node_inst_name + "*"}}}
-                    }
-                }
+                {"Flow": {flow_name: {"Link": {"*": {"To": "*" + node_inst_name + "*"}}}}}
             )
 
             for link in links_from + links_to:
-                for link_id in MovaiDB().keys_to_dict([(link, "")])["Flow"][flow_name][
-                    "Link"
-                ]:
+                for link_id in MovaiDB().keys_to_dict([(link, "")])["Flow"][flow_name]["Link"]:
                     deleted_links.append((flow_name, link_id))
 
-                    links_dict = MovaiDB().search_by_args(
-                        "Flow", Name=flow_name, Link=link_id
-                    )
+                    links_dict = MovaiDB().search_by_args("Flow", Name=flow_name, Link=link_id)
                     try:
                         full_dict_to_delete["Flow"][flow_name]["Link"].update(
                             links_dict[0]["Flow"][flow_name]["Link"]
@@ -314,7 +283,6 @@ class Node(Scope):
         return to_return
 
     def get_port_node_instance_links(self, port_name: str) -> list:
-
         full_node_list = MovaiDB().search(
             {"Flow": {"*": {"NodeInst": {"*": {"Template": self.name}}}}}
         )
@@ -328,17 +296,11 @@ class Node(Scope):
 
                 # get Links from Flow(flow_name)
                 flow_links = MovaiDB().get({"Flow": {flow_name: {"Links": "*"}}})
-                node_inst_name = next(
-                    iter(node.get("Flow").get(flow_name).get("NodeInst"))
-                )
+                node_inst_name = next(iter(node.get("Flow").get(flow_name).get("NodeInst")))
 
                 for key, value in (
-                    flow_links.get("Flow", {})
-                    .get(flow_name, {})
-                    .get("Links", {})
-                    .items()
+                    flow_links.get("Flow", {}).get(flow_name, {}).get("Links", {}).items()
                 ):
-
                     if re.search(
                         r"^{0}/{1}/.+$".format(node_inst_name, port_name),
                         value.get("From"),
@@ -370,9 +332,7 @@ class Node(Scope):
         for flow_name, node_insts in flows.get("Flow").items():
             for node_inst_name, params in node_insts.get("NodeInst").items():
                 if params.get("Template") == self.name:
-                    dict_key = {
-                        "Flow": {flow_name: {"NodeInst": {node_inst_name: "*"}}}
-                    }
+                    dict_key = {"Flow": {flow_name: {"NodeInst": {node_inst_name: "*"}}}}
                     node_inst_ref_keys.append(dict_key)
 
         return node_inst_ref_keys
@@ -400,9 +360,7 @@ class Node(Scope):
                 re_port = re.search(r"^.+/", port)[0][:-1]
                 if re_port == port_name:
                     node_inst_name = next(iter(exposed_ports))
-                    dict_key = {
-                        "Flow": {key: {"ExposedPorts": {node_inst_name: [port]}}}
-                    }
+                    dict_key = {"Flow": {key: {"ExposedPorts": {node_inst_name: [port]}}}}
                     exposed_ports_ref_keys.append(dict_key)
                     break
 
@@ -411,9 +369,7 @@ class Node(Scope):
         for exposed_port in exposed_ports_ref_keys:
             for port_hash in Helpers.find_by_key(exposed_port, "ExposedPorts"):
                 node_inst_name = next(iter(port_hash.get("ExposedPorts")))
-                link_keys = self.get_exposed_port_node_instance_links(
-                    port_name, node_inst_name
-                )
+                link_keys = self.get_exposed_port_node_instance_links(port_name, node_inst_name)
                 flow_container_link_keys.extend(link_keys)
 
         # Get Links
@@ -428,19 +384,15 @@ class Node(Scope):
 
         return reference_keys
 
-    def get_exposed_port_node_instance_links(
-        self, port_name, exposed_port_node_inst_name
-    ):
-
+    def get_exposed_port_node_instance_links(self, port_name, exposed_port_node_inst_name):
         # Loop through Flows with Containers instances and get Links to the port that is exposed
         flow_container_link_keys = []
         flows_with_containers = MovaiDB().get({"Flow": {"*": {"Container": "*"}}})
 
         from dal.scopes.flow import Flow
 
-        for (flow_name, flows_containers) in flows_with_containers.get("Flow").items():
+        for flow_name, flows_containers in flows_with_containers.get("Flow").items():
             for container_node_inst_name in flows_containers.get("Container").keys():
-
                 # Confirm that the port is from the correct Node
                 container_flow_name = (
                     flows_containers.get("Container", {})
@@ -460,12 +412,8 @@ class Node(Scope):
 
                 flow_links = MovaiDB().get({"Flow": {flow_name: {"Links": "*"}}})
                 for key, value in (
-                    flow_links.get("Flow", {})
-                    .get(flow_name, {})
-                    .get("Links", {})
-                    .items()
+                    flow_links.get("Flow", {}).get(flow_name, {}).get("Links", {}).items()
                 ):
-
                     if re.search(
                         r"^{0}/{1}/.+$".format(node_inst_name, port_name),
                         value.get("From"),

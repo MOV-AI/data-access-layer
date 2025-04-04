@@ -8,6 +8,4 @@
 """
 from .gflow import GFlow
 
-__all__ = [
-    "GFlow"
-]
+__all__ = ["GFlow"]

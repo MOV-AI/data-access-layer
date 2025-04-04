@@ -137,6 +137,7 @@ class ParamParser:
                 )
 
             from dal.models.flow import Flow
+
             if isinstance(instance, Flow):
                 info = (
                     f'Error evaluating "{key}" with value "{expression}"'

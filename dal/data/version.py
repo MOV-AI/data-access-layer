@@ -12,15 +12,15 @@ from .tree import CallableNode
 
 class VersionObject(ABC):
     """
-     A versionable object, it handles different versions of
-     the same object
-     """
+    A versionable object, it handles different versions of
+    the same object
+    """
 
     @abstractproperty
     def version(self):
         """
-            the current version
-            """
+        the current version
+        """
         raise NotImplementedError
 
 

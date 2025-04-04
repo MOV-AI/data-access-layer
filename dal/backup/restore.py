@@ -23,20 +23,17 @@ class RestoreJob:
     class is private and should not be
     accessed directly
     """
-    _ROOT_PATH = os.path.join(os.getenv('MOVAI_USERSPACE', ""), "restore")
+
+    _ROOT_PATH = os.path.join(os.getenv("MOVAI_USERSPACE", ""), "restore")
 
     def __init__(self, restore_file: str):
-
         if not os.path.exists(restore_file):
             raise ValueError("Restore file does not exists")
 
         self._job_id = str(uuid.uuid4())
         self._path = os.path.join(RestoreJob._ROOT_PATH, self._job_id)
         self._restore_file = restore_file
-        self. _state = {
-            "created": int(datetime.now().timestamp()),
-            "state": "created"
-        }
+        self._state = {"created": int(datetime.now().timestamp()), "state": "created"}
         os.makedirs(self._path, exist_ok=True)
         shutil.move(restore_file, os.path.join(self._path, "restore.zip"))
 
@@ -74,7 +71,8 @@ class RestoreJob:
         state_file = os.path.join(self.path, "state.json")
         if os.path.exists(state_file):
             RestoreManager.logger.warning(
-                "Job previously started, not starting it again: %s", self.job_id)
+                "Job previously started, not starting it again: %s", self.job_id
+            )
             return
 
         RestoreManager.logger.info("Restore job started: %s", self.job_id)
@@ -90,15 +88,15 @@ class RestoreJob:
         # Open log, open zip file and process the restore
         with open(log_file, "w") as log_fp:
             try:
-                with ZipFile(restore_file, 'r') as archive_fp:
-
+                with ZipFile(restore_file, "r") as archive_fp:
                     try:
-                        with archive_fp.open('manifest.json') as manifest_fp:
+                        with archive_fp.open("manifest.json") as manifest_fp:
                             manifest = json.load(manifest_fp)
                         manifest_files = manifest["manifest"]
                     except KeyError as e:
                         log_fp.write(
-                            f"[{datetime.now().strftime('%d/%m/%Y-%H:%M')}] Missing manifest!\n")
+                            f"[{datetime.now().strftime('%d/%m/%Y-%H:%M')}] Missing manifest!\n"
+                        )
                         raise BadZipFile from e
 
                     # start archiving the requested manifest
@@ -106,17 +104,17 @@ class RestoreJob:
                         try:
                             scopes.restore(path=scope_path, archive=archive_fp)
                             log_fp.write(
-                                f"[{datetime.now().strftime('%d/%m/%Y-%H:%M')}] Scope: {scope_path} restored sucessfully!\n")
+                                f"[{datetime.now().strftime('%d/%m/%Y-%H:%M')}] Scope: {scope_path} restored sucessfully!\n"
+                            )
                         except (FileNotFoundError, NotImplementedError):
                             log_fp.write(
-                                f"[{datetime.now().strftime('%d/%m/%Y-%H:%M')}] Error restoring scope: {scope_path}!\n")
+                                f"[{datetime.now().strftime('%d/%m/%Y-%H:%M')}] Error restoring scope: {scope_path}!\n"
+                            )
                             continue
 
             except BadZipFile:
-                log_fp.write(
-                    f"[{datetime.now().strftime('%d/%m/%Y-%H:%M')}] Invalid zip file!\n")
-                RestoreManager.logger.error(
-                    "Invalid zip file: %s", self.job_id)
+                log_fp.write(f"[{datetime.now().strftime('%d/%m/%Y-%H:%M')}] Invalid zip file!\n")
+                RestoreManager.logger.error("Invalid zip file: %s", self.job_id)
 
         self.state["finished"] = int(datetime.now().timestamp())
         self.state["state"] = "finished"
@@ -138,10 +136,10 @@ class RestoreJob:
 
         # All good, send the log file
         with open(log_file, "rb") as file:
-            buffer = file.read(2 ** 16)
+            buffer = file.read(2**16)
             while buffer:
                 await writer.write(buffer)
-                buffer = file.read(2 ** 16)
+                buffer = file.read(2**16)
 
     def clean(self):
         """
@@ -155,6 +153,7 @@ class RestoreManager:
     """
     A static class to help on interacting with restores
     """
+
     __RESTORE_JOBS__ = {}
     __EXPIRED_MIN__ = 10
     logger = Log.get_logger("restore.mov.ai")
@@ -222,8 +221,7 @@ class RestoreManager:
         for job in RestoreManager.__RESTORE_JOBS__.values():
             jobs_list.add(job.job_id)
 
-        restore_jobs = glob.glob(os.path.join(
-            RestoreJob._ROOT_PATH, "*-*-*-*-*"))
+        restore_jobs = glob.glob(os.path.join(RestoreJob._ROOT_PATH, "*-*-*-*-*"))
 
         for job_path in restore_jobs:
             jobs_list.add(os.path.basename(job_path))
@@ -247,8 +245,7 @@ class RestoreManager:
 
             # All jobs that have finished more then 10 minutes ago will be
             # clean up and removed
-            elapsed = datetime.now() - \
-                datetime.fromtimestamp(state["finished"])
+            elapsed = datetime.now() - datetime.fromtimestamp(state["finished"])
             if elapsed.seconds > RestoreManager.__EXPIRED_MIN__ * 60:
                 to_delete.append(job_id)
 
@@ -291,7 +288,7 @@ class RestoreManager:
 
         # All good, send the log file
         with open(log_file, "rb") as file:
-            buffer = file.read(2 ** 16)
+            buffer = file.read(2**16)
             while buffer:
                 await writer.write(buffer)
-                buffer = file.read(2 ** 16)
+                buffer = file.read(2**16)

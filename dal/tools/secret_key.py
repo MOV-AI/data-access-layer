@@ -5,24 +5,24 @@ from curses.ascii import isascii
 from errno import EEXIST, EINVAL, ENOEXEC
 
 from movai_core_shared.logger import Log
-from movai_core_shared.exceptions import (SecretKeyAlreadyExist,
-                                          SecretKeyDoesNotExist)
+from movai_core_shared.exceptions import SecretKeyAlreadyExist, SecretKeyDoesNotExist
 
 from dal.classes.utils.secretkey import SecretKey
 
 MIN_KEY_LENGTH = 16
 MAX_KEY_LENGTH = 1024
 
+
 class BaseCommand(ABC):
-    """Base Class for the varios tool commands.
-    """
-    log = Log.get_logger('BaseCommand')
+    """Base Class for the varios tool commands."""
+
+    log = Log.get_logger("BaseCommand")
+
     def __init__(self, **kwargs) -> None:
-        """initializes the object and extract commnad arguments.
-        """
-        self.command = kwargs['command']
-        self.name = kwargs.get('name')
-        self.length = kwargs.get('length', 32)
+        """initializes the object and extract commnad arguments."""
+        self.command = kwargs["command"]
+        self.name = kwargs.get("name")
+        self.length = kwargs.get("length", 32)
         self.log.debug(f"executing {self.command} command.")
 
     def __call__(self) -> any:
@@ -56,16 +56,15 @@ class BaseCommand(ABC):
         raise ArgumentError(error_msg)
 
     def check_name(self):
-        """Checks the name argument
-        """
+        """Checks the name argument"""
         error = False
         if self.name is None:
-            self.fail_argument('name')
+            self.fail_argument("name")
         if not isinstance(self.name, str):
-            self.fail_argument('name')
+            self.fail_argument("name")
         for letter in self.name:
             if not isascii(letter):
-                self.fail_argument('name')
+                self.fail_argument("name")
 
     def check_length(self):
         """Checks the legnth argument
@@ -75,12 +74,13 @@ class BaseCommand(ABC):
                 is not in the allowed range.
         """
         if self.length is None:
-            self.fail_argument('length')
+            self.fail_argument("length")
         elif self.length < 16 or self.length > 1024:
-            error_msg = f"Can't execute {self.command} command,"\
-                        f"the length argument must be in the range {MIN_KEY_LENGTH} to {MAX_KEY_LENGTH}."
+            error_msg = (
+                f"Can't execute {self.command} command,"
+                f"the length argument must be in the range {MIN_KEY_LENGTH} to {MAX_KEY_LENGTH}."
+            )
             raise ArgumentError(error_msg)
-            
 
     @abstractmethod
     def execute(self) -> int:
@@ -93,11 +93,12 @@ class BaseCommand(ABC):
 
 class CreateCommand(BaseCommand):
     """Creates an new secret key in DB.
-    
+
     Args:
         name (str) - the name of the key object in DB.
         length (int) - the size of the key in characters.
     """
+
     def execute(self) -> int:
         self.check_name()
         self.check_length()
@@ -108,23 +109,26 @@ class CreateCommand(BaseCommand):
 
 class RemoveCommand(BaseCommand):
     """Removes a key from DB.
-    
+
     Args:
         name (str) - the name of the key object in DB.
     """
+
     def execute(self) -> int:
         self.check_name()
         SecretKey.remove(self.name)
         print(f"successfully removed {self.name} secret key.")
         return 0
 
+
 class UpdateCommand(BaseCommand):
     """Updates a key in DB.
-    
+
     Args:
         name (str) - the name of the key object in DB.
         length (int) - the size of the key in characters.
     """
+
     def execute(self) -> int:
         self.check_name()
         self.check_length()
@@ -134,8 +138,8 @@ class UpdateCommand(BaseCommand):
 
 
 class ShowCommand(BaseCommand):
-    """Dispalys the the key on the user terminal.
-    """
+    """Dispalys the the key on the user terminal."""
+
     def execute(self) -> int:
         self.check_name()
         print(f"Secret: {SecretKey.get_secret(self.name)}")
@@ -143,21 +147,22 @@ class ShowCommand(BaseCommand):
 
 
 class SecretKeyTool:
-    """A class for executing the correct command
-    """
-    commands = {'create': CreateCommand,
-                'remove': RemoveCommand,
-                'update': UpdateCommand,
-                'show': ShowCommand}
+    """A class for executing the correct command"""
+
+    commands = {
+        "create": CreateCommand,
+        "remove": RemoveCommand,
+        "update": UpdateCommand,
+        "show": ShowCommand,
+    }
 
     def __call__(self, **kwargs):
-        """initialize the tool and execute the command.
-        """
-        if 'command' not in kwargs:
+        """initialize the tool and execute the command."""
+        if "command" not in kwargs:
             error_msg = f"Can not find the command field in kwargs dictionary."
             print(error_msg)
             return EINVAL
-        command = kwargs['command']
+        command = kwargs["command"]
         if command not in self.commands:
             error_msg = f"Unknown command: {command}"
             print(error_msg)
@@ -165,31 +170,35 @@ class SecretKeyTool:
         command_type = self.commands[command]
         command_obj = command_type(**kwargs)
         return command_obj()
-        
+
 
 def main():
     parser = argparse.ArgumentParser(description="Create a secret key for Mov.ai fleet.")
-    parser.add_argument("-c", "--command",
-                        help="create - creates a new key with the specified name"\
-                             "remove - removes the key with the specified name"\
-                             "update - updates the key with the specified name"\
-                             "show - displays thecontents of key with the specified name"\
-                             "list - list all available keys on current robot",
-                        type=str,
-                        required=True)
-    parser.add_argument("-n", "--name",
-                        help="key name",
-                        type=str,
-                        required=False)
-    parser.add_argument("-l", "--length",
-                        help=f"key length, default = 64, {MIN_KEY_LENGTH} =< length =< {MAX_KEY_LENGTH}",
-                        type=int,
-                        required=False)
+    parser.add_argument(
+        "-c",
+        "--command",
+        help="create - creates a new key with the specified name"
+        "remove - removes the key with the specified name"
+        "update - updates the key with the specified name"
+        "show - displays thecontents of key with the specified name"
+        "list - list all available keys on current robot",
+        type=str,
+        required=True,
+    )
+    parser.add_argument("-n", "--name", help="key name", type=str, required=False)
+    parser.add_argument(
+        "-l",
+        "--length",
+        help=f"key length, default = 64, {MIN_KEY_LENGTH} =< length =< {MAX_KEY_LENGTH}",
+        type=int,
+        required=False,
+    )
 
     args, _ = parser.parse_known_args()
 
     key = SecretKeyTool()
     exit(key(**vars(args)))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

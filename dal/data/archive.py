@@ -36,11 +36,10 @@ class RemoteArchiveAsync:
         Authenticate against the server
         """
         async with ClientSession() as session:
-            async with session.post(self._make_url("token-auth/"), json={
-                "username": self._user,
-                "password": self._password
-            }) as response:
-
+            async with session.post(
+                self._make_url("token-auth/"),
+                json={"username": self._user, "password": self._password},
+            ) as response:
                 body = await response.json()
                 self._access_token = body["access_token"]
 
@@ -50,7 +49,9 @@ class RemoteArchiveAsync:
         """
         try:
             await self._authenticate()
-            async with ClientSession(headers={"Authorization": f"Bearer {self._access_token}"}) as session:
+            async with ClientSession(
+                headers={"Authorization": f"Bearer {self._access_token}"}
+            ) as session:
                 async with session.get(self._make_url(f"api/v2/db/{workspace_id}")) as response:
                     return await response.json()
         except (ContentTypeError, ClientConnectorError):
@@ -62,7 +63,9 @@ class RemoteArchiveAsync:
         """
         try:
             await self._authenticate()
-            async with ClientSession(headers={"Authorization": f"Bearer {self._access_token}"}) as session:
+            async with ClientSession(
+                headers={"Authorization": f"Bearer {self._access_token}"}
+            ) as session:
                 async with session.get(self._make_url("api/v2/db")) as response:
                     return await response.json()
         except (ContentTypeError, ClientConnectorError):
@@ -74,7 +77,9 @@ class RemoteArchiveAsync:
         """
         try:
             await self._authenticate()
-            async with ClientSession(headers={"Authorization": f"Bearer {self._access_token}"}) as session:
+            async with ClientSession(
+                headers={"Authorization": f"Bearer {self._access_token}"}
+            ) as session:
                 async with session.get(self._make_url(f"api/v2/db/{path}")) as response:
                     return await response.json()
         except (ContentTypeError, ClientConnectorError):
@@ -86,15 +91,18 @@ class RemoteArchiveAsync:
         """
         try:
             await self._authenticate()
-            async with ClientSession(headers={"Authorization": f"Bearer {self._access_token}"}) as session:
-
+            async with ClientSession(
+                headers={"Authorization": f"Bearer {self._access_token}"}
+            ) as session:
                 # First we create the backup job with the scope
                 # we want to download
-                async with session.post(self._make_url("api/v2/db/backup"), json={
-                    "metadata": {},
-                    "manifest": objs if isinstance(objs, list) else [str(objs)]
-                }) as response:
-
+                async with session.post(
+                    self._make_url("api/v2/db/backup"),
+                    json={
+                        "metadata": {},
+                        "manifest": objs if isinstance(objs, list) else [str(objs)],
+                    },
+                ) as response:
                     job = await response.json()
 
                 # get the id of the backup job and current state
@@ -106,7 +114,9 @@ class RemoteArchiveAsync:
 
                 # we wait until the job is finished
                 while current_state != "finished":
-                    async with session.get(self._make_url(f"api/v2/db/backup/{job_id}")) as response:
+                    async with session.get(
+                        self._make_url(f"api/v2/db/backup/{job_id}")
+                    ) as response:
                         job_info = await response.json()
                         try:
                             current_state = job_info["state"]["state"]
@@ -121,9 +131,11 @@ class RemoteArchiveAsync:
                 except FileNotFoundError:
                     pass
 
-                async with session.get(self._make_url(f"api/v2/db/backup/{job_id}/archive")) as response:
+                async with session.get(
+                    self._make_url(f"api/v2/db/backup/{job_id}/archive")
+                ) as response:
                     # Read the content from the request
-                    with open(destination, 'wb') as backup_fp:
+                    with open(destination, "wb") as backup_fp:
                         while True:
                             chunk = await response.content.read(CHUNK_SIZE)
                             if not chunk:
@@ -140,16 +152,18 @@ class RemoteArchiveAsync:
         Upload a restore file to the server
         """
         try:
-
             if not os.path.exists(source):
                 return False
 
             await self._authenticate()
-            async with ClientSession(headers={"Authorization": f"Bearer {self._access_token}"}) as session:
-
+            async with ClientSession(
+                headers={"Authorization": f"Bearer {self._access_token}"}
+            ) as session:
                 # We open the restore file and upload it to the server
                 with open(source, "rb") as restore_fp:
-                    async with session.post(self._make_url("api/v2/db/restore"), data=restore_fp) as response:
+                    async with session.post(
+                        self._make_url("api/v2/db/restore"), data=restore_fp
+                    ) as response:
                         job = await response.json()
 
                 # get the id of the backup job and current state
@@ -161,7 +175,9 @@ class RemoteArchiveAsync:
 
                 # we wait until the job is finished
                 while current_state != "finished":
-                    async with session.get(self._make_url(f"api/v2/db/restore/{job_id}")) as response:
+                    async with session.get(
+                        self._make_url(f"api/v2/db/restore/{job_id}")
+                    ) as response:
                         job_info = await response.json()
                         try:
                             current_state = job_info["state"]["state"]
@@ -180,8 +196,7 @@ class RemoteArchive:
     """
 
     def __init__(self, remote_uri: str, user: str, password: str):
-        self._async_client = RemoteArchiveAsync(
-            URL(remote_uri), user, password)
+        self._async_client = RemoteArchiveAsync(URL(remote_uri), user, password)
         self._loop = asyncio.get_event_loop()
 
     def list_scopes(self, workspace_id: str):

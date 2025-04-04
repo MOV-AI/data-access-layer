@@ -6,7 +6,8 @@ from movai_core_shared.exceptions import (
     AclObjectDoesNotExist,
     AclObjectError,
     AclObjectIDMismatch,
-    AclObjectInvalidAttribute)
+    AclObjectInvalidAttribute,
+)
 
 from .model import Model
 from .scopestree import ScopesTree, scopes
@@ -18,24 +19,23 @@ class AclObject(Model):
     to login.
     The name of each record is in the form "account_name@domain_name".
     """
+
     max_attr_length = 100
-    mandatory_parameters = {'DomainName',
-                            'AccountName',
-                            'CommonName',
-                            'ID',
-                            'Roles'}
+    mandatory_parameters = {"DomainName", "AccountName", "CommonName", "ID", "Roles"}
 
     @classmethod
-    def create(cls,
-               domain_name: str,
-               account_name: str,
-               common_name: str,
-               object_type: str,
-               identifier: str,
-               roles: list,
-               read_only: bool = False,
-               super_user: bool = False,
-               send_report: bool = False) -> Model:
+    def create(
+        cls,
+        domain_name: str,
+        account_name: str,
+        common_name: str,
+        object_type: str,
+        identifier: str,
+        roles: list,
+        read_only: bool = False,
+        super_user: bool = False,
+        send_report: bool = False,
+    ) -> Model:
         """creates a new user entry in the access list, if one already exists it
         update the current record and returns a refernece to it.
 
@@ -54,7 +54,7 @@ class AclObject(Model):
         """
         try:
             principal_name = create_principal_name(domain_name, account_name)
-            acl_object = scopes().create(scope='AclObject', ref=principal_name)
+            acl_object = scopes().create(scope="AclObject", ref=principal_name)
             acl_object.DomainName = domain_name
             acl_object.AccountName = account_name
             acl_object.common_name = common_name
@@ -68,8 +68,7 @@ class AclObject(Model):
             acl_object.write()
             return acl_object
         except ValueError:
-            error_msg = f"The AclObject named {principal_name} "\
-                        f"is already exist in DB"
+            error_msg = f"The AclObject named {principal_name} " f"is already exist in DB"
             cls.log.error(error_msg)
             raise AclObjectAlreadyExist(error_msg)
 
@@ -87,11 +86,12 @@ class AclObject(Model):
         obj = cls.get_object_by_name(domain_name, account_name)
         if id == obj.ID:
             scopes().delete(obj)
-            cls.log.info(f"Successfully removed {cls.__name__}:"
-                         f"{obj.principal_name}")
+            cls.log.info(f"Successfully removed {cls.__name__}:" f"{obj.principal_name}")
         else:
-            error_msg = f"Failed to remove {obj.principal_name}, the "\
+            error_msg = (
+                f"Failed to remove {obj.principal_name}, the "
                 f"supplied id does not match object's id"
+            )
             cls.log.error(error_msg)
             raise AclObjectIDMismatch(error_msg)
 
@@ -110,18 +110,20 @@ class AclObject(Model):
         Raises:
             AclObjectIDMismatch - if AclObject update has failed.
         """
-        if obj_dict['ID'] == self.ID:
-            self.common_name = obj_dict.get('CommonName', self.common_name)
-            self.roles = obj_dict.get('Roles', self.roles)
-            self.read_only = obj_dict.get('ReadOnly', self.read_only)
-            self.super_user = obj_dict.get('SuperUser', self.super_user)
-            self.send_report = obj_dict.get('SendReport', self.send_report)
+        if obj_dict["ID"] == self.ID:
+            self.common_name = obj_dict.get("CommonName", self.common_name)
+            self.roles = obj_dict.get("Roles", self.roles)
+            self.read_only = obj_dict.get("ReadOnly", self.read_only)
+            self.super_user = obj_dict.get("SuperUser", self.super_user)
+            self.send_report = obj_dict.get("SendReport", self.send_report)
             self._update_time()
             self.write()
             self.log.info(f"Successfully updated {self.principal_name}")
         else:
-            error_msg = f"Failed to update {self.principal_name}, the "\
+            error_msg = (
+                f"Failed to update {self.principal_name}, the "
                 f"supplied id does not match object's id"
+            )
             self.log.warning(error_msg)
             raise AclObjectIDMismatch(error_msg)
 
@@ -138,12 +140,11 @@ class AclObject(Model):
         Returns:
             str: the account name (e.g: "johns")
         """
-        if '@' in principal_name:
-            account_name = principal_name.split('@')[0]
+        if "@" in principal_name:
+            account_name = principal_name.split("@")[0]
             return account_name
         else:
-            cls.log.error("principlal name doesn't contain the seperator"
-                         "character @")
+            cls.log.error("principlal name doesn't contain the seperator" "character @")
 
     @classmethod
     def get_domain_name(cls, principal_name: str) -> str:
@@ -155,17 +156,14 @@ class AclObject(Model):
         Returns:
             str: the domain name (e.g: "example.com")
         """
-        if '@' in principal_name:
-            domain_name = principal_name.split('@')[1]
+        if "@" in principal_name:
+            domain_name = principal_name.split("@")[1]
             return domain_name
         else:
-            cls.log.error("principlal name doesn't contain the seperator"
-                         "character @")
+            cls.log.error("principlal name doesn't contain the seperator" "character @")
 
     @classmethod
-    def get_object_by_name(cls,
-                           domain_name: str,
-                           account_name: str) -> Model:
+    def get_object_by_name(cls, domain_name: str, account_name: str) -> Model:
         """Looks for an AclObject record with the specified name and returns
         a reference of it.
 
@@ -179,11 +177,10 @@ class AclObject(Model):
         """
         principal_name = create_principal_name(domain_name, account_name)
         try:
-            obj = ScopesTree().from_path(principal_name, scope='AclObject')
+            obj = ScopesTree().from_path(principal_name, scope="AclObject")
             return obj
         except KeyError:
-            error_msg = f"Failed to find acl object {principal_name},"\
-                        f" object does not exist"
+            error_msg = f"Failed to find acl object {principal_name}," f" object does not exist"
             cls.log.error(error_msg)
             raise AclObjectDoesNotExist(error_msg)
 
@@ -199,19 +196,16 @@ class AclObject(Model):
             list: containing all the objects conforms to domain and type.
         """
         allowed_objects_names = []
-        for obj in scopes().list_scopes(scope='AclObject'):
-            account_name = AclObject.get_account_name(obj['ref'])
+        for obj in scopes().list_scopes(scope="AclObject"):
+            account_name = AclObject.get_account_name(obj["ref"])
             acl_obj = AclObject.get_object_by_name(domain_name, account_name)
-            if domain_name == acl_obj.domain_name and \
-               object_type == acl_obj.object_type:
+            if domain_name == acl_obj.domain_name and object_type == acl_obj.object_type:
                 allowed_objects_names.append(account_name)
-        cls.log.debug(f"Current AclObjects defined in access list:"
-                     f"{allowed_objects_names}")
+        cls.log.debug(f"Current AclObjects defined in access list:" f"{allowed_objects_names}")
         return allowed_objects_names
 
     def display_info(self) -> None:
-        """display all the user attributes as defined in AclObject scheme.
-        """
+        """display all the user attributes as defined in AclObject scheme."""
         try:
             self.log.info(f"ref: {self.ref}")
             self.log.info(f"DomainName: {self.DomainName}")
@@ -228,8 +222,7 @@ class AclObject(Model):
             self.log.error(a)
 
     def convert_object_to_dict(self) -> dict:
-        """display all the user attributes as defined in AclObject scheme.
-        """
+        """display all the user attributes as defined in AclObject scheme."""
         object_info = {}
         try:
             object_info["name"] = self.ref
@@ -260,8 +253,8 @@ class AclObject(Model):
             bool: True if exist, False otherwise.
         """
         current_objects = []
-        for obj in scopes().list_scopes(scope='AclObject'):
-            current_objects.append(obj['ref'])
+        for obj in scopes().list_scopes(scope="AclObject"):
+            current_objects.append(obj["ref"])
         return principal_name in current_objects
 
     @classmethod
@@ -290,8 +283,7 @@ class AclObject(Model):
         """
         for parameter in cls.mandatory_parameters:
             if parameter not in obj_dict:
-                error_msg = f"The key: \"{parameter}\" is missing in the "\
-                            f"supplied dictionary"
+                error_msg = f'The key: "{parameter}" is missing in the ' f"supplied dictionary"
                 cls.log.error(error_msg)
                 raise AclObjectError(error_msg)
 
@@ -306,7 +298,7 @@ class AclObject(Model):
         Returns:
             str: the name in the form account_name@domain_name
         """
-        principal_name = self.account_name + '@' + self.domain_name
+        principal_name = self.account_name + "@" + self.domain_name
         return principal_name
 
     @property
@@ -349,8 +341,7 @@ class AclObject(Model):
         if not isinstance(name, str):
             raise ValueError("The name agrument must be a string")
         if len(name) > self.max_attr_length:
-            raise ValueError(f"The name agrument must be less than "
-                             f"{self.max_attr_length}")
+            raise ValueError(f"The name agrument must be less than " f"{self.max_attr_length}")
         self.CommonName = name
 
     @property
@@ -519,19 +510,20 @@ class AclObject(Model):
 
 
 class AclUser(AclObject):
-
     @classmethod
     def create(cls, user: dict) -> AclObject:
         cls.check_parameters(user)
-        obj = super().create(user['DomainName'],
-                             user['AccountName'],
-                             user['CommonName'],
-                             "user",
-                             user['ID'],
-                             user['Roles'],
-                             user['ReadOnly'],
-                             user['SuperUser'],
-                             user['SendReport'])
+        obj = super().create(
+            user["DomainName"],
+            user["AccountName"],
+            user["CommonName"],
+            "user",
+            user["ID"],
+            user["Roles"],
+            user["ReadOnly"],
+            user["SuperUser"],
+            user["SendReport"],
+        )
         return obj
 
     @classmethod
@@ -548,19 +540,20 @@ class AclUser(AclObject):
 
 
 class AclGroup(AclObject):
-
     @classmethod
     def create(cls, group: dict) -> AclObject:
         cls.check_parameters(group)
-        obj = super().create(group['DomainName'],
-                             group['AccountName'],
-                             group['CommonName'],
-                             "group",
-                             group['ID'],
-                             group['Roles'],
-                             group['ReadOnly'],
-                             group['SuperUser'],
-                             group['SendReport'])
+        obj = super().create(
+            group["DomainName"],
+            group["AccountName"],
+            group["CommonName"],
+            "group",
+            group["ID"],
+            group["Roles"],
+            group["ReadOnly"],
+            group["SuperUser"],
+            group["SendReport"],
+        )
         return obj
 
     @classmethod

@@ -32,7 +32,6 @@ class Message(Scope):
         # what is in db is valid to run
         return True
 
-
     @classmethod
     def get_packages(cls, msg_type="all", db="global") -> list:
         """Gives a list of all packages containing messages of a type"""
@@ -49,9 +48,7 @@ class Message(Scope):
         action_packs = []
         action_names = ["ActionFeedback", "ActionGoal", "ActionResult"]
 
-        db_packs = [
-            x for x in MovaiDB(db).search_by_args(cls.scope, Name="*")[0][cls.scope]
-        ]
+        db_packs = [x for x in MovaiDB(db).search_by_args(cls.scope, Name="*")[0][cls.scope]]
 
         if msg_type in ("msg", "all"):
             msg_packs = [x for x, _ in rosmsg.iterate_packages(rospack, ".msg")]
@@ -68,7 +65,7 @@ class Message(Scope):
         if msg_type == "action":
             temp_msg_packs = [x for x in rosmsg.iterate_packages(rospack, ".msg")]
 
-            for (package, direc) in temp_msg_packs:
+            for package, direc in temp_msg_packs:
                 temp_list = [msg for msg in rosmsg._list_types(direc, "msg", ".msg")]
 
                 for msg in action_names:
@@ -148,16 +145,12 @@ class Message(Scope):
 
         msg_packs = [x for x in rosmsg.iterate_packages(rospack, ".msg")]
         srv_packs = [x for x in rosmsg.iterate_packages(rospack, ".srv")]
-        db_packs = [
-            x for x in MovaiDB(db).search_by_args(cls.scope, Name="*")[0][cls.scope]
-        ]
+        db_packs = [x for x in MovaiDB(db).search_by_args(cls.scope, Name="*")[0][cls.scope]]
 
-        for (package, direc) in msg_packs:
-            full_dict[package] = [
-                msg for msg in rosmsg._list_types(direc, "msg", ".msg")
-            ]
+        for package, direc in msg_packs:
+            full_dict[package] = [msg for msg in rosmsg._list_types(direc, "msg", ".msg")]
 
-        for (package, direc) in srv_packs:
+        for package, direc in srv_packs:
             full_dict[package] = full_dict.get(package, []) + [
                 srv for srv in rosmsg._list_types(direc, "srv", ".srv")
             ]
@@ -181,7 +174,7 @@ class Message(Scope):
         # get the messages
         msg_packs = [x for x in rosmsg.iterate_packages(rospack, ".msg")]
 
-        for (pkg, path) in msg_packs:
+        for pkg, path in msg_packs:
             # possibly...
             if pkg == "actionlib":
                 # don't put this as a 'message'
@@ -197,7 +190,7 @@ class Message(Scope):
         # now the services
         srv_packs = [x for x in rosmsg.iterate_packages(rospack, ".srv")]
 
-        for (pkg, path) in srv_packs:
+        for pkg, path in srv_packs:
             root["ROS1_srv"][pkg] = root["ROS1_srv"].get(pkg, []) + [
                 srv for srv in rosmsg._list_types(path, "srv", ".srv")
             ]
@@ -206,24 +199,16 @@ class Message(Scope):
         del srv_packs
 
         # now ... actions
-        db_packs = [
-            x for x in MovaiDB(db).search_by_args(cls.scope, Name="*")[0][cls.scope]
-        ]
+        db_packs = [x for x in MovaiDB(db).search_by_args(cls.scope, Name="*")[0][cls.scope]]
         for pkg in db_packs:
             # so ... all or just actions ?
             mm = Message(pkg)
             if len(mm.Msg):
-                root["ROS1_msg"][pkg] = root["ROS1_msg"].get(pkg, []) + [
-                    k for k in mm.Msg
-                ]
+                root["ROS1_msg"][pkg] = root["ROS1_msg"].get(pkg, []) + [k for k in mm.Msg]
             if len(mm.Srv):
-                root["ROS1_srv"][pkg] = root["ROS1_srv"].get(pkg, []) + [
-                    k for k in mm.Srv
-                ]
+                root["ROS1_srv"][pkg] = root["ROS1_srv"].get(pkg, []) + [k for k in mm.Srv]
             if len(mm.Action):
-                root["ROS1_action"][pkg] = root["ROS1_action"].get(pkg, []) + [
-                    k for k in mm.Action
-                ]
+                root["ROS1_action"][pkg] = root["ROS1_action"].get(pkg, []) + [k for k in mm.Action]
 
         del db_packs
 
@@ -263,9 +248,7 @@ class Message(Scope):
                 ):
                     pkg_msgs.remove(base + suffix)
                 # add to the ROS1_action
-                root["ROS1_action"][pkg] = root["ROS1_action"].get(pkg, []) + [
-                    base + "Action"
-                ]
+                root["ROS1_action"][pkg] = root["ROS1_action"].get(pkg, []) + [base + "Action"]
                 # and look for more actions
                 loop = True
         # all parsed,
@@ -281,9 +264,7 @@ class Message(Scope):
     @staticmethod
     def fetch_portdata_api() -> dict:
         """Retrieve data from database -> Called from a cloud function"""
-        return MovaiDB("local").get({"System": {"PortsData": "**"}})["System"][
-            "PortsData"
-        ]["Value"]
+        return MovaiDB("local").get({"System": {"PortsData": "**"}})["System"]["PortsData"]["Value"]
 
     @staticmethod
     def fetch_portdata_messages() -> dict:
@@ -335,18 +316,14 @@ class Message(Scope):
                 genmsg.load_depends(context, spec, msg_search_path)
                 msg_structure = {"srv": {"request": {}, "response": {}}}
                 iterate_message(context, spec.request, msg_structure["srv"]["request"])
-                iterate_message(
-                    context, spec.response, msg_structure["srv"]["response"]
-                )
+                iterate_message(context, spec.response, msg_structure["srv"]["response"])
 
             except:  # LETS TRY IN REDIS
                 try:  # MESSAGE
                     context = genmsg.MsgContext()
                     try:
                         text = Message(package).Msg[msg_name].Source
-                        spec = genmsg.msg_loader.load_msg_from_string(
-                            context, text, msg_name
-                        )
+                        spec = genmsg.msg_loader.load_msg_from_string(context, text, msg_name)
                         msg_structure = {"msg": {}}
                         iterate_message(context, spec, msg_structure["msg"])
                     except:  # SERVICE
@@ -360,17 +337,11 @@ class Message(Scope):
                         )
                         spec = genmsg.srvs.SrvSpec(msg_in, msg_out, text, msg_name)
                         msg_structure = {"srv": {"request": {}, "response": {}}}
-                        iterate_message(
-                            context, spec.request, msg_structure["srv"]["request"]
-                        )
-                        iterate_message(
-                            context, spec.response, msg_structure["srv"]["response"]
-                        )
+                        iterate_message(context, spec.request, msg_structure["srv"]["request"])
+                        iterate_message(context, spec.response, msg_structure["srv"]["response"])
 
                 except:
-                    print(
-                        'Cannot locate structure for Message or Service "%s"' % message
-                    )
+                    print('Cannot locate structure for Message or Service "%s"' % message)
                     return {}
 
         # try:
@@ -382,7 +353,6 @@ class Message(Scope):
 
 
 def iterate_message(context, spec, struct):
-
     for type_, name in zip(spec.types, spec.names):
         struct[name] = {"type": type_, "content": {}}
         base_type = genmsg.msgs.bare_msg_type(type_)

@@ -1,6 +1,5 @@
-
 class ChildrenCmpMixin(object):
-    """ Implement _children comparison functions """
+    """Implement _children comparison functions"""
 
     def __eq__(self, other):
         try:
@@ -10,8 +9,9 @@ class ChildrenCmpMixin(object):
             # in case we're comparing to a `dict`
             return self._children == other
 
+
 class ValueCmpMixin(object):
-    """ Implement _value comparison functions """
+    """Implement _value comparison functions"""
 
     def __eq__(self, other):
         try:

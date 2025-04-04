@@ -7,12 +7,7 @@
    - Moawiya Mograbi (moawiya@mov.ai) - 2022
 """
 
-from .redis import (
-    ContextClientIn,
-    ContextClientOut,
-    ContextServerIn,
-    ContextServerOut
-)
+from .redis import ContextClientIn, ContextClientOut, ContextServerIn, ContextServerOut
 
 __all__ = [
     "ContextClientIn",

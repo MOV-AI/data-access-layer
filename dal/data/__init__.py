@@ -6,13 +6,18 @@
    Developers:
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
 """
-from .workspace import (WorkspaceObject, WorkspaceManager)
+from .workspace import WorkspaceObject, WorkspaceManager
 from .version import VersionObject
-from .schema import (schemas, SchemaObjectNode, SchemaPropertyNode,
-                     SchemasTree, SchemaDeserializer, SchemaNode)
-from .tree import (TreeNode,
-                   ObjectNode, PropertyNode)
-from .serialization import (ObjectSerializer, ObjectDeserializer)
+from .schema import (
+    schemas,
+    SchemaObjectNode,
+    SchemaPropertyNode,
+    SchemasTree,
+    SchemaDeserializer,
+    SchemaNode,
+)
+from .tree import TreeNode, ObjectNode, PropertyNode
+from .serialization import ObjectSerializer, ObjectDeserializer
 
 __all__ = [
     "ObjectSerializer",
@@ -25,5 +30,5 @@ __all__ = [
     "SchemasTree",
     "SchemaNode",
     "TreeNode",
-    "WorkspaceManager"
+    "WorkspaceManager",
 ]

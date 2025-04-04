@@ -49,27 +49,28 @@ try:
         GraphicAsset,
         GraphicScene,
         Layout,
-        SharedDataEntry, 
-        SharedDataTemplate, 
+        SharedDataEntry,
+        SharedDataTemplate,
         TaskEntry,
         TaskTemplate,
     )
+
     enterprise_modules = [
-        'Annotation',
-        'GraphicAsset',
-        'GraphicScene',
-        'Layout',
-        'SharedDataEntry',
-        'SharedDataTemplate',
-        'TaskEntry',
-        'TaskTemplate'
+        "Annotation",
+        "GraphicAsset",
+        "GraphicScene",
+        "Layout",
+        "SharedDataEntry",
+        "SharedDataTemplate",
+        "TaskEntry",
+        "TaskTemplate",
     ]
 except ImportError:
     enterprise_modules = []
 
 
 __all__ = [
-    "ACLManager", 
+    "ACLManager",
     "NewACLManager",
     "Configuration",
     "AclObject",
@@ -106,4 +107,3 @@ __all__ = [
 ]
 
 __all__.extend(enterprise_modules)
-

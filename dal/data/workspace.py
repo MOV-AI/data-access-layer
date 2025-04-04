@@ -54,10 +54,7 @@ class WorkspaceManager:
         get information about a workspace
         """
         if workspace == "global":
-            return {
-                "label": "global",
-                "url": "/global"
-            }
+            return {"label": "global", "url": "/global"}
 
         plugin = Persistence.get_plugin_class("filesystem")()
         return plugin.workspace_info(workspace)
