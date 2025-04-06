@@ -96,7 +96,7 @@ class Hash(dict):
             raise Exception('Hash has no field with name "%s"' % var)
         # struct = copy.deepcopy(self.prev_struct)
         # Helpers already do a deepcopy
-        deletes = self.movaidb.hdel(Helpers.update_dict(self.prev_struct, {self.name: ""}), var)
+        self.movaidb.hdel(Helpers.update_dict(self.prev_struct, {self.name: ""}), var)
         return result
 
     def delete(self, var: str):
