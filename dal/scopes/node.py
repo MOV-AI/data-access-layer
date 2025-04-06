@@ -283,7 +283,6 @@ class Node(Scope):
         return to_return
 
     def get_port_node_instance_links(self, port_name: str) -> list:
-
         full_node_list = self.movaidb.search(
             {"Flow": {"*": {"NodeInst": {"*": {"Template": self.name}}}}}
         )
@@ -297,9 +296,7 @@ class Node(Scope):
 
                 # get Links from Flow(flow_name)
                 flow_links = self.movaidb.get({"Flow": {flow_name: {"Links": "*"}}})
-                node_inst_name = next(
-                    iter(node.get("Flow").get(flow_name).get("NodeInst"))
-                )
+                node_inst_name = next(iter(node.get("Flow").get(flow_name).get("NodeInst")))
 
                 for key, value in (
                     flow_links.get("Flow", {}).get(flow_name, {}).get("Links", {}).items()

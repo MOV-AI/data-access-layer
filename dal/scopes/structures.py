@@ -48,9 +48,7 @@ class List(list):
     def pop(self):
         """Pop from python list and redis list"""
         # struct = copy.deepcopy(self.prev_struct)
-        return self.movaidb.pop(
-            Helpers.update_dict(self.prev_struct, {self.name: ""})
-        )
+        return self.movaidb.pop(Helpers.update_dict(self.prev_struct, {self.name: ""}))
 
 
 class Hash(dict):
@@ -83,9 +81,7 @@ class Hash(dict):
         """Gets a hash field and returns it"""
         # struct = copy.deepcopy(self.prev_struct)
         # Helpers already do a deepcopy
-        result = self.movaidb.hget(
-            Helpers.update_dict(self.prev_struct, {self.name: ""}), var
-        )
+        result = self.movaidb.hget(Helpers.update_dict(self.prev_struct, {self.name: ""}), var)
         if result:
             # update python with db value
             super(Hash, self).__setitem__(var, result)
@@ -99,9 +95,7 @@ class Hash(dict):
             raise Exception('Hash has no field with name "%s"' % var)
         # struct = copy.deepcopy(self.prev_struct)
         # Helpers already do a deepcopy
-        deletes = self.movaidb.hdel(
-            Helpers.update_dict(self.prev_struct, {self.name: ""}), var
-        )
+        deletes = self.movaidb.hdel(Helpers.update_dict(self.prev_struct, {self.name: ""}), var)
         return result
 
     def delete(self, var: str):
@@ -118,6 +112,7 @@ class Struct:
     """
     General structure... how to describe?
     """
+
     Name: str
     db: str
     movaidb: MovaiDB
@@ -215,8 +210,7 @@ class Struct:
         if getattr(self, name) is None:
             print("Attribute is not defined")
             return False
-        result = self.movaidb.unsafe_delete(
-            Helpers.join_first({name: "*"}, self.prev_struct))
+        result = self.movaidb.unsafe_delete(Helpers.join_first({name: "*"}, self.prev_struct))
         if name in self.lists:  # do some cleaver delete
             self.__dict__[name] = List(name, [], self.db, self.prev_struct)
         elif name in self.hashs:
@@ -228,11 +222,9 @@ class Struct:
     def __setattr__(self, name, value):
         if name in self.attrs:
             self.__dict__[name] = value
-            self.movaidb.set(Helpers.join_first(
-                {name: value}, self.prev_struct))
+            self.movaidb.set(Helpers.join_first({name: value}, self.prev_struct))
             if "TTL" in self.attrs:
-                self.movaidb.set(Helpers.join_first(
-                    {"_timestamp": time.time()}, self.prev_struct))
+                self.movaidb.set(Helpers.join_first({"_timestamp": time.time()}, self.prev_struct))
         elif name in self.lists:
             raise AttributeError(f"'{name}' is a list not an attribute")
         elif name in self.hashs:
@@ -347,8 +339,7 @@ class Struct:
                 # only single ref
                 if value.count("$") == 2 and value[0] == "$" and value[-1] == "$":
                     # the value type is maintained
-                    value = iterate(self.movaidb.get(
-                        eval(value[1:-1])), eval(value[1:-1]))
+                    value = iterate(self.movaidb.get(eval(value[1:-1])), eval(value[1:-1]))
                 else:  # it has more stuff so lets make a nice string with everything
                     value = re.sub(r"\$([^\$]*)\$", lambda x: replace(x.group()), value)
                     # result always a string here

@@ -22,7 +22,6 @@ class Scope(Struct):
     permissions = ["create", "read", "update", "delete"]
 
     def __init__(self, scope, name, version, new=False, db="global", db_object=None):
-
         self.__dict__["name"] = name
         self.__dict__["scope"] = scope
 
@@ -37,8 +36,7 @@ class Scope(Struct):
 
         if new:
             if self.movaidb.exists_by_args(scope=scope, Name=name):
-                raise AlreadyExist(
-                    "This already exists. To edit dont send the 'new' flag")
+                raise AlreadyExist("This already exists. To edit dont send the 'new' flag")
         else:
             if not self.movaidb.exists_by_args(scope=scope, Name=name):
                 raise DoesNotExist(
@@ -51,9 +49,8 @@ class Scope(Struct):
         return MovaiDB().calc_scope_update(old_dict, new_dict, structure)
 
     def remove(self, force=True):
-        """ Removes Scope """
-        result = self.movaidb.unsafe_delete(
-            {self.scope: {self.name: "**"}})
+        """Removes Scope"""
+        result = self.movaidb.unsafe_delete({self.scope: {self.name: "**"}})
         return result
 
     def remove_partial(self, dict_key):
