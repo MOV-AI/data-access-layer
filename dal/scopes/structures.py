@@ -54,11 +54,12 @@ class List(list):
 class Hash(dict):
     """Custom dict that overrides methods"""
 
-    def __init__(self, name: str, init_value: dict, db: str, prev_struct: str):
+    def __init__(self, name: str, init_value: dict, db: str, prev_struct: str, db_obj=None):
         self.db = db
         self.name = name
         self.prev_struct = prev_struct
         init_value = init_value or {}
+        self.movaidb = db_obj or MovaiDB(db)
         super(Hash, self).__init__(init_value)
 
     def __setitem__(self, name, value):
@@ -154,7 +155,7 @@ class Struct:
         ]:
             return super().__getattribute__(name)
 
-        db = self.movaidb
+        db = self.__dict__["movaidb"]
         if name == "Value" and "TTL" in self.attrs:
             TTL = db.get_value(Helpers.join_first({"TTL": "*"}, self.prev_struct))
             if TTL:
