@@ -400,11 +400,10 @@ class Node(Scope):
                     .get("ContainerFlow", None)
                 )
 
-                try:
-                    if self.name not in Flow(container_flow_name).ExposedPorts.keys():
-                        continue
-                except Exception:
-                    # flow does not exist; probably a reference to a flow in the archive
+                exposed_ports = self.movaidb.get_hash(
+                    {"Flow": {container_flow_name: {"ExposedPorts": "*"}}}, search=False
+                )
+                if self.name not in exposed_ports:
                     continue
 
                 prefix = container_node_inst_name

@@ -9,8 +9,8 @@
    - Moawiya Mograbi (moawiya@mov.ai) - 2022
 """
 
-import asyncio
 import fnmatch
+import asyncio
 import pickle
 import warnings
 from os import getenv, path
@@ -373,7 +373,7 @@ class MovaiDB:
         # of the same object. Instead of scanning Redis for each pattern,
         # we can optimize the search by scanning once for a common prefix,
         # and then filtering the results in Python.
-        prefix = longest_common_prefix(patterns)
+        prefix = longest_common_prefix(patterns) + "*"
         keys = list()
         found = [elem.decode("utf-8") for elem in self.db_read.scan_iter(prefix, count=1000)]
         for pattern in patterns:
@@ -894,11 +894,11 @@ class MovaiDB:
         patterns = list()
         for k, v, s in self.dict_to_keys(search_dict):
             patterns.append(k)
-        # keys = list()
-        for p in patterns:
-            for elem in self.db_read.scan_iter(p, count=1000):
+        prefix = longest_common_prefix(patterns) + "*"
+        found = [elem.decode("utf-8") for elem in self.db_read.scan_iter(prefix, count=1000)]
+        for pattern in patterns:
+            if any(fnmatch.fnmatch(elem, pattern) for elem in found):
                 return True
-                # keys.append(elem.decode('utf-8'))
         return False
 
     def search_by_args(self, scope, **kwargs) -> Tuple[dict, int]:
