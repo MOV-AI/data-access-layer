@@ -10,6 +10,7 @@
 """
 
 import asyncio
+import fnmatch
 import pickle
 import warnings
 from os import getenv, path
@@ -35,6 +36,20 @@ LOGGER = Log.get_logger("dal.mov.ai")
 
 dal_directory = path.dirname(dal.__file__)
 __SCHEMAS_URL__ = f"file://{dal_directory}/validation/schema"
+
+
+def longest_common_prefix(strings):
+    if len(strings) == 0:
+        return ""
+    for char_index in range(len(strings[0])):
+        current_char = strings[0][char_index]
+        for string_index in range(len(strings)):
+            if (
+                char_index == len(strings[string_index])
+                or strings[string_index][char_index] != current_char
+            ):
+                return strings[0][0:char_index]
+    return strings[0]
 
 
 class SubscribeManager(metaclass=Singleton):
@@ -353,10 +368,16 @@ class MovaiDB:
         keys Meant to be used by other functions in this class
         """
         patterns = [k for k, _, _ in self.dict_to_keys(_input)]
+
+        # often patterns are very similar, looking for different keys
+        # of the same object. Instead of scanning Redis for each pattern,
+        # we can optimize the search by scanning once for a common prefix,
+        # and then filtering the results in Python.
+        prefix = longest_common_prefix(patterns)
         keys = list()
-        for p in patterns:
-            for elem in self.db_read.scan_iter(p, count=1000):
-                keys.append(elem.decode("utf-8"))
+        found = [elem.decode("utf-8") for elem in self.db_read.scan_iter(prefix, count=1000)]
+        for pattern in patterns:
+            keys.extend(fnmatch.filter(found, pattern))
         keys.sort(key=str.lower)
 
         return keys
