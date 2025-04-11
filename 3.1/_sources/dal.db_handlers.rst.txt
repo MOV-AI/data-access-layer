@@ -1,0 +1,21 @@
+dal.db\_handlers package
+========================
+
+Submodules
+----------
+
+dal.db\_handlers.base\_db\_handler module
+-----------------------------------------
+
+.. automodule:: dal.db_handlers.base_db_handler
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: dal.db_handlers
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,554 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dal.backup package &mdash; data-access-layer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+
+  
+    <link rel="shortcut icon" href="_static/cropped-Mov.ai-favicon2-32x32.png"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="_static/versions.js?v=6808f9ef"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="dal.classes package" href="dal.classes.html" />
+    <link rel="prev" title="dal.archive package" href="dal.archive.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            data-access-layer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">data-access-layer</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">data-access-layer</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dal.html">dal package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="dal.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="dal.api.html">dal.api package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.archive.html">dal.archive package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">dal.backup package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.html">dal.classes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.data.html">dal.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.db_handlers.html">dal.db_handlers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.exceptions.html">dal.exceptions package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.html">dal.helpers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.models.html">dal.models package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.movaidb.html">dal.movaidb package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.html">dal.plugins package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html">dal.scopes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html">dal.tools package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.utils.html">dal.utils package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html">dal.validation package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.html#module-dal">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="permissions.html">Resource permissions</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">data-access-layer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">data-access-layer</a></li>
+          <li class="breadcrumb-item"><a href="dal.html">dal package</a></li>
+      <li class="breadcrumb-item active">dal.backup package</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/MOV-AI/data-access-layer/blob/3.1/docs/source/dal.backup.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dal-backup-package">
+<h1>dal.backup package<a class="headerlink" href="#dal-backup-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-dal.backup.backup">
+<span id="dal-backup-backup-module"></span><h2>dal.backup.backup module<a class="headerlink" href="#module-dal.backup.backup" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Alexandre Pires  (<a class="reference external" href="mailto:alexandre&#46;pires&#37;&#52;&#48;mov&#46;ai">alexandre<span>&#46;</span>pires<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.backup.backup.BackupJob">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.backup.backup.</span></span><span class="sig-name descname"><span class="pre">BackupJob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manifest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shallow</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.backup.BackupJob" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class represents a backup job, this
+class is private and should not be
+accessed directly</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.backup.BackupJob.clean">
+<span class="sig-name descname"><span class="pre">clean</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.backup.BackupJob.clean" title="Permalink to this definition"></a></dt>
+<dd><p>Clean this backup job, for now we do nothing
+more then delete the backup directory</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.backup.backup.BackupJob.job_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">job_id</span></span><a class="headerlink" href="#dal.backup.backup.BackupJob.job_id" title="Permalink to this definition"></a></dt>
+<dd><p>return the curren job id</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.backup.backup.BackupJob.manifest">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">manifest</span></span><a class="headerlink" href="#dal.backup.backup.BackupJob.manifest" title="Permalink to this definition"></a></dt>
+<dd><p>return the manifest of this job</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.backup.backup.BackupJob.metadata">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">metadata</span></span><a class="headerlink" href="#dal.backup.backup.BackupJob.metadata" title="Permalink to this definition"></a></dt>
+<dd><p>return the metadata for this job</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.backup.backup.BackupJob.path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#dal.backup.backup.BackupJob.path" title="Permalink to this definition"></a></dt>
+<dd><p>return the path of this job</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.backup.BackupJob.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.backup.BackupJob.run" title="Permalink to this definition"></a></dt>
+<dd><p>starts the backup job</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.backup.backup.BackupJob.state">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">state</span></span><a class="headerlink" href="#dal.backup.backup.BackupJob.state" title="Permalink to this definition"></a></dt>
+<dd><p>return the state of this job</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.backup.BackupJob.write_archive">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">write_archive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">writer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.backup.BackupJob.write_archive" title="Permalink to this definition"></a></dt>
+<dd><p>return this backup file, this method
+does not read everthing to memory, instead
+it reads the content of the file direct to
+a write</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.backup.BackupJob.write_log">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">write_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">writer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.backup.BackupJob.write_log" title="Permalink to this definition"></a></dt>
+<dd><p>writes this backup job log file, this method
+does not read everthing to memory, instead
+it reads the content of the file direct to
+a write</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.backup.backup.BackupManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.backup.backup.</span></span><span class="sig-name descname"><span class="pre">BackupManager</span></span><a class="headerlink" href="#dal.backup.backup.BackupManager" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A static class to help on interacting with backups</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.backup.BackupManager.clean_jobs">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clean_jobs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.backup.BackupManager.clean_jobs" title="Permalink to this definition"></a></dt>
+<dd><p>Do a clean-up of jobs that had already run successfully,
+this method should be called periodically</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.backup.BackupManager.create_job">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manifest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shallow</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.backup.BackupManager.create_job" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a new backup job</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.backup.BackupManager.exists">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.backup.BackupManager.exists" title="Permalink to this definition"></a></dt>
+<dd><p>Checks is a job exists</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.backup.BackupManager.get_job_state">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_job_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.backup.BackupManager.get_job_state" title="Permalink to this definition"></a></dt>
+<dd><p>Get the state of a job</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.backup.BackupManager.list_jobs">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_jobs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.backup.BackupManager.list_jobs" title="Permalink to this definition"></a></dt>
+<dd><p>Get a list of all existing backup jobs</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.backup.backup.BackupManager.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Logger</span> <span class="pre">backup.mov.ai</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#dal.backup.backup.BackupManager.logger" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.backup.BackupManager.start_job">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.backup.BackupManager.start_job" title="Permalink to this definition"></a></dt>
+<dd><p>Runs a backup job, we can only start jobs in our
+session</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.backup.BackupManager.write_archive">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">write_archive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">writer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.backup.BackupManager.write_archive" title="Permalink to this definition"></a></dt>
+<dd><p>writes this backup job archive, this method
+does not read everthing to memory, instead
+it reads the content of the file direct to
+a write</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.backup.BackupManager.write_log">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">write_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">writer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.backup.BackupManager.write_log" title="Permalink to this definition"></a></dt>
+<dd><p>writes this backup job log file, this method
+does not read everthing to memory, instead
+it reads the content of the file direct to
+a write</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dal.backup.restore">
+<span id="dal-backup-restore-module"></span><h2>dal.backup.restore module<a class="headerlink" href="#module-dal.backup.restore" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Alexandre Pires  (<a class="reference external" href="mailto:alexandre&#46;pires&#37;&#52;&#48;mov&#46;ai">alexandre<span>&#46;</span>pires<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.backup.restore.RestoreJob">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.backup.restore.</span></span><span class="sig-name descname"><span class="pre">RestoreJob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">restore_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.restore.RestoreJob" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class represents a restore job, this
+class is private and should not be
+accessed directly</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.restore.RestoreJob.clean">
+<span class="sig-name descname"><span class="pre">clean</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.restore.RestoreJob.clean" title="Permalink to this definition"></a></dt>
+<dd><p>Clean this restore job, for now we do nothing
+more then delete the restore directory</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.backup.restore.RestoreJob.job_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">job_id</span></span><a class="headerlink" href="#dal.backup.restore.RestoreJob.job_id" title="Permalink to this definition"></a></dt>
+<dd><p>return the curren job id</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.backup.restore.RestoreJob.path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#dal.backup.restore.RestoreJob.path" title="Permalink to this definition"></a></dt>
+<dd><p>return the path of this job</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.restore.RestoreJob.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.restore.RestoreJob.run" title="Permalink to this definition"></a></dt>
+<dd><p>starts the restore job</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.backup.restore.RestoreJob.state">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">state</span></span><a class="headerlink" href="#dal.backup.restore.RestoreJob.state" title="Permalink to this definition"></a></dt>
+<dd><p>return the state of this job</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.restore.RestoreJob.write_log">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">write_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">writer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.restore.RestoreJob.write_log" title="Permalink to this definition"></a></dt>
+<dd><p>writes this restore job log file, this method
+does not read everthing to memory, instead
+it reads the content of the file direct to
+a write</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.backup.restore.RestoreManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.backup.restore.</span></span><span class="sig-name descname"><span class="pre">RestoreManager</span></span><a class="headerlink" href="#dal.backup.restore.RestoreManager" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A static class to help on interacting with restores</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.restore.RestoreManager.clean_jobs">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clean_jobs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.restore.RestoreManager.clean_jobs" title="Permalink to this definition"></a></dt>
+<dd><p>Do a clean-up of jobs that had already run successfully,
+this method should be called periodically</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.restore.RestoreManager.create_job">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">restore_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.restore.RestoreManager.create_job" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a new restore job</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.restore.RestoreManager.exists">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.restore.RestoreManager.exists" title="Permalink to this definition"></a></dt>
+<dd><p>Checks is a job exists</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.restore.RestoreManager.get_job_state">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_job_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.restore.RestoreManager.get_job_state" title="Permalink to this definition"></a></dt>
+<dd><p>Get the state of a job</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.restore.RestoreManager.list_jobs">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_jobs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.restore.RestoreManager.list_jobs" title="Permalink to this definition"></a></dt>
+<dd><p>Get a list of all existing restore jobs</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.backup.restore.RestoreManager.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Logger</span> <span class="pre">restore.mov.ai</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#dal.backup.restore.RestoreManager.logger" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.restore.RestoreManager.start_job">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.restore.RestoreManager.start_job" title="Permalink to this definition"></a></dt>
+<dd><p>Runs a restore job, we can only start jobs in our
+session</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.restore.RestoreManager.write_log">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">write_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">writer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.restore.RestoreManager.write_log" title="Permalink to this definition"></a></dt>
+<dd><p>writes this restore job log file, this method
+does not read everthing to memory, instead
+it reads the content of the file direct to
+a write</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dal.backup">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dal.backup" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Alexandre Pires  (<a class="reference external" href="mailto:alexandre&#46;pires&#37;&#52;&#48;mov&#46;ai">alexandre<span>&#46;</span>pires<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.backup.BackupManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.backup.</span></span><span class="sig-name descname"><span class="pre">BackupManager</span></span><a class="headerlink" href="#dal.backup.BackupManager" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A static class to help on interacting with backups</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.BackupManager.clean_jobs">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clean_jobs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.BackupManager.clean_jobs" title="Permalink to this definition"></a></dt>
+<dd><p>Do a clean-up of jobs that had already run successfully,
+this method should be called periodically</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.BackupManager.create_job">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manifest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shallow</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.BackupManager.create_job" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a new backup job</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.BackupManager.exists">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.BackupManager.exists" title="Permalink to this definition"></a></dt>
+<dd><p>Checks is a job exists</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.BackupManager.get_job_state">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_job_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.BackupManager.get_job_state" title="Permalink to this definition"></a></dt>
+<dd><p>Get the state of a job</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.BackupManager.list_jobs">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_jobs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.BackupManager.list_jobs" title="Permalink to this definition"></a></dt>
+<dd><p>Get a list of all existing backup jobs</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.backup.BackupManager.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Logger</span> <span class="pre">backup.mov.ai</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#dal.backup.BackupManager.logger" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.BackupManager.start_job">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.BackupManager.start_job" title="Permalink to this definition"></a></dt>
+<dd><p>Runs a backup job, we can only start jobs in our
+session</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.BackupManager.write_archive">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">write_archive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">writer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.BackupManager.write_archive" title="Permalink to this definition"></a></dt>
+<dd><p>writes this backup job archive, this method
+does not read everthing to memory, instead
+it reads the content of the file direct to
+a write</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.BackupManager.write_log">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">write_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">writer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.BackupManager.write_log" title="Permalink to this definition"></a></dt>
+<dd><p>writes this backup job log file, this method
+does not read everthing to memory, instead
+it reads the content of the file direct to
+a write</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.backup.RestoreManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.backup.</span></span><span class="sig-name descname"><span class="pre">RestoreManager</span></span><a class="headerlink" href="#dal.backup.RestoreManager" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A static class to help on interacting with restores</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.RestoreManager.clean_jobs">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clean_jobs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.RestoreManager.clean_jobs" title="Permalink to this definition"></a></dt>
+<dd><p>Do a clean-up of jobs that had already run successfully,
+this method should be called periodically</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.RestoreManager.create_job">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">restore_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.RestoreManager.create_job" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a new restore job</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.RestoreManager.exists">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.RestoreManager.exists" title="Permalink to this definition"></a></dt>
+<dd><p>Checks is a job exists</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.RestoreManager.get_job_state">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_job_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.RestoreManager.get_job_state" title="Permalink to this definition"></a></dt>
+<dd><p>Get the state of a job</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.RestoreManager.list_jobs">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_jobs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.RestoreManager.list_jobs" title="Permalink to this definition"></a></dt>
+<dd><p>Get a list of all existing restore jobs</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.backup.RestoreManager.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Logger</span> <span class="pre">restore.mov.ai</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#dal.backup.RestoreManager.logger" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.RestoreManager.start_job">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.RestoreManager.start_job" title="Permalink to this definition"></a></dt>
+<dd><p>Runs a restore job, we can only start jobs in our
+session</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.backup.RestoreManager.write_log">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">write_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">writer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.backup.RestoreManager.write_log" title="Permalink to this definition"></a></dt>
+<dd><p>writes this restore job log file, this method
+does not read everthing to memory, instead
+it reads the content of the file direct to
+a write</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dal.archive.html" class="btn btn-neutral float-left" title="dal.archive package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dal.classes.html" class="btn btn-neutral float-right" title="dal.classes package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Backend.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Read the Docs</span>
+        v: 3.1
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dt>Versions</dt>
+        <dl id="docs-versions"></dl>
+        <hr />
+        <a href="https://tech.michaelaltfield.net/2020/07/18/sphinx-rtd-github-pages-1/">Continuous
+            Documentation</a> hosting provided by <a href="https://pages.github.com/">GitHub Pages</a>.
+    </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

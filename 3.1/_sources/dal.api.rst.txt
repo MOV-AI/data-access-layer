@@ -1,0 +1,29 @@
+dal.api package
+===============
+
+Submodules
+----------
+
+dal.api.dalapi module
+---------------------
+
+.. automodule:: dal.api.dalapi
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.api.gitapi module
+---------------------
+
+.. automodule:: dal.api.gitapi
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: dal.api
+   :members:
+   :undoc-members:
+   :show-inheritance:

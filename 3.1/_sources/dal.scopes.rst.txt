@@ -1,0 +1,157 @@
+dal.scopes package
+==================
+
+Submodules
+----------
+
+dal.scopes.application module
+-----------------------------
+
+.. automodule:: dal.scopes.application
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.scopes.callback module
+--------------------------
+
+.. automodule:: dal.scopes.callback
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.scopes.configuration module
+-------------------------------
+
+.. automodule:: dal.scopes.configuration
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.scopes.fleetrobot module
+----------------------------
+
+.. automodule:: dal.scopes.fleetrobot
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.scopes.flow module
+----------------------
+
+.. automodule:: dal.scopes.flow
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.scopes.form module
+----------------------
+
+.. automodule:: dal.scopes.form
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.scopes.message module
+-------------------------
+
+.. automodule:: dal.scopes.message
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.scopes.node module
+----------------------
+
+.. automodule:: dal.scopes.node
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.scopes.package module
+-------------------------
+
+.. automodule:: dal.scopes.package
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.scopes.ports module
+-----------------------
+
+.. automodule:: dal.scopes.ports
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.scopes.robot module
+-----------------------
+
+.. automodule:: dal.scopes.robot
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.scopes.role module
+----------------------
+
+.. automodule:: dal.scopes.role
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.scopes.scope module
+-----------------------
+
+.. automodule:: dal.scopes.scope
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.scopes.statemachine module
+------------------------------
+
+.. automodule:: dal.scopes.statemachine
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.scopes.structures module
+----------------------------
+
+.. automodule:: dal.scopes.structures
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.scopes.system module
+------------------------
+
+.. automodule:: dal.scopes.system
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.scopes.user module
+----------------------
+
+.. automodule:: dal.scopes.user
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.scopes.widget module
+------------------------
+
+.. automodule:: dal.scopes.widget
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: dal.scopes
+   :members:
+   :undoc-members:
+   :show-inheritance:

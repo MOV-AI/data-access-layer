@@ -1,0 +1,21 @@
+dal.exceptions package
+======================
+
+Submodules
+----------
+
+dal.exceptions.exceptions module
+--------------------------------
+
+.. automodule:: dal.exceptions.exceptions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: dal.exceptions
+   :members:
+   :undoc-members:
+   :show-inheritance:
