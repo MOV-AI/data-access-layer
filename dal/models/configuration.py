@@ -17,6 +17,7 @@ from dal.classes.common.singleton import Singleton
 
 LOGGER = Log.get_logger("ParamParser.mov.ai")
 
+
 class ConfigurationCache(metaclass=Singleton):
     def __init__(self):
         self._map = {}
@@ -29,17 +30,19 @@ class ConfigurationCache(metaclass=Singleton):
             value = yaml.load(yaml_str, Loader=yaml.FullLoader)
             self._map[map_key] = value
             return value
-    
+
     def clean_config_cache(self):
         with self.__class__._lock:
             self._map = {}
-        
+
+
 class Configuration(Model):
     """
     Provides xml or yaml configuration
     """
+
     logger = Log.get_logger("ParamParser.mov.ai")
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.db = MovaiDB().db_read
@@ -55,7 +58,7 @@ class Configuration(Model):
 
     def get_value(self, cached=True) -> dict:
         """Returns a dictionary with the configuration values"""
-        
+
         if self.Type == "xml":
             # Yaml is the name of the field
             return self.Yaml
@@ -88,6 +91,7 @@ class Configuration(Model):
                 f'"{param}" is not a valid parameter in configuration "{self.path}"'
             ) from exc
         return value
+
 
 # Register class as model of scope Flow
 Model.register_model_class("Configuration", Configuration)

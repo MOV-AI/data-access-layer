@@ -294,7 +294,7 @@ class Flow(Model):
         _context = context or self.ref
 
         # parse the parameter in the context of "_context"
-        output = self.parser.parse(key, param,"", self, context=_context)
+        output = self.parser.parse(key, param, "", self, context=_context)
 
         return output
 
@@ -316,7 +316,7 @@ class Flow(Model):
 
         return output
 
-    def filter_by_port(self,fnport, lnport):
+    def filter_by_port(self, fnport, lnport):
         return True if fnport is None else fnport == lnport
 
     def get_node_transitions(self, node_inst: str, port_name: str = None) -> set:

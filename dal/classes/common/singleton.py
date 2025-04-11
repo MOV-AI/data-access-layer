@@ -10,6 +10,7 @@
 """
 import threading
 
+
 class Singleton(type):
     """
     A Singleton metaclass, every class that is intended to be a Singleton
