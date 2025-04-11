@@ -893,7 +893,7 @@ class MovaiDB:
         search_dict = self.get_search_dict(scope, **kwargs)
         patterns = list()
         for k, v, s in self.dict_to_keys(search_dict):
-            patterns.append(k)
+            patterns.append(k + "*")
         prefix = longest_common_prefix(patterns) + "*"
         found = [elem.decode("utf-8") for elem in self.db_read.scan_iter(prefix, count=1000)]
         for pattern in patterns:
