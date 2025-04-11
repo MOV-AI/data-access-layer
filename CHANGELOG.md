@@ -1,5 +1,16 @@
+# v3.1.2
+- [BP-1405](https://movai.atlassian.net/browse/BP-1405): Backeng logs an error if someone tries to login with a user that does not exist
+
+# v3.1.1
+- [BP-1399](https://movai.atlassian.net/browse/BP-1399): Format code
+
+# v3.1.0
+- [BP-1312](https://movai.atlassian.net/browse/BP-1312): Validation of ability for non-super user to run callbacks is broken
+
 # v3.0.5
 - Revert BP-1310
+- [RP-3269](https://movai.atlassian.net/browse/RP-3269): Have HFM working on the real lab (v3.0.5.3)
+  - Add robot type and robot model to robot class
 
 # v3.0.4
 - [BP-1371](https://movai.atlassian.net/browse/BP-1371): NameError: name 'gd' is not defined

@@ -9,11 +9,7 @@
    Ports Model
 """
 
-from movai_core_shared.consts import (
-    TRANSITION_TYPE,
-    ROS1_NODELETCLIENT,
-    ROS1_NODELETSERVER
-)
+from movai_core_shared.consts import TRANSITION_TYPE, ROS1_NODELETCLIENT, ROS1_NODELETSERVER
 from .model import Model
 
 
@@ -23,24 +19,27 @@ class Ports(Model):
     """
 
     def is_transition(self, port_type: str, port_name: str) -> bool:
-        """ Check if a port is of type transition """
+        """Check if a port is of type transition"""
 
         port = self[port_type][port_name]
 
-        if port.Protocol == TRANSITION_TYPE["Protocol"] and \
-                port.Transport == TRANSITION_TYPE["Transport"]:
+        if (
+            port.Protocol == TRANSITION_TYPE["Protocol"]
+            and port.Transport == TRANSITION_TYPE["Transport"]
+        ):
             return True
 
         return False
 
     def is_nodelet_client(self) -> bool:
-        """ Returns True if the port is a nodelet client """
+        """Returns True if the port is a nodelet client"""
         return self.Template == ROS1_NODELETCLIENT
 
     def is_nodelet_server(self) -> bool:
-        """ Returns True if the port is a nodelet server """
+        """Returns True if the port is a nodelet server"""
         return self.Template == ROS1_NODELETSERVER
 
     # default __init__
+
 
 Model.register_model_class("Ports", Ports)

@@ -54,7 +54,6 @@ class SchemaNode(DictNode):
 
         return f"{self.parent.path}/{self._schema}"
 
-
     def validate(self, node: PropertyNode):
         """
         Validate a property Node against this schema
@@ -92,15 +91,9 @@ class SchemaPropertyNode(PropertyNode):
     """
     Implements a property node
     """
+
     # Table that maps the default values
-    DEFAULT_MAPPING = {
-        str: "",
-        int: 0,
-        float: 0.0,
-        dict: {},
-        bool: False,
-        object: None
-    }
+    DEFAULT_MAPPING = {str: "", int: 0, float: 0.0, dict: {}, bool: False, object: None}
 
     def __init__(self, name: str, value_type: type):
         super().__init__(name, None)
@@ -148,12 +141,10 @@ class SchemasTree(CallableNode):
         except KeyError:
             pass
 
-        schema_file = path.join(
-            __SCHEMAS_URL__, version, f"{name}.json")
+        schema_file = path.join(__SCHEMAS_URL__, version, f"{name}.json")
 
         if not Resource.exists(schema_file):
-            raise FileNotFoundError(
-                f"{__SCHEMAS_URL__}/{version}/{name}.json")
+            raise FileNotFoundError(f"{__SCHEMAS_URL__}/{version}/{name}.json")
 
         try:
             version_tree = self._children[version]
@@ -183,7 +174,7 @@ class SchemaDeserializer(ObjectDeserializer, PluginManager):
 
     __SCHEMAS_MAPPING__ = {
         "1.0": lambda r, s: SchemaDeserializer.get_plugin("version10").deserialize(r, s),
-        "2.0": lambda r, s: SchemaDeserializer.get_plugin("version20").deserialize(r, s)
+        "2.0": lambda r, s: SchemaDeserializer.get_plugin("version20").deserialize(r, s),
     }
 
     def __init__(self, version: str = "1.0"):

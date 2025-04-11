@@ -15,34 +15,36 @@ from dal.exceptions import RepositoryDoesNotExist
 
 class GitLink:
     """a class to represent a remote git link
-       whether it was ssh link or https.
-       Git links Parser.
+    whether it was ssh link or https.
+    Git links Parser.
 
-        example of git links:
-            GitLab:
-                git@gitlab.com:szabiprog/cashflow.git
-                https://gitlab.com/szabiprog/cashflow.git
-                https://gitlab.com/szabiprog/cashflow
+     example of git links:
+         GitLab:
+             git@gitlab.com:szabiprog/cashflow.git
+             https://gitlab.com/szabiprog/cashflow.git
+             https://gitlab.com/szabiprog/cashflow
 
-            GitHub:
-                https://github.com/MOV-AI/data-access-layer.git
-                git@github.com:MOV-AI/data-access-layer.git
-                https://github.com/MOV-AI/data-access-layer
+         GitHub:
+             https://github.com/MOV-AI/data-access-layer.git
+             git@github.com:MOV-AI/data-access-layer.git
+             https://github.com/MOV-AI/data-access-layer
 
-            Bitbucket:
-                git@bitbucket.org:robosavvy/movai-cli.git
-                https://Moawiyam@bitbucket.org/robosavvy/movai-cli.git
+         Bitbucket:
+             git@bitbucket.org:robosavvy/movai-cli.git
+             https://Moawiyam@bitbucket.org/robosavvy/movai-cli.git
     """
+
     HTTPS_REGEX = "https://([^/]+)/([^/]+)/([^/]*)(/(.*))?"
     SSH_REGEX = "git@([^:]+):([^/]+)/([^/]*)(/(.*))?"
 
     def __init__(self, link: str):
         self._link = link
-        m = search(GitLink.HTTPS_REGEX, link) or \
-            search(GitLink.SSH_REGEX, link)
+        m = search(GitLink.HTTPS_REGEX, link) or search(GitLink.SSH_REGEX, link)
         if m is None:
-            raise ValueError("git link provided does not match \
-                             with HTTPS or SSH git links")
+            raise ValueError(
+                "git link provided does not match \
+                             with HTTPS or SSH git links"
+            )
         self._domain = m.group(1)
         if "@" in self._domain:
             self._domain = self._domain.split("@")[1]

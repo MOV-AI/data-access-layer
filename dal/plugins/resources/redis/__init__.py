@@ -8,6 +8,4 @@
 """
 from .driver import RedisPlugin
 
-__all__ = [
-    "RedisPlugin"
-]
+__all__ = ["RedisPlugin"]

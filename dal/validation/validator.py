@@ -14,19 +14,16 @@ from re import search
 
 from .schema import Schema
 from json import loads as load_json
-from dal.exceptions import (
-    SchemaTypeNotKnown,
-    ValidationError,
-    SchemaVersionError
-)
+from dal.exceptions import SchemaTypeNotKnown, ValidationError, SchemaVersionError
 
 
 class JsonValidator:
     """JsonValidator class
-       responsible to load schema json files and validate files according
-       to it's type.
-       types: node/flow/callback/annotation/layout/graphicscene
+    responsible to load schema json files and validate files according
+    to it's type.
+    types: node/flow/callback/annotation/layout/graphicscene
     """
+
     def __init__(self, version: str):
         self.schema_types = []
         self._version = version
@@ -59,7 +56,7 @@ class JsonValidator:
 
     def _init_schemas(self):
         """will initialize schemas objects in the schema folder
-            for all of our configuration files
+        for all of our configuration files
         """
         # validator is in the root of validation module
         validation_path = dirname(realpath(__file__))
@@ -89,7 +86,7 @@ class JsonValidator:
                         - status: True if succeeded otherwise False
                         - message: error or success message
                         - path: the path of the error in case there is one
-            """
+        """
         if file_path is not None:
             with file_path.open() as f:
                 content = load_json(f.read())

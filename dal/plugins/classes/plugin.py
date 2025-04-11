@@ -14,6 +14,7 @@ class Plugin:
     """
     A abstract class for plugins
     """
+
     @property
     @abstractmethod
     def plugin_name(self):
@@ -33,6 +34,7 @@ class PluginManager:
     """
     A abstract class for plugin managers
     """
+
     _plugins = {}
 
     @classmethod
@@ -50,8 +52,7 @@ class PluginManager:
         if key not in cls._plugins:
             try:
                 # Try to load plugin from our library
-                import_module(
-                    "dal.plugins.{}.{}".format(cls.plugin_class(), key))
+                import_module("dal.plugins.{}.{}".format(cls.plugin_class(), key))
             except ModuleNotFoundError as e:
                 raise ValueError(f"No plugin found for key:{key}") from e
 
@@ -65,8 +66,7 @@ class PluginManager:
         if key not in cls._plugins:
             try:
                 # Try to load plugin from our library
-                import_module(
-                    "dal.plugins.{}.{}".format(cls.plugin_class(), key))
+                import_module("dal.plugins.{}.{}".format(cls.plugin_class(), key))
             except ModuleNotFoundError as e:
                 raise ValueError(f"No plugin found for key:{key}") from e
 

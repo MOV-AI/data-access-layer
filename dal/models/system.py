@@ -13,8 +13,9 @@ from .model import Model
 
 
 class System(Model):
-    """ System Model
+    """System Model
 
-        use deprecated instead"""
+    use deprecated instead"""
 
-#Model.register_model_class("System", System)
+
+# Model.register_model_class("System", System)

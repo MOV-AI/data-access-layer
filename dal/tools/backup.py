@@ -31,6 +31,7 @@ def test_reachable(redis_url):
     """
     try:
         from redis import Redis
+
         r = Redis(redis_url, socket_connect_timeout=1)
         return r.ping()
     except Exception as exc:
@@ -41,6 +42,7 @@ def test_reachable(redis_url):
 def _from_path(name):
     try:
         from dal.models.scopestree import scopes
+
         return scopes.extract_reference(name)[2]
     except KeyError:
         # not a path and `scope` wasn't passed
@@ -232,6 +234,7 @@ class Importer(Backup):
             ]
         else:
             from dal.movaidb.database import MovaiDB
+
             self._db = MovaiDB()
             self.dry_print = lambda *paths: None
 
@@ -1689,6 +1692,7 @@ class Remover(Backup):
             self.dry_print = lambda *paths: [print(path) for path in paths]
         else:
             from dal.movaidb.database import MovaiDB
+
             self._db = MovaiDB()
             self.dry_print = lambda *paths: None
 
@@ -1955,6 +1959,7 @@ def main():
 
     # not exited before, means exception
     exit(1)
+
 
 if __name__ == "__main__":
     main()

@@ -269,7 +269,6 @@ class Callback(Model):
 
                 # get classes
                 for key, value in inspect.getmembers(i_mod, inspect.isclass):
-
                     # ignore __var__ like __these__
                     # probably simpler than re.match()
                     if key[:2] == "__" and key[-2:] == "__":
@@ -288,7 +287,6 @@ class Callback(Model):
 
                 # get methods
                 for key, value in inspect.getmembers(i_mod, inspect.isroutine):
-
                     # ignore __var__ like __these__
                     if key[:2] == "__" and key[-2:] == "__":
                         continue
@@ -306,7 +304,6 @@ class Callback(Model):
 
                 # get data/constants
                 for key, value in inspect.getmembers(i_mod, pydoc.isdata):
-
                     # ignore __var__ like __these__
                     if key[:2] == "__" and key[-2:] == "__":
                         continue

@@ -8,6 +8,4 @@
 """
 from .filesystem import FilesystemPlugin
 
-__all__ = [
-    "FilesystemPlugin"
-]
+__all__ = ["FilesystemPlugin"]

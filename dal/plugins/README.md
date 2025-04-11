@@ -82,7 +82,7 @@ plugin = Persistence.get_plugin_class("redis")
 
 ## Resource and ResourcePlugin
 
-Implements an abstraction to access to resources, it allows to implement different plugins to load resources from remote locations  
+Implements an abstraction to access to resources, it allows to implement different plugins to load resources from remote locations
 
 Usage:
 ```

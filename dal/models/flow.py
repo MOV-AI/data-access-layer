@@ -28,7 +28,8 @@ if TYPE_CHECKING:
 
 
 class LinkDict(TypedDict):
-    """ Represents a link between two ports """
+    """Represents a link between two ports"""
+
     From: str
     To: str
     Dependency: int
@@ -36,7 +37,8 @@ class LinkDict(TypedDict):
 
 @dataclass
 class FlowOutput:
-    """ Return format by get_dict() """
+    """Return format by get_dict()"""
+
     NodeInst: Dict[str, "NodeInst"] = field(default_factory=dict)
     Links: Dict[str, "LinkDict"] = field(default_factory=dict)
 
@@ -128,7 +130,6 @@ class Flow(Model):
         prefix = f"{prefix}__" if prefix else ""
 
         for _id, node_inst in nodes:
-
             pref_id = f"{prefix}{_id}"
 
             output.NodeInst.update({pref_id: node_inst})
@@ -177,7 +178,6 @@ class Flow(Model):
         output = data or self._with_prefix("", self.NodeInst.items(), self.Links.items())
 
         for _, container in self.Container.items():
-
             # container.ContainerFlow is expected to have the full path of the doc
             subflow: Flow = cast(Flow, scopes.from_path(container.ContainerFlow, scope="Flow"))
 
@@ -241,7 +241,6 @@ class Flow(Model):
         # going up to the main flow using the context allows
         # to get the container down in a subflow
         for ctr in node_name_arr:
-
             _container = _flow.Container[ctr]
 
             _flow = _container.subflow
@@ -310,7 +309,6 @@ class Flow(Model):
         output = []
 
         for _, node_inst in self.full.NodeInst.items():
-
             # if node_inst.Type == ROS2_LIFECYCLENODE:
             #    output.append(node_inst.ref)
             # FIXME not being used and causing bugs
@@ -351,7 +349,6 @@ class Flow(Model):
             if port_tpl.is_transition(_port_type, _plink.port_type) and self.filter_by_port(
                 port_name, _plink.port_name
             ):
-
                 # get the node_inst to transit to
                 to_transit = (
                     getattr(link["ref"], "From") if _type == "To" else getattr(link["ref"], "To")
@@ -379,7 +376,6 @@ class Flow(Model):
         links = self.Links.get_node_links(node_inst)
 
         for link in links:
-
             if link["ref"].From.node_inst != node_inst:
                 continue
 
@@ -423,7 +419,6 @@ class Flow(Model):
         links = self.Links.get_node_links(node_name)
 
         for link in links:
-
             if link["id"] in links_to_skip:
                 continue
 
@@ -482,7 +477,6 @@ class Flow(Model):
         dependencies = self.get_node_dependencies(node_name=node_inst, first_level_only=True)
 
         for dependency in dependencies:
-
             # get the node instance
             node_inst_dep = self.get_node_inst(dependency)
 

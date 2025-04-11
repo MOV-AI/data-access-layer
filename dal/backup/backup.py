@@ -19,14 +19,14 @@ from dal.models.scopestree import ScopesTree, scopes
 from dal.models.model import Model
 
 
-
 class BackupJob:
     """
     This class represents a backup job, this
     class is private and should not be
     accessed directly
     """
-    _ROOT_PATH = os.path.join(os.getenv('MOVAI_USERSPACE', ""), "backups")
+
+    _ROOT_PATH = os.path.join(os.getenv("MOVAI_USERSPACE", ""), "backups")
 
     def __init__(self, manifest: list, shallow: bool = False, metadata: dict = None):
         self._job_id = str(uuid.uuid4())
@@ -34,10 +34,7 @@ class BackupJob:
         self._manifest = manifest
         self._shallow = shallow
         self._metadata = metadata
-        self. _state = {
-            "created": int(datetime.now().timestamp()),
-            "state": "created"
-        }
+        self._state = {"created": int(datetime.now().timestamp()), "state": "created"}
         os.makedirs(self._path, exist_ok=True)
 
     @property
@@ -87,7 +84,9 @@ class BackupJob:
         # This job as already started before ( state_file_created )
         state_file = os.path.join(self.path, "state.json")
         if os.path.exists(state_file):
-            BackupManager.logger.warning("Job previously started, not starting it again: %s", self.job_id)
+            BackupManager.logger.warning(
+                "Job previously started, not starting it again: %s", self.job_id
+            )
             return
 
         BackupManager.logger.info("Backup job started: %s", self.job_id)
@@ -104,8 +103,7 @@ class BackupJob:
 
         # Open log, open zip file and process the manifest
         with open(log_file, "w") as log_fp:
-            with ZipFile(backup_file, 'w') as archive_fp:
-
+            with ZipFile(backup_file, "w") as archive_fp:
                 # start archiving the requested manifest
                 archived_scopes = set()
 
@@ -114,34 +112,38 @@ class BackupJob:
                         scopes.backup(path=scope_path, archive=archive_fp)
                         archived_scopes.add(scope_path)
                         log_fp.write(
-                            f"[{datetime.now().strftime('%d/%m/%Y-%H:%M')}] Scope: {scope_path} archived sucessfully!\n")
+                            f"[{datetime.now().strftime('%d/%m/%Y-%H:%M')}] Scope: {scope_path} archived sucessfully!\n"
+                        )
                     except (FileNotFoundError, NotImplementedError):
                         log_fp.write(
-                            f"[{datetime.now().strftime('%d/%m/%Y-%H:%M')}] Error archiving scope: {scope_path}!\n")
+                            f"[{datetime.now().strftime('%d/%m/%Y-%H:%M')}] Error archiving scope: {scope_path}!\n"
+                        )
                         continue
 
                     log_fp.write(
-                        f"[{datetime.now().strftime('%d/%m/%Y-%H:%M')}] Looking for scope: {scope_path} dependencies!\n")
+                        f"[{datetime.now().strftime('%d/%m/%Y-%H:%M')}] Looking for scope: {scope_path} dependencies!\n"
+                    )
 
                     # Scope done, next we process the dependencies, if we selected a shallow archive we just process
                     # the direct dependencies, depth = 0
-                    workspace, scope, ref, version = ScopesTree.extract_reference(
-                        scope_path)
+                    workspace, scope, ref, version = ScopesTree.extract_reference(scope_path)
 
                     dependencies = Model.get_relations(
-                        workspace=workspace, scope=scope, ref=ref, version=version, depth=depth)
+                        workspace=workspace, scope=scope, ref=ref, version=version, depth=depth
+                    )
 
                     # store each dependencie
                     for dependency in dependencies:
-
                         try:
                             scopes.backup(path=dependency, archive=archive_fp)
                             archived_scopes.add(dependency)
                             log_fp.write(
-                                f"[{datetime.now().strftime('%d/%m/%Y-%H:%M')}] Dependency scope: {dependency} archived sucessfully!\n")
+                                f"[{datetime.now().strftime('%d/%m/%Y-%H:%M')}] Dependency scope: {dependency} archived sucessfully!\n"
+                            )
                         except (FileNotFoundError, NotImplementedError):
                             log_fp.write(
-                                f"[{datetime.now().strftime('%d/%m/%Y-%H:%M')}] Error archiving dependency scope: {dependency}!\n")
+                                f"[{datetime.now().strftime('%d/%m/%Y-%H:%M')}] Error archiving dependency scope: {dependency}!\n"
+                            )
                             continue
 
                 # store manifest file inside our archive, for now we
@@ -149,16 +151,20 @@ class BackupJob:
                 # list of all scopes added, maybe in the future it will be required
                 # to add some security features
                 log_fp.write(
-                    f"[{datetime.now().strftime('%d/%m/%Y-%H:%M')}] Writing archive manifest\n")
-                archive_fp.writestr(manifest_file, json.dumps(
-                    {
-                        "metadata": self._metadata,
-                        "date": datetime.now().strftime('%d/%m/%Y-%H:%M'),
-                        "manifest": list(archived_scopes)
-                    }))
+                    f"[{datetime.now().strftime('%d/%m/%Y-%H:%M')}] Writing archive manifest\n"
+                )
+                archive_fp.writestr(
+                    manifest_file,
+                    json.dumps(
+                        {
+                            "metadata": self._metadata,
+                            "date": datetime.now().strftime("%d/%m/%Y-%H:%M"),
+                            "manifest": list(archived_scopes),
+                        }
+                    ),
+                )
 
-            log_fp.write(
-                f"[{datetime.now().strftime('%d/%m/%Y-%H:%M')}] Archive finished!\n")
+            log_fp.write(f"[{datetime.now().strftime('%d/%m/%Y-%H:%M')}] Archive finished!\n")
 
         self.state["finished"] = int(datetime.now().timestamp())
         self.state["state"] = "finished"
@@ -180,10 +186,10 @@ class BackupJob:
 
         # All good, send the log file
         with open(log_file, "rb") as file:
-            buffer = file.read(2 ** 16)
+            buffer = file.read(2**16)
             while buffer:
                 await writer.write(buffer)
-                buffer = file.read(2 ** 16)
+                buffer = file.read(2**16)
 
     async def write_archive(self, writer):
         """
@@ -207,10 +213,10 @@ class BackupJob:
 
         # All good, send the archive file
         with open(backup_file, "rb") as file:
-            buffer = file.read(2 ** 16)
+            buffer = file.read(2**16)
             while buffer:
                 await writer.write(buffer)
-                buffer = file.read(2 ** 16)
+                buffer = file.read(2**16)
 
     def clean(self):
         """
@@ -224,6 +230,7 @@ class BackupManager:
     """
     A static class to help on interacting with backups
     """
+
     __BACKUP_JOBS__ = {}
     __EXPIRED_MIN__ = 10
     logger = Log.get_logger("backup.mov.ai")
@@ -291,8 +298,7 @@ class BackupManager:
         for job in BackupManager.__BACKUP_JOBS__.values():
             jobs_list.add(job.job_id)
 
-        backup_jobs = glob.glob(os.path.join(
-            BackupJob._ROOT_PATH, "*-*-*-*-*"))
+        backup_jobs = glob.glob(os.path.join(BackupJob._ROOT_PATH, "*-*-*-*-*"))
 
         for job_path in backup_jobs:
             jobs_list.add(os.path.basename(job_path))
@@ -316,8 +322,7 @@ class BackupManager:
 
             # All jobs that have finished more then 10 minutes ago will be
             # clean up and removed
-            elapsed = datetime.now() - \
-                datetime.fromtimestamp(state["finished"])
+            elapsed = datetime.now() - datetime.fromtimestamp(state["finished"])
             if elapsed.seconds > BackupManager.__EXPIRED_MIN__ * 60:
                 to_delete.append(job_id)
 
@@ -360,10 +365,10 @@ class BackupManager:
 
         # All good, send the log file
         with open(log_file, "rb") as file:
-            buffer = file.read(2 ** 16)
+            buffer = file.read(2**16)
             while buffer:
                 await writer.write(buffer)
-                buffer = file.read(2 ** 16)
+                buffer = file.read(2**16)
 
     @staticmethod
     async def write_archive(job_id: str, writer):
@@ -388,7 +393,7 @@ class BackupManager:
 
         # All good, send the log file
         with open(backup_file, "rb") as file:
-            buffer = file.read(2 ** 16)
+            buffer = file.read(2**16)
             while buffer:
                 await writer.write(buffer)
-                buffer = file.read(2 ** 16)
+                buffer = file.read(2**16)

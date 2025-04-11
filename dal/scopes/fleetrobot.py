@@ -37,6 +37,7 @@ END_TIME_VAR = "endTime"
 
 class FleetRobot(Scope):
     """Represent the Robot scope in the redis-master."""
+
     spawner_client: MessageClient
     async_spawner_client: AsyncMessageClient
     Parameter: Dict
@@ -129,8 +130,14 @@ class FleetRobot(Scope):
             self.Actions.append(command_data)
 
     async def async_send_cmd(
-        self, command: str, *, flow: str = None, node: str = None, port=None, data=None,
-        response_required=False
+        self,
+        command: str,
+        *,
+        flow: str = None,
+        node: str = None,
+        port=None,
+        data=None,
+        response_required=False,
     ) -> None:
         """Send an action command to the Robot.
 
@@ -173,11 +180,7 @@ class FleetRobot(Scope):
             if not response_required:
                 # success if response is not required or if required, is well formed
                 logger.info("Sent command %s to robot %s", command_data, self.RobotName)
-            elif (
-                res is not None
-                and "response" in res
-                and res["response"] != {}
-            ):
+            elif res is not None and "response" in res and res["response"] != {}:
                 # success if response is not required or if required, is well formed
                 logger.info("Sent command %s to robot %s", command_data, self.RobotName)
                 return res["response"]

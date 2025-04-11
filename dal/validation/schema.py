@@ -24,8 +24,8 @@ class Schema:
         self._version = Schema._get_schema_version(self._schema)
         full_path = abspath(schema_path)
         self._resolver = RefResolver(
-            base_uri=f"file://{dirname(full_path)}/",
-            referrer=self._schema)
+            base_uri=f"file://{dirname(full_path)}/", referrer=self._schema
+        )
 
     @staticmethod
     def _get_schema_version(schema_obj) -> float:
@@ -40,7 +40,7 @@ class Schema:
         Returns:
             float: the version in float
         """
-        version = schema_obj['$version']
+        version = schema_obj["$version"]
         return float(version)
 
     @property
@@ -63,19 +63,13 @@ class Schema:
         message = ""
         path = ""
         try:
-            json_validate(instance=inst,
-                          schema=self._schema,
-                          resolver=self._resolver)
+            json_validate(instance=inst, schema=self._schema, resolver=self._resolver)
         except ValidationError as e:
             status = False
-            path = '/' + '/'.join(e.path)
+            path = "/" + "/".join(e.path)
             message = e.message
         except Exception as e:
             status = False
             message = str(e)
 
-        return {
-            "status": status,
-            "message": message,
-            "path": path
-        }
+        return {"status": status, "message": message, "path": path}

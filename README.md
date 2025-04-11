@@ -1,10 +1,10 @@
 # data-access-layer
-The data access layer (DAL) is an abstraction layer Library for accessing the required data. 
+The data access layer (DAL) is an abstraction layer Library for accessing the required data.
 The data may be fetched/written (pending permission) from/to the appropriate data sources:
     GIT
     DB (Redis)
-    File system 
-    
+    File system
+
 The Data Service provides:
     1) Validation of user permissions before accessing the data
     2) Enforcing the appropriate JSON schema when writing data
@@ -48,4 +48,3 @@ The complete build process:
     --index-url="https://artifacts.cloud.mov.ai/repository/pypi-experimental/simple" \
     --extra-index-url https://pypi.org/simple \
     ./dist/*.whl
-

@@ -12,7 +12,7 @@ from .model import Model
 
 
 class Widget(Model):
-    """ Widget Model """
+    """Widget Model"""
 
     # default __init__
 

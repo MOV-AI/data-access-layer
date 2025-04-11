@@ -120,9 +120,7 @@ class User(Model):
             List: a list of a given permission for this resource.
         """
         try:
-            return list(
-                self._acl.which_permissions_all([self.Role], resource_name.capitalize())
-            )
+            return list(self._acl.which_permissions_all([self.Role], resource_name.capitalize()))
         except Exception as e:
             self.log.debug(e)
             return list()
@@ -169,14 +167,12 @@ class User(Model):
 
         resources_parsed_data = {}
         for resource, permissions in all_resources_permissions.items():
-
             has_role_resource = False
             if resource in all_roles.get(role, {}).get("Resources", {}):
                 has_role_resource = all_roles[role]["Resources"][resource]
 
             user_permissions = []
             for perm in permissions:
-
                 role_perm_value = has_role_resource and (perm in has_role_resource)
 
                 perm_value = self.has_permission(
@@ -220,9 +216,7 @@ class User(Model):
     def _token_gen(self, token_type: str):
         """Generate or refresh authentication token"""
         time_expiration = (
-            JWT_ACCESS_EXPIRATION_DELTA
-            if token_type == "token"
-            else JWT_REFRESH_EXPIRATION_DELTA
+            JWT_ACCESS_EXPIRATION_DELTA if token_type == "token" else JWT_REFRESH_EXPIRATION_DELTA
         )
         message = {
             "sub": token_type,

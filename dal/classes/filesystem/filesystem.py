@@ -16,8 +16,9 @@ from json import dump as json_dump
 
 class FileSystem:
     """FileSystem class that will handle all functions related to
-       creating/deleting/modifying files on the system locally.
+    creating/deleting/modifying files on the system locally.
     """
+
     def __init__(self):
         pass
 
@@ -115,7 +116,7 @@ class FileSystem:
             str: the created folder path
         """
         # somehow Path.mkdir does not work properly with ~
-        folder_path = folder_path.replace('~', FileSystem.get_home_folder())
+        folder_path = folder_path.replace("~", FileSystem.get_home_folder())
         if not isdir(folder_path):
             Path(folder_path).mkdir(parents=True, exist_ok=True)
         return folder_path

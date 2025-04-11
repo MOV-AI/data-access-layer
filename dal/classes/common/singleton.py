@@ -18,6 +18,7 @@ class Singleton(type):
     class Logger(metaclass=Singleton):
         pass
     """
+
     _instances = {}
     _lock = threading.Lock()
 

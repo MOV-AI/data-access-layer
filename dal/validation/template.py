@@ -73,7 +73,6 @@ class Template:  # pylint: disable=too-few-public-methods
         """
         result = {}
         for k, v in values.items():
-
             # Key of values must exists on the config section, or else skip
             try:
                 # T is the type that we will check against the value v
@@ -95,13 +94,11 @@ class Template:  # pylint: disable=too-few-public-methods
             # simple convert the dict to a SimpleNamespace
             # https://docs.python.org/3/library/types.html#types.SimpleNamespace
             if isinstance(T, dict) and isinstance(v, dict):
-                result[k] = SimpleNamespace(
-                    **Template._validate_and_copy(v, T))
+                result[k] = SimpleNamespace(**Template._validate_and_copy(v, T))
                 continue
 
             # when T is a list, means we have a list of objects
             if isinstance(T, list):
-
                 # the value in json for this key must also be an array
                 if not isinstance(v, list):
                     raise ValueError("Value of {} is not a list".format(k))
@@ -110,29 +107,27 @@ class Template:  # pylint: disable=too-few-public-methods
                 # the array, len(T) must be always 1
                 if len(T) != 1:
                     raise ValueError(
-                        "A array in the config schema must have only one object, {}".format(k))
+                        "A array in the config schema must have only one object, {}".format(k)
+                    )
 
                 # our T to validate the elements of the json list is the
                 # element 0 on the list T
                 T = T[0]
                 l = []
                 for e in v:
-
                     # when a T is a simple python type only checks
                     # the type of element on the json list and add it to the result
                     # and append it to our list
                     if isinstance(T, type):
                         if not isinstance(e, T):
-                            raise ValueError(
-                                "Value of {} is not {}".format(k, T))
+                            raise ValueError("Value of {} is not {}".format(k, T))
                         list.append(l, e)
                         continue
 
                     # e must now be a dict, validate the structure and append
                     # the new Template object to our list
                     if isinstance(e, dict) and isinstance(T, dict):
-                        list.append(
-                            l, Template(**Template._validate_and_copy(e, T)))
+                        list.append(l, Template(**Template._validate_and_copy(e, T)))
                         continue
 
                     # This should never happen, this means either we did not

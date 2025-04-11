@@ -13,6 +13,7 @@ Welcome to data-access-layer's documentation!
 
    readme
    modules
+   permissions
 
 .. include:: readme.rst
 

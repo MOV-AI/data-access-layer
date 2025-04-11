@@ -16,11 +16,7 @@ from redis.exceptions import ResponseError
 from redis.connection import Connection
 
 from dal.plugins.classes import Plugin, Persistence, PersistencePlugin
-from dal.data import (
-                      SchemaPropertyNode,
-                      SchemaNode,
-                      schemas,
-                      TreeNode)
+from dal.data import SchemaPropertyNode, SchemaNode, schemas, TreeNode
 from dal.models.scopestree import ScopesTree, ScopeInstanceVersionNode
 from dal.models.model import Model
 from dal.movaidb import MovaiDB
@@ -41,6 +37,7 @@ class RedisPlugin(PersistencePlugin):
     the key composition, otherwise it will be stored as a value
     - Composition pattern: <scope>:<id>[(,<attr>:<id>)*](,<attr>)+:(<value>)*
     """
+
     _REDIS_MASTER_HOST = MovaiDB.REDIS_MASTER_HOST
     _REDIS_MASTER_PORT = MovaiDB.REDIS_MASTER_PORT
     _REDIS_SLAVE_HOST = MovaiDB.REDIS_SLAVE_HOST
@@ -49,31 +46,39 @@ class RedisPlugin(PersistencePlugin):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._REDIS_MASTER_POOL = ConnectionPool(
-            host=self._REDIS_MASTER_HOST, port=self._REDIS_MASTER_PORT, db=0, connection_class=Connection)
+            host=self._REDIS_MASTER_HOST,
+            port=self._REDIS_MASTER_PORT,
+            db=0,
+            connection_class=Connection,
+        )
         self._REDIS_SLAVE_POOL = ConnectionPool(
-            host=self._REDIS_SLAVE_HOST, port=self._REDIS_SLAVE_PORT, db=0, connection_class=Connection)
+            host=self._REDIS_SLAVE_HOST,
+            port=self._REDIS_SLAVE_PORT,
+            db=0,
+            connection_class=Connection,
+        )
 
     def decode_value(self, _value):
-        '''Decodes a value from redis'''
+        """Decodes a value from redis"""
         try:
-            return _value.decode('utf-8')
+            return _value.decode("utf-8")
         except UnicodeDecodeError:
             return pickle.loads(_value)
 
     def decode_hash(self, _hash):
-        '''Decodes a full hash from redis'''
+        """Decodes a full hash from redis"""
         decoded_hash = {}
         for key, val in _hash.items():  # decode 1 by 1
             try:
-                decoded_hash[key.decode('utf-8')] = val.decode('utf-8')
+                decoded_hash[key.decode("utf-8")] = val.decode("utf-8")
             except UnicodeDecodeError:
-                decoded_hash[key.decode('utf-8')] = pickle.loads(val)
+                decoded_hash[key.decode("utf-8")] = pickle.loads(val)
         return decoded_hash
 
     def decode_list(self, _list):
-        '''Decodes a full list from redis'''
+        """Decodes a full list from redis"""
         try:
-            decoded_list = [elem.decode('utf-8') for elem in _list]
+            decoded_list = [elem.decode("utf-8") for elem in _list]
         except UnicodeDecodeError:
             decoded_list = [pickle.loads(elem) for elem in _list]
         return decoded_list
@@ -91,7 +96,7 @@ class RedisPlugin(PersistencePlugin):
 
         current_ptr = None
         old_ptr = data
-        for idx in range(len(keys)-2):
+        for idx in range(len(keys) - 2):
             attr = keys[idx]
             try:
                 _ = old_ptr[attr]
@@ -104,7 +109,7 @@ class RedisPlugin(PersistencePlugin):
 
         attr = keys[idx]
         if schema.attributes.get("value_on_key", False):
-            current_ptr[attr] = keys[idx+1]
+            current_ptr[attr] = keys[idx + 1]
             return
 
         # A simple value?
@@ -134,21 +139,18 @@ class RedisPlugin(PersistencePlugin):
         try:
             # if we are on a property node, store it on the database
             if isinstance(schema, SchemaPropertyNode):
-
                 key = f"{base},{schema.name}:"
                 value_on_key = schema.attributes.get("value_on_key", False)
                 value = data[schema.name]
 
                 # Add key to key set internal:<scope>:<ref>:keys
                 if value_on_key:
-
                     # since we store the value in the key we need to verify if there
                     # is already a key with this name without the value
                     # if yes means we are changing the value so we need to remove
                     # the old key
                     try:
-                        old_key = fnmatch.filter(
-                            keys, f'{key}*')[0]
+                        old_key = fnmatch.filter(keys, f"{key}*")[0]
                         if old_key != f"{key}{value}":
                             conn.delete(old_key)
                         else:
@@ -170,12 +172,12 @@ class RedisPlugin(PersistencePlugin):
                     # not there
                     pass
 
-                if schema.attributes['type'] == dict:
+                if schema.attributes["type"] == dict:
                     for dkey, dvalue in value.items():
                         conn.hset(key, dkey, pickle.dumps(dvalue))
                     return
 
-                if schema.attributes['type'] == list:
+                if schema.attributes["type"] == list:
                     for lvalue in value:
                         conn.rpush(key, pickle.dumps(lvalue))
                     return
@@ -190,8 +192,7 @@ class RedisPlugin(PersistencePlugin):
             if schema.attributes.get("is_hash", True):
                 for name in data[schema.name].keys():
                     for child in schema.children:
-                        self.save_keys(
-                            child, f"{base}{name}", keys, conn, data[schema.name][name])
+                        self.save_keys(child, f"{base}{name}", keys, conn, data[schema.name][name])
                 return
 
             for child in schema.children:
@@ -202,7 +203,6 @@ class RedisPlugin(PersistencePlugin):
             # (at least) sometimes it's not a problem
             pass
         except AttributeError:
-
             # No schema! check in this node children if any
             for child in schema.children:
                 self.save_keys(child, base, keys, conn, data)
@@ -214,14 +214,12 @@ class RedisPlugin(PersistencePlugin):
         try:
             # if we are on a property node, store it on the database
             if isinstance(schema, SchemaPropertyNode):
-
                 key = f"{base},{schema.name}:"
                 value_on_key = schema.attributes.get("value_on_key", False)
                 value = data[schema.name]
 
                 # Add key to key set internal:<scope>:<ref>:keys
                 if value_on_key:
-
                     # since we store the value in the key we need to verify if there
                     # is already a key with this name without the value
                     # if yes means we are changing the value so we need to remove
@@ -245,18 +243,15 @@ class RedisPlugin(PersistencePlugin):
                     for child in schema.children:
                         to_delete = data[schema.name][name]
                         if isinstance(to_delete, dict):
-                            self.delete_keys(
-                                child, f"{base}{name}", keys, conn, to_delete)
+                            self.delete_keys(child, f"{base}{name}", keys, conn, to_delete)
                             continue
-                        self.delete_all_keys(
-                            child, f"{base}{name}", keys, conn)
+                        self.delete_all_keys(child, f"{base}{name}", keys, conn)
                 return
 
             for child in schema.children:
                 self.delete_keys(child, base, keys, conn, data[schema.name])
 
         except (KeyError, AttributeError):
-
             # No schema! check in this node children if any
             for child in schema.children:
                 self.delete_keys(child, base, keys, conn, data)
@@ -268,7 +263,6 @@ class RedisPlugin(PersistencePlugin):
         try:
             # if we are on a property node, store it on the database
             if isinstance(schema, SchemaPropertyNode):
-
                 key = f"{base},{schema.name}:"
                 value_on_key = schema.attributes.get("value_on_key", False)
 
@@ -296,7 +290,6 @@ class RedisPlugin(PersistencePlugin):
                 self.delete_all_keys(child, base, keys, conn)
 
         except (KeyError, AttributeError):
-
             # No schema! check in this node children if any
             for child in schema.children:
                 self.delete_all_keys(child, base, keys, conn)
@@ -308,7 +301,6 @@ class RedisPlugin(PersistencePlugin):
         try:
             # if we are on a property node, store it on the database
             if isinstance(schema, SchemaPropertyNode):
-
                 key = f"{base},{schema.name}:"
                 value_on_key = schema.attributes.get("value_on_key", False)
 
@@ -331,20 +323,19 @@ class RedisPlugin(PersistencePlugin):
                 self.load_keys(child, base, keys, conn, out)
 
         except (KeyError, AttributeError):
-
             # No schema! check in this node children if any
             for child in schema.children:
                 self.load_keys(child, base, keys, conn, out)
 
     def fetch_keys_iter(self, conn, scope: str, ref: str) -> list:
-        """ Get keys using SCAN ITER command """
+        """Get keys using SCAN ITER command"""
         # for now this method is not in use but benchmarks should be done
         # against the method fetch_keys
-        return [s.decode() for s in conn.scan_iter(f'{scope}:{ref},*', count=10000)]
+        return [s.decode() for s in conn.scan_iter(f"{scope}:{ref},*", count=10000)]
 
     def fetch_keys(self, conn, scope: str, ref: str) -> list:
-        """ Get keys using KEYS command """
-        return [s.decode() for s in conn.keys(f'{scope}:{ref},*')]
+        """Get keys using KEYS command"""
+        return [s.decode() for s in conn.keys(f"{scope}:{ref},*")]
 
     def schema_to_key(self, schema: TreeNode):
         """
@@ -355,7 +346,6 @@ class RedisPlugin(PersistencePlugin):
             return ""
 
         if isinstance(schema, SchemaPropertyNode):
-
             if schema.attributes.get("value_on_key", False):
                 return f"{self.schema_to_key(schema.parent)},{schema.name}:*"
 
@@ -418,13 +408,12 @@ class RedisPlugin(PersistencePlugin):
         processed = set()
         scope = kwargs.get("scope", "*")
         try:
-            workspace = kwargs.get(
-                "workspace", self._args["workspace"])
+            workspace = kwargs.get("workspace", self._args["workspace"])
         except KeyError as e:
             raise ValueError("missing workspace") from e
 
         for key in conn.scan_iter(f"{scope}:*", count=50):
-            tokens = re.split("[:,]", key.decode('utf-8'))
+            tokens = re.split("[:,]", key.decode("utf-8"))
             try:
                 scope = tokens[0]
                 ref = tokens[1]
@@ -432,11 +421,7 @@ class RedisPlugin(PersistencePlugin):
                     continue
 
                 processed.add(f"{scope}:{ref}")
-                scopes.append({
-                    "url": f"{workspace}/{scope}/{ref}",
-                    "scope": scope,
-                    "ref": ref
-                })
+                scopes.append({"url": f"{workspace}/{scope}/{ref}", "scope": scope, "ref": ref})
 
             except IndexError:
                 continue
@@ -457,8 +442,7 @@ class RedisPlugin(PersistencePlugin):
             scope = kwargs["scope"]
             ref = kwargs["ref"]
             version = kwargs["version"]
-            workspace = kwargs.get(
-                "workspace", self._args["workspace"])
+            workspace = kwargs.get("workspace", self._args["workspace"])
             archive = kwargs["archive"]
         except KeyError as e:
             raise KeyError("missing scope, ref, version or archive") from e
@@ -467,7 +451,9 @@ class RedisPlugin(PersistencePlugin):
         relations = self.get_related_objects(**kwargs)
 
         archive.writestr(f"{workspace}/{scope}/{ref}/{version}/data.json", json.dumps(data))
-        archive.writestr(f"{workspace}/{scope}/{ref}/{version}/relation.json", json.dumps(list(relations)))
+        archive.writestr(
+            f"{workspace}/{scope}/{ref}/{version}/relation.json", json.dumps(list(relations))
+        )
 
     def restore(self, **kwargs):
         """
@@ -476,8 +462,7 @@ class RedisPlugin(PersistencePlugin):
         try:
             scope = kwargs["scope"]
             ref = kwargs["ref"]
-            workspace = kwargs.get(
-                "workspace", self._args["workspace"])
+            workspace = kwargs.get("workspace", self._args["workspace"])
             archive = kwargs["archive"]
         except KeyError as e:
             raise KeyError("missing scope, ref, version or archive") from e
@@ -494,7 +479,7 @@ class RedisPlugin(PersistencePlugin):
             raise FileNotFoundError("Scope not in archive") from e
 
         # write this object in the database
-        self.write(data,scope=scope,ref=ref)
+        self.write(data, scope=scope, ref=ref)
 
     def list_versions(self, **kwargs):
         """
@@ -504,8 +489,7 @@ class RedisPlugin(PersistencePlugin):
         try:
             scope = kwargs["scope"]
             ref = kwargs["ref"]
-            workspace = kwargs.get(
-                "workspace", self._args["workspace"])
+            workspace = kwargs.get("workspace", self._args["workspace"])
         except KeyError as e:
             raise ValueError("missing workspace, scope, or ref") from e
 
@@ -513,10 +497,7 @@ class RedisPlugin(PersistencePlugin):
         if len(list(conn.scan_iter(f"{scope}:{ref}*", count=50))) == 0:
             return []
 
-        return [{
-                "url": f"{workspace}/{scope}/{ref}",
-                "tag": "__UNVERSIONED__",
-                "date": ""}]
+        return [{"url": f"{workspace}/{scope}/{ref}", "tag": "__UNVERSIONED__", "date": ""}]
 
     def workspace_info(self, ref: str):
         """
@@ -553,10 +534,14 @@ class RedisPlugin(PersistencePlugin):
         # if that's the case return the cached information
         if conn.exists(f"{scope}:{ref},relations:"):
             for relation in conn.lrange(f"{scope}:{ref},relations:", 0, -1):
-                value = relation.decode('utf-8')
+                value = relation.decode("utf-8")
 
-                target_workspace, target_scope, target_ref, target_version = ScopesTree.extract_reference(
-                    value)
+                (
+                    target_workspace,
+                    target_scope,
+                    target_ref,
+                    target_version,
+                ) = ScopesTree.extract_reference(value)
 
                 # We add the found related object in the list
                 # if we passed a search filter we check if scope
@@ -564,25 +549,28 @@ class RedisPlugin(PersistencePlugin):
                 # None and trigger a TypeError
                 try:
                     if target_scope in search_filter:
-                        out.add(
-                            f"{target_workspace}/{target_scope}/{target_ref}/{target_version}")
+                        out.add(f"{target_workspace}/{target_scope}/{target_ref}/{target_version}")
                 except TypeError:
-                    out.add(
-                        f"{target_workspace}/{target_scope}/{target_ref}/{target_version}")
+                    out.add(f"{target_workspace}/{target_scope}/{target_ref}/{target_version}")
 
                 if level < depth:
                     out.update(
                         Model.get_relations(
-                            workspace=target_workspace, scope=target_scope,
-                            ref=target_ref, version=target_version,
-                            level=level+1, depth=depth, search_filter=search_filter))
+                            workspace=target_workspace,
+                            scope=target_scope,
+                            ref=target_ref,
+                            version=target_version,
+                            level=level + 1,
+                            depth=depth,
+                            search_filter=search_filter,
+                        )
+                    )
 
             return out
 
         # No cached relations we need to search for relations, depending on
         # the depth of the search this can be a costly operation
         for relation, target in Model.get_relations_definition(scope).items():
-
             # we get the attribute defined in the relations table
             # and compose a search pattern: <scope>:<ref>:<attr_schema>:
             attr_schema = schema.from_path(relation)
@@ -592,25 +580,27 @@ class RedisPlugin(PersistencePlugin):
             # pattern, and process it in other to get the
             # object it references to
             for key in conn.scan_iter(pattern, count=50):
-
                 # If the value is on key we get the value from the
                 # last token of the string, otherwise we read
                 # the value from the database
                 if attr_schema.attributes.get("value_on_key", False):
                     try:
-                        tokens = re.split("[:,]", key.decode('utf-8'))
+                        tokens = re.split("[:,]", key.decode("utf-8"))
                         value = tokens[-1]
                     except IndexError:
                         continue
                 else:
                     try:
-                        value = self.decode_value(
-                            conn.get(key.decode('utf-8')))
+                        value = self.decode_value(conn.get(key.decode("utf-8")))
                     except ResponseError:
                         continue
 
-                target_workspace, target_scope, target_ref, target_version = ScopesTree.extract_reference(
-                    value, scope = target["scope"])
+                (
+                    target_workspace,
+                    target_scope,
+                    target_ref,
+                    target_version,
+                ) = ScopesTree.extract_reference(value, scope=target["scope"])
 
                 # We add the found related object in the list
                 # if we passed a search filter we check if scope
@@ -618,20 +608,24 @@ class RedisPlugin(PersistencePlugin):
                 # None and trigger a TypeError
                 try:
                     if target_scope in search_filter:
-                        out.add(
-                            f"{target_workspace}/{target_scope}/{target_ref}/{target_version}")
+                        out.add(f"{target_workspace}/{target_scope}/{target_ref}/{target_version}")
                 except TypeError:
-                    out.add(
-                        f"{target_workspace}/{target_scope}/{target_ref}/{target_version}")
+                    out.add(f"{target_workspace}/{target_scope}/{target_ref}/{target_version}")
 
                 # If we want to go deeper in the relations, the deeper we search
                 # the costly it gets, we should avoid deep searches
                 if level < depth:
                     out.update(
                         Model.get_relations(
-                            workspace=target_workspace, scope=target_scope,
-                            ref=target_ref, version=target_version,
-                            level=level+1, depth=depth, search_filter=search_filter))
+                            workspace=target_workspace,
+                            scope=target_scope,
+                            ref=target_ref,
+                            version=target_version,
+                            level=level + 1,
+                            depth=depth,
+                            search_filter=search_filter,
+                        )
+                    )
 
         return out
 
@@ -654,11 +648,9 @@ class RedisPlugin(PersistencePlugin):
         conn = Redis(connection_pool=self._REDIS_MASTER_POOL)
 
         if issubclass(type(data), ScopeInstanceVersionNode):
-
             # Only unversioned objects can be stored on
             # redis
             if data.version == "__UNVERSIONED__":
-
                 schema = data.schema
                 scope = data.scope
                 ref = data.ref
@@ -671,7 +663,7 @@ class RedisPlugin(PersistencePlugin):
                 self.save_keys(schema, f"{scope}:{ref}", redis_keys, conn, data.serialize())
 
                 # store the schema version of this data
-                conn.set(f"{scope}:{ref},_schema_version:",  schema.version)
+                conn.set(f"{scope}:{ref},_schema_version:", schema.version)
                 try:
                     redis_keys.remove(f"{scope}:{ref},_schema_version:")
                 except ValueError:
@@ -698,12 +690,11 @@ class RedisPlugin(PersistencePlugin):
             raise ValueError("Redis plugin do not support versions")
 
         if isinstance(data, dict):
-
             try:
                 scope = kwargs["scope"]
                 ref = kwargs["ref"]
-                remove_extra = kwargs.get('remove_extra', False)
-                schema_version = data.get("schema_version",kwargs.get("schema_version", "1.0"))
+                remove_extra = kwargs.get("remove_extra", False)
+                schema_version = data.get("schema_version", kwargs.get("schema_version", "1.0"))
             except KeyError as e:
                 raise ValueError("missing scope,ref or schema_version") from e
 
@@ -720,7 +711,7 @@ class RedisPlugin(PersistencePlugin):
             self.save_keys(schema, f"{scope}:{ref}", redis_keys, conn, obj)
 
             # store the schema version of this data
-            conn.set(f"{scope}:{ref},_schema_version:",  schema_version)
+            conn.set(f"{scope}:{ref},_schema_version:", schema_version)
             try:
                 redis_keys.remove(f"{scope}:{ref},_schema_version:")
             except ValueError:
@@ -729,7 +720,8 @@ class RedisPlugin(PersistencePlugin):
             # delete the old relations cache and update it
             conn.delete(f"{scope}:{ref},relations:")
             relations = self.get_related_objects(
-                scope=scope, ref=ref, schema_version=schema_version)
+                scope=scope, ref=ref, schema_version=schema_version
+            )
             for relation in relations:
                 conn.rpush(f"{scope}:{ref},relations:", relation)
             try:
@@ -799,15 +791,15 @@ class RedisPlugin(PersistencePlugin):
         conn = Redis(connection_pool=self._REDIS_MASTER_POOL)
 
         if issubclass(type(data), ScopeInstanceVersionNode):
-
             if data.version == "__UNVERSIONED__":
-
                 schema = data.schema
                 scope = data.scope
                 ref = data.ref
                 data = data.serialize()
 
-                self.delete_keys(schema, f"{scope}:{ref}", self.fetch_keys(conn, scope, ref), conn, data)
+                self.delete_keys(
+                    schema, f"{scope}:{ref}", self.fetch_keys(conn, scope, ref), conn, data
+                )
                 # also delete schema version key
                 conn.delete(f"{scope}:{ref},_schema_version:")
                 conn.delete(f"{scope}:{ref},relations:")
@@ -833,7 +825,6 @@ class RedisPlugin(PersistencePlugin):
 
         schema = schemas(scope, schema_version)
         if isinstance(data, dict):
-
             try:
                 obj = data[scope][ref]
             except KeyError as e:
@@ -858,8 +849,8 @@ class RedisPlugin(PersistencePlugin):
         items = self.list_scopes()
 
         for item in items:
-            scope = item['scope']
-            ref = item['ref']
+            scope = item["scope"]
+            ref = item["ref"]
             # delete the old relations cache and update it
             conn.delete(f"{scope}:{ref},relations:")
             schema_version = conn.get(f"{scope}:{ref},_schema_version:")
@@ -869,12 +860,13 @@ class RedisPlugin(PersistencePlugin):
             if schema_version is None:
                 schema_version = "1.0"
                 # store the schema version of this data
-                conn.set(f"{scope}:{ref},_schema_version:",  schema_version)
+                conn.set(f"{scope}:{ref},_schema_version:", schema_version)
             else:
                 schema_version = schema_version.decode("utf-8")
 
             relations = self.get_related_objects(
-                scope=scope, ref=ref, schema_version=schema_version)
+                scope=scope, ref=ref, schema_version=schema_version
+            )
             for relation in relations:
                 conn.rpush(f"{scope}:{ref},relations:", relation)
 

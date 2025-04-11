@@ -32,9 +32,7 @@ class FlowLinks(ScopePropertyNode):
 
     __DEFAULT_DEPENDENCY__ = 0
 
-    LINK_REGEX = (
-        r"^([~@a-zA-Z_0-9-]+)([\/])([\/~@a-zA-Z_0-9]+)+([\/])([~@a-zA-Z_0-9]+)$"
-    )
+    LINK_REGEX = r"^([~@a-zA-Z_0-9-]+)([\/])([\/~@a-zA-Z_0-9]+)+([\/])([~@a-zA-Z_0-9]+)$"
 
     def __init__(self, name: str, value: str):
         super().__init__(name, value)
@@ -51,9 +49,7 @@ class FlowLinks(ScopePropertyNode):
             # request the link from the list of all links in the flow and subflows (with prefix)
             data = self.full[key]
 
-        return Template.load_dict(
-            FlowLinks._parse_link(data), FlowLinks.__LINK_TEMPLATE__
-        )
+        return Template.load_dict(FlowLinks._parse_link(data), FlowLinks.__LINK_TEMPLATE__)
 
     @property
     def flow(self):
@@ -63,19 +59,19 @@ class FlowLinks(ScopePropertyNode):
     @staticmethod
     def _parse_link(link: dict) -> dict:
         """Parse a link into a dictionary
-            Parameters:
-                link (dict): the link to parse
-                    {
-                        {"From": "<node inst>/<port name>/<port type>"},
-                        {"To": "<node inst>/<port name>/<port type>"}
-                    }
-            Returns:
-                output (dict): the link parsed
+        Parameters:
+            link (dict): the link to parse
                 {
-                    {"From": {"node_inst": str, "port_name": str, "port_type": str, "str": str},
-                    "To": {"node_inst": str, "port_name": str, "port_type": str, "str": str},
-                    "Dependency": int}
+                    {"From": "<node inst>/<port name>/<port type>"},
+                    {"To": "<node inst>/<port name>/<port type>"}
                 }
+        Returns:
+            output (dict): the link parsed
+            {
+                {"From": {"node_inst": str, "port_name": str, "port_type": str, "str": str},
+                "To": {"node_inst": str, "port_name": str, "port_type": str, "str": str},
+                "Dependency": int}
+            }
         """
         output = {}
         try:
@@ -197,7 +193,6 @@ class FlowLinks(ScopePropertyNode):
         links = []
 
         for key in self.full:
-
             link = self.flow.Links[key]
 
             if node_name in [link.From.node_inst, link.To.node_inst]:
@@ -207,5 +202,6 @@ class FlowLinks(ScopePropertyNode):
                 links.append(_link)
         self.cache[node_name] = links
         return links
+
 
 ScopeNode.register_scope_property("schemas/1.0/Flow/Links", FlowLinks)
