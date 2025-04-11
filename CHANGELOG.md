@@ -1,3 +1,6 @@
+# v3.1.2
+- [BP-1405](https://movai.atlassian.net/browse/BP-1405): Backeng logs an error if someone tries to login with a user that does not exist
+
 # v3.1.1
 - [BP-1399](https://movai.atlassian.net/browse/BP-1399): Format code
 

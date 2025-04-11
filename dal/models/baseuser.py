@@ -463,8 +463,8 @@ class BaseUser(Model):
             user = ScopesTree().from_path(principal_name, scope=cls.__name__)
             return user
         except KeyError:
-            msg = f"Failed to find {cls.__name__} named: {principal_name}"
-            cls.log.error(msg)
+            msg = f"{cls.__name__} named {principal_name} does not exist"
+            cls.log.info(msg)
             raise UserDoesNotExist(msg)
 
     @classmethod
