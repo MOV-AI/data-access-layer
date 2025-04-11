@@ -38,7 +38,26 @@ dal_directory = path.dirname(dal.__file__)
 __SCHEMAS_URL__ = f"file://{dal_directory}/validation/schema"
 
 
-def longest_common_prefix(strings):
+def longest_common_prefix(strings: List[str]) -> str:
+    """
+    Finds the longest common prefix string amongst an array of strings.
+
+    Args:
+        strings (list of str): A list of strings to evaluate.
+
+    Returns:
+        str: The longest common prefix shared among all strings in the list.
+             If the list is empty, returns an empty string. If no common prefix
+             exists, returns an empty string.
+
+    Example:
+        >>> longest_common_prefix(["flower", "flow", "flight"])
+        'fl'
+        >>> longest_common_prefix(["dog", "racecar", "car"])
+        ''
+        >>> longest_common_prefix([])
+        ''
+    """
     if len(strings) == 0:
         return ""
     for char_index in range(len(strings[0])):
@@ -241,9 +260,9 @@ class MovaiDB:
         # Represents the API template dict. Can be Imported or saved into Redis
         """
 
-        __API__: Dict[
-            str, Dict[str, Dict]
-        ] = {}  # First key is the Version, the second is the scope
+        __API__: Dict[str, Dict[str, Dict]] = (
+            {}
+        )  # First key is the Version, the second is the scope
 
         def __init__(self, version: str = "latest", url: str = __SCHEMAS_URL__):
             super(type(self), self).__init__()
