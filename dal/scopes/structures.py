@@ -7,10 +7,11 @@
    - Manuel Silva (manuel.silva@mov.ai) - 2020
    - Tiago Paulino (tiago@mov.ai) - 2020
 """
-import copy
 import re
-import time
+import copy
+
 from movai_core_shared.exceptions import AlreadyExist
+
 from dal.movaidb import MovaiDB
 from dal.helpers import Helpers
 
