@@ -389,8 +389,6 @@ class Node(Scope):
         flow_container_link_keys = []
         flows_with_containers = self.movaidb.get({"Flow": {"*": {"Container": "*"}}})
 
-        from dal.scopes.flow import Flow
-
         for flow_name, flows_containers in flows_with_containers.get("Flow").items():
             for container_node_inst_name in flows_containers.get("Container").keys():
                 # Confirm that the port is from the correct Node
