@@ -14,7 +14,6 @@ The Data Service provides:
 The DAL exposes API for reading and writing the data and is used by the MOV.AI platform component
 The DAL is a python package and it is incapsulated in the Backend and in the Spawner (Flow initiator) containers
 
-
 > Prerequisites : The DAL is depended on the following packages:
     Pillow>=5.1.0
     aioredis==1.3.0

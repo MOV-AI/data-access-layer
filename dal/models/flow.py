@@ -17,6 +17,8 @@ from dal.helpers.flow import GFlow
 from dal.helpers.parsers import ParamParser
 from .model import Model
 from .scopestree import scopes
+from dal.classes.common.singleton import Singleton
+
 
 if TYPE_CHECKING:
     from dal.data.tree import DictNode, ObjectNode, PropertyNode
@@ -206,9 +208,7 @@ class Flow(Model):
 
         # in the context of a another flow or own context
         _context = context or self.ref
-
         node_inst = self.get_node_inst(node_name)
-
         return node_inst.get_params(node_name, _context)
 
     def get_node_inst(self, name: str) -> "NodeInst":
@@ -316,6 +316,9 @@ class Flow(Model):
 
         return output
 
+    def filter_by_port(self, fnport, lnport):
+        return True if fnport is None else fnport == lnport
+
     def get_node_transitions(self, node_inst: str, port_name: str = None) -> set:
         """Returns a list of nodes to transit to"""
 
@@ -335,16 +338,15 @@ class Flow(Model):
             # TODO confirm this fix
             if _type == "To":
                 continue
+
             _plink = getattr(link["ref"], _type)  # Get partial link from ref
+
             _port_type = "In" if _type == "To" else "Out"
 
             # get the Ports instance from the Node template
             port_tpl = node_tpl.get_port(_plink.port_name)
 
-            def filter_by_port(fnport, lnport):
-                return True if fnport is None else fnport == lnport
-
-            if port_tpl.is_transition(_port_type, _plink.port_type) and filter_by_port(
+            if port_tpl.is_transition(_port_type, _plink.port_type) and self.filter_by_port(
                 port_name, _plink.port_name
             ):
                 # get the node_inst to transit to
@@ -356,6 +358,7 @@ class Flow(Model):
                 transition_nodes.add(to_transit.node_inst)
 
         # TODO output is including every node instance even with no transition possible (iport).
+
         return transition_nodes
 
     def get_nodelet_manager(self, node_inst: str) -> str:
@@ -401,7 +404,7 @@ class Flow(Model):
     ) -> list:
         """Get node dependencies recursively"""
 
-        # TODO review and refactor
+        # TODO review and refactor - Ongoing
 
         dependencies = dependencies_collected or []
 
