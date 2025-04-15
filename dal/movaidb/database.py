@@ -260,9 +260,9 @@ class MovaiDB:
         # Represents the API template dict. Can be Imported or saved into Redis
         """
 
-        __API__: Dict[str, Dict[str, Dict]] = (
-            {}
-        )  # First key is the Version, the second is the scope
+        __API__: Dict[
+            str, Dict[str, Dict]
+        ] = {}  # First key is the Version, the second is the scope
 
         def __init__(self, version: str = "latest", url: str = __SCHEMAS_URL__):
             super(type(self), self).__init__()
