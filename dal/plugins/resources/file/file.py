@@ -10,10 +10,7 @@ from io import BytesIO, StringIO
 from json import JSONDecodeError, load
 from os import listdir, path, getenv, getcwd
 import yaml
-from dal.plugins.classes import (Plugin,
-                                 Resource,
-                                 ResourcePlugin,
-                                 ResourceException)
+from dal.plugins.classes import Plugin, Resource, ResourcePlugin, ResourceException
 
 __DRIVER_NAME__ = "Filesystem Plugin"
 __DRIVER_VERSION__ = "0.0.1"
@@ -49,8 +46,7 @@ class FilePlugin(ResourcePlugin):
             try:
                 return StringIO(fd.read())
             except (OSError, JSONDecodeError):
-                raise ResourceException(
-                    "Error opening text file {}".format(url))
+                raise ResourceException("Error opening text file {}".format(url))
 
     def read_json(self, url: str):
         """
@@ -62,8 +58,7 @@ class FilePlugin(ResourcePlugin):
             try:
                 return load(fd)
             except (OSError, JSONDecodeError):
-                raise ResourceException(
-                    "Error opening json file {}".format(url))
+                raise ResourceException("Error opening json file {}".format(url))
 
     def read_yaml(self, url: str):
         """
@@ -71,12 +66,11 @@ class FilePlugin(ResourcePlugin):
         """
         local_path = self._get_local_path(url)
 
-        with open(local_path, 'r') as fd:
+        with open(local_path, "r") as fd:
             try:
                 return yaml.safe_load(fd)
             except (OSError, yaml.YAMLError):
-                raise ResourceException(
-                    "Error opening yaml file {}".format(url))
+                raise ResourceException("Error opening yaml file {}".format(url))
 
     def read_binary(self, url: str):
         """
@@ -88,9 +82,7 @@ class FilePlugin(ResourcePlugin):
             try:
                 return BytesIO(fd.read())
             except (OSError, JSONDecodeError):
-                raise ResourceException(
-                    "Error opening binary file {}".format(url))
-
+                raise ResourceException("Error opening binary file {}".format(url))
 
     def exists(self, url: str):
         """
@@ -123,7 +115,7 @@ class FilePlugin(ResourcePlugin):
         based on APP_PATH environment variable or the
         current working directory.
         """
-        if not url.startswith('file://'):
+        if not url.startswith("file://"):
             raise ValueError("Invalid URL")
 
         # TODO these checks should be more extensible (BP-45)
@@ -140,7 +132,7 @@ class FilePlugin(ResourcePlugin):
                 return cwd_path
 
             # check with APP_PATH
-            app_path = getenv('APP_PATH')
+            app_path = getenv("APP_PATH")
             if app_path is not None:
                 app_path_path = path.join(app_path, local_path)
                 if path.exists(app_path_path):

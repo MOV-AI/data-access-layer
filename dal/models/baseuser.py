@@ -18,10 +18,13 @@ from movai_core_shared.exceptions import (
     UserDoesNotExist,
     UserPermissionsError,
 )
+from movai_core_shared.consts import EXECUTE_PERMISSION
 
 from dal.models.scopestree import ScopesTree, scopes
 from dal.models.model import Model
 from dal.models.acl import NewACLManager
+from dal.scopes.application import Application
+from dal.models.acl import ResourceType, ApplicationsType
 
 
 class BaseUser(Model):
@@ -95,9 +98,7 @@ class BaseUser(Model):
             cls.log.error(error_msg)
             raise ValueError(error_msg)
         if cls.is_exist(domain_name, account_name):
-            error_msg = (
-                f"The requested user {account_name}@{domain_name} " "already exist"
-            )
+            error_msg = f"The requested user {account_name}@{domain_name} " "already exist"
             raise UserAlreadyExist(error_msg)
 
         principal_name = create_principal_name(domain_name, account_name)
@@ -145,9 +146,7 @@ class BaseUser(Model):
                 InternalUser model.
         """
         if not any(key in user_params.keys() for key in self.update_keys):
-            error_msg = (
-                f"Json fields aren't found in " f"{self.__class__.__name__} attributes."
-            )
+            error_msg = f"Json fields aren't found in " f"{self.__class__.__name__} attributes."
             self.log.warning(error_msg)
             raise InvalidStructure(error_msg)
         self.common_name = user_params.get("CommonName", self.common_name)
@@ -234,9 +233,7 @@ class BaseUser(Model):
         if not isinstance(name, str):
             raise ValueError("The name agrument must be a string")
         if len(name) > self.max_attr_length:
-            raise ValueError(
-                f"The name agrument must be less than " f"{self.max_attr_length}"
-            )
+            raise ValueError(f"The name agrument must be less than " f"{self.max_attr_length}")
         self.CommonName = name
 
     @property
@@ -280,9 +277,7 @@ class BaseUser(Model):
         if not isinstance(address, str):
             raise ValueError("The address agrument must be a string")
         if len(address) > self.max_attr_length:
-            raise ValueError(
-                f"The address agrument must be less " f"than {self.max_attr_length}"
-            )
+            raise ValueError(f"The address agrument must be less " f"than {self.max_attr_length}")
         self.Email = address
 
     @property
@@ -419,9 +414,7 @@ class BaseUser(Model):
             user = cls.get_user_by_principal_name(principal_name)
             if domain_name == user.domain_name:
                 users_names.append(user.account_name)
-        cls.log.debug(
-            f"current list of BaseUser records found in the system: {users_names}"
-        )
+        cls.log.debug(f"current list of BaseUser records found in the system: {users_names}")
         return users_names
 
     @classmethod
@@ -470,8 +463,8 @@ class BaseUser(Model):
             user = ScopesTree().from_path(principal_name, scope=cls.__name__)
             return user
         except KeyError:
-            msg = f"Failed to find {cls.__name__} named: {principal_name}"
-            cls.log.error(msg)
+            msg = f"{cls.__name__} named {principal_name} does not exist"
+            cls.log.info(msg)
             raise UserDoesNotExist(msg)
 
     @classmethod
@@ -574,11 +567,6 @@ class BaseUser(Model):
         if not skip_superuser and self.super_user:
             return True
 
-        permission_name = permission_name.lower()
-
-        if f"{self.ref}.read".lower() == permission_name:
-            return True
-
         try:
             self.set_acl()
             for role_name in self.roles:
@@ -588,3 +576,21 @@ class BaseUser(Model):
         except Exception as e:
             self.log.debug(e)
             return False
+
+    def has_permission_callback_execute(self, callback_name: str) -> bool:
+        """Check if user has permission to execute a callback.
+
+        TODO Added because frontend apps execute callbacks, remove after migration to endpoints
+
+        """
+        if self.has_permission(ResourceType.Callback.value, EXECUTE_PERMISSION):
+            return True
+
+        # allow to run callbacks from allowed applications
+        for app_name in [app.value for app in ApplicationsType]:
+            if self.has_permission(ResourceType.Applications.value, app_name):
+                ca = Application(name=app_name)
+                if ca.Callbacks and callback_name in ca.Callbacks:
+                    return True
+
+        return False

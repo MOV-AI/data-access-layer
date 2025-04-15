@@ -27,6 +27,7 @@ extensions = [
     "sphinx.ext.todo",  # Catch and show TODOs within docstrings
     "sphinx_mdinclude",  # Markdown to rst
     "sphinx.ext.inheritance_diagram",  # Classes inheritance diagram
+    "sphinx.ext.autosectionlabel",  # Allows to ref other sections
 ]
 
 # display TODOs
@@ -51,6 +52,6 @@ html_context["current_version"] = version
 # https://sphinx-rtd-theme.readthedocs.io/en/latest/configuring.html#configuration
 html_context["display_github"] = True
 html_context["github_user"] = "MOV-AI"
-html_context["github_repo"] = "flows-test-core"
+html_context["github_repo"] = "data-access-layer"
 branch = version if version == "main" else f"{version}"
 html_context["github_version"] = f"{branch}/docs/source/"

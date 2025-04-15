@@ -8,6 +8,4 @@
 """
 from .file import FilePlugin
 
-__all__ = [
-    "FilePlugin"
-]
+__all__ = ["FilePlugin"]

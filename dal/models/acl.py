@@ -1,22 +1,22 @@
-"""
-   Copyright (C) Mov.ai  - All Rights Reserved
-   Unauthorized copying of this file, via any medium is strictly prohibited
-   Proprietary and confidential
+"""Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential
 
-   Developers:
-   - Manuel Silva (manuel.silva@mov.ai) - 2020
-   - Telmo Martinho (telmo.martinho@mov.ai) - 2020
+Developers:
+ * Manuel Silva (manuel.silva@mov.ai) - 2020
+ * Telmo Martinho (telmo.martinho@mov.ai) - 2020
 """
 
 from typing import List, Dict
+from enum import Enum
 
 from miracle import Acl
 
 from movai_core_shared.consts import (
     READ_PERMISSION,
-    UPDATE_PERMISSION, 
-    CREATE_PERMISSION, 
-    DELETE_PERMISSION, 
+    UPDATE_PERMISSION,
+    CREATE_PERMISSION,
+    DELETE_PERMISSION,
     EXECUTE_PERMISSION,
     RESET_PERMISSION,
 )
@@ -25,13 +25,52 @@ from movai_core_shared.logger import Log
 from dal.models.scopestree import ScopesTree, scopes
 
 
+class ResourceType(Enum):
+    AclObject = "AclObject"
+    Annotation = "Annotation"
+    Application = "Application"
+    Applications = "Applications"
+    Callback = "Callback"
+    Configuration = "Configuration"
+    EmailsAlertsConfig = "EmailsAlertsConfig"
+    EmailsAlertsRecipients = "EmailsAlertsRecipients"
+    Flow = "Flow"
+    Form = "Form"
+    GraphicScene = "GraphicScene"
+    InternalUser = "InternalUser"
+    Layout = "Layout"
+    LdapConfig = "LdapConfig"
+    Node = "Node"
+    Package = "Package"
+    RemoteUser = "RemoteUser"
+    Role = "Role"
+    SharedDataEntry = "SharedDataEntry"
+    SharedDataTemplate = "SharedDataTemplate"
+    StateMachine = "StateMachine"
+    TaskEntry = "TaskEntry"
+    TaskTemplate = "TaskTemplate"
+
+
+class ApplicationsType(Enum):
+    AdminBoard = "AdminBoard"
+    FleetBoard = "FleetBoard"
+    IDE = "mov-fe-app-ide"
+    Launcher = "mov-fe-app-launcher"
+    TaskManager = "mov-fe-app-taskmanager"
+
+
 class ACLManager:
     """
     Acl class to manage users and roles permissions
     """
 
     log = Log.get_logger("ACLManager")
-    _DEFAULT_PERMISSIONS = [CREATE_PERMISSION, READ_PERMISSION, UPDATE_PERMISSION, DELETE_PERMISSION]
+    _DEFAULT_PERMISSIONS = [
+        CREATE_PERMISSION,
+        READ_PERMISSION,
+        UPDATE_PERMISSION,
+        DELETE_PERMISSION,
+    ]
     _EXECUTE_PERMISSIONS = _DEFAULT_PERMISSIONS + [EXECUTE_PERMISSION]
     _USER_PERMISSIONS = _DEFAULT_PERMISSIONS + [RESET_PERMISSION]
     _SPECIAL_PERMISSIONS_MAP = {

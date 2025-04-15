@@ -2,7 +2,7 @@
    Copyright (C) Mov.ai  - All Rights Reserved
    Unauthorized copying of this file, via any medium is strictly prohibited
    Proprietary and confidential
-   
+
    Usage:
         a basic class for getting robot information.
 
@@ -18,6 +18,7 @@ class LocalRobotInfo:
     """
     Helper class for retrieving the robot id  and robot name from the local Redis DB
     """
+
     robot_id = None
     robot_name = None
 
@@ -50,10 +51,10 @@ class LocalRobotInfo:
         if robot_struct:
             for name in robot_struct["Robot"]:
                 LocalRobotInfo.robot_id = name
-                LocalRobotInfo.robot_name = robot_struct["Robot"][name].get('RobotName')
+                LocalRobotInfo.robot_name = robot_struct["Robot"][name].get("RobotName")
         else:
-            LocalRobotInfo.robot_id = ''
-            LocalRobotInfo.robot_name = os.getenv('DEVICE_NAME')
+            LocalRobotInfo.robot_id = ""
+            LocalRobotInfo.robot_name = os.getenv("DEVICE_NAME")
 
     @staticmethod
     def generate_identity_string(component: str) -> str:

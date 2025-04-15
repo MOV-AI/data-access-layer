@@ -185,7 +185,7 @@ class Token:
         Args:
             subject (str): The subject of the token ('Access', 'Refresh')
             expiration_delta (timedelta): the time delta from now.
-        
+
         Returns:
             (dict): the payload of the token.
         """
@@ -215,11 +215,13 @@ class Token:
         Returns:
             dict: a dicitionary with all the token's payload info.
         """
-        #cls.log.debug(f"Decoding and verifying token.")
+        # cls.log.debug(f"Decoding and verifying token.")
         options = {}
         options["require"] = cls.required_keys
         options["verify_iss"] = True
-        token_payload = jwt.decode(jwt=token, key=secret_key, algorithms=cls.allowed_algorithms, options=options)
+        token_payload = jwt.decode(
+            jwt=token, key=secret_key, algorithms=cls.allowed_algorithms, options=options
+        )
         return token_payload
 
     @classmethod
@@ -235,13 +237,15 @@ class Token:
         Returns:
             dict: A dicitionary with all the token's payload info.
         """
-        #cls.log.debug(f"Decoding token without verification.")
+        # cls.log.debug(f"Decoding token without verification.")
         return jwt.decode(
             jwt=token, key=secret_key, verify=False, algorithms=cls.allowed_algorithms
         )
 
     @classmethod
-    def encode_token(cls, token_payload: dict, secret_key: str = JWT_SECRET_KEY, algorithm: str = "HS256") -> str:
+    def encode_token(
+        cls, token_payload: dict, secret_key: str = JWT_SECRET_KEY, algorithm: str = "HS256"
+    ) -> str:
         """This function generates Json Web Token (JWT) that will use the
         client to access system resources.
 
@@ -263,11 +267,13 @@ class Token:
             raise TokenError(error_msg)
 
         for key in Token.required_keys:
-           if key not in token_payload.keys():
-               error_msg = f"The key: \"{key}\" is missing from payload dictionary."
-               raise TokenError(error_msg)
+            if key not in token_payload.keys():
+                error_msg = f'The key: "{key}" is missing from payload dictionary.'
+                raise TokenError(error_msg)
         cls.log.debug(f"Encoding token using {algorithm} algorithm.")
-        token_str = jwt.encode(payload=token_payload, key=secret_key, algorithm=algorithm).decode("utf-8")
+        token_str = jwt.encode(payload=token_payload, key=secret_key, algorithm=algorithm).decode(
+            "utf-8"
+        )
         return token_str
 
     @classmethod
@@ -290,12 +296,12 @@ class Token:
         token_id = None
         try:
             token_id = cls.get_token_id(token)
-            #cls.log.debug(f"Verifying token id {token_id}")
+            # cls.log.debug(f"Verifying token id {token_id}")
             cls.decode_and_verify_token(token)
             if not cls._token_manager.is_token_exist(token_id):
                 error_msg = "Token have been revoked, please login again."
                 raise TokenRevoked(error_msg)
-        except (jwt.ExpiredSignatureError, jwt.DecodeError, jwt.InvalidTokenError)  as e:
+        except (jwt.ExpiredSignatureError, jwt.DecodeError, jwt.InvalidTokenError) as e:
             error_msg = f"Failed to verify token: {e}"
             cls.log.warning(error_msg)
             if token_id is not None:
@@ -328,7 +334,9 @@ class Token:
 
 class UserToken(Token):
     @classmethod
-    def init_payload(cls, user: BaseUser, subject: str, expiration_delta: timedelta, refresh_id: str):
+    def init_payload(
+        cls, user: BaseUser, subject: str, expiration_delta: timedelta, refresh_id: str
+    ):
         """initializes a dictionary which will be used as a payload
         for token (JWT) generation.
 
@@ -336,7 +344,7 @@ class UserToken(Token):
             user: (BaseUser): The user to for whom the token will be generated.
             expiration_delta (timedelta): the time delta from now.
             refresh_id (str): An id of the assciated refresh token.
-        
+
         Returns:
             (dict): The dictionary to use as a payload when encoding the token.
         """
@@ -379,15 +387,14 @@ class UserToken(Token):
         if "" == token_obj.refresh_id:
             return None
         return token_obj.refresh_id
-            
-            
+
     @classmethod
     def _generate_user_token(
         cls, user: BaseUser, subject: str, time_delta: timedelta, refresh_id: str = ""
     ) -> str:
         """This function encapsulates the generate_token function to
         generate the access token.
-        
+
         Args:
             user (BaseUser): The user for whom the token is generated.
             subect (str): The subject of the token ('Access', 'Refresh').

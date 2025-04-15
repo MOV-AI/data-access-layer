@@ -46,19 +46,19 @@ class PersistencePlugin(Plugin):
         """
 
     @abstractmethod
-    def create_workspace(self, ref:str, **kwargs):
+    def create_workspace(self, ref: str, **kwargs):
         """
         creates a new workspace
         """
 
     @abstractmethod
-    def delete_workspace(self, ref:str):
+    def delete_workspace(self, ref: str):
         """
         deletes a existing workspace
         """
 
     @abstractmethod
-    def workspace_info(self, ref:str):
+    def workspace_info(self, ref: str):
         """
         get information about a workspace
         """
@@ -124,7 +124,7 @@ class PersistencePlugin(Plugin):
         """
 
     @abstractmethod
-    def rebuild_indexes(self,**kwargs):
+    def rebuild_indexes(self, **kwargs):
         """
         force the database layer to rebuild
         all indexes
@@ -136,6 +136,7 @@ class Persistence(PluginManager):
     Implements an interface for accessing the persistance
     layer
     """
+
     logger = Log.get_logger("persistence.mov.ai")
 
     @classmethod

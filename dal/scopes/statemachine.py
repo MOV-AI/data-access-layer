@@ -19,9 +19,7 @@ class StateMachine(Scope):
     scope = "StateMachine"
 
     def __init__(self, name, version="latest", new=False, db="global"):
-        super().__init__(
-            scope="StateMachine", name=name, version=version, new=new, db=db
-        )
+        super().__init__(scope="StateMachine", name=name, version=version, new=new, db=db)
 
     def delete(self, key, name):
         """Delete object dependencies"""
@@ -29,12 +27,8 @@ class StateMachine(Scope):
 
         # delete State Links
         if result > 0 and key == "State":
-
             for link, value in self.Links.items():
-                if (
-                    value["From"].split("/", 1)[0] == name
-                    or value["To"].split("/", 1)[0] == name
-                ):
+                if value["From"].split("/", 1)[0] == name or value["To"].split("/", 1)[0] == name:
                     # delete the link if State is in From or To
                     del self.Links[link]
 
@@ -42,12 +36,7 @@ class StateMachine(Scope):
         return {}
 
     def add_link(
-        self,
-        source_node: str,
-        source_port: str,
-        target_node: str,
-        target_port: str,
-        **ignore
+        self, source_node: str, source_port: str, target_node: str, target_port: str, **ignore
     ) -> tuple:
         """
         verifies if the links already exists if not add it to the Links hash
@@ -105,18 +94,11 @@ class StateMachine(Scope):
             if options:
                 new_node.update(options)
 
-            MovaiDB().set(
-                {
-                    self.__class__.__name__: {
-                        self.name: {org_type: {copy_name: new_node}}
-                    }
-                }
-            )
+            MovaiDB().set({self.__class__.__name__: {self.name: {org_type: {copy_name: new_node}}}})
 
             return (True, None)
 
         except Exception as error:
-
             return (False, repr(error))
 
 
@@ -124,15 +106,12 @@ class SMVars:
     """Class for user to write and read vars into a state machine"""
 
     def __init__(self, _sm_name, _node_name=""):
-
         self.__dict__["_sm_name"] = _sm_name
         self.__dict__["_node_name"] = _node_name
         self.__dict__["id"] = _node_name + "@" + _sm_name
 
     def __setattr__(self, name, value):
-        MovaiDB("local").hset(
-            {"Var": {"node": {"ID": {self.id: {"Parameter": {name: value}}}}}}
-        )
+        MovaiDB("local").hset({"Var": {"node": {"ID": {self.id: {"Parameter": {name: value}}}}}})
 
     def __getattr__(self, name):
         try:
@@ -168,9 +147,7 @@ class SMVars:
         return delattr(self, name)
 
     def get_dict(self):
-        return MovaiDB("local").get_hash(
-            {"Var": {"node": {"ID": {self.id: {"Parameter": ""}}}}}
-        )
+        return MovaiDB("local").get_hash({"Var": {"node": {"ID": {self.id: {"Parameter": ""}}}}})
 
     '''
     @staticmethod
@@ -198,5 +175,4 @@ class SMVars:
 
 
 if __name__ == "__main__":
-
     pass

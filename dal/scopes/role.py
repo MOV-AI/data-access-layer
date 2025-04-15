@@ -11,7 +11,6 @@ from dal.scopes.scope import Scope
 
 
 class Role(Scope):
-
     scope = "Role"
 
     def __init__(self, name, version="latest", new=False, db="global"):

@@ -12,8 +12,9 @@ from .model import Model
 
 
 class Form(Model):
-    """ Form Model """
+    """Form Model"""
 
     # default __init__
+
 
 Model.register_model_class("Form", Form)

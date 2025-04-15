@@ -2,7 +2,6 @@ import unittest
 
 
 class TestDAL(unittest.TestCase):
-
     def __init__(self, methodName: str = ...) -> None:
         super().__init__(methodName)
 

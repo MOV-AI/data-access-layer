@@ -11,17 +11,13 @@
 
 import hashlib
 
-from dal.models.scopestree import (
-    ScopeObjectNode,
-    ScopePropertyNode,
-    ScopeNode,
-    PropertyNode
-)
+from dal.models.scopestree import ScopeObjectNode, ScopePropertyNode, ScopeNode, PropertyNode
+
 
 class PackageFileValue(ScopePropertyNode):
-    """ Submodel for Package/File/Value
+    """Submodel for Package/File/Value
 
-        will update File's Checksum on set
+    will update File's Checksum on set
     """
 
     @PropertyNode.value.setter
@@ -33,17 +29,18 @@ class PackageFileValue(ScopePropertyNode):
         except AttributeError:
             # bytes has no attribute encode
             csum = hashlib.md5(value)
-        self.parent._children['Checksum'].attributes['Checksum'] = csum.hexdigest()
+        self.parent._children["Checksum"].attributes["Checksum"] = csum.hexdigest()
+
 
 class PackageFileChecksum(ScopePropertyNode):
-    """ Submodel for Package/File/Checksum
+    """Submodel for Package/File/Checksum
 
-        Doesn't allow setting it directly
+    Doesn't allow setting it directly
     """
 
     @property
     def value(self):
-        return self.attributes.get('Checksum', self._value)
+        return self.attributes.get("Checksum", self._value)
 
     @value.setter
     def value(self, value):
@@ -51,11 +48,10 @@ class PackageFileChecksum(ScopePropertyNode):
         pass
 
 
-
 class PackageFile(ScopeObjectNode):
-    """ Submodel for Package/File
+    """Submodel for Package/File
 
-        needed to get the actual value from Checksum/File properties
+    needed to get the actual value from Checksum/File properties
     """
 
     def __getattribute__(self, name):
@@ -68,6 +64,7 @@ class PackageFile(ScopeObjectNode):
         # else
         return attr
 
-ScopeNode.register_scope_object('schemas/1.0/Package/File', PackageFile)
-ScopeNode.register_scope_property('schemas/1.0/Package/File/Value', PackageFileValue)
-ScopeNode.register_scope_property('schemas/1.0/Package/File/Checksum', PackageFileChecksum)
+
+ScopeNode.register_scope_object("schemas/1.0/Package/File", PackageFile)
+ScopeNode.register_scope_property("schemas/1.0/Package/File/Value", PackageFileValue)
+ScopeNode.register_scope_property("schemas/1.0/Package/File/Checksum", PackageFileChecksum)

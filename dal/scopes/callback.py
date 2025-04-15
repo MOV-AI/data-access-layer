@@ -40,19 +40,6 @@ class Callback(Scope):
 
         return self.template_depends(force)
 
-    def has_permission(self, user, permission, app_name):
-        """Override has_permission for the Scope Callback"""
-        has_perm = super().has_scope_permission(user, permission)
-        if not has_perm:
-            # Check if user has the Callback on the authorized Applications Callbacks list.
-            # If the user has authorization on the Application that is calling the callback, then authorize.
-            if app_name in user.get_permissions("Applications"):
-                ca = Application(name=app_name)
-                if ca.Callbacks and self.name in ca.Callbacks:
-                    has_perm = True
-
-        return has_perm
-
     @staticmethod
     def get_modules() -> list:
         modules_list = [x[1] for x in pkgutil.iter_modules()]
@@ -151,7 +138,6 @@ class Callback(Scope):
 
     @staticmethod
     def get_full_modules() -> dict:
-
         module_description = {}
 
         mods = Callback.get_modules()
@@ -281,7 +267,6 @@ class Callback(Scope):
 
                 # get classes
                 for key, value in inspect.getmembers(i_mod, inspect.isclass):
-
                     # ignore __var__ like __these__
                     # probably simpler than re.match()
                     if key[:2] == "__" and key[-2:] == "__":
@@ -300,7 +285,6 @@ class Callback(Scope):
 
                 # get methods
                 for key, value in inspect.getmembers(i_mod, inspect.isroutine):
-
                     # ignore __var__ like __these__
                     if key[:2] == "__" and key[-2:] == "__":
                         continue
@@ -318,7 +302,6 @@ class Callback(Scope):
 
                 # get data/constants
                 for key, value in inspect.getmembers(i_mod, pydoc.isdata):
-
                     # ignore __var__ like __these__
                     if key[:2] == "__" and key[-2:] == "__":
                         continue
@@ -429,15 +412,10 @@ class Callback(Scope):
         return mods["System"]["PyModules"]["Value"]
 
     def template_depends(self, force=False):
-
         # this will give a list of tuples (node_name, node_inst_name, iport_name)
         replaced_cbs = []
         full_node_list = MovaiDB().search(
-            {
-                "Node": {
-                    "*": {"PortsInst": {"*": {"In": {"*": {"Callback": self.name}}}}}
-                }
-            }
+            {"Node": {"*": {"PortsInst": {"*": {"In": {"*": {"Callback": self.name}}}}}}}
         )
 
         for node_key in full_node_list:

@@ -20,9 +20,9 @@ from movai_core_shared.logger import Log
 from dal.movaidb import MovaiDB
 from dal.scopes.robot import Robot
 
-SCOPES = ['local', 'global']
+SCOPES = ["local", "global"]
 
-logger = Log.get_logger('Lock')
+logger = Log.get_logger("Lock")
 
 
 class Lock:
@@ -43,17 +43,27 @@ class Lock:
         persistent (bool): If true, lock persists after the flow is stopped
 
     """
+
     enabled_locks = []
     HEARTBEAT_MIN_TIMEOUT = 1
     DEFAULT_MAX_RETRIES = 3  # nr. of times we try to reacquire the lock
     HEARTBEAT_FREQ_FACTOR = 0.25
     DEFAULT_LOCK_TIMEOUT = 90
 
-    def __init__(self, name: str, scope: str = 'global', *, timeout: float = 0,
-                 queue_level: int = None, blocking_timeout: float = 0,
-                 alive_timeout: float = 5000, _robot_name: str = None,
-                 _node_name: str = 'test_node', persistent: bool = False,
-                 reacquire: bool = False):
+    def __init__(
+        self,
+        name: str,
+        scope: str = "global",
+        *,
+        timeout: float = 0,
+        queue_level: int = None,
+        blocking_timeout: float = 0,
+        alive_timeout: float = 5000,
+        _robot_name: str = None,
+        _node_name: str = "test_node",
+        persistent: bool = False,
+        reacquire: bool = False,
+    ):
         """Initialize the Lock object
 
         Args:
@@ -76,8 +86,10 @@ class Lock:
 
         """
         if scope not in SCOPES:
-            raise MovaiException(f"'{scope}' is not a valid scope. \
-                                 Choose between: '{str(SCOPES)[1:-1]}")
+            raise MovaiException(
+                f"'{scope}' is not a valid scope. \
+                                 Choose between: '{str(SCOPES)[1:-1]}"
+            )
 
         self.db_read = MovaiDB(scope).db_read
         self.db_write = MovaiDB(scope).db_write
@@ -94,7 +106,7 @@ class Lock:
         self.robot_name = _robot_name or Robot().name
         self.node_name = _node_name
 
-        self.source = self.robot_name if scope == 'global' else self.node_name
+        self.source = self.robot_name if scope == "global" else self.node_name
 
         self.blocking_timeout = blocking_timeout
         self.should_reacquire = reacquire
@@ -102,9 +114,9 @@ class Lock:
             # default timeout time
             timeout = self.DEFAULT_LOCK_TIMEOUT
         self.timeout = timeout
-        self.db_lock = self.db_write.lock(self.lock_name, timeout=timeout,
-                                          blocking_timeout=blocking_timeout,
-                                          thread_local=False)
+        self.db_lock = self.db_write.lock(
+            self.lock_name, timeout=timeout, blocking_timeout=blocking_timeout, thread_local=False
+        )
 
         if not isinstance(self.source, bytes):
             # needed for db_lock.owned(), redis-py lock owned() method
@@ -142,13 +154,14 @@ class Lock:
         if self.queue_level:  # Add me to the queue and to the alive
             try:
                 score = int(str(self.queue_level) + str(time_milis))
-                self.db_write.zadd(self.queue_name, {self.source: score},
-                                   nx=True)
+                self.db_write.zadd(self.queue_name, {self.source: score}, nx=True)
                 self.db_write.zadd(self.alive_name, {self.source: time_milis})
 
             except Exception as e:
-                logger.error(f"Could not add to queue {self._name} in \
-                             {self.source}. see error: {e}")
+                logger.error(
+                    f"Could not add to queue {self._name} in \
+                             {self.source}. see error: {e}"
+                )
 
         if self.blocking_timeout is not None and not blocking:
             stop_trying_at = start_time + self.blocking_timeout
@@ -157,37 +170,34 @@ class Lock:
             # Here we remove the guys in from of me that are not alive-cuz Yolo
             # First get all elements with score lower than mine
             my_score = self.db_read.zscore(self.queue_name, self.source)
-            my_score = my_score - 1 if my_score else '+inf'
-            frontline = self.db_read.zrangebyscore(
-                self.queue_name, '-inf', my_score)
+            my_score = my_score - 1 if my_score else "+inf"
+            frontline = self.db_read.zrangebyscore(self.queue_name, "-inf", my_score)
 
             # then check the last time they were alive
             for elem in frontline:
-                elem_name = elem.decode('utf-8')
+                elem_name = elem.decode("utf-8")
                 last_alive = self.db_read.zscore(self.alive_name, elem_name)
                 if int(time.time() * 1000) - last_alive > self.alive_timeout:
-                    logger.debug(
-                        f'{elem_name} removed from queue for inactivity')
+                    logger.debug(f"{elem_name} removed from queue for inactivity")
                     try:
                         self.db_write.zrem(self.queue_name, elem_name)
                         self.db_write.zrem(self.alive_name, elem_name)
 
                     except Exception as e:
-                        logger.error(f"Could not remove {elem_name} from \
-                                     queue {self._name}. see error: {e}")
+                        logger.error(
+                            f"Could not remove {elem_name} from \
+                                     queue {self._name}. see error: {e}"
+                        )
 
             # return the first guy in the queue (lowest score)
             lowest_score_robot = self.db_read.zrange(self.queue_name, 0, 0)
 
-            if not lowest_score_robot \
-               or lowest_score_robot[0].decode('utf-8') == self.source:
+            if not lowest_score_robot or lowest_score_robot[0].decode("utf-8") == self.source:
                 # No one in queue or its me!!!
-                block_inside = self.blocking_timeout - \
-                               (time.time() - start_time)
+                block_inside = self.blocking_timeout - (time.time() - start_time)
                 res = self.db_lock.acquire(
-                                           blocking=blocking,
-                                           blocking_timeout=block_inside,
-                                           token=self.source)
+                    blocking=blocking, blocking_timeout=block_inside, token=self.source
+                )
                 if res:
                     # We acquired the lock so lets remove us from
                     # queue and alive
@@ -196,9 +206,11 @@ class Lock:
                         self.db_write.zrem(self.alive_name, self.source)
 
                     except Exception as e:
-                        logger.error(f"Could not remove from queue \
+                        logger.error(
+                            f"Could not remove from queue \
                                      {self._name} in {self.source}. \
-                                     see error: {e}")
+                                     see error: {e}"
+                        )
 
                     # enable Lock heartbeat
                     self.send_lock_cmd()
@@ -223,8 +235,9 @@ class Lock:
             self.db_lock.release()
 
         except redis.exceptions.LockNotOwnedError:
-            logger.warning(f"Cannot release a lock ({self._name})"
-                           f" that's no longer owned ({self.source}) ")
+            logger.warning(
+                f"Cannot release a lock ({self._name})" f" that's no longer owned ({self.source}) "
+            )
             return False
 
         except redis.exceptions.LockError:
@@ -232,8 +245,10 @@ class Lock:
             return False
 
         except Exception as e:
-            logger.error(f"Could not release lock {self._name} in \
-                         {self.source}. see error: {e}")
+            logger.error(
+                f"Could not release lock {self._name} in \
+                         {self.source}. see error: {e}"
+            )
             return False
 
         finally:
@@ -245,9 +260,9 @@ class Lock:
         """Returns the current queue and lock holder"""
         holder = self.db_read.get(self.lock_name)
         if holder:
-            holder = holder.decode('utf-8')
+            holder = holder.decode("utf-8")
         queue = self.db_read.zrange(self.queue_name, 0, -1)
-        return holder, [elem.decode('utf-8') for elem in queue]
+        return holder, [elem.decode("utf-8") for elem in queue]
 
     def extend(self, additional_time: float) -> bool:
         """Adds more time to an already acquired lock."""
@@ -255,12 +270,16 @@ class Lock:
             return self.db_lock.extend(additional_time)
 
         except redis.exceptions.ConnectionError:
-            logger.warning(f"Could not extend lock ({self._name}). \
-                           Connection error.")
+            logger.warning(
+                f"Could not extend lock ({self._name}). \
+                           Connection error."
+            )
 
         except Exception as e:
-            logger.error(f"Could not extend lock {self._name} in \
-                         {self.source}. see error: {e}")
+            logger.error(
+                f"Could not extend lock {self._name} in \
+                         {self.source}. see error: {e}"
+            )
 
         return False
 
@@ -274,39 +293,49 @@ class Lock:
             return self.db_lock.reacquire()
 
         except redis.exceptions.ConnectionError:
-            logger.warning(f"Could not reacquire lock ({self._name}). \
-                           Connection error.")
+            logger.warning(
+                f"Could not reacquire lock ({self._name}). \
+                           Connection error."
+            )
 
         except redis.exceptions.LockNotOwnedError:
             # backend already released that lock from redis.
-            logger.debug(f"Could not reacquire lock ({self._name}). \
-                           Lock not owned.")
+            logger.debug(
+                f"Could not reacquire lock ({self._name}). \
+                           Lock not owned."
+            )
 
         except Exception as e:
-            logger.error(f"Could not reacquire lock {self._name} in \
-                         {self.source}. see error: {e}")
+            logger.error(
+                f"Could not reacquire lock {self._name} in \
+                         {self.source}. see error: {e}"
+            )
 
         return False
 
     def is_owned(self):
-        """ Returns if the lock is owned."""
+        """Returns if the lock is owned."""
         try:
             return self.db_lock.owned()
 
         except redis.exceptions.ConnectionError:
-            logger.warning(f"Could not check lock ({self._name}) \
-                           ownership. Connection error.")
+            logger.warning(
+                f"Could not check lock ({self._name}) \
+                           ownership. Connection error."
+            )
 
         except Exception as e:
-            logger.error(f"Could not check lock ({self._name}) ownership. \
-                         see error:{e}")
+            logger.error(
+                f"Could not check lock ({self._name}) ownership. \
+                         see error:{e}"
+            )
 
         return False
 
     async def th_reacquire(self):
         """
-            Thread to keep Lock heartbeat
-            Thread will exit when Lock is not in enabled_locks anymore
+        Thread to keep Lock heartbeat
+        Thread will exit when Lock is not in enabled_locks anymore
         """
         # heartbeat time must be smaller than timeout
         _heartbeat = self.timeout * self.HEARTBEAT_FREQ_FACTOR
@@ -319,8 +348,7 @@ class Lock:
             await asyncio.sleep(_heartbeat)
 
             # terminate heartbeat
-            if self._name not in type(self).enabled_locks \
-               or not self.should_reacquire:
+            if self._name not in type(self).enabled_locks or not self.should_reacquire:
                 break
 
             # if cannot reacquire stop doing heartbeat
@@ -329,8 +357,10 @@ class Lock:
                 if max_retries == 0:
                     if self._name in type(self).enabled_locks:
                         type(self).enabled_locks.remove(self._name)
-                    logger.debug(f"Heartbeat could not reacquire lock \
-                                {self._name} in {self.source}")
+                    logger.debug(
+                        f"Heartbeat could not reacquire lock \
+                                {self._name} in {self.source}"
+                    )
                     break
             else:
                 max_retries = self.DEFAULT_MAX_RETRIES
@@ -338,7 +368,7 @@ class Lock:
     @classmethod
     async def enable_heartbeat(cls, **kwargs):
         """
-            Create a thread to continuously keep Lock heartbeat
+        Create a thread to continuously keep Lock heartbeat
         """
         # instantiate Lock object
         lock_obj = cls(**kwargs)
@@ -356,8 +386,8 @@ class Lock:
     @classmethod
     def disable_heartbeat(cls, name, **_):
         """
-            Disable Lock heartbeat by removing it from enabled_locks
-            heartbeat thread will automatically end
+        Disable Lock heartbeat by removing it from enabled_locks
+        heartbeat thread will automatically end
         """
         try:
             # remove lock from enabled locks pool
@@ -374,7 +404,7 @@ class Lock:
 
     def send_lock_cmd(self):
         """
-            Send spawner a command to enable heartbeat
+        Send spawner a command to enable heartbeat
         """
 
         # do not heartbeat if timeout less than 1 second
@@ -383,25 +413,25 @@ class Lock:
 
         # get instance kwargs
         _kwargs = {
-            "name":             self._name,
-            "scope":            self.scope,
-            "timeout":          self.timeout,
-            "queue_level":      self.queue_level,
+            "name": self._name,
+            "scope": self.scope,
+            "timeout": self.timeout,
+            "queue_level": self.queue_level,
             "blocking_timeout": self.blocking_timeout,
-            "alive_timeout":    self.alive_timeout,
-            "_robot_name":      self.robot_name,
-            "_node_name":       self.node_name,
-            "persistent":       self.persistent,
-            "reacquire":        self.should_reacquire
+            "alive_timeout": self.alive_timeout,
+            "_robot_name": self.robot_name,
+            "_node_name": self.node_name,
+            "persistent": self.persistent,
+            "reacquire": self.should_reacquire,
         }
 
         # send command
-        Robot().send_cmd(command='LOCK', data=_kwargs)
+        Robot().send_cmd(command="LOCK", data=_kwargs)
 
     def send_unlock_cmd(self):
         """
-            Send spawner a command to disable heartbeat
+        Send spawner a command to disable heartbeat
         """
 
         # send command
-        Robot().send_cmd(command='UNLOCK', data={'name': self._name})
+        Robot().send_cmd(command="UNLOCK", data={"name": self._name})

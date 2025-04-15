@@ -18,6 +18,4 @@ class Application(Scope):
     permissions = [*Scope.permissions, "execute"]
 
     def __init__(self, name, version="latest", new=False, db="global"):
-        super().__init__(
-            scope="Application", name=name, version=version, new=new, db=db
-        )
+        super().__init__(scope="Application", name=name, version=version, new=new, db=db)

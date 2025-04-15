@@ -22,22 +22,19 @@ class RedisPlugin(ResourcePlugin):
         """
         Read a text file, returns all text in the file
         """
-        raise ResourceException(
-            "Error opening text file {}".format(url))
+        raise ResourceException("Error opening text file {}".format(url))
 
     def read_json(self, url: str):
         """
         Read a text file, returns all text in the file
         """
-        raise ResourceException(
-            "Error opening text file {}".format(url))
+        raise ResourceException("Error opening text file {}".format(url))
 
     def read_binary(self, url: str):
         """
         Read a text file, returns all text in the file
         """
-        raise ResourceException(
-            "Error opening text file {}".format(url))
+        raise ResourceException("Error opening text file {}".format(url))
 
 
 # Register this Plugin

@@ -8,7 +8,7 @@ from dal.exceptions import (
     TagAlreadyExist,
     VersionDoesNotExist,
     RepositoryDoesNotExist,
-    FileDoesNotExist
+    FileDoesNotExist,
 )
 from dal.classes.filesystem import FileSystem
 from dal.archive import Archive, BaseArchive
@@ -21,7 +21,7 @@ pytest.skip(allow_module_level=True, reason="These tests were never enabled")
 def _validate_file(archive: BaseArchive, remote, filename, version, expect: dict):
     path = archive.get(filename, remote, version)
     file_json = json_loads(path.read_text())
-    assert(sorted(expect.items()) == sorted(file_json.items()))
+    assert sorted(expect.items()) == sorted(file_json.items())
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -31,7 +31,10 @@ def clean_environment(request):
     for user in used_users:
         path = path_join(GIT_BASE_FOLDER, user)
         FileSystem.delete(path)
+
+
 ###############################################################################
+
 
 def should_run_test():
     """
@@ -43,19 +46,38 @@ def should_run_test():
         return False
     return True
 
+
 def test_basic():
     global archive
     archive = Archive(user="TEMP")
-    assert(archive is not None)
+    assert archive is not None
 
 
-@pytest.mark.parametrize("params, expected_error", [
-    (("git@github.com:MOV-AI/DOES_NOT_EXIST.git", "file", "v", json_loads("{}")), RepositoryDoesNotExist),
-    (("git@github.com:MOV-AI/ANOTHER_DOES_NOT_EXIST.git", "file", "v", json_loads("{}")), RepositoryDoesNotExist),
-    (("https://github.com/Mograbi/test-git", "file1", "vDoesNotExist", json_loads("{}")), VersionDoesNotExist),
-    (("https://github.com/Mograbi/test-git", "file2", "v11DoesNotExist", json_loads("{}")), VersionDoesNotExist),
-    (("https://github.com/Mograbi/test-git", "doesnotexist.json", "v0.1", json_loads("{}")), FileDoesNotExist),
-])
+@pytest.mark.parametrize(
+    "params, expected_error",
+    [
+        (
+            ("git@github.com:MOV-AI/DOES_NOT_EXIST.git", "file", "v", json_loads("{}")),
+            RepositoryDoesNotExist,
+        ),
+        (
+            ("git@github.com:MOV-AI/ANOTHER_DOES_NOT_EXIST.git", "file", "v", json_loads("{}")),
+            RepositoryDoesNotExist,
+        ),
+        (
+            ("https://github.com/Mograbi/test-git", "file1", "vDoesNotExist", json_loads("{}")),
+            VersionDoesNotExist,
+        ),
+        (
+            ("https://github.com/Mograbi/test-git", "file2", "v11DoesNotExist", json_loads("{}")),
+            VersionDoesNotExist,
+        ),
+        (
+            ("https://github.com/Mograbi/test-git", "doesnotexist.json", "v0.1", json_loads("{}")),
+            FileDoesNotExist,
+        ),
+    ],
+)
 def test_read_errors(params, expected_error):
     if not should_run_test():
         pytest.skip("cannot check this from inside gitub pipeline")
@@ -64,35 +86,73 @@ def test_read_errors(params, expected_error):
         _validate_file(archive, *params)
 
 
-@pytest.mark.parametrize("params", [
-    # use tag as a version
-    ("https://github.com/Mograbi/test-git", "file1", "v0.1", json_loads("""{
+@pytest.mark.parametrize(
+    "params",
+    [
+        # use tag as a version
+        (
+            "https://github.com/Mograbi/test-git",
+            "file1",
+            "v0.1",
+            json_loads(
+                """{
                                                                             "filed1": 1,
                                                                                 "field2": 2,
                                                                                 "field3": [1, 2]
-                                                                        }""")),
-    ("https://github.com/Mograbi/test-git", "file1", "s0.1", json_loads("""{
+                                                                        }"""
+            ),
+        ),
+        (
+            "https://github.com/Mograbi/test-git",
+            "file1",
+            "s0.1",
+            json_loads(
+                """{
                                                                             "filed1": "side-branch",
                                                                             "field2": 2,
                                                                             "field3": [1, 2]
-                                                                        }""")),
-    # use a branch as a version
-    ("https://github.com/Mograbi/test-git", "file1", "side-branch", json_loads("""{
+                                                                        }"""
+            ),
+        ),
+        # use a branch as a version
+        (
+            "https://github.com/Mograbi/test-git",
+            "file1",
+            "side-branch",
+            json_loads(
+                """{
                                                                                     "filed1": "side-branch",
                                                                                     "field2": 2,
                                                                                     "field3": [1, 2]
-                                                                                }""")),
-    ("https://github.com/Mograbi/test-git", "file1", "master", json_loads("""{
+                                                                                }"""
+            ),
+        ),
+        (
+            "https://github.com/Mograbi/test-git",
+            "file1",
+            "master",
+            json_loads(
+                """{
                                                                                     "filed1": "master",
                                                                                     "field2": 2,
                                                                                     "field3": [1, 2]
-                                                                                }""")),
-    # use commit hash as a version
-    ("https://github.com/Mograbi/test-git", "file2", "b8252bb89646", json_loads("""{
+                                                                                }"""
+            ),
+        ),
+        # use commit hash as a version
+        (
+            "https://github.com/Mograbi/test-git",
+            "file2",
+            "b8252bb89646",
+            json_loads(
+                """{
                                                                                     "field1": "master branch",
                                                                                     "field2": 4
-                                                                                }"""))
-])
+                                                                                }"""
+            ),
+        ),
+    ],
+)
 def test_read(params):
     if not should_run_test():
         pytest.skip("cannot check this from inside gitub pipeline")
@@ -105,7 +165,9 @@ def test_commit_errors():
         pytest.skip("cannot check this from inside gitub pipeline")
     archive = Archive(user="TEMP2")
     with pytest.raises(NoChangesToCommit):
-        archive.commit("file1", "https://github.com/Mograbi/test-git", base_version="master", message="")
+        archive.commit(
+            "file1", "https://github.com/Mograbi/test-git", base_version="master", message=""
+        )
 
 
 def test_commit():
@@ -113,14 +175,20 @@ def test_commit():
         pytest.skip("cannot check this from inside gitub pipeline")
     archive = Archive(user="TEMP2")
     path = archive.get("file1", "https://github.com/Mograbi/test-git", "master")
-    FileSystem.write(path, json_loads(
-                            """{
+    FileSystem.write(
+        path,
+        json_loads(
+            """{
                                 "filed1": "master",
                                 "field2": 2,
                                 "field3": [1, 2],
                                 "new_field": "new"
-                            }"""))
-    new_commit = archive.commit("file1", "https://github.com/Mograbi/test-git", base_version="master", message="new commit")
+                            }"""
+        ),
+    )
+    new_commit = archive.commit(
+        "file1", "https://github.com/Mograbi/test-git", base_version="master", message="new commit"
+    )
 
 
 def test_revert():
@@ -130,28 +198,41 @@ def test_revert():
     path = archive.get("file1", "https://github.com/Mograbi/test-git", "master")
     before_commit = json_loads(path.read_text())
 
-    FileSystem.write(path, json_loads(
-                            """{
+    FileSystem.write(
+        path,
+        json_loads(
+            """{
                                 "filed1": "master",
                                 "field2": 2,
                                 "field3": [1, 2],
                                 "new_field": "test_revert"
-                            }"""))
-    new_commit = archive.commit("file1", "https://github.com/Mograbi/test-git", base_version="master", message="new commit test revert")
+                            }"""
+        ),
+    )
+    new_commit = archive.commit(
+        "file1",
+        "https://github.com/Mograbi/test-git",
+        base_version="master",
+        message="new commit test revert",
+    )
     path = archive.get("file1", "https://github.com/Mograbi/test-git", "master")
     after_commit = json_loads(path.read_text())
 
-    assert(sorted(before_commit.items()) != sorted(after_commit.items()))
+    assert sorted(before_commit.items()) != sorted(after_commit.items())
 
     path = archive.revert("https://github.com/Mograbi/test-git", "file1", "master")
-    assert(sorted(before_commit.items()) == sorted(json_loads(path.read_text()).items()))
+    assert sorted(before_commit.items()) == sorted(json_loads(path.read_text()).items())
 
-    assert(sorted(after_commit.items()) == sorted(json_loads("""{
+    assert sorted(after_commit.items()) == sorted(
+        json_loads(
+            """{
                                 "filed1": "master",
                                 "field2": 2,
                                 "field3": [1, 2],
                                 "new_field": "test_revert"
-                            }""").items()))
+                            }"""
+        ).items()
+    )
 
 
 def test_version_errors():
@@ -175,13 +256,16 @@ def test_version():
     archive.create_version(remote, "master", "v1.0", message="creating new tag v1.0")
 
 
-@pytest.mark.parametrize("params, expected_error", [
-    (("git@github.com:MOV-AI/DOES_NOT_EXIST.git", "file", "v"), RepositoryDoesNotExist),
-    (("git@github.com:MOV-AI/ANOTHER_DOES_NOT_EXIST.git", "file", "v"), RepositoryDoesNotExist),
-    (("https://github.com/Mograbi/test-git", "file1", "vDoesNotExist"), VersionDoesNotExist),
-    (("https://github.com/Mograbi/test-git", "file2", "v11DoesNotExist"), VersionDoesNotExist),
-    (("https://github.com/Mograbi/test-git", "doesnotexist.json", "v0.1"), FileDoesNotExist),
-])
+@pytest.mark.parametrize(
+    "params, expected_error",
+    [
+        (("git@github.com:MOV-AI/DOES_NOT_EXIST.git", "file", "v"), RepositoryDoesNotExist),
+        (("git@github.com:MOV-AI/ANOTHER_DOES_NOT_EXIST.git", "file", "v"), RepositoryDoesNotExist),
+        (("https://github.com/Mograbi/test-git", "file1", "vDoesNotExist"), VersionDoesNotExist),
+        (("https://github.com/Mograbi/test-git", "file2", "v11DoesNotExist"), VersionDoesNotExist),
+        (("https://github.com/Mograbi/test-git", "doesnotexist.json", "v0.1"), FileDoesNotExist),
+    ],
+)
 def test_delete_errors(params, expected_error):
     if not should_run_test():
         pytest.skip("cannot check this from inside gitub pipeline")

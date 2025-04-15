@@ -14,8 +14,8 @@ from movai_core_shared.logger import Log
 
 
 class BaseDBHandler(object):
-    """This class is a base class for db handlers.
-    """
+    """This class is a base class for db handlers."""
+
     def __init__(self, handler_name: str, db_type: str, logger: Logger) -> None:
         """constructor
 
@@ -29,9 +29,9 @@ class BaseDBHandler(object):
             Exception: _description_
         """
         self._debug = MESSAGE_SERVER_DEBUG_MODE
-        if handler_name is None or handler_name == '':
+        if handler_name is None or handler_name == "":
             raise DBHandlerError("DBHandler must have a qualified name.")
-        if db_type is None or db_type == '':
+        if db_type is None or db_type == "":
             raise DBHandlerError("DBHandler must have a qualified type.")
         self._db_name = None
         self._name = handler_name

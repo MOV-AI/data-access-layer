@@ -10,7 +10,7 @@ from dal.validation import JsonValidator, default_version
 
 class GitPlugin(PersistencePlugin):
     logger = Log.get_logger("git.mov.ai")
-    _ROOT_PATH = os.path.join(os.getenv('MOVAI_USERSPACE', ""), "database")
+    _ROOT_PATH = os.path.join(os.getenv("MOVAI_USERSPACE", ""), "database")
     archive = Archive()
 
     def validate_data(self, schema, data: dict, out: dict):
@@ -121,11 +121,18 @@ class GitPlugin(PersistencePlugin):
         validator = JsonValidator(schema_version)
         validation_res = validator.validate(file_path=None, content=data_to_write)
         if validation_res["status"] is False:
-            self.logger.error(f"data is incompatible with schema version: {schema_version}\n", validation_res["message"])
+            self.logger.error(
+                f"data is incompatible with schema version: {schema_version}\n",
+                validation_res["message"],
+            )
 
         self.archive.create_obj(GitPlugin.remote(scope), ref, data_to_write, base_version=version)
-        commit_sha = self.archive.commit(ref, GitPlugin.remote(scope), message=f"modified file {ref}")
-        self.logger.debug(f"file written and committed path:{self.archive.local_path(GitPlugin.remote(scope))}/{ref}, commit sha:{commit_sha}")
+        commit_sha = self.archive.commit(
+            ref, GitPlugin.remote(scope), message=f"modified file {ref}"
+        )
+        self.logger.debug(
+            f"file written and committed path:{self.archive.local_path(GitPlugin.remote(scope))}/{ref}, commit sha:{commit_sha}"
+        )
 
         return commit_sha
 
@@ -133,7 +140,9 @@ class GitPlugin(PersistencePlugin):
         scope = kwargs["scope"]
         base_version = kwargs["base_version"]
         message = kwargs["message"]
-        return GitPlugin.archive.create_tag(GitPlugin.remote(scope), base_version, version_tag, message)
+        return GitPlugin.archive.create_tag(
+            GitPlugin.remote(scope), base_version, version_tag, message
+        )
 
     def push(self, **kwargs):
         scope = kwargs["scope"]

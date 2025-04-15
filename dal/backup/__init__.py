@@ -9,7 +9,4 @@
 from .backup import BackupManager
 from .restore import RestoreManager
 
-__all__ = [
-    "BackupManager",
-    "RestoreManager"
-]
+__all__ = ["BackupManager", "RestoreManager"]

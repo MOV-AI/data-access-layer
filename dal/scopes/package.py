@@ -25,9 +25,7 @@ class FileStruct(Struct):
     """Helper class to provide callbacks on attributes set"""
 
     def __init__(self, name, struct_dict, prev_struct, db):
-        super().__init__(
-            name=name, struct_dict=struct_dict, prev_struct=prev_struct, db=db
-        )
+        super().__init__(name=name, struct_dict=struct_dict, prev_struct=prev_struct, db=db)
         self.__dict__["setattr_callback"] = {"Value": self.set_checksum}
 
     def __setattr__(self, name, value):

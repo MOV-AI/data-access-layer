@@ -80,9 +80,7 @@ class _fake_redis(_patch):
                                 msg,
                             )
 
-            def read_response(
-                self, *a, **kw
-            ):
+            def read_response(self, *a, **kw):
                 if RECORD:
                     try:
                         value = super().read_response(*a, **kw)

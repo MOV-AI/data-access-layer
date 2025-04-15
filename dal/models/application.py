@@ -13,7 +13,7 @@ from .model import Model
 
 
 class Application(Model):
-    """ Application Model """
+    """Application Model"""
 
     # default __init__
 

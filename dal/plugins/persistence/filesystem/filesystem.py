@@ -18,15 +18,12 @@ from binascii import Error as BinasciiError
 from datetime import datetime
 
 from movai_core_shared.logger import Log
-from dal.data import (schemas,
-                      TreeNode,
-                      SchemaPropertyNode)
+from dal.data import schemas, TreeNode, SchemaPropertyNode
 from dal.plugins.classes import Plugin, PersistencePlugin, Persistence
 from dal.models.scopestree import ScopeInstanceVersionNode, ScopesTree
 from dal.models.model import Model
 from dal.backup import RestoreManager
 from dal.data.archive import RemoteArchive
-
 
 
 __DRIVER_NAME__ = "Mov.ai Filesystem Plugin"
@@ -37,10 +34,11 @@ class FilesystemPlugin(PersistencePlugin):
     """
     Implements a workspace that stores in a local storage
     """
+
     # Probably this should go to another place
-    _ROOT_PATH = os.path.join(os.getenv('MOVAI_USERSPACE', ""), "database")
-    _ARCHIVE_URI = os.getenv('MOVAI_MANAGER_URI', "http://localhost:5004")
-    _FLEET_TOKEN = os.getenv('FLEET_TOKEN', None)
+    _ROOT_PATH = os.path.join(os.getenv("MOVAI_USERSPACE", ""), "database")
+    _ARCHIVE_URI = os.getenv("MOVAI_MANAGER_URI", "http://localhost:5004")
+    _FLEET_TOKEN = os.getenv("FLEET_TOKEN", None)
     _ARCHIVE_USER = None
     _ARCHIVE_PASSWORD = None
     logger = Log.get_logger("filesystem.mov.ai")
@@ -59,14 +57,14 @@ class FilesystemPlugin(PersistencePlugin):
 
         # The credentials are base64 encoded so we decode it
         try:
-            token_bytes = FilesystemPlugin._FLEET_TOKEN.encode('ascii')
+            token_bytes = FilesystemPlugin._FLEET_TOKEN.encode("ascii")
             base64_bytes = base64.b64decode(token_bytes)
-            token_decoded = base64_bytes.decode('ascii')
+            token_decoded = base64_bytes.decode("ascii")
         except BinasciiError as e:
             raise ValueError("Invalid Fleet token") from e
 
         # Split the result to get User and Password
-        tokens = token_decoded.split(':')
+        tokens = token_decoded.split(":")
 
         try:
             FilesystemPlugin._ARCHIVE_USER = tokens[0]
@@ -106,25 +104,34 @@ class FilesystemPlugin(PersistencePlugin):
         # from a remote archive, then we use RestoreManager to
         # run a restore Job
         with tempfile.TemporaryDirectory() as tempdir:
-
             FilesystemPlugin.logger.info(
-                "Requesting scope (%s) from manager (%s)", scope, FilesystemPlugin._ARCHIVE_URI)
+                "Requesting scope (%s) from manager (%s)", scope, FilesystemPlugin._ARCHIVE_URI
+            )
 
             target_file = os.path.join(str(tempdir), "backup.zip")
 
             # Uses RemoteArchive to Fetch scopes and dependencies
             # from the remote archive
-            client = RemoteArchive(FilesystemPlugin._ARCHIVE_URI,
-                                   FilesystemPlugin._ARCHIVE_USER, FilesystemPlugin._ARCHIVE_PASSWORD)
+            client = RemoteArchive(
+                FilesystemPlugin._ARCHIVE_URI,
+                FilesystemPlugin._ARCHIVE_USER,
+                FilesystemPlugin._ARCHIVE_PASSWORD,
+            )
 
             # Something went wrong, probably we do not have the scope
             if not client.backup([scope], target_file):
                 FilesystemPlugin.logger.error(
-                    "Error downloading scope (%s) and dependencies from the manager (%s)", scope, FilesystemPlugin._ARCHIVE_URI)
+                    "Error downloading scope (%s) and dependencies from the manager (%s)",
+                    scope,
+                    FilesystemPlugin._ARCHIVE_URI,
+                )
                 raise FileNotFoundError
 
             FilesystemPlugin.logger.info(
-                "scope (%s) and dependencies retrieced from the manager (%s)", scope, FilesystemPlugin._ARCHIVE_URI)
+                "scope (%s) and dependencies retrieced from the manager (%s)",
+                scope,
+                FilesystemPlugin._ARCHIVE_URI,
+            )
 
             # We now restore the retrieved archive
             try:
@@ -151,15 +158,13 @@ class FilesystemPlugin(PersistencePlugin):
                 for name in data[schema.name].keys():
                     out[schema.name][name] = {}
                     for child in schema.children:
-                        self.validate_data(
-                            child, data[schema.name][name], out[schema.name][name])
+                        self.validate_data(child, data[schema.name][name], out[schema.name][name])
                 return
 
             for child in schema.children:
                 self.validate_data(child, data[schema.name], out[schema.name])
 
         except (KeyError, AttributeError):
-
             # No schema! check in this node children if any
             for child in schema.children:
                 self.validate_data(child, data, out)
@@ -197,10 +202,7 @@ class FilesystemPlugin(PersistencePlugin):
         """
         get information about a workspace
         """
-        return {
-            "label": ref,
-            "url": f"/{ref}"
-        }
+        return {"label": ref, "url": f"/{ref}"}
 
     def delete_workspace(self, ref: str):
         """
@@ -218,7 +220,7 @@ class FilesystemPlugin(PersistencePlugin):
         for folder in glob.glob(pattern):
             if not os.path.isdir(folder):
                 continue
-            workspace = folder.replace(FilesystemPlugin._ROOT_PATH, '')
+            workspace = folder.replace(FilesystemPlugin._ROOT_PATH, "")
             workspaces.append(workspace[1:])
 
         return workspaces
@@ -229,16 +231,13 @@ class FilesystemPlugin(PersistencePlugin):
         """
         try:
             scope = kwargs.get("scope", "*")
-            workspace = kwargs.get(
-                "workspace", self._args["workspace"])
+            workspace = kwargs.get("workspace", self._args["workspace"])
         except KeyError as e:
             raise ValueError("missing workspace") from e
 
-        pattern = os.path.join(FilesystemPlugin._ROOT_PATH,
-                               workspace, scope, "*")
+        pattern = os.path.join(FilesystemPlugin._ROOT_PATH, workspace, scope, "*")
         scopes = []
         for folder in glob.glob(pattern):
-
             tokens = os.path.split(folder)
             try:
                 folder = tokens[0]
@@ -253,11 +252,13 @@ class FilesystemPlugin(PersistencePlugin):
             except IndexError:
                 continue
 
-            scopes.append({
-                "url": f"{workspace}/{scope}/{ref}", #folder.replace(FilesystemPlugin._ROOT_PATH, ""),
-                "scope": scope,
-                "ref": ref
-            })
+            scopes.append(
+                {
+                    "url": f"{workspace}/{scope}/{ref}",  # folder.replace(FilesystemPlugin._ROOT_PATH, ""),
+                    "scope": scope,
+                    "ref": ref,
+                }
+            )
 
         return scopes
 
@@ -275,15 +276,13 @@ class FilesystemPlugin(PersistencePlugin):
             scope = kwargs["scope"]
             ref = kwargs["ref"]
             version = kwargs["version"]
-            workspace = kwargs.get(
-                "workspace", self._args["workspace"])
+            workspace = kwargs.get("workspace", self._args["workspace"])
             archive = kwargs["archive"]
         except KeyError as e:
             raise KeyError("missing scope, ref, version or archive") from e
 
         # base path for the scope we are trying to backup
-        basepath = os.path.join(
-            FilesystemPlugin._ROOT_PATH, workspace, scope, ref)
+        basepath = os.path.join(FilesystemPlugin._ROOT_PATH, workspace, scope, ref)
 
         # First time we just check if we have any scope with that version in
         # our archive, otherwise we try to fetch it from a remote archive
@@ -291,8 +290,7 @@ class FilesystemPlugin(PersistencePlugin):
             data_folder = glob.glob(os.path.join(basepath, f"{version}-*"))[0]
         except IndexError:
             # try and fetch the scope from a remote archive
-            FilesystemPlugin.get_scope_from_upstream(
-                os.path.join(workspace, scope, ref, version))
+            FilesystemPlugin.get_scope_from_upstream(os.path.join(workspace, scope, ref, version))
 
         # if still not there
         try:
@@ -304,18 +302,18 @@ class FilesystemPlugin(PersistencePlugin):
         try:
             data_filename = os.path.join(data_folder, "data.json")
             relations_filename = os.path.join(data_folder, "relations.json")
-            with open(data_filename, 'r') as data_fp:
+            with open(data_filename, "r") as data_fp:
                 data = data_fp.read()
-            with open(relations_filename, 'r') as relations_fp:
+            with open(relations_filename, "r") as relations_fp:
                 relations = json.load(relations_fp)
         except FileNotFoundError as e:
             raise FileNotFoundError from e
 
         # Write files in the zip archive
-        archive.writestr(data_filename.replace(
-            FilesystemPlugin._ROOT_PATH+"/", ""), data)
-        archive.writestr(relations_filename.replace(
-            FilesystemPlugin._ROOT_PATH+"/", ""), json.dumps(relations))
+        archive.writestr(data_filename.replace(FilesystemPlugin._ROOT_PATH + "/", ""), data)
+        archive.writestr(
+            relations_filename.replace(FilesystemPlugin._ROOT_PATH + "/", ""), json.dumps(relations)
+        )
 
     def restore(self, **kwargs):
         """
@@ -325,8 +323,7 @@ class FilesystemPlugin(PersistencePlugin):
             scope = kwargs["scope"]
             ref = kwargs["ref"]
             version = kwargs["version"]
-            workspace = kwargs.get(
-                "workspace", self._args["workspace"])
+            workspace = kwargs.get("workspace", self._args["workspace"])
             archive = kwargs["archive"]
         except KeyError as e:
             raise KeyError("missing scope, ref, version or archive") from e
@@ -342,8 +339,7 @@ class FilesystemPlugin(PersistencePlugin):
         # data object in the archive
         try:
             scope_folder = os.path.dirname(scope_file_list[0])
-            data_folder = os.path.join(
-                FilesystemPlugin._ROOT_PATH, scope_folder)
+            data_folder = os.path.join(FilesystemPlugin._ROOT_PATH, scope_folder)
             os.makedirs(data_folder, exist_ok=False)
         except IndexError as e:
             raise FileNotFoundError("Scope not present in archive") from e
@@ -363,13 +359,11 @@ class FilesystemPlugin(PersistencePlugin):
         try:
             scope = kwargs["scope"]
             ref = kwargs["ref"]
-            workspace = kwargs.get(
-                "workspace", self._args["workspace"])
+            workspace = kwargs.get("workspace", self._args["workspace"])
         except KeyError as e:
             raise ValueError("missing workspace, scope, or ref") from e
 
-        pattern = os.path.join(FilesystemPlugin._ROOT_PATH,
-                               workspace, scope, ref, "*")
+        pattern = os.path.join(FilesystemPlugin._ROOT_PATH, workspace, scope, ref, "*")
         versions = []
         for folder in glob.glob(pattern):
             tokens = os.path.split(folder)
@@ -386,10 +380,12 @@ class FilesystemPlugin(PersistencePlugin):
             except IndexError:
                 continue
 
-            versions.append({
-                "url": f"{workspace}/{scope}/{ref}/{tag}", #os.path.join(folder.replace(FilesystemPlugin._ROOT_PATH, ""), tag),
-                "tag": tag,
-                "date": date}
+            versions.append(
+                {
+                    "url": f"{workspace}/{scope}/{ref}/{tag}",  # os.path.join(folder.replace(FilesystemPlugin._ROOT_PATH, ""), tag),
+                    "tag": tag,
+                    "date": date,
+                }
             )
 
         return versions
@@ -419,16 +415,14 @@ class FilesystemPlugin(PersistencePlugin):
                 scope = kwargs["scope"]
                 ref = kwargs["ref"]
                 version = kwargs["version"]
-                workspace = kwargs.get(
-                    "workspace", self._args["workspace"])
+                workspace = kwargs.get("workspace", self._args["workspace"])
                 data = None
             except KeyError as e:
                 raise KeyError("missing scope, ref or version") from e
 
         # The base path for this object:
         # <ROOT_PATH>/<workspace_id>/<scope>/ref
-        basepath = os.path.join(
-            FilesystemPlugin._ROOT_PATH, workspace, scope, ref)
+        basepath = os.path.join(FilesystemPlugin._ROOT_PATH, workspace, scope, ref)
 
         # We list all folders with the following pattern:
         # <base_path>/<version>-*
@@ -446,12 +440,16 @@ class FilesystemPlugin(PersistencePlugin):
             # We look for a file called relations.json, it holds a cache
             # to this objects relation
             filename = os.path.join(data_folder, "relations.json")
-            with open(filename, 'r') as data_fp:
+            with open(filename, "r") as data_fp:
                 relations = json.load(data_fp)
 
             for value in relations:
-                target_workspace, target_scope, target_ref, target_version = ScopesTree.extract_reference(
-                    value)
+                (
+                    target_workspace,
+                    target_scope,
+                    target_ref,
+                    target_version,
+                ) = ScopesTree.extract_reference(value)
 
                 # We add the found related object in the list
                 # if we passed a search filter we check if scope
@@ -459,18 +457,22 @@ class FilesystemPlugin(PersistencePlugin):
                 # None and trigger a TypeError
                 try:
                     if target_scope in search_filter:
-                        out.add(
-                            f"{target_workspace}/{target_scope}/{target_ref}/{target_version}")
+                        out.add(f"{target_workspace}/{target_scope}/{target_ref}/{target_version}")
                 except TypeError:
-                    out.add(
-                        f"{target_workspace}/{target_scope}/{target_ref}/{target_version}")
+                    out.add(f"{target_workspace}/{target_scope}/{target_ref}/{target_version}")
 
                 if level < depth:
                     out.update(
                         Model.get_relations(
-                            workspace=target_workspace, scope=target_scope,
-                            ref=target_ref, version=target_version,
-                            level=level+1, depth=depth, search_filter=search_filter))
+                            workspace=target_workspace,
+                            scope=target_scope,
+                            ref=target_ref,
+                            version=target_version,
+                            level=level + 1,
+                            depth=depth,
+                            search_filter=search_filter,
+                        )
+                    )
 
             return out
 
@@ -484,7 +486,7 @@ class FilesystemPlugin(PersistencePlugin):
             # the file system
             try:
                 filename = os.path.join(data_folder, "data.json")
-                with open(filename, 'r') as data_fp:
+                with open(filename, "r") as data_fp:
                     data = json.load(data_fp)
 
                 schema_version = data.get("schema_version", "1.0")
@@ -497,8 +499,7 @@ class FilesystemPlugin(PersistencePlugin):
         # relations
         try:
             relations_def = Model.get_relations_definition(scope)
-            Model._get_relations_list(
-                relations_def, schema, data, out, 0, depth, search_filter)
+            Model._get_relations_list(relations_def, schema, data, out, 0, depth, search_filter)
         except AttributeError:
             pass
         return out
@@ -508,8 +509,7 @@ class FilesystemPlugin(PersistencePlugin):
         Stores the object on the persistent layer
         """
         try:
-            workspace = kwargs.get(
-                "workspace", self._args["workspace"])
+            workspace = kwargs.get("workspace", self._args["workspace"])
         except KeyError as e:
             raise ValueError("Missing workspace") from e
 
@@ -522,8 +522,7 @@ class FilesystemPlugin(PersistencePlugin):
 
         # A Tree object already have the required information
         if issubclass(type(data), ScopeInstanceVersionNode):
-
-            #if data.version == "__UNVERSIONED__":
+            # if data.version == "__UNVERSIONED__":
 
             schema = data.schema
             scope = data.scope
@@ -560,8 +559,7 @@ class FilesystemPlugin(PersistencePlugin):
 
         # The base path for this object:
         # <ROOT_PATH>/<workspace_id>/<scope>/ref
-        basepath = os.path.join(
-            FilesystemPlugin._ROOT_PATH, workspace, scope, ref)
+        basepath = os.path.join(FilesystemPlugin._ROOT_PATH, workspace, scope, ref)
 
         # we check if we have already any version stored with
         # this tag
@@ -573,8 +571,7 @@ class FilesystemPlugin(PersistencePlugin):
 
         # The base path is the updated to have the timestamp a version tag
         # <ROOT_PATH>/<workspace_id>/<scope>/<ref>/<tag>-<epoch>-<random uuid>
-        basepath = os.path.join(basepath,
-                                f"{tag}-{datetime.now().timestamp()}-{uuid.uuid4()}")
+        basepath = os.path.join(basepath, f"{tag}-{datetime.now().timestamp()}-{uuid.uuid4()}")
 
         # This make sures the full path is always available
         os.makedirs(basepath, exist_ok=True)
@@ -597,17 +594,12 @@ class FilesystemPlugin(PersistencePlugin):
 
         # store data
         obj_file = os.path.join(basepath, "data.json")
-        with open(obj_file, 'w') as data_fp:
-            json.dump({
-                "schema_version": schema.version,
-                scope: {
-                    ref: obj
-                }
-            }, data_fp)
+        with open(obj_file, "w") as data_fp:
+            json.dump({"schema_version": schema.version, scope: {ref: obj}}, data_fp)
 
         # store relations cache
         relation_file = os.path.join(basepath, "relations.json")
-        with open(relation_file, 'w') as data_fp:
+        with open(relation_file, "w") as data_fp:
             json.dump(list(relations), data_fp)
 
     def read(self, **kwargs):
@@ -618,15 +610,13 @@ class FilesystemPlugin(PersistencePlugin):
             scope = kwargs["scope"]
             ref = kwargs["ref"]
             version = kwargs["version"]
-            workspace = kwargs.get(
-                "workspace", self._args["workspace"])
+            workspace = kwargs.get("workspace", self._args["workspace"])
         except KeyError as e:
             raise KeyError("missing scope, ref or version") from e
 
         # The base path is composed by the scope and ref
         # <ROOT_PATH>/<workspace_id>/<scope>/<ref>/<tag>
-        basepath = os.path.join(
-            FilesystemPlugin._ROOT_PATH, workspace, scope, ref)
+        basepath = os.path.join(FilesystemPlugin._ROOT_PATH, workspace, scope, ref)
 
         # First time we just check if we have any scope with that version in
         # our archive, otherwise we try to fetch it from a remote archive
@@ -634,8 +624,7 @@ class FilesystemPlugin(PersistencePlugin):
             data_folder = glob.glob(os.path.join(basepath, f"{version}-*"))[0]
         except IndexError:
             # try and fetch the scope from a remote archive
-            FilesystemPlugin.get_scope_from_upstream(
-                os.path.join(workspace, scope, ref, version))
+            FilesystemPlugin.get_scope_from_upstream(os.path.join(workspace, scope, ref, version))
 
         # This time we MUST have one or otherwise it means we did not find any in
         # the remote archive
@@ -646,7 +635,7 @@ class FilesystemPlugin(PersistencePlugin):
 
         try:
             filename = os.path.join(data_folder, "data.json")
-            with open(filename, 'r') as data_fp:
+            with open(filename, "r") as data_fp:
                 return json.load(data_fp)
         except FileNotFoundError:
             return None

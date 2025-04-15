@@ -27,27 +27,9 @@ if TYPE_CHECKING:
     from dal.models.nodeinst import NodeInst  # NOSONAR
 
 
-class SingletonDependencyMap(metaclass=Singleton):
-    def __init__(self):
-        self._map = {}
-   
-    def get_dependency(self,node_name):
-        with self.__class__._lock:
-            return self._map[node_name]
-        
-    def set_dependency(self,node_name, dependencies):
-        with self.__class__._lock:
-            self._map[node_name] = dependencies     
-    
-    def is_cached(self,node_name):
-        return node_name in self._map
-    
-    def clean_dependency_cache(self):
-        with self.__class__._lock:
-            self._map = {}
-    
 class LinkDict(TypedDict):
-    """ Represents a link between two ports """
+    """Represents a link between two ports"""
+
     From: str
     To: str
     Dependency: int
@@ -55,7 +37,8 @@ class LinkDict(TypedDict):
 
 @dataclass
 class FlowOutput:
-    """ Return format by get_dict() """
+    """Return format by get_dict()"""
+
     NodeInst: Dict[str, "NodeInst"] = field(default_factory=dict)
     Links: Dict[str, "LinkDict"] = field(default_factory=dict)
 
@@ -147,7 +130,6 @@ class Flow(Model):
         prefix = f"{prefix}__" if prefix else ""
 
         for _id, node_inst in nodes:
-
             pref_id = f"{prefix}{_id}"
 
             output.NodeInst.update({pref_id: node_inst})
@@ -196,7 +178,6 @@ class Flow(Model):
         output = data or self._with_prefix("", self.NodeInst.items(), self.Links.items())
 
         for _, container in self.Container.items():
-
             # container.ContainerFlow is expected to have the full path of the doc
             subflow: Flow = cast(Flow, scopes.from_path(container.ContainerFlow, scope="Flow"))
 
@@ -260,7 +241,6 @@ class Flow(Model):
         # going up to the main flow using the context allows
         # to get the container down in a subflow
         for ctr in node_name_arr:
-
             _container = _flow.Container[ctr]
 
             _flow = _container.subflow
@@ -314,7 +294,7 @@ class Flow(Model):
         _context = context or self.ref
 
         # parse the parameter in the context of "_context"
-        output = self.parser.parse(key, param,"", self, context=_context)
+        output = self.parser.parse(key, param, "", self, context=_context)
 
         return output
 
@@ -329,7 +309,6 @@ class Flow(Model):
         output = []
 
         for _, node_inst in self.full.NodeInst.items():
-
             # if node_inst.Type == ROS2_LIFECYCLENODE:
             #    output.append(node_inst.ref)
             # FIXME not being used and causing bugs
@@ -337,7 +316,7 @@ class Flow(Model):
 
         return output
 
-    def filter_by_port(self,fnport, lnport):
+    def filter_by_port(self, fnport, lnport):
         return True if fnport is None else fnport == lnport
 
     def get_node_transitions(self, node_inst: str, port_name: str = None) -> set:
@@ -370,7 +349,6 @@ class Flow(Model):
             if port_tpl.is_transition(_port_type, _plink.port_type) and self.filter_by_port(
                 port_name, _plink.port_name
             ):
-
                 # get the node_inst to transit to
                 to_transit = (
                     getattr(link["ref"], "From") if _type == "To" else getattr(link["ref"], "To")
@@ -398,7 +376,6 @@ class Flow(Model):
         links = self.Links.get_node_links(node_inst)
 
         for link in links:
-
             if link["ref"].From.node_inst != node_inst:
                 continue
 
@@ -429,11 +406,6 @@ class Flow(Model):
 
         # TODO review and refactor - Ongoing
 
-        cache = SingletonDependencyMap()
-
-        if cache.is_cached(node_name):
-            return cache.get_dependency(node_name)
-
         dependencies = dependencies_collected or []
 
         links_to_skip = links_to_skip or []
@@ -447,7 +419,6 @@ class Flow(Model):
         links = self.Links.get_node_links(node_name)
 
         for link in links:
-
             if link["id"] in links_to_skip:
                 continue
 
@@ -494,11 +465,8 @@ class Flow(Model):
                         dependencies = self.get_node_dependencies(
                             dependency_name, dependencies, links_to_skip, skip_parent_node
                         )
-                        
-                        
-        dependency_result = list(set(dependencies))
-        cache.set_dependency(node_name, dependency_result)
-        return dependency_result.copy()
+
+        return list(set(dependencies))
 
     def get_node_plugins(self, node_inst: str) -> set:
         """Return NodeInst(s) plugins linked to node_inst"""
@@ -509,7 +477,6 @@ class Flow(Model):
         dependencies = self.get_node_dependencies(node_name=node_inst, first_level_only=True)
 
         for dependency in dependencies:
-
             # get the node instance
             node_inst_dep = self.get_node_inst(dependency)
 
