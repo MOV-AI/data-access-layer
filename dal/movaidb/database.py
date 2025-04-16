@@ -858,11 +858,11 @@ class MovaiDB:
         """
         Sort nested dict.
         Adapted from:
-            https://gist.github.com/gyli/f60f0374defc383aa098d44cfbd318eb
+        https://gist.github.com/gyli/f60f0374defc383aa098d44cfbd318eb
 
         Example:
-             Input: {'a': 1, 'c': 3, 'b': {'b2': 2, 'b1': 1}}
-             Output: {'a': 1, 'b': {'b1': 1, 'b2': 2}, 'c': 3}
+        Input: {'a': 1, 'c': 3, 'b': {'b2': 2, 'b1': 1}}
+        Output: {'a': 1, 'b': {'b1': 1, 'b2': 2}, 'c': 3}
         """
         return {k: cls.sort_dict(v) if isinstance(v, dict) else v for k, v in sorted(item.items())}
 
