@@ -21,7 +21,7 @@ class Scope(Struct):
 
     permissions = ["create", "read", "update", "delete"]
 
-    def __init__(self, scope, name, version, new=False, db="global", db_object=None):
+    def __init__(self, scope, name, version, new=False, db="global"):
         self.__dict__["name"] = name
         self.__dict__["scope"] = scope
 

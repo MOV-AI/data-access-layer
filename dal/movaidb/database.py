@@ -387,6 +387,8 @@ class MovaiDB:
         keys Meant to be used by other functions in this class
         """
         patterns = [k for k, _, _ in self.dict_to_keys(_input)]
+        if not patterns:
+            return []
 
         # often patterns are very similar, looking for different keys
         # of the same object. Instead of scanning Redis for each pattern,

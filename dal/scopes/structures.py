@@ -22,6 +22,7 @@ class List(list):
         self.db = db
         self.name = name
         self.prev_struct = prev_struct
+        self.movaidb = MovaiDB(db)
         init_value = init_value or []
         super(List, self).__init__(init_value)
         methods = [
@@ -54,12 +55,12 @@ class List(list):
 class Hash(dict):
     """Custom dict that overrides methods"""
 
-    def __init__(self, name: str, init_value: dict, db: str, prev_struct: str, db_obj=None):
+    def __init__(self, name: str, init_value: dict, db: str, prev_struct: str):
         self.db = db
         self.name = name
         self.prev_struct = prev_struct
         init_value = init_value or {}
-        self.movaidb = db_obj or MovaiDB(db)
+        self.movaidb = MovaiDB(db)
         super(Hash, self).__init__(init_value)
 
     def __setitem__(self, name, value):
