@@ -6,7 +6,7 @@
    Developers:
    - Manuel Silva  (manuel.silva@mov.ai) - 2020
 """
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Optional
 
 from .scopestree import ScopeObjectNode, ScopeNode, scopes
 
@@ -23,7 +23,7 @@ class Container(ScopeObjectNode):
     ContainerFlow: str
 
     @property
-    def flow(self):
+    def flow(self) -> "Flow":
         """Returns the parent flow instance (Flow)"""
         return self.parent.parent
 
@@ -56,11 +56,11 @@ class Container(ScopeObjectNode):
     def get_param(
         self,
         key: str,
-        name: str = None,
-        context=None,
-        custom_parser: any = None,
-        default_value: any = None,
-    ) -> any:
+        name: Optional[str] = None,
+        context: Optional[str] = None,
+        custom_parser: Optional[Any] = None,
+        default_value: Optional[Any] = None,
+    ) -> Any:
         """
         Returns a specific parameter of the container after
         parsing it
