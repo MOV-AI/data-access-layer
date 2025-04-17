@@ -1,4 +1,4 @@
-# vTBD
+# v3.2.1
 - [BP-1303](https://movai.atlassian.net/browse/BP-1303): Rosparam.get_param() of a disabled parameter returns the value instead of None
 
 # v3.1.2
