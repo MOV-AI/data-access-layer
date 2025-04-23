@@ -274,7 +274,6 @@ class Flow(Model):
     def get_param(
         self,
         key: str,
-        node_name: Optional[str] = None,
         context: Optional[str] = None,
         is_subflow: bool = False,
     ) -> Any:
