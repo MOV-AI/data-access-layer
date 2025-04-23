@@ -206,7 +206,14 @@ class ParamParser:
             output (any): the value of the parameter or the default
         """
 
-        output = instance.get_param(param_name, node_name, self.context) or default
+        cls_name = type(instance).__name__
+        if cls_name == "Flow":  # Flows don't have a node name
+            instance = cast("Flow", instance)
+            output = instance.get_param(param_name, self.context) or default
+        elif cls_name in ["NodeInst", "Container"]:
+            output = instance.get_param(param_name, node_name, self.context) or default
+        else:
+            raise ValueError(f'Instance type "{cls_name}" not supported')
 
         return output
 
