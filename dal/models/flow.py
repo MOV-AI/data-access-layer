@@ -271,7 +271,12 @@ class Flow(Model):
 
         return output
 
-    def get_param(self, key: str, context: str = None, is_subflow: bool = False) -> any:
+    def get_param(
+        self,
+        key: str,
+        context: Optional[str] = None,
+        is_subflow: bool = False,
+    ) -> Any:
         """
         Returns a parameter of the flow after parsing it
         """

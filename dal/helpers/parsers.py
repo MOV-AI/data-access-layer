@@ -10,12 +10,18 @@
 import ast
 import re
 import os
-from typing import Optional, Protocol
+from typing import TYPE_CHECKING, Any, Optional, Protocol, Union, cast
 
 from movai_core_shared.logger import Log
 from dal.models.scopestree import scopes
 from dal.models.var import Var
 from dal.movaidb import MovaiDB
+
+if TYPE_CHECKING:
+    from dal.models.container import Container
+    from dal.models.flow import Flow
+    from dal.models.nodeinst import NodeInst
+    from dal.models.configuration import Configuration
 
 
 class ObjectWithName(Protocol):
@@ -34,7 +40,7 @@ class ParamParser:
 
     __REGEX__ = r"\$\((param|config|var|flow)[^$)]+\)"
 
-    def __init__(self, flow):
+    def __init__(self, flow: "Flow"):
         self.mapping = {
             "config": self.eval_config,
             "param": self.eval_param,
@@ -54,7 +60,7 @@ class ParamParser:
         node_name: str,
         instance: ObjectWithName,
         context: Optional[str] = None,
-    ) -> any:
+    ) -> Any:
         """
         Returns the parameter value. If the value is a valid expression, it is evaluated.
 
@@ -123,7 +129,7 @@ class ParamParser:
             if result is None:
                 raise ValueError(f"Invalid expression, {expression}")
             # get the function to call from the mapping dict
-            func = self.mapping.get(result.group(1))
+            func = self.mapping[result.group(1)]
 
             # call
             output = func(result.group(2), expression, instance, node_name)
@@ -170,7 +176,7 @@ class ParamParser:
 
         _config_name, _config_param = _config.split(".", 1)
         try:
-            obj = scopes.from_path(_config_name, scope="Configuration")
+            obj = cast("Configuration", scopes.from_path(_config_name, scope="Configuration"))
 
         except KeyError as exc:
             raise ValueError(f"Configuration {_config_name} does not exist") from exc
@@ -179,7 +185,13 @@ class ParamParser:
 
         return output
 
-    def eval_param(self, param_name: str, default: str, instance: any, node_name: str) -> any:
+    def eval_param(
+        self,
+        param_name: str,
+        default: str,
+        instance: Union["Flow", "NodeInst", "Container"],
+        node_name: str,
+    ) -> any:
         """
         Returns the param expression evaluated or default
             ex.: $(param name)
@@ -194,11 +206,18 @@ class ParamParser:
             output (any): the value of the parameter or the default
         """
 
-        output = instance.get_param(param_name, node_name, self.context) or default
+        cls_name = type(instance).__name__
+        if cls_name == "Flow":  # Flows don't have a node name
+            instance = cast("Flow", instance)
+            output = instance.get_param(param_name, self.context) or default
+        elif cls_name in ["NodeInst", "Container"]:
+            output = instance.get_param(param_name, node_name, self.context) or default
+        else:
+            raise ValueError(f'Instance type "{cls_name}" not supported')
 
         return output
 
-    def eval_var(self, reference: str, *__) -> any:
+    def eval_var(self, reference: str, *__) -> Any:
         """
         Returns the var expression evaluated
             ex.: $(var robot.name)
@@ -223,7 +242,13 @@ class ParamParser:
 
         return output
 
-    def eval_flow(self, param_name, default, instance, node_name) -> any:
+    def eval_flow(
+        self,
+        param_name: str,
+        default: str,
+        instance: Union["NodeInst", "Container"],
+        node_name: str,
+    ) -> any:
         """
         Returns the flow expression evaluated
             ex.: $(flow myvar)
@@ -241,7 +266,7 @@ class ParamParser:
         node_name_arr = node_name.split("__")
         # Check if this is the main flow or a subflow
         is_subflow = len(node_name_arr) > 1
-        value = instance.flow.get_param(param_name, self.context, is_subflow=is_subflow)
+        value = instance.flow.get_param(param_name, context=self.context, is_subflow=is_subflow)
         if value is None:
             value = default
 
@@ -258,6 +283,7 @@ class ParamParser:
 
                     # get the container instance
                     ctr_instance = self.flow.get_container(_name, self.context)
+                    assert ctr_instance is not None, f"Container {_name} not found"
 
                     # get the instance parameter value
                     # if there is no instance param, set to default

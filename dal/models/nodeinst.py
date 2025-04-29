@@ -7,13 +7,14 @@
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
    - Manuel Sila  (manuel.silva@mov.ai) - 2020
 """
-from typing import Optional, TYPE_CHECKING, cast
+from typing import Optional, TYPE_CHECKING, cast, Any
 
 from .scopestree import ScopeObjectNode, ScopeNode, scopes
 from movai_core_shared.logger import Log
 
 if TYPE_CHECKING:
     from dal.models.node import Node
+    from dal.models.flow import Flow
 
 
 class NodeInst(ScopeObjectNode):
@@ -26,7 +27,7 @@ class NodeInst(ScopeObjectNode):
     logger = Log.get_logger("NodeInst.mov.ai")
 
     @property
-    def flow(self):
+    def flow(self) -> "Flow":
         """Returns the flow (Flow)"""
         return self.parent.parent
 
@@ -151,8 +152,12 @@ class NodeInst(ScopeObjectNode):
         return params
 
     def get_param(
-        self, key: str, name: str = None, context: str = None, custom_parser: any = None
-    ) -> any:
+        self,
+        key: str,
+        name: Optional[str] = None,
+        context: Optional[str] = None,
+        custom_parser: Optional[Any] = None,
+    ) -> Any:
         """
         Returns a specific parameter of the node instance after
         parsing it
@@ -170,7 +175,7 @@ class NodeInst(ScopeObjectNode):
         # get the instance value
         try:
             inst_value = self.Parameter[key].Value
-            if inst_value is None:
+            if inst_value == "None":
                 # param is disabled, and we return None
                 return None
 
