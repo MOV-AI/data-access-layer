@@ -28,7 +28,8 @@ from .configuration import Configuration
 class Robot(Scope):
     """Robot class that deals with robot related stuff
 
-    You should also read the page :doc:`/robot_parameters` for a deep dive on the Parameters feature.
+    You should also read the page :doc:`/robot_parameters`
+    for a deep dive on the Parameters feature.
     """
 
     spawner_client: MessageClient
