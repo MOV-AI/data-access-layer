@@ -1,3 +1,9 @@
+# v3.2.2
+- [BP-1328](https://movai.atlassian.net/browse/BP-1328): Improve TTL on Robot parameters
+
+# v3.2.1
+- [BP-1303](https://movai.atlassian.net/browse/BP-1303): Rosparam.get_param() of a disabled parameter returns the value instead of None
+
 # v3.1.2
 - [BP-1405](https://movai.atlassian.net/browse/BP-1405): Backeng logs an error if someone tries to login with a user that does not exist
 
