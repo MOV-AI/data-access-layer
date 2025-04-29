@@ -1,3 +1,6 @@
+# v3.2.3
+- [BP-1365](https://movai.atlassian.net/browse/BP-1365): Fix call to get_param
+
 # v3.2.2
 - [BP-1328](https://movai.atlassian.net/browse/BP-1328): Improve TTL on Robot parameters
 
