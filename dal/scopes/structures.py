@@ -213,7 +213,7 @@ class Struct:
             db = MovaiDB(self.db)
             TTL = (
                 db.get_value(Helpers.join_first({"TTL": "*"}, self.prev_struct))
-                if name == "Value"
+                if name == "Value" and "TTL" in self.attrs
                 else None
             )
             db.set(Helpers.join_first({name: value}, self.prev_struct), ex=TTL)
