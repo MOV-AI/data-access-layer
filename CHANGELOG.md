@@ -1,4 +1,4 @@
-# vTBD
+# v3.2.4
 - Add tests using docker compose
 - Only get TTL if already in attributes
 - Allow setting TTL using add("Parameter", ...) syntax
