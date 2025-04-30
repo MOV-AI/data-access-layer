@@ -246,6 +246,11 @@ class Struct:
 
         self.__dict__[key][name] = Struct(key, new_struct, temp, self.db)
 
+        # If TTL is one of the attributes, set it first
+        # so it applies if the Value is also set
+        if "TTL" in kwargs:
+            setattr(self.__dict__[key][name], "TTL", kwargs.pop("TTL"))
+
         for k, v in kwargs.items():
             setattr(self.__dict__[key][name], k, v)
 
