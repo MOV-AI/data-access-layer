@@ -19,13 +19,13 @@ class TestMovaiDB:
 
         sleep(1.5)
 
-        assert None == scopes_robot.fleet.Parameter["on_set"].Value
+        assert scopes_robot.fleet.Parameter["on_set"].Value is None
 
-    @pytest.mark.xfail("Not working ATM")
+    @pytest.mark.xfail(reason="Not working ATM")
     def test_ttl_on_add(self, global_db, scopes_robot):
         """Robot fleet parameter TTL"""
         scopes_robot.fleet.add("Parameter", "on_add", Value=10.0, TTL=1)
 
         sleep(1.5)
 
-        assert None == scopes_robot.fleet.Parameter["on_add"].Value
+        assert scopes_robot.fleet.Parameter["on_add"].Value is None
