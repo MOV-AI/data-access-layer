@@ -218,7 +218,7 @@ class Struct:
             self.__dict__[name] = value
             TTL = (
                 self.movaidb.get_value(Helpers.join_first({"TTL": "*"}, self.prev_struct))
-                if name == "Value"
+                if name == "Value" and "TTL" in self.attrs
                 else None
             )
             self.movaidb.set(Helpers.join_first({name: value}, self.prev_struct), ex=TTL)
@@ -250,6 +250,11 @@ class Struct:
         temp = copy.deepcopy(self.prev_struct)
 
         self.__dict__[key][name] = Struct(key, new_struct, temp, self.db)
+
+        # If TTL is one of the attributes, set it first
+        # so it applies if the Value is also set
+        if "TTL" in kwargs:
+            setattr(self.__dict__[key][name], "TTL", kwargs.pop("TTL"))
 
         for k, v in kwargs.items():
             setattr(self.__dict__[key][name], k, v)

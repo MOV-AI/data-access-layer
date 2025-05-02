@@ -1,3 +1,8 @@
+# v3.2.4
+- Add tests using docker compose
+- Only get TTL if already in attributes
+- Allow setting TTL using add("Parameter", ...) syntax
+
 # v3.2.3
 - [BP-1365](https://movai.atlassian.net/browse/BP-1365): Fix call to get_param
 
