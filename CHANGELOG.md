@@ -1,3 +1,6 @@
+# v3.1.3
+- [BP-1365](https://movai.atlassian.net/browse/BP-1365): Fix call to get_param
+
 # v3.1.2
 - [BP-1405](https://movai.atlassian.net/browse/BP-1405): Backeng logs an error if someone tries to login with a user that does not exist
 
