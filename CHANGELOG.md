@@ -1,3 +1,6 @@
+# vTBD
+- [BP-1311](https://movai.atlassian.net/browse/BP-1311): Backend taking long to delete document / error in response
+
 # v3.2.4
 - Add tests using docker compose
 - Only get TTL if already in attributes
