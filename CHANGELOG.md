@@ -1,4 +1,4 @@
-# vTBD
+# v3.2.5
 - [BP-1311](https://movai.atlassian.net/browse/BP-1311): Backend taking long to delete document / error in response
 
 # v3.2.4
