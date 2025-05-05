@@ -23,6 +23,7 @@ class List(list):
         self.db = db
         self.name = name
         self.prev_struct = prev_struct
+        self.movaidb = MovaiDB(db)
         init_value = init_value or []
         super(List, self).__init__(init_value)
         methods = [
@@ -44,12 +45,12 @@ class List(list):
     def append(self, value):
         """Append both to python list and redis list"""
         # struct = copy.deepcopy(self.prev_struct)
-        MovaiDB(self.db).push(Helpers.update_dict(self.prev_struct, {self.name: value}))
+        self.movaidb.push(Helpers.update_dict(self.prev_struct, {self.name: value}))
 
     def pop(self):
         """Pop from python list and redis list"""
         # struct = copy.deepcopy(self.prev_struct)
-        return MovaiDB(self.db).pop(Helpers.update_dict(self.prev_struct, {self.name: ""}))
+        return self.movaidb.pop(Helpers.update_dict(self.prev_struct, {self.name: ""}))
 
 
 class Hash(dict):
@@ -60,6 +61,7 @@ class Hash(dict):
         self.name = name
         self.prev_struct = prev_struct
         init_value = init_value or {}
+        self.movaidb = MovaiDB(db)
         super(Hash, self).__init__(init_value)
 
     def __setitem__(self, name, value):
@@ -76,13 +78,13 @@ class Hash(dict):
         super(Hash, self).update(value)
         # struct = copy.deepcopy(self.prev_struct)
         # Helpers already do a deepcopy
-        MovaiDB(self.db).hset(Helpers.update_dict(self.prev_struct, {self.name: value}))
+        self.movaidb.hset(Helpers.update_dict(self.prev_struct, {self.name: value}))
 
     def get(self, var: str, default=None):
         """Gets a hash field and returns it"""
         # struct = copy.deepcopy(self.prev_struct)
         # Helpers already do a deepcopy
-        result = MovaiDB(self.db).hget(Helpers.update_dict(self.prev_struct, {self.name: ""}), var)
+        result = self.movaidb.hget(Helpers.update_dict(self.prev_struct, {self.name: ""}), var)
         if result:
             # update python with db value
             super(Hash, self).__setitem__(var, result)
@@ -96,7 +98,7 @@ class Hash(dict):
             raise Exception('Hash has no field with name "%s"' % var)
         # struct = copy.deepcopy(self.prev_struct)
         # Helpers already do a deepcopy
-        deletes = MovaiDB(self.db).hdel(Helpers.update_dict(self.prev_struct, {self.name: ""}), var)
+        self.movaidb.hdel(Helpers.update_dict(self.prev_struct, {self.name: ""}), var)
         return result
 
     def delete(self, var: str):
@@ -113,6 +115,10 @@ class Struct:
     """
     General structure... how to describe?
     """
+
+    Name: str
+    db: str
+    movaidb: MovaiDB
 
     def __init__(self, name, struct_dict, prev_struct, db):
         self.__dict__["Name"] = name
@@ -151,7 +157,7 @@ class Struct:
         ]:
             return super().__getattribute__(name)
 
-        db = MovaiDB(self.db)
+        db = self.__dict__["movaidb"]
         if name in self.attrs:
             return db.get_value(Helpers.join_first({name: "*"}, self.prev_struct))
         elif name in self.lists:
@@ -198,7 +204,7 @@ class Struct:
         if getattr(self, name) is None:
             print("Attribute is not defined")
             return False
-        result = MovaiDB(self.db).unsafe_delete(Helpers.join_first({name: "*"}, self.prev_struct))
+        result = self.movaidb.unsafe_delete(Helpers.join_first({name: "*"}, self.prev_struct))
         if name in self.lists:  # do some cleaver delete
             self.__dict__[name] = List(name, [], self.db, self.prev_struct)
         elif name in self.hashs:
@@ -210,13 +216,12 @@ class Struct:
     def __setattr__(self, name, value):
         if name in self.attrs:
             self.__dict__[name] = value
-            db = MovaiDB(self.db)
             TTL = (
-                db.get_value(Helpers.join_first({"TTL": "*"}, self.prev_struct))
+                self.movaidb.get_value(Helpers.join_first({"TTL": "*"}, self.prev_struct))
                 if name == "Value" and "TTL" in self.attrs
                 else None
             )
-            db.set(Helpers.join_first({name: value}, self.prev_struct), ex=TTL)
+            self.movaidb.set(Helpers.join_first({name: value}, self.prev_struct), ex=TTL)
         elif name in self.lists:
             raise AttributeError(f"'{name}' is a list not an attribute")
         elif name in self.hashs:
@@ -229,7 +234,7 @@ class Struct:
         args[key] = name
         result = 0
         for scope_name in self.prev_struct:
-            result = MovaiDB(self.db).delete_by_args(scope_name, **args)
+            result = self.movaidb.delete_by_args(scope_name, **args)
 
         if key in self.__dict__ and name in self.__dict__[key]:
             del self.__dict__[key][name]
@@ -279,7 +284,7 @@ class Struct:
         for elem in self.prev_struct:
             scope = elem
             break
-        full_dict = MovaiDB(self.db).get_by_args(scope, **args)
+        full_dict = self.movaidb.get_by_args(scope, **args)
 
         def iterate(d: dict, d2: dict):
             for k, v in d.items():
@@ -329,14 +334,14 @@ class Struct:
 
         def replace(group):
             key = eval(group[1:-1])
-            return str(iterate(MovaiDB(self.db).get(key), key))
+            return str(iterate(self.movaidb.get(key), key))
 
         if isinstance(value, str):
             if "$" in value and value.count("$") % 2 == 0:  # its a REF!!
                 # only single ref
                 if value.count("$") == 2 and value[0] == "$" and value[-1] == "$":
                     # the value type is maintained
-                    value = iterate(MovaiDB(self.db).get(eval(value[1:-1])), eval(value[1:-1]))
+                    value = iterate(self.movaidb.get(eval(value[1:-1])), eval(value[1:-1]))
                 else:  # it has more stuff so lets make a nice string with everything
                     value = re.sub(r"\$([^\$]*)\$", lambda x: replace(x.group()), value)
                     # result always a string here

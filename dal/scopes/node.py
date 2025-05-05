@@ -283,7 +283,7 @@ class Node(Scope):
         return to_return
 
     def get_port_node_instance_links(self, port_name: str) -> list:
-        full_node_list = MovaiDB().search(
+        full_node_list = self.movaidb.search(
             {"Flow": {"*": {"NodeInst": {"*": {"Template": self.name}}}}}
         )
 
@@ -291,11 +291,11 @@ class Node(Scope):
         for node_key in full_node_list:
             try:
                 # Get flow_name and node_inst_name
-                node = MovaiDB().keys_to_dict([(node_key, "")])
+                node = self.movaidb.keys_to_dict([(node_key, "")])
                 flow_name = next(iter(node.get("Flow").keys()))
 
                 # get Links from Flow(flow_name)
-                flow_links = MovaiDB().get({"Flow": {flow_name: {"Links": "*"}}})
+                flow_links = self.movaidb.get({"Flow": {flow_name: {"Links": "*"}}})
                 node_inst_name = next(iter(node.get("Flow").get(flow_name).get("NodeInst")))
 
                 for key, value in (
@@ -324,7 +324,7 @@ class Node(Scope):
         """Search Flows for NodeInstances"""
 
         # Check if Node has instances on existing Flows
-        flows = MovaiDB().get({"Flow": {"*": {"NodeInst": "*"}}})
+        flows = self.movaidb.get({"Flow": {"*": {"NodeInst": "*"}}})
         node_inst_ref_keys = []
         if not flows or flows.get("Flow") is None or len(flows.get("Flow")) == 0:
             return node_inst_ref_keys
@@ -341,7 +341,7 @@ class Node(Scope):
         """Loop through NodeInst's Links and return list with matching links dict_keys"""
 
         # Loop through Flows with ExposedPorts to check if the port is exposed
-        flow_exposed_ports = MovaiDB().get({"Flow": {"*": {"ExposedPorts": "*"}}})
+        flow_exposed_ports = self.movaidb.get({"Flow": {"*": {"ExposedPorts": "*"}}})
         exposed_ports_ref_keys = []
         if (
             not flow_exposed_ports
@@ -387,9 +387,7 @@ class Node(Scope):
     def get_exposed_port_node_instance_links(self, port_name, exposed_port_node_inst_name):
         # Loop through Flows with Containers instances and get Links to the port that is exposed
         flow_container_link_keys = []
-        flows_with_containers = MovaiDB().get({"Flow": {"*": {"Container": "*"}}})
-
-        from dal.scopes.flow import Flow
+        flows_with_containers = self.movaidb.get({"Flow": {"*": {"Container": "*"}}})
 
         for flow_name, flows_containers in flows_with_containers.get("Flow").items():
             for container_node_inst_name in flows_containers.get("Container").keys():
@@ -400,17 +398,16 @@ class Node(Scope):
                     .get("ContainerFlow", None)
                 )
 
-                try:
-                    if self.name not in Flow(container_flow_name).ExposedPorts.keys():
-                        continue
-                except Exception:
-                    # flow does not exist; probably a reference to a flow in the archive
+                exposed_ports = self.movaidb.get_hash(
+                    {"Flow": {container_flow_name: {"ExposedPorts": "*"}}}, search=False
+                )
+                if self.name not in exposed_ports:
                     continue
 
                 prefix = container_node_inst_name
                 node_inst_name = "{}__{}".format(prefix, exposed_port_node_inst_name)
 
-                flow_links = MovaiDB().get({"Flow": {flow_name: {"Links": "*"}}})
+                flow_links = self.movaidb.get({"Flow": {flow_name: {"Links": "*"}}})
                 for key, value in (
                     flow_links.get("Flow", {}).get(flow_name, {}).get("Links", {}).items()
                 ):
