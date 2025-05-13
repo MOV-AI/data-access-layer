@@ -114,12 +114,10 @@ class Backup:
         "SharedDataEntry",
     ]
 
-    def __init__(self, project, debug: bool = False, root_path=_ROOT_PATH, recursive=True):
+    def __init__(self, project, debug: bool = False, recursive=True):
         self.project = project
         self.recursive = recursive
-        # in case of None
-        self.root_path = root_path or Backup._ROOT_PATH
-        self.project_path = os.path.join(self.root_path, project)
+        self.project_path = os.path.join(Backup._ROOT_PATH, project)
 
         if debug:
             self.log = print
@@ -1686,7 +1684,6 @@ def main():
                 force=args.force,
                 dry=args.dry,
                 debug=args.debug,
-                root_path=args.root_path,
                 recursive=recursive,
                 clean_old_data=args.clean_old_data,
             )
@@ -1694,14 +1691,13 @@ def main():
             print("Skipping importer...")
             exit(0)
     elif args.action == "export":
-        tool = Exporter(project, debug=args.debug, root_path=args.root_path, recursive=recursive)
+        tool = Exporter(project, debug=args.debug, recursive=recursive)
     elif args.action == "remove":
         if redis_write:
             tool = Remover(
                 force=args.force,
                 dry=args.dry,
                 debug=args.debug,
-                root_path=args.root_path,
                 recursive=recursive,
             )
             # so the action print is not 'Removeed'
