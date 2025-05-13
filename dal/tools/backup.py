@@ -90,7 +90,7 @@ class Factory:
         return Factory.CLASSES_CACHE[scope]
 
 
-class Backup(object):
+class Backup:
     MOVAI_USERSPACE = os.getenv("MOVAI_USERSPACE")
     _ROOT_PATH = f"{MOVAI_USERSPACE}/database"
 
@@ -207,9 +207,6 @@ class Importer(Backup):
 
             self._db = MovaiDB()
             self.dry_print = lambda *paths: None
-
-    def read_manifest(self, manifest):
-        return Backup.read_manifest(manifest, [None])
 
     def get_objs(self, scope):
         """Get all objects of a given scope.
@@ -1495,18 +1492,6 @@ class Remover(Backup):
 
             self._db = MovaiDB()
             self.dry_print = lambda *paths: None
-
-    def read_manifest(self, manifest):
-        """Wrapper around Backup's read_manifest.
-
-        Args:
-            manifest: Path to the manifest file.
-
-        Returns:
-            Dict with scope names as keys and list with item name as values
-
-        """
-        return Backup.read_manifest(manifest, [None])
 
     def get_objs(self, scope):
         """Get all objects in given a scope.
