@@ -518,9 +518,7 @@ class MovaiDB:
         xx=False,
         validate=True,  # TODO: remove unused parameter
     ) -> None:
-        """
-        Set key values in database
-        """
+        """Set key values in database."""
 
         # here we validate our dict and get the keys
         kvs = self.dict_to_keys(_input)

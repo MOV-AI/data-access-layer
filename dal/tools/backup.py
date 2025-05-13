@@ -73,20 +73,12 @@ class RemoveException(Exception):
     pass
 
 
-#
-# Base class for commonality
-#
-
-
 class Factory:
-    # cache
     CLASSES_CACHE = {}
 
     @staticmethod
     def get_class(scope):
-        """
-        Get the scope
-        """
+        """Get scope class."""
         if scope not in Factory.CLASSES_CACHE:
             mod = import_module("dal.scopes")
 
@@ -99,9 +91,6 @@ class Factory:
 
 
 class Backup(object):
-    #
-    # some constants
-    #
     MOVAI_USERSPACE = os.getenv("MOVAI_USERSPACE")
     _ROOT_PATH = f"{MOVAI_USERSPACE}/database"
 
@@ -141,18 +130,15 @@ class Backup(object):
         # Connect to Redis
         MovaiDB(db="global")
 
-    #
-    # reads a manifest file and returns
-    # the declared objects
-    #
-    # 'all' tells what to do when a '*' is found
-    # for a scope, should be a callable or a list
-    # if it's a callable, should take as parameter the _type
-    # and return a list of items,
-    # else, should be a list
-    #
     @staticmethod
-    def read_manifest(manifest, all_default=[None]):
+    def read_manifest(manifest: str, all_default=[None]) -> dict:
+        """Reads a manifest file and returns the declared objects.
+
+        Args:
+            manifest (str): Path to the manifest file.
+            all_default: Default value for all objects, applied when '*' is found.
+
+        """
         objects = {}
         # let it blow
         with open(manifest) as manifest_file:
@@ -186,25 +172,9 @@ class Backup(object):
         raise NotImplementedError
 
 
-#
-# Importer class
-#
-# implements the import mechanisms
-#
 class Importer(Backup):
-    #
-    # Importer creation
-    # given the project name
-    #
-    # if force is set to True, movaiDB will
-    # not validate the data
-    #
-    # if debug is set to True, messages
-    # will be printed to stdout
-    #
-    # the root_path param overrides the default
-    # userspace database path
-    #
+    """Imports project data to the database."""
+
     def __init__(
         self,
         project,
@@ -238,27 +208,19 @@ class Importer(Backup):
             self._db = MovaiDB()
             self.dry_print = lambda *paths: None
 
-    #
-    # wrapper around Backup's read_manifest
-    #
     def read_manifest(self, manifest):
         return Backup.read_manifest(manifest, [None])
 
-    #
-    # get all objects given a scope
-    #
-    # in the case of importer, is simply [None]
-    #
     def get_objs(self, scope):
+        """Get all objects of a given scope.
+
+        For importer, this is always [None].
+
+        """
         return [None]
 
-    #
-    # Importer main function
-    #
-    # imports the defined objects
-    # if the objects are empty, will import everything
-    #
     def run(self, objects: dict = {}):
+        """Imports the objects defined in the manifest."""
         if len(objects) == 0:
             # means import all we find
             # so ...
@@ -294,41 +256,21 @@ class Importer(Backup):
 
             object_names = get_objects(scope_name)
             importer(*args(scope_name, object_names))
-        # done
 
-    #
-    # wrapper to check if a scope:name pair
-    # is already imported
-    #
-    def imported(self, scope, name):
+    def imported(self, scope, name) -> bool:
+        """Wrapper to check if a scope:name pair is already imported."""
         return scope in self._imported and name in self._imported[scope]
 
-    #
-    # wrapper to set a scope:name pair
-    # as imported
-    #
     def set_imported(self, scope, name):
+        """Wrapper to set a scope:name pair as imported."""
         if scope not in self._imported:
             self._imported[scope] = []
         if name not in self._imported[scope]:
             self.log(f"Imported {scope}:{name}")
             self._imported[scope].append(name)
 
-    #
-    # list files given a scope
-    #
-    # if name is not None, will check if
-    # the name exists in the directory
-    #
-    # returns a list of tuples:
-    # [0] -> extracted
-    # [1] -> full path to file
-    #
-    # the extract and matcher are functions
-    # to match and extract the output of listdir
-    # (look at code for more info)
-    #
     def _list_files(self, scope, extract=None, match=None):
+        """Lists files in the given scope."""
         extractor = extract
         if extract is None:
 
@@ -353,22 +295,13 @@ class Importer(Backup):
             # "ignore" it
             return []
 
-    #
-    # get the files from 'scope'
-    # corresponding to the given 'names'
-    #
-    # 'build' is used to create the filename from object name
-    #
-    # 'match' is used to verify the file path
-    #
-    # returns a list of tuples:
-    # [0] -> name
-    # [1] -> full path
-    #
-    # raises a ImportException if scope directory not found
-    # raises a ImportException if match returns false
-    #
     def _get_files(self, scope, names, build=None, match=None):
+        """Get files from the given scope.
+
+        Raises:
+            ImportException: If the scope directory is not found or if the file does not match.
+
+        """
         names = [_from_path(n) for n in names]
 
         if len(names) == 0:
@@ -408,9 +341,6 @@ class Importer(Backup):
 
         return files
 
-    #
-    # wrapper around _get/_list _files
-    #
     def get_files(
         self,
         scope,
@@ -422,13 +352,10 @@ class Importer(Backup):
     ):
         if names is None:
             return self._list_files(scope, extract, list_match)
-        # else
         return self._get_files(scope, names, build, get_match)
 
-    #
-    # wrapper around movaidb.set
-    #
     def _import_data(self, scope, name, data):
+        """Imports data to the database."""
         # remove unwanted keys
         if self._delete:
             try:
@@ -442,7 +369,6 @@ class Importer(Backup):
             # delete
             try:
                 obj = Factory.get_class(scope)(name)
-                # exists
                 self._db.delete_by_args(scope, Name=obj.name)
             except Exception:
                 pass
@@ -458,17 +384,12 @@ class Importer(Backup):
                 # force print
                 print(_msg)
 
-    #
-    # default importer function
-    # imports the specified names to database
-    #
-    # each file defaults to json
-    #
-    # if names is None (default), imports every file
-    # it finds, given a scope
-    #
     def import_default(self, scope, names=None):
-        # all defaults
+        """Default import function.
+
+        Imports the specified names to the database, if names is None (default), imports every file.
+
+        """
         files = self.get_files(scope, names)
 
         for name, file_path in files:
@@ -485,7 +406,6 @@ class Importer(Backup):
                     data = pickle.load(file)
 
             self._import_data(scope, name, data)
-        # endfor files
 
     def import_configuration(self, names=None):
         files = self.get_files("Configuration", names)
@@ -516,14 +436,8 @@ class Importer(Backup):
 
             self._import_data("Configuration", name, data)
 
-    #
-    # import callback
-    #
-    # similar to import_default
-    # but also tries to update Callback's Code
-    # with contents found in <name>.py
-    #
     def import_callback(self, names=None):
+        """Imports Callback, similar to import_default but also updates Callback's Code."""
         # default lambdas
         files = self.get_files("Callback", names)
 
@@ -548,14 +462,9 @@ class Importer(Backup):
                     data["Callback"][name]["Code"] = code.read()
 
             self._import_data("Callback", name, data)
-        # endfor files
 
-    #
-    # import packages
-    #
-    # recursively look for files of the package
-    #
     def import_package(self, names=None):
+        """Import Package, recursively look for files of the package"""
         dirs = self.get_files(
             "Package",
             names,
@@ -564,8 +473,6 @@ class Importer(Backup):
             list_match=None,
             get_match=os.path.isdir,
         )
-
-        # __ isjson = lambda file : os.path.splitext(file)[1] == 'json'
 
         for name, dir_path in dirs:
             if self.imported("Package", name):
@@ -591,11 +498,8 @@ class Importer(Backup):
                         contents = fd.read()
                     checksum.update(contents)
 
-                    # try to decode it
                     try:
                         contents = contents.decode()
-                        # TODO JSON here?
-                        # contents = json.loads(contents) if isjson(file) else contents
                     except UnicodeError:
                         pass
 
@@ -604,15 +508,9 @@ class Importer(Backup):
                         "Checksum": checksum.hexdigest(),
                         "FileLabel": file,
                     }
-                # endfor file in files
-            # endfor os.walk
 
             self._import_data("Package", name, data)
-        # endfor dirs
 
-    #
-    # imports messages
-    #
     def import_message(self, names=None):
         files = self.get_files("Message", names)
 
@@ -649,9 +547,6 @@ class Importer(Backup):
 
             self._import_data("Message", name, data)
 
-    #
-    # imports ports
-    #
     def import_ports(self, names=None):
         def to_import(ports):
             return ports in names or ports.split("/")[0] in names
@@ -687,12 +582,7 @@ class Importer(Backup):
                 self.dependencies_ports(pkg_json["Ports"][name])
 
                 self._import_data("Ports", name, data)
-            # endfor name in json
-        # endfor in files
 
-    #
-    # import tasktemplates
-    #
     def import_tasktemplate(self, names=None):
         files = self.get_files("TaskTemplate", names)
 
@@ -710,15 +600,9 @@ class Importer(Backup):
                 self.dependencies_tasktemplate(data["TaskTemplate"][name])
 
             self._import_data("TaskTemplate", name, data)
-        # endfor files
 
-    #
-    # import flow
-    #
-    # same as import_default,
-    # but imports dependencies
-    #
     def import_flow(self, names=None):
+        """Imports Flow, similar to import_default but imports dependencies."""
         files = self.get_files("Flow", names)
 
         for name, file_path in files:
@@ -750,17 +634,11 @@ class Importer(Backup):
                             self.import_flow([contained_flow])
                         except AttributeError:
                             self.import_default("Flow", [contained_flow])
-            # end dependencies
 
             self._import_data("Flow", name, data)
 
-    #
-    # import node
-    #
-    # same as import default
-    # but imports dependencies
-    #
     def import_node(self, names=None):
+        """Imports Node, similar to import_default but imports dependencies."""
         files = self.get_files("Node", names)
 
         for name, file_path in files:
@@ -777,11 +655,7 @@ class Importer(Backup):
                 self.dependencies_node(data["Node"][name])
 
             self._import_data("Node", name, data)
-        # endfor files
 
-    #
-    # import shared data entry
-    #
     def import_shareddataentry(self, names=None):
         files = self.get_files("SharedDataEntry", names)
 
@@ -803,13 +677,7 @@ class Importer(Backup):
                     self.import_default("SharedDataTemplate", [dep])
 
             self._import_data("SharedDataEntry", name, data)
-        # endfor files
 
-    #
-    # import state machine
-    #
-    # with dependencies
-    #
     def import_statemachine(self, names=None):
         # all defaults
         files = self.get_files("StateMachine", names)
@@ -833,16 +701,9 @@ class Importer(Backup):
                             self.import_callback([callback])
                         except AttributeError:
                             self.import_default("Callback", [callback])
-            # end dependencies
 
             self._import_data("StateMachine", name, data)
-        # endfor files
 
-    #
-    # import graphic scene
-    #
-    # with dependencies
-    #
     def import_graphicscene(self, names=None):
         # all defaults
         files = self.get_files("GraphicScene", names)
@@ -872,14 +733,8 @@ class Importer(Backup):
                             self.import_annotation(annotations)
                         except AttributeError:
                             self.import_default("Annotation", annotations)
-            # end dependencies
 
             self._import_data("GraphicScene", name, data)
-        # endfor files
-
-    #
-    # dependencies
-    #
 
     def dependencies_ports(self, ports: dict):
         if "Package" in ports["Data"]:
@@ -1013,21 +868,9 @@ class Importer(Backup):
             cf_importer(*cf_args([conf_name]))
 
 
-#
-# Exporter class
-#
-# implements the export mechanisms
-#
 class Exporter(Backup):
-    #
-    # Exporter creation
-    # the project is the project name
-    # if debug is set to True, messages
-    # will be printed to stdout
-    #
-    # the root path where the database is can
-    # be overriden with 'root_path' param
-    #
+    """Exports projects data from the database."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -1046,20 +889,13 @@ class Exporter(Backup):
         # 2 -> kell all
         self._override = 0
 
-    # wrapper around Backup's read_manifest method
     def read_manifest(self, manifest):
         return Backup.read_manifest(manifest, self.get_objs)
 
-    #
-    # get all objects, given a scope
-    #
     def get_objs(self, scope):
+        """Get all objects of a given scope."""
         return Factory.get_class(scope).get_all()
 
-    #
-    # check if it's to override the file
-    # if exists
-    #
     def override(self, path):
         if self._override != 0:
             return self._override == 1
@@ -1087,17 +923,9 @@ class Exporter(Backup):
         self._override = "AK".index(choice) + 1
         return self._override == 1
 
-    #
-    # wrapper to check if scope:name pair
-    # is already exported
-    #
     def exported(self, scope, name):
         return scope in self._exported and name in self._exported[scope]
 
-    #
-    # wrapper to set scope:name pair
-    # as exported
-    #
     def set_exported(self, scope, name):
         if scope not in self._exported:
             self._exported[scope] = []
@@ -1105,11 +933,8 @@ class Exporter(Backup):
             self.log(f"Exported {scope}:{name}")
             self._exported[scope].append(name)
 
-    #
-    # Exporter main function
-    # export the objects
-    #
     def run(self, objects: dict = {}):
+        """Exports the objects defined in the manifest."""
         if len(objects) == 0:
             raise ExportException("No objects to export")
 
@@ -1133,9 +958,6 @@ class Exporter(Backup):
             for obj_id in objects[scope_name]:
                 self.log(f"Exporting {scope_name}:{obj_id}")
                 exporter(*args(scope_name, obj_id))
-        # endfor scope name
-
-        # TODO post actions for Ports
 
     def export_default(self, scope, name):
         name = _from_path(name)
@@ -1157,11 +979,6 @@ class Exporter(Backup):
         self.dict2file(obj.get_dict(), json_path)
 
         self.set_exported(scope, name)
-        # okay
-
-    #
-    # special export cases
-    #
 
     def export_callback(self, name):
         name = _from_path(name)
@@ -1279,7 +1096,6 @@ class Exporter(Backup):
                         self.export_flow(inner_flow)
                     except AttributeError:
                         self.export_default("Flow", inner_flow)
-        # endfor node in NodeInst
 
         self.export_default("Flow", name)
 
@@ -1335,11 +1151,8 @@ class Exporter(Backup):
         except Exception:
             raise ExportException(f"Can't find Node:{name}")
 
-        # export dependencies
         if self.recursive:
             self.dependencies_node(node)
-
-        # endfor dependencies
 
         self.export_default("Node", name)
 
@@ -1364,7 +1177,6 @@ class Exporter(Backup):
                         self.export_callback(callback)
                     except AttributeError:
                         self.export_default("Callback", callback)
-        # end dependencies
 
         self.export_default("StateMachine", name)
 
@@ -1386,7 +1198,6 @@ class Exporter(Backup):
                     self.export_message(ports.Data["Package"])
                 except AttributeError:
                     self.export_default("Message", ports.Data["Package"])
-        # end dependencies
 
         first_part = name.split("/", 1)[0]
 
@@ -1439,7 +1250,6 @@ class Exporter(Backup):
                             self.export_annotation(key)
                         except AttributeError:
                             self.export_default("Annotation", key)
-        # end dependencies
 
         self.export_default("GraphicScene", name)
 
@@ -1460,10 +1270,6 @@ class Exporter(Backup):
         # export yaml as external file
         path = os.path.join(self.project_path, "Configuration", f"{name}.yaml")
         self.code2file(config.Yaml, path)
-
-    #
-    # *2file methods
-    #
 
     def dict2file(self, data, path):
         real_path = os.path.join(self.project_path, path)
@@ -1544,10 +1350,6 @@ class Exporter(Backup):
         os.makedirs(os.path.dirname(real_path), exist_ok=True)
         with open(real_path, mode) as file:
             file.write(data)
-
-    #
-    # dependencies
-    #
 
     def dependencies_tasktemplate(self, tasktemplate):
         try:
@@ -1650,8 +1452,6 @@ class Exporter(Backup):
                 conf_name = conf
 
             cf_exporter(*cf_args(conf_name))
-
-        # all done
 
 
 class Remover(Backup):
