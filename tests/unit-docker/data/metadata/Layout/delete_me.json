@@ -1,0 +1,23 @@
+{
+    "Layout": {
+        "delete_me": {
+            "DashboardTitle": "",
+            "Icon": "",
+            "Info": "",
+            "Label": "delete_me",
+            "LastUpdate": {
+                "date": "23/02/2023 at 17:33:00",
+                "user": "movai@internal"
+            },
+            "LayoutColors": [],
+            "Styles": "",
+            "User": "",
+            "Version": "",
+            "VersionDelta": {},
+            "allLayouts": {
+                "lg": []
+            },
+            "layoutEvents": {}
+        }
+    }
+}

@@ -1,0 +1,16 @@
+{
+    "Callback": {
+        "delete_me": {
+            "Info": "",
+            "Label": "delete_me",
+            "LastUpdate": {
+                "date": "18/11/2022 at 15:30:30",
+                "user": "movai@internal"
+            },
+            "Message": "",
+            "User": "",
+            "Version": "",
+            "VersionDelta": {}
+        }
+    }
+}

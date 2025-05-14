@@ -1,0 +1,34 @@
+{
+    "Node": {
+        "delete_me": {
+            "Info": "",
+            "Label": "delete_me",
+            "LastUpdate": {
+                "date": "18/11/2022 at 15:30:55",
+                "user": "movai@internal"
+            },
+            "Launch": true,
+            "PackageDepends": "",
+            "Path": "",
+            "Persistent": false,
+            "PortsInst": {
+                "in": {
+                    "In": {
+                        "in": {
+                            "Callback": "global/Callback/delete_me",
+                            "Message": "movai_msgs/Transition"
+                        }
+                    },
+                    "Message": "Transition",
+                    "Package": "movai_msgs",
+                    "Template": "MovAI/TransitionTo"
+                }
+            },
+            "Remappable": true,
+            "Type": "MovAI/State",
+            "User": "",
+            "Version": "",
+            "VersionDelta": {}
+        }
+    }
+}
