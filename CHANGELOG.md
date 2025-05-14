@@ -1,3 +1,6 @@
+# vTBD
+- [BP-1420](https://movai.atlassian.net/browse/BP-1420): Initial cleanup on backup tool
+
 # v3.2.5
 - [BP-1311](https://movai.atlassian.net/browse/BP-1311): Backend taking long to delete document / error in response
 
