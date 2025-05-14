@@ -1,4 +1,4 @@
-# vTBD
+# v3.2.6
 - [BP-1420](https://movai.atlassian.net/browse/BP-1420): Initial cleanup on backup tool
 
 # v3.2.5
