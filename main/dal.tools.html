@@ -118,7 +118,7 @@ Proprietary and confidential</p>
 <p>Backup a.k.a. Import Export tool</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dal.tools.backup.Backup">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.tools.backup.</span></span><span class="sig-name descname"><span class="pre">Backup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'None/database'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Backup" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.tools.backup.</span></span><span class="sig-name descname"><span class="pre">Backup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Backup" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dal.tools.backup.Backup.MOVAI_USERSPACE">
@@ -132,8 +132,17 @@ Proprietary and confidential</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Backup.read_manifest">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_manifest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manifest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[None]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Backup.read_manifest" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_manifest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manifest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[None]</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#dal.tools.backup.Backup.read_manifest" title="Permalink to this definition"></a></dt>
+<dd><p>Reads a manifest file and returns the declared objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>manifest</strong> (<em>str</em>) – Path to the manifest file.</p></li>
+<li><p><strong>all_default</strong> – Default value for all objects, applied when ‘*’ is found.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Backup.run">
@@ -158,6 +167,7 @@ Proprietary and confidential</p>
 <dt class="sig sig-object py" id="dal.tools.backup.Exporter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.tools.backup.</span></span><span class="sig-name descname"><span class="pre">Exporter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Exporter" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dal.tools.backup.Backup" title="dal.tools.backup.Backup"><code class="xref py py-class docutils literal notranslate"><span class="pre">Backup</span></code></a></p>
+<p>Exports projects data from the database.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Exporter.code2file">
 <span class="sig-name descname"><span class="pre">code2file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Exporter.code2file" title="Permalink to this definition"></a></dt>
@@ -264,7 +274,8 @@ Proprietary and confidential</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Exporter.get_objs">
 <span class="sig-name descname"><span class="pre">get_objs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Exporter.get_objs" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get all objects of a given scope.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Exporter.override">
@@ -279,12 +290,22 @@ Proprietary and confidential</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Exporter.read_manifest">
 <span class="sig-name descname"><span class="pre">read_manifest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manifest</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Exporter.read_manifest" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Reads a manifest file and returns the declared objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>manifest</strong> (<em>str</em>) – Path to the manifest file.</p></li>
+<li><p><strong>all_default</strong> – Default value for all objects, applied when ‘*’ is found.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Exporter.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">objects</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Exporter.run" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Exports the objects defined in the manifest.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Exporter.set_exported">
@@ -305,7 +326,7 @@ Proprietary and confidential</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Factory.get_class">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Factory.get_class" title="Permalink to this definition"></a></dt>
-<dd><p>Get the scope</p>
+<dd><p>Get scope class.</p>
 </dd></dl>
 
 </dd></dl>
@@ -320,6 +341,7 @@ Proprietary and confidential</p>
 <dt class="sig sig-object py" id="dal.tools.backup.Importer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.tools.backup.</span></span><span class="sig-name descname"><span class="pre">Importer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean_old_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Importer" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dal.tools.backup.Backup" title="dal.tools.backup.Backup"><code class="xref py py-class docutils literal notranslate"><span class="pre">Backup</span></code></a></p>
+<p>Imports project data to the database.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Importer.dependencies_node">
 <span class="sig-name descname"><span class="pre">dependencies_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Importer.dependencies_node" title="Permalink to this definition"></a></dt>
@@ -343,12 +365,15 @@ Proprietary and confidential</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Importer.get_objs">
 <span class="sig-name descname"><span class="pre">get_objs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Importer.get_objs" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get all objects of a given scope.</p>
+<p>For importer, this is always [None].</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Importer.import_callback">
 <span class="sig-name descname"><span class="pre">import_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Importer.import_callback" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Imports Callback, similar to import_default but also updates Callback’s Code.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Importer.import_configuration">
@@ -358,12 +383,15 @@ Proprietary and confidential</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Importer.import_default">
 <span class="sig-name descname"><span class="pre">import_default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Importer.import_default" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Default import function.</p>
+<p>Imports the specified names to the database, if names is None (default), imports every file.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Importer.import_flow">
 <span class="sig-name descname"><span class="pre">import_flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Importer.import_flow" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Imports Flow, similar to import_default but imports dependencies.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Importer.import_graphicscene">
@@ -378,12 +406,14 @@ Proprietary and confidential</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Importer.import_node">
 <span class="sig-name descname"><span class="pre">import_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Importer.import_node" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Imports Node, similar to import_default but imports dependencies.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Importer.import_package">
 <span class="sig-name descname"><span class="pre">import_package</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Importer.import_package" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Import Package, recursively look for files of the package</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Importer.import_ports">
@@ -407,23 +437,21 @@ Proprietary and confidential</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Importer.imported">
-<span class="sig-name descname"><span class="pre">imported</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Importer.imported" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.tools.backup.Importer.read_manifest">
-<span class="sig-name descname"><span class="pre">read_manifest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manifest</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Importer.read_manifest" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">imported</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.tools.backup.Importer.imported" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper to check if a scope:name pair is already imported.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Importer.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">objects</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Importer.run" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Imports the objects defined in the manifest.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Importer.set_imported">
 <span class="sig-name descname"><span class="pre">set_imported</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Importer.set_imported" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Wrapper to set a scope:name pair as imported.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -487,20 +515,6 @@ would be performed.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>List containing a None.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.tools.backup.Remover.read_manifest">
-<span class="sig-name descname"><span class="pre">read_manifest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manifest</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Remover.read_manifest" title="Permalink to this definition"></a></dt>
-<dd><p>Wrapper around Backup’s read_manifest.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>manifest</strong> – Path to the manifest file.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Dict with scope names as keys and list with item name as values</p>
 </dd>
 </dl>
 </dd></dl>
