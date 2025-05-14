@@ -1,0 +1,14 @@
+{
+    "SharedDataEntry": {
+        "delete_me_opt0": {
+            "Description": "",
+            "Field": {
+                "delete_me": {
+                    "Value": true
+                }
+            },
+            "Label": "delete_me_opt0",
+            "TemplateID": "delete_me"
+        }
+    }
+}

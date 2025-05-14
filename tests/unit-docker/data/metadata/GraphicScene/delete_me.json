@@ -1,0 +1,21 @@
+{
+    "GraphicScene": {
+        "delete_me": {
+            "AssetType": {
+                "memory": {
+                    "AssetName": {
+                        "tree": {
+                            "Value": []
+                        }
+                    }
+                }
+            },
+            "Label": "delete_me",
+            "LastUpdate": {
+                "date": "23/02/2023 at 17:33:30",
+                "user": "movai@internal"
+            },
+            "User": ""
+        }
+    }
+}

@@ -1,0 +1,38 @@
+{
+    "Flow": {
+        "delete_me": {
+            "Description": "",
+            "ExposedPorts": {},
+            "Info": "",
+            "Label": "delete_me",
+            "LastUpdate": {
+                "date": "18/11/2022 at 15:31:07",
+                "user": "movai@internal"
+            },
+            "Layers": {},
+            "Links": {
+                "d5b63a2c-e83e-4504-94e6-9d8305523227": {
+                    "From": "start/start/start",
+                    "To": "delete_me/in/in"
+                }
+            },
+            "NodeInst": {
+                "delete_me": {
+                    "NodeLabel": "delete_me",
+                    "Template": "delete_me",
+                    "Visualization": {
+                        "x": {
+                            "Value": 0.010333333333333333
+                        },
+                        "y": {
+                            "Value": 0.006
+                        }
+                    }
+                }
+            },
+            "User": "",
+            "Version": "",
+            "VersionDelta": {}
+        }
+    }
+}

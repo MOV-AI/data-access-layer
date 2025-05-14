@@ -1,0 +1,24 @@
+{
+    "SharedDataTemplate": {
+        "delete_me": {
+            "Description": "",
+            "Field": {
+                "delete_me": {
+                    "Default": true,
+                    "Options": [
+                        {
+                            "key": 0,
+                            "label": false
+                        },
+                        {
+                            "key": 1,
+                            "label": true
+                        }
+                    ],
+                    "Type": "bool"
+                }
+            },
+            "Label": "delete_me"
+        }
+    }
+}
