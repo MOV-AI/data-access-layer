@@ -31,15 +31,15 @@ class SingletonDependencyMap(metaclass=Singleton):
     def __init__(self):
         self._map = {}
 
-    def get_dependency(self,node_name):
+    def get_dependency(self, node_name):
         with self.__class__._lock:
             return self._map[node_name]
 
-    def set_dependency(self,node_name, dependencies):
+    def set_dependency(self, node_name, dependencies):
         with self.__class__._lock:
-            self._map[node_name] = dependencies     
+            self._map[node_name] = dependencies
 
-    def is_cached(self,node_name):
+    def is_cached(self, node_name):
         return node_name in self._map
 
     def clean_dependency_cache(self):
