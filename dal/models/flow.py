@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from dal.models.nodeinst import NodeInst  # NOSONAR
 
 
-class SingletonDependencyMap(metaclass=Singleton):
+class DependencyCache(metaclass=Singleton):
     def __init__(self):
         self._map = {}
 
@@ -431,7 +431,7 @@ class Flow(Model):
 
         # TODO review and refactor - Ongoing
 
-        cache = SingletonDependencyMap()
+        cache = DependencyCache()
 
         if cache.is_cached(node_name):
             return cache.get_dependency(node_name)
