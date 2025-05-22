@@ -1,3 +1,6 @@
+# vTBD
+- [BP-1434](https://movai.atlassian.net/browse/BP-1434): Duplicated logs on spawner
+
 # v3.2.6
 - [BP-1420](https://movai.atlassian.net/browse/BP-1420): Initial cleanup on backup tool
 
