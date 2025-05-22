@@ -28,7 +28,6 @@ The DAL is a python package and it is incapsulated in the Backend and in the Spa
     redis==3.3.11
     movai_core_shared==1.0.0.10
 
-
 ## Build
 
 The complete build process:
