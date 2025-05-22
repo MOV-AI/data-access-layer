@@ -33,7 +33,7 @@ class DependencyCache(metaclass=Singleton):
 
     def get_dependency(self, node_name):
         with self.__class__._lock:
-            return self._map[node_name]
+            return self._map[node_name].copy()
 
     def set_dependency(self, node_name, dependencies):
         with self.__class__._lock:
