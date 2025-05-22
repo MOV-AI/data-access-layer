@@ -17,6 +17,7 @@ from movai_core_shared.consts import (
     MOVAI_TRANSITIONFOR,
     MOVAI_TRANSITIONTO,
 )
+from movai_core_shared.exceptions import RemapValidationError
 from dal.validation import Template
 
 if TYPE_CHECKING:
@@ -234,7 +235,7 @@ class GFlow:
                     ).is_remappable
                     and self.check_ros_port(self.flow.Links[link].To.node_inst, full_port_name)
                 ):
-                    raise Exception(
+                    raise RemapValidationError(
                         f"Two non remappable nodes are connected: {self.flow.Links[link].To.str} and {self.flow.Links[link].From.str}"
                     )
 
@@ -258,7 +259,7 @@ class GFlow:
                                 + "\nLeading to the following calculated remaps (topics): \n - "
                                 + ",\n - ".join([self.graph[port_to_remap]["remap"], remap_to])
                             )
-                            raise Exception("Flow validation failed. Flow stopped")
+                            raise RemapValidationError("Flow validation failed. Flow stopped")
 
                         link_in_forced_remap = self.forced_remap(self.flow.Links[link])
                         if link_in_forced_remap:
@@ -291,7 +292,7 @@ class GFlow:
                                         f"Remap could not be solved. More than one port previously "
                                         f"remapped with different values. port: {port_to_remap}"
                                     )
-                                    raise Exception(error_msg)
+                                    raise RemapValidationError(error_msg)
 
                     remap_to = self.graph[port_to_remap]["remap"]
                     port["remap"] = remap_to
