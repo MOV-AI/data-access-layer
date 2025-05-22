@@ -1,4 +1,4 @@
-# vTBD
+# v3.2.7
 - [BP-1434](https://movai.atlassian.net/browse/BP-1434): Duplicated logs on spawner
 
 # v3.2.6
