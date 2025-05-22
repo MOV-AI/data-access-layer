@@ -24,7 +24,7 @@ from dal.scopes.system import System
 from .model import Model
 
 
-logger = Log.get_logger("")
+logger = Log.get_logger(__name__)
 
 
 class Callback(Model):
