@@ -471,7 +471,6 @@ class Flow(Model):
 
         return list(set(dependencies))
 
-
     def get_node_plugins(self, node_inst: str) -> set:
         """Return NodeInst(s) plugins linked to node_inst"""
 
