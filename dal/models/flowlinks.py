@@ -92,7 +92,7 @@ class FlowLinks(ScopePropertyNode):
             output["Dependency"] = dep_level if (3 >= dep_level >= 0) else 0
 
         except Exception as error:
-            raise ValueError("Invalid link format: %s" % link[direction]) from error
+            raise ValueError("Invalid link format: %s" % link) from error
 
         return output
 
