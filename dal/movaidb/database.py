@@ -1066,7 +1066,7 @@ class MovaiDB:
             curr = curr.get(key)
             # Check if path exists
         if len(pieces):
-            LOGGER.warning("Couldn't process %s on dict %s", path, base_dict)
+            LOGGER.debug("Couldn't process %s on dict %s", path, base_dict)
             return None
         return curr
 

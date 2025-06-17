@@ -92,7 +92,7 @@ class FlowLinks(ScopePropertyNode):
             output["Dependency"] = dep_level if (3 >= dep_level >= 0) else 0
 
         except Exception as error:
-            raise ValueError("Invalid link format") from error
+            raise ValueError("Invalid link format: %s" % link[direction]) from error
 
         return output
 
@@ -154,8 +154,8 @@ class FlowLinks(ScopePropertyNode):
         src_separator = "__" if source_type == "MovAI/Flow" else "/"
         trg_separator = "__" if target_type == "MovAI/Flow" else "/"
 
-        source = src_separator.join([source_node, source_port])
-        target = trg_separator.join([target_node, target_port])
+        source = src_separator.join([source_node, source_port, source_type])
+        target = trg_separator.join([target_node, target_port, target_type])
 
         new_link = {"From": source, "To": target}
 
