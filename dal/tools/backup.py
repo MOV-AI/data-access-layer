@@ -17,6 +17,7 @@ import pickle
 import re
 import sys
 from importlib import import_module
+import warnings
 
 from dal.movaidb import MovaiDB
 
@@ -1659,6 +1660,11 @@ def main(args) -> int:
 
 
 if __name__ == "__main__":
+    warnings.warn(
+        "The module tools.backup is deprecated, please use mobdata.",
+        DeprecationWarning,
+    )
+
     parser = argparse.ArgumentParser(description="Export/Import/Remove Mov.AI Data")
     parser.add_argument(
         "-a",
