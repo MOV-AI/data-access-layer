@@ -1700,9 +1700,7 @@ if __name__ == "__main__":
     )
     parser.add_argument("-n", "--name", help="Object name", type=str, metavar="", default=None)
 
-    parser.add_argument(
-        "-r", "--root-path", help="Database path", type=str, metavar="", default=None
-    )
+    parser.add_argument("-r", "--root-path", help="Deprecated", type=str, metavar="", default=None)
 
     parser.add_argument(
         "-f",
