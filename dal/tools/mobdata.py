@@ -2,10 +2,11 @@
 
 import argparse
 
-from .mobdata import main
+from .backup import main as backup_main
 
 
-if __name__ == "__main__":
+def main():
+    
     parser = argparse.ArgumentParser(description="Export/Import/Remove Mov.AI Data")
     parser.add_argument(
         "action", choices=["import", "export", "remove"], help="Import, export or remove"
@@ -76,6 +77,9 @@ if __name__ == "__main__":
 
     args, _ = parser.parse_known_args()
 
-    ret_code = main(args)
+    ret_code = backup_main(args)
 
     exit(ret_code)
+
+if __name__ == "__main__":
+    main()
