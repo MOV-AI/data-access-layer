@@ -6,7 +6,6 @@ from .backup import main as backup_main
 
 
 def main():
-    
     parser = argparse.ArgumentParser(description="Export/Import/Remove Mov.AI Data")
     parser.add_argument(
         "action", choices=["import", "export", "remove"], help="Import, export or remove"
@@ -80,6 +79,7 @@ def main():
     ret_code = backup_main(args)
 
     exit(ret_code)
+
 
 if __name__ == "__main__":
     main()
