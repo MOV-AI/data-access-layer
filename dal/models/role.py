@@ -82,6 +82,7 @@ class Role(Model):
             "EmailsAlertsConfig": [READ_PERMISSION],
             "EmailsAlertsRecipients": [READ_PERMISSION, UPDATE_PERMISSION],
             "Configuration": [READ_PERMISSION],
+            "GraphicScene": [READ_PERMISSION],
         }
         resources["Applications"] = ["FleetBoard", "mov-fe-app-launcher"]
         if not Role.is_exist(OPERATOR_ROLE):
@@ -106,6 +107,7 @@ class Role(Model):
             "InternalUser": [READ_PERMISSION],
             "Role": [READ_PERMISSION],
             "AclObject": [READ_PERMISSION],
+            "GraphicScene": [READ_PERMISSION],
         }
         resources["Applications"] = [
             item["ref"] for item in scopes().list_scopes(scope="Application")
