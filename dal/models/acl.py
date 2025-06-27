@@ -213,9 +213,13 @@ class NewACLManager(ACLManager):
         return resources
 
     @staticmethod
-    def get_permissions() -> Dict:
-        """:returns dict with available resources & permissions"""
+    def get_permissions() -> Dict[str, List[str]]:
+        """Get all available permissions
 
+        Returns:
+            Available resources and permissions
+
+        """
         resources = NewACLManager.get_resources()
         resources_permissions = {}
         # Scopes
