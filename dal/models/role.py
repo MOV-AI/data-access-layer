@@ -15,8 +15,10 @@ from movai_core_shared.consts import (
     ADMIN_ROLE,
     OPERATOR_ROLE,
     DEPLOYER_ROLE,
+    CREATE_PERMISSION,
     READ_PERMISSION,
     UPDATE_PERMISSION,
+    DELETE_PERMISSION,
 )
 from movai_core_shared.envvars import DEFAULT_ROLE_NAME
 
@@ -34,16 +36,18 @@ from dal.models.acl import NewACLManager
 class Role(Model):
     """Role Model (only of name)"""
 
+    _DEFAULT_RESOUCE_PERM = [
+        CREATE_PERMISSION,
+        READ_PERMISSION,
+        UPDATE_PERMISSION,
+        DELETE_PERMISSION,
+    ]
+
     ADMIN_RESOURCES = NewACLManager.get_permissions()
 
     DEPLOYER_RESOURCES = {
-        "EmailsAlertsConfig": [READ_PERMISSION, UPDATE_PERMISSION],
-        "EmailsAlertsRecipients": [READ_PERMISSION],
-        "Configuration": [READ_PERMISSION],
-        "InternalUser": [READ_PERMISSION],
-        "Role": [READ_PERMISSION],
         "AclObject": [READ_PERMISSION],
-        "GraphicScene": [READ_PERMISSION],
+        "Annotation": _DEFAULT_RESOUCE_PERM,
         "Applications": [
             "AdminBoard",
             "FleetBoard",
@@ -51,14 +55,25 @@ class Role(Model):
             "mov-fe-app-launcher",
             "mov-fe-app-taskmanager",
         ],
+        "Callback": _DEFAULT_RESOUCE_PERM,
+        "Configuration": [READ_PERMISSION],
+        "EmailsAlertsConfig": [READ_PERMISSION, UPDATE_PERMISSION],
+        "EmailsAlertsRecipients": [READ_PERMISSION],
+        "Flow": _DEFAULT_RESOUCE_PERM,
+        "GraphicScene": _DEFAULT_RESOUCE_PERM,
+        "InternalUser": [READ_PERMISSION],
+        "Layout": _DEFAULT_RESOUCE_PERM,
+        "Node": _DEFAULT_RESOUCE_PERM,
+        "Package": _DEFAULT_RESOUCE_PERM,
+        "Role": [READ_PERMISSION],
+        "SharedDataEntry": _DEFAULT_RESOUCE_PERM,
+        "SharedDataTemplate": _DEFAULT_RESOUCE_PERM,
+        "TaskEntry": _DEFAULT_RESOUCE_PERM,
+        "TaskTemplate": _DEFAULT_RESOUCE_PERM,
     }
 
     OPERATOR_RESOURCES = {
-        "EmailsAlertsConfig": [READ_PERMISSION],
-        "EmailsAlertsRecipients": [READ_PERMISSION, UPDATE_PERMISSION],
-        "Configuration": [READ_PERMISSION],
         "GraphicScene": [READ_PERMISSION],
-        "Layout": [READ_PERMISSION],
         "Applications": ["FleetBoard", "mov-fe-app-launcher"],
     }
 
