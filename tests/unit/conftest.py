@@ -46,7 +46,7 @@ def set_redis_ip(docker_ip):
             except Exception as e:
                 pass
 
-    time.sleep(0.5)  # wait for db to be ready
+    time.sleep(2)  # wait for db to be ready
 
 
 @pytest.fixture()
