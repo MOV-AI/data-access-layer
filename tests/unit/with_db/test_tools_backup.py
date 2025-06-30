@@ -4,11 +4,10 @@ from pathlib import Path
 import pytest
 
 CURR_DIR = Path(os.path.dirname(os.path.realpath(__file__)))
-METADATA_FOLDER = CURR_DIR / "data" / "metadata"
-MANIFEST = CURR_DIR / "data" / "manifest.txt"
+METADATA_FOLDER = CURR_DIR / ".." / "data" / "metadata"
+MANIFEST = CURR_DIR / ".." / "data" / "manifest.txt"
 
 
-@pytest.mark.xfail(reason="These tests require movai-core-enterprise")
 class TestToolsBackup:
     def test_import_manifest(self, global_db):
         from dal.tools.backup import Importer
@@ -26,6 +25,7 @@ class TestToolsBackup:
 
         tool.run(objects)
 
+    @pytest.mark.skip(reason="These tests require movai-core-enterprise")
     def test_export_manifest(self, global_db, tmp_path):
         from dal.tools.backup import Exporter
 
