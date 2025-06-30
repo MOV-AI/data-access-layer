@@ -17,7 +17,7 @@ def docker_compose_file(pytestconfig):
     return str(DOCKER_COMPOSE)
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def set_redis_ip(docker_ip):
     os.environ["REDIS_MASTER_HOST"] = docker_ip
     os.environ["REDIS_MASTER_PORT"] = "6380"
@@ -46,24 +46,24 @@ def set_redis_ip(docker_ip):
             except Exception as e:
                 pass
 
-    time.sleep(2)  # wait for db to be ready
 
-
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def global_db(set_redis_ip, docker_services):
     from dal.movaidb.database import MovaiDB
 
-    return MovaiDB()
+    db = MovaiDB()
+    time.sleep(2)  # wait for db to be ready
+    return db
 
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def scopes_robot(global_db):
     from dal.scopes.robot import Robot
 
     return Robot()
 
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def models_message(global_db):
     from dal.models.message import Message
 
