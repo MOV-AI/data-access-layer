@@ -7,6 +7,7 @@ class TestMovaiDB:
         node = {"Node": {"hi": "*"}}
         node_data = {"Node": {"hi": {"Label": "hi", "User": "movai"}}}
         global_db.set(node_data)
+        sleep(0.01)  # ensure the data is written before reading
         assert node_data == global_db.get(node)
 
     def test_ttl(self, global_db, scopes_robot):
