@@ -1,5 +1,7 @@
 import os
 import pytest
+import sys
+import importlib
 
 
 from pathlib import Path
@@ -14,7 +16,7 @@ def docker_compose_file(pytestconfig):
     return str(DOCKER_COMPOSE)
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="module")
 def set_redis_ip(docker_ip):
     os.environ["REDIS_MASTER_HOST"] = docker_ip
     os.environ["REDIS_MASTER_PORT"] = "6380"
@@ -22,22 +24,43 @@ def set_redis_ip(docker_ip):
     os.environ["REDIS_LOCAL_HOST"] = docker_ip
     os.environ["REDIS_LOCAL_PORT"] = "6381"
 
+    # there are mocks leakling to other tests, so we need to redis
+    for key in list(sys.modules):
+        if key.startswith("redis"):
+            try:
+                importlib.reload(sys.modules[key])
+            except Exception as e:
+                pass
+    # reload modules which use env vars
+    for key in list(sys.modules):
+        if key.startswith("movai_core_shared"):
+            try:
+                importlib.reload(sys.modules[key])
+            except Exception as e:
+                pass
+    for key in list(sys.modules):
+        if key.startswith("dal"):
+            try:
+                importlib.reload(sys.modules[key])
+            except Exception as e:
+                pass
 
-@pytest.fixture(scope="class")
+
+@pytest.fixture()
 def global_db(set_redis_ip, docker_services):
     from dal.movaidb.database import MovaiDB
 
     return MovaiDB()
 
 
-@pytest.fixture(scope="class")
+@pytest.fixture()
 def scopes_robot(global_db):
     from dal.scopes.robot import Robot
 
     return Robot()
 
 
-@pytest.fixture(scope="class")
+@pytest.fixture()
 def models_message(global_db):
     from dal.models.message import Message
 
