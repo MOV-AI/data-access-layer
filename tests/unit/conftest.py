@@ -24,7 +24,7 @@ def set_redis_ip(docker_ip):
     os.environ["REDIS_LOCAL_HOST"] = docker_ip
     os.environ["REDIS_LOCAL_PORT"] = "6381"
 
-    # there are mocks leakling to other tests, so we need to redis
+    # there are mocks leaking to other tests, so we need to reload redis
     for key in list(sys.modules):
         if key.startswith("redis"):
             try:
