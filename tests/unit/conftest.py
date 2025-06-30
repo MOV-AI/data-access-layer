@@ -2,6 +2,7 @@ import os
 import pytest
 import sys
 import importlib
+import time
 
 
 from pathlib import Path
@@ -44,6 +45,8 @@ def set_redis_ip(docker_ip):
                 importlib.reload(sys.modules[key])
             except Exception as e:
                 pass
+
+    time.sleep(0.5)  # wait for db to be ready
 
 
 @pytest.fixture()
