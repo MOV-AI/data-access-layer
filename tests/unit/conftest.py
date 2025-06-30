@@ -28,23 +28,14 @@ def set_redis_ip(docker_ip):
     # there are mocks leaking to other tests, so we need to reload redis
     for key in list(sys.modules):
         if key.startswith("redis"):
-            try:
-                importlib.reload(sys.modules[key])
-            except Exception as e:
-                pass
+            importlib.reload(sys.modules[key])
     # reload modules which use env vars
     for key in list(sys.modules):
         if key.startswith("movai_core_shared"):
-            try:
-                importlib.reload(sys.modules[key])
-            except Exception as e:
-                pass
+            importlib.reload(sys.modules[key])
     for key in list(sys.modules):
         if key.startswith("dal"):
-            try:
-                importlib.reload(sys.modules[key])
-            except Exception as e:
-                pass
+            importlib.reload(sys.modules[key])
 
 
 @pytest.fixture(scope="session")
