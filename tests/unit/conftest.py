@@ -52,7 +52,7 @@ def global_db(set_redis_ip, docker_services):
     from dal.movaidb.database import MovaiDB
 
     db = MovaiDB()
-    time.sleep(2)  # wait for db to be ready
+    time.sleep(0.5)  # wait for db to be ready
     return db
 
 
@@ -60,11 +60,15 @@ def global_db(set_redis_ip, docker_services):
 def scopes_robot(global_db):
     from dal.scopes.robot import Robot
 
-    return Robot()
+    robot = Robot()
+    time.sleep(0.5)  # wait for db to be ready
+    return robot
 
 
 @pytest.fixture(scope="session")
 def models_message(global_db):
     from dal.models.message import Message
 
-    return Message
+    msg = Message
+    time.sleep(0.5)  # wait for db to be ready
+    return msg
