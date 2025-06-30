@@ -5,8 +5,9 @@ on:
 
 jobs:
   CI:
-    uses: MOV-AI/.github/.github/workflows/py-workflow.yml@v2
+    uses: MOV-AI/.github/.github/workflows/py-workflow.yml@v2.3
     with:
+      PYTHON_VERSION: 3.8.10
       release: true
     secrets:
       auto_commit_user: ${{ secrets.RAISE_BOT_COMMIT_USER }}

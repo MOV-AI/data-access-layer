@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   redis-master:
-    image: registry.hel.mov.ai/devops/redis2:v1.0.16
+    image: registry.hel.mov.ai/devops/redis2:v2.0.0
     healthcheck:
       test: ["CMD", "echo", ">", "/dev/tcp/localhost/6379"]
       start_period: 3s
@@ -17,7 +17,7 @@ services:
       - "6380:6379"
 
   redis-local:
-    image: registry.hel.mov.ai/devops/redis2:v1.0.16
+    image: registry.hel.mov.ai/devops/redis2:v2.0.0
     healthcheck:
       test: ["CMD", "echo", ">", "/dev/tcp/localhost/6379"]
       start_period: 3s
