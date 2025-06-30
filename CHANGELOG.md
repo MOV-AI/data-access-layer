@@ -1,4 +1,4 @@
-# vTBD
+# v3.2.9
 - [BP-1429](https://movai.atlassian.net/browse/BP-1429): Enable tests using docker compose in dal
 
 # v3.2.8
