@@ -17,6 +17,7 @@ import pickle
 import re
 import sys
 from importlib import import_module
+import warnings
 
 from dal.movaidb import MovaiDB
 
@@ -1587,7 +1588,83 @@ class Remover(Backup):
             self.set_removed(scope, name)
 
 
-def main():
+def main(args) -> int:
+    project = args.project
+    recursive = not args.individual
+
+    redis_write = test_reachable("redis-master")
+
+    if args.action == "import":
+        if redis_write:
+            tool = Importer(
+                project,
+                force=args.force,
+                dry=args.dry,
+                debug=args.debug,
+                recursive=recursive,
+                clean_old_data=args.clean_old_data,
+            )
+        else:
+            print("Skipping importer...")
+            return 0
+    elif args.action == "export":
+        tool = Exporter(project, debug=args.debug, recursive=recursive)
+    elif args.action == "remove":
+        if redis_write:
+            tool = Remover(
+                force=args.force,
+                dry=args.dry,
+                debug=args.debug,
+                recursive=recursive,
+            )
+            # so the action print is not 'Removeed'
+        else:
+            print("Skipping remover...")
+            return 0
+        args.action = args.action[:-1]
+    else:
+        print(f"Unknown action {args.action}")
+        return 1
+
+    if args.manifest:
+        objects = tool.read_manifest(args.manifest)
+    else:
+        objects = {}
+        if args.type is not None:
+            if args.name is None or args.name == "*":
+                objects[args.type] = tool.get_objs(args.type)
+            else:
+                objects[args.type] = [args.name]
+
+    try:
+        tool.run(objects)
+        print(args.action.capitalize() + "ed")
+        return 0
+    except ImportException as exc:
+        import traceback
+
+        print(traceback.format_exc(), end="", file=sys.stderr)
+        print("error importing:", str(exc), file=sys.stderr)
+    except ExportException as exc:
+        print("error exporting:", str(exc), file=sys.stderr)
+    except RemoveException as exc:
+        print("error removing:", str(exc), file=sys.stderr)
+    except Exception as e:
+        import traceback
+
+        print(traceback.format_exc(), end="", file=sys.stderr)
+        print("unknown error:", type(e).__qualname__, "-", str(e), file=sys.stderr)
+
+    # not exited before, means exception
+    return 1
+
+
+if __name__ == "__main__":
+    warnings.warn(
+        "The module tools.backup is deprecated, please use mobdata.",
+        DeprecationWarning,
+    )
+
     parser = argparse.ArgumentParser(description="Export/Import/Remove Mov.AI Data")
     parser.add_argument(
         "-a",
@@ -1623,9 +1700,7 @@ def main():
     )
     parser.add_argument("-n", "--name", help="Object name", type=str, metavar="", default=None)
 
-    parser.add_argument(
-        "-r", "--root-path", help="Database path", type=str, metavar="", default=None
-    )
+    parser.add_argument("-r", "--root-path", help="Deprecated", type=str, metavar="", default=None)
 
     parser.add_argument(
         "-f",
@@ -1672,75 +1747,6 @@ def main():
 
     args, _ = parser.parse_known_args()
 
-    project = args.project
-    recursive = not args.individual
+    ret_code = main(args)
 
-    redis_write = test_reachable("redis-master")
-
-    if args.action == "import":
-        if redis_write:
-            tool = Importer(
-                project,
-                force=args.force,
-                dry=args.dry,
-                debug=args.debug,
-                recursive=recursive,
-                clean_old_data=args.clean_old_data,
-            )
-        else:
-            print("Skipping importer...")
-            exit(0)
-    elif args.action == "export":
-        tool = Exporter(project, debug=args.debug, recursive=recursive)
-    elif args.action == "remove":
-        if redis_write:
-            tool = Remover(
-                force=args.force,
-                dry=args.dry,
-                debug=args.debug,
-                recursive=recursive,
-            )
-            # so the action print is not 'Removeed'
-        else:
-            print("Skipping remover...")
-            exit(0)
-        args.action = args.action[:-1]
-    else:
-        print(f"Unknown action {args.action}")
-        exit(1)
-
-    if args.manifest:
-        objects = tool.read_manifest(args.manifest)
-    else:
-        objects = {}
-        if args.type is not None:
-            if args.name is None or args.name == "*":
-                objects[args.type] = tool.get_objs(args.type)
-            else:
-                objects[args.type] = [args.name]
-
-    try:
-        tool.run(objects)
-        print(args.action.capitalize() + "ed")
-        exit(0)
-    except ImportException as exc:
-        import traceback
-
-        print(traceback.format_exc(), end="", file=sys.stderr)
-        print("error importing:", str(exc), file=sys.stderr)
-    except ExportException as exc:
-        print("error exporting:", str(exc), file=sys.stderr)
-    except RemoveException as exc:
-        print("error removing:", str(exc), file=sys.stderr)
-    except Exception as e:
-        import traceback
-
-        print(traceback.format_exc(), end="", file=sys.stderr)
-        print("unknown error:", type(e).__qualname__, "-", str(e), file=sys.stderr)
-
-    # not exited before, means exception
-    exit(1)
-
-
-if __name__ == "__main__":
-    main()
+    exit(ret_code)

@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "data-access-layer"
-version = "3.2.9.1"
+version = "3.3.0.0"
 authors = [
     {name = "Backend team", email = "backend@mov.ai"},
 ]
@@ -40,6 +40,7 @@ Repository = "https://github.com/MOV-AI/data-access-layer"
 
 [project.scripts]
 dal_backup = "dal.tools.backup:main"
+mobdata = "dal.tools.mobdata:main"
 edit_yaml = "dal.tools.edit_yaml:main"
 secret_key = "dal.tools.secret_key:main"
 
@@ -59,7 +60,7 @@ dal = [
 line-length = 100
 
 [tool.bumpversion]
-current_version = "3.2.9.1"
+current_version = "3.3.0.0"
 parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)?(\\.(?P<build>\\d+))?"
 serialize = ["{major}.{minor}.{patch}.{build}"]
 
