@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>data-access-layer &mdash; data-access-layer  documentation</title>
+  <title>Data Access Layer &mdash; data-access-layer  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
@@ -47,11 +47,16 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">data-access-layer</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#build">Build</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#build-pip-module">build pip module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#install-pip-module-locally">install pip module locally</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Data Access Layer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#versioning">Versioning</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#development">Development</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#build">Build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-locally">Install locally</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">data-access-layer</a></li>
@@ -73,7 +78,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">data-access-layer</li>
+      <li class="breadcrumb-item active">Data Access Layer</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/MOV-AI/data-access-layer/blob/main/docs/source/readme.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -84,52 +89,58 @@
            <div itemprop="articleBody">
              
   <section id="data-access-layer">
-<h1>data-access-layer<a class="headerlink" href="#data-access-layer" title="Permalink to this heading"></a></h1>
-<p>The data access layer (DAL) is an abstraction layer Library for accessing the required data.
-The data may be fetched/written (pending permission) from/to the appropriate data sources:
-GIT
-DB (Redis)
-File system</p>
-<p>The Data Service provides:
-1) Validation of user permissions before accessing the data
-2) Enforcing the appropriate JSON schema when writing data
-3) Validating compatibility between a document versions</p>
+<h1>Data Access Layer<a class="headerlink" href="#data-access-layer" title="Permalink to this heading"></a></h1>
+<p>The Data Access Layer (DAL) is an abstraction layer Library for accessing data.
+The data may be read/written (pending permission) from/to the followin data sources:</p>
+<ul class="simple">
+<li><p>GIT</p></li>
+<li><p>DB (Redis)</p></li>
+<li><p>File system</p></li>
+</ul>
+<p>The Data Service provides:</p>
+<ol class="arabic simple">
+<li><p>Validation of user permissions before accessing the data</p></li>
+<li><p>Enforcing the appropriate JSON schema when writing data</p></li>
+<li><p>Validating compatibility between a document versions</p></li>
+</ol>
 <section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading"></a></h2>
-<p>The DAL exposes API for reading and writing the data and is used by the MOV.AI platform component
-The DAL is a python package and it is incapsulated in the Backend and in the Spawner (Flow initiator) containers</p>
-<blockquote>
-<div><p>Prerequisites : The DAL is depended on the following packages:
-Pillow&gt;=5.1.0
-aioredis==1.3.0
-deepdiff==4.0.9
-gitpython==3.1.2
-jsonschema==3.2.0
-miracle-acl==0.0.4.post1
-py3rosmsgs
-pyjwt==1.7.1
-pyros-genmsg
-python-box==4.0.4
-redis==3.3.11
-movai_core_shared==1.0.0.10</p>
-</div></blockquote>
+<p>The DAL exposes APIs for reading and writing the data and is used by MOV.AI platform components.
+It’s a python package by message-server, backend and flow-initiator services.</p>
+<section id="versioning">
+<h3>Versioning<a class="headerlink" href="#versioning" title="Permalink to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>EE</p></th>
+<th class="head"><p>DAL branch</p></th>
+<th class="head"><p>DAL version</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>2.4.1</p></td>
+<td><p>releases/3.1</p></td>
+<td><p>3.1.x.y</p></td>
+</tr>
+<tr class="row-odd"><td><p>2.4.4</p></td>
+<td><p>releases/3.2</p></td>
+<td><p>3.2.x.y</p></td>
+</tr>
+<tr class="row-even"><td><p>2.5.0</p></td>
+<td><p>main</p></td>
+<td><p>3.3.x.y</p></td>
+</tr>
+</tbody>
+</table>
 </section>
+</section>
+<section id="development">
+<h2>Development<a class="headerlink" href="#development" title="Permalink to this heading"></a></h2>
 <section id="build">
-<h2>Build<a class="headerlink" href="#build" title="Permalink to this heading"></a></h2>
-<p>The complete build process:</p>
-<ul class="simple">
-<li><p>a python module building step which will create a <code class="docutils literal notranslate"><span class="pre">.whl</span></code> file</p></li>
-</ul>
+<h3>Build<a class="headerlink" href="#build" title="Permalink to this heading"></a></h3>
+<p>To build DAL run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">build</span></code></p>
 </section>
-<section id="build-pip-module">
-<h2>build pip module<a class="headerlink" href="#build-pip-module" title="Permalink to this heading"></a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">rm</span> <span class="n">dist</span><span class="o">/*</span>
-<span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">build</span> <span class="o">.</span>
-</pre></div>
-</div>
-</section>
-<section id="install-pip-module-locally">
-<h2>install pip module locally<a class="headerlink" href="#install-pip-module-locally" title="Permalink to this heading"></a></h2>
+<section id="install-locally">
+<h3>Install locally<a class="headerlink" href="#install-locally" title="Permalink to this heading"></a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">venv</span> <span class="o">.</span><span class="n">testenv</span>
 <span class="n">source</span> <span class="o">.</span><span class="n">testenv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span>
 <span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">cache</span><span class="o">-</span><span class="nb">dir</span> \
@@ -138,6 +149,7 @@ movai_core_shared==1.0.0.10</p>
 <span class="o">./</span><span class="n">dist</span><span class="o">/*.</span><span class="n">whl</span>
 </pre></div>
 </div>
+</section>
 </section>
 </section>
 
