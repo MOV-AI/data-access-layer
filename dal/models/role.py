@@ -9,13 +9,16 @@
    Role Model (only of name)
 """
 from typing import Dict
+from typing import List
 
 from movai_core_shared.consts import (
     ADMIN_ROLE,
     OPERATOR_ROLE,
     DEPLOYER_ROLE,
+    CREATE_PERMISSION,
     READ_PERMISSION,
     UPDATE_PERMISSION,
+    DELETE_PERMISSION,
 )
 from movai_core_shared.envvars import DEFAULT_ROLE_NAME
 
@@ -33,8 +36,47 @@ from dal.models.acl import NewACLManager
 class Role(Model):
     """Role Model (only of name)"""
 
+    _DEFAULT_RESOUCE_PERM = [
+        CREATE_PERMISSION,
+        READ_PERMISSION,
+        UPDATE_PERMISSION,
+        DELETE_PERMISSION,
+    ]
+
+    DEPLOYER_RESOURCES = {
+        "AclObject": [READ_PERMISSION],
+        "Annotation": _DEFAULT_RESOUCE_PERM,
+        "Applications": [
+            "AdminBoard",
+            "FleetBoard",
+            "mov-fe-app-ide",
+            "mov-fe-app-launcher",
+            "mov-fe-app-taskmanager",
+        ],
+        "Callback": _DEFAULT_RESOUCE_PERM,
+        "Configuration": [READ_PERMISSION],
+        "EmailsAlertsConfig": [READ_PERMISSION, UPDATE_PERMISSION],
+        "EmailsAlertsRecipients": [READ_PERMISSION],
+        "Flow": _DEFAULT_RESOUCE_PERM,
+        "GraphicScene": _DEFAULT_RESOUCE_PERM,
+        "InternalUser": [READ_PERMISSION],
+        "Layout": _DEFAULT_RESOUCE_PERM,
+        "Node": _DEFAULT_RESOUCE_PERM,
+        "Package": _DEFAULT_RESOUCE_PERM,
+        "Role": [READ_PERMISSION],
+        "SharedDataEntry": _DEFAULT_RESOUCE_PERM,
+        "SharedDataTemplate": _DEFAULT_RESOUCE_PERM,
+        "TaskEntry": _DEFAULT_RESOUCE_PERM,
+        "TaskTemplate": _DEFAULT_RESOUCE_PERM,
+    }
+
+    OPERATOR_RESOURCES = {
+        "GraphicScene": [READ_PERMISSION],
+        "Applications": ["FleetBoard", "mov-fe-app-launcher"],
+    }
+
     @classmethod
-    def create(cls, name: str, resources: Dict):
+    def create(cls, name: str, resources: Dict[str, List[str]]) -> "Role":
         """create a new Role object in DB
 
         Args:
@@ -58,77 +100,21 @@ class Role(Model):
             raise RoleAlreadyExist(error_msg)
 
     @classmethod
-    def create_admin_role(cls):
-        """
-        creates default admin Role
-        """
-        resources = NewACLManager.get_permissions()
-        if not Role.is_exist(ADMIN_ROLE):
-            admin_role = cls.create(ADMIN_ROLE, resources)
+    def create_role(cls, role: str, resources: Dict[str, List[str]]):
+        """Create role"""
+        if not Role.is_exist(role):
+            cls.create(role, resources)
         else:
-            admin_role = Role(ADMIN_ROLE)
-            for key, item in resources.items():
-                admin_role.Resources[key] = item
-                admin_role.write()
-
-        return admin_role
-
-    @classmethod
-    def create_operator_role(cls):
-        """
-        creates default operator Role
-        """
-        resources = {
-            "EmailsAlertsConfig": [READ_PERMISSION],
-            "EmailsAlertsRecipients": [READ_PERMISSION, UPDATE_PERMISSION],
-            "Configuration": [READ_PERMISSION],
-        }
-        resources["Applications"] = ["FleetBoard", "mov-fe-app-launcher"]
-        if not Role.is_exist(OPERATOR_ROLE):
-            operator_role = cls.create(OPERATOR_ROLE, resources)
-        else:
-            operator_role = Role(OPERATOR_ROLE)
-            for key, item in resources.items():
-                operator_role.Resources[key] = item
-                operator_role.write()
-
-        return operator_role
-
-    @classmethod
-    def create_deployer_role(cls):
-        """
-        creates default deployer role
-        """
-        resources = {
-            "EmailsAlertsConfig": [READ_PERMISSION, UPDATE_PERMISSION],
-            "EmailsAlertsRecipients": [READ_PERMISSION],
-            "Configuration": [READ_PERMISSION],
-            "InternalUser": [READ_PERMISSION],
-            "Role": [READ_PERMISSION],
-            "AclObject": [READ_PERMISSION],
-        }
-        resources["Applications"] = [
-            item["ref"] for item in scopes().list_scopes(scope="Application")
-        ]
-        if not Role.is_exist(DEPLOYER_ROLE):
-            deployer_role = cls.create(DEPLOYER_ROLE, resources)
-        else:
-            deployer_role = Role(DEPLOYER_ROLE)
-            for key, item in resources.items():
-                deployer_role.Resources[key] = item
-                deployer_role.write()
-
-        return deployer_role
+            role_obj = Role(role)
+            role_obj.Resources = resources
+            role_obj.write()
 
     @classmethod
     def create_default_roles(cls):
-        """
-        will create the default Roles for system
-        Admin, Deployer, Operator
-        """
-        cls.create_admin_role()
-        cls.create_deployer_role()
-        cls.create_operator_role()
+        """Create default roles: Admin, Deployer, Operator"""
+        cls.create_role(ADMIN_ROLE, NewACLManager.get_permissions())
+        cls.create_role(DEPLOYER_ROLE, cls.DEPLOYER_RESOURCES)
+        cls.create_role(OPERATOR_ROLE, cls.OPERATOR_RESOURCES)
 
     def update(self, resources: Dict) -> None:
         """Update role data"""
