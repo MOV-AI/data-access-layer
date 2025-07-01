@@ -43,8 +43,6 @@ class Role(Model):
         DELETE_PERMISSION,
     ]
 
-    ADMIN_RESOURCES = NewACLManager.get_permissions()
-
     DEPLOYER_RESOURCES = {
         "AclObject": [READ_PERMISSION],
         "Annotation": _DEFAULT_RESOUCE_PERM,
@@ -115,7 +113,7 @@ class Role(Model):
     @classmethod
     def create_default_roles(cls):
         """Create default roles: Admin, Deployer, Operator"""
-        cls.create_role(ADMIN_ROLE, cls.ADMIN_RESOURCES)
+        cls.create_role(ADMIN_ROLE, NewACLManager.get_permissions())
         cls.create_role(DEPLOYER_ROLE, cls.DEPLOYER_RESOURCES)
         cls.create_role(OPERATOR_ROLE, cls.OPERATOR_RESOURCES)
 
