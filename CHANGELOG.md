@@ -1,8 +1,11 @@
 # vTBD
 - [DP-1843](https://movai.atlassian.net/browse/DP-1843): Create mobdata
+# v3.2.9
+- [BP-1429](https://movai.atlassian.net/browse/BP-1429): Enable tests using docker compose in dal
 
 # v3.2.8
 - [BP-1390](https://movai.atlassian.net/browse/BP-1434): Caching of flow's node dependencies.
+
 # v3.2.7
 - [BP-1434](https://movai.atlassian.net/browse/BP-1434): Duplicated logs on spawner
 

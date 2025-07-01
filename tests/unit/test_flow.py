@@ -478,7 +478,7 @@ class FlowTests(unittest.TestCase):
         with pytest.raises(Exception) as e:
             Flow("two_pubs_test").graph.calc_remaps()
 
-        self.assertEquals(str(e.value), "Flow validation failed. Flow stopped")
+        self.assertEqual(str(e.value), "Flow validation failed. Flow stopped")
         # TODO evaluate the error message
 
     @pytest.mark.skipif()
