@@ -20,6 +20,14 @@ dal.tools.edit\_yaml module
    :undoc-members:
    :show-inheritance:
 
+dal.tools.mobdata module
+------------------------
+
+.. automodule:: dal.tools.mobdata
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dal.tools.secret\_key module
 ----------------------------
 
