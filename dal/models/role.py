@@ -106,9 +106,8 @@ class Role(Model):
             cls.create(role, resources)
         else:
             role_obj = Role(role)
-            for key, item in resources.items():
-                role_obj.Resources[key] = item
-                role_obj.write()
+            role_obj.Resources = resources
+            role_obj.write()
 
     @classmethod
     def create_default_roles(cls):
