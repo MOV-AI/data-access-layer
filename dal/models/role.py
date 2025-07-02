@@ -16,6 +16,7 @@ from movai_core_shared.consts import (
     DEPLOYER_ROLE,
     READ_PERMISSION,
     UPDATE_PERMISSION,
+    CREATE_PERMISSION
 )
 from movai_core_shared.envvars import DEFAULT_ROLE_NAME
 
@@ -102,7 +103,12 @@ class Role(Model):
         resources = {
             "EmailsAlertsConfig": [READ_PERMISSION, UPDATE_PERMISSION],
             "EmailsAlertsRecipients": [READ_PERMISSION],
-            "Configuration": [READ_PERMISSION],
+            "Configuration": [READ_PERMISSION, CREATE_PERMISSION],
+            "Annotation": [READ_PERMISSION, CREATE_PERMISSION],
+            "Flow": [READ_PERMISSION, CREATE_PERMISSION],
+            "Callback": [READ_PERMISSION, CREATE_PERMISSION],
+            "GraphicScene": [READ_PERMISSION, CREATE_PERMISSION],
+            "Node": [READ_PERMISSION, CREATE_PERMISSION],
             "InternalUser": [READ_PERMISSION],
             "Role": [READ_PERMISSION],
             "AclObject": [READ_PERMISSION],
