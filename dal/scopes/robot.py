@@ -27,6 +27,7 @@ from .configuration import Configuration
 
 LOGGER = Log.get_logger("dal.mov.ai")
 
+
 class Robot(Scope):
     """Robot class that deals with robot related stuff
 
@@ -128,11 +129,12 @@ class Robot(Scope):
             self.spawner_client.send_request(COMMAND_HANDLER_MSG_TYPE, req_data)
         else:
             if command == "TRANS":
-                LOGGER.warning(f"Going to send command {command} to Robot {self.RobotName} through redis! Transition failed as spawner is no longer listening to redis! \
-                    Is zmq set? ({hasattr(self, "spawner_client")}) | \
-                    and is initialized? ({self.spawner_client is not None}) | \
-                    it the target of command to self? {self.RobotName == DEVICE_NAME}\
-                    ")
+                LOGGER.warning(
+                    f"Going to send command {command} to Robot {self.RobotName} through redis! Transition failed as spawner is no longer listening to redis! "
+                    f"Is zmq set? ({hasattr(self, 'spawner_client')}) | "
+                    f"is initialized? ({self.spawner_client is not None}) | "
+                    f"it the target of command to self? {self.RobotName == DEVICE_NAME}"
+                )
             command_data = pickle.dumps(command_data)
             self.Actions.append(command_data)
 
