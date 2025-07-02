@@ -1,0 +1,200 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Robot Parameters &mdash; data-access-layer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+
+  
+    <link rel="shortcut icon" href="_static/cropped-Mov.ai-favicon2-32x32.png"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="_static/versions.js?v=6808f9ef"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Resource permissions" href="permissions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            data-access-layer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">data-access-layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">data-access-layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="permissions.html">Resource permissions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Robot Parameters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#setting-a-parameter-s-value">Setting a Parameter’s Value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setting-a-parameter-with-ttl">Setting a Parameter with TTL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-creating-and-using-parameters">Example: Creating and Using Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#subscribing-to-parameter-events">Subscribing to Parameter Events</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#notes">Notes</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">data-access-layer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Robot Parameters</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/MOV-AI/data-access-layer/blob/3.2/docs/source/robot_parameters.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="robot-parameters">
+<h1>Robot Parameters<a class="headerlink" href="#robot-parameters" title="Permalink to this heading"></a></h1>
+<p>The <cite>Robot</cite> class provides a mechanism to manage parameters associated with a robot. Each parameter has the following attributes:</p>
+<ul class="simple">
+<li><p><strong>Value</strong>: The current value of the parameter.</p></li>
+<li><p><strong>TTL</strong>: Time-to-live in seconds (<cite>None | int</cite>). This attribute is <strong>optional</strong>. If not set (default is <cite>None</cite>), the parameter’s <cite>Value</cite> will persist indefinitely. If set to an integer, the parameter’s <cite>Value</cite> will automatically reset to <cite>None</cite> after the specified number of seconds.</p></li>
+</ul>
+<p>Additionally, when a parameter’s <cite>Value</cite> expires (due to TTL), an <cite>expired</cite> event is sent to any subscribers monitoring the parameter via the websockets events mechanism.</p>
+<p><strong>Important:</strong> If the <cite>TTL</cite> attribute is not set, no expiration will occur, and the parameter’s <cite>Value</cite> will remain unchanged until explicitly modified.</p>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading"></a></h2>
+<section id="setting-a-parameter-s-value">
+<h3>Setting a Parameter’s Value<a class="headerlink" href="#setting-a-parameter-s-value" title="Permalink to this heading"></a></h3>
+<p>To set the value of an existing parameter or create a new one:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">robot</span> <span class="o">=</span> <span class="n">FleetRobot</span><span class="p">(</span><span class="s2">&quot;robot_id&quot;</span><span class="p">)</span>
+<span class="n">robot</span><span class="o">.</span><span class="n">Parameter</span><span class="p">[</span><span class="s2">&quot;parameter_name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">Value</span> <span class="o">=</span> <span class="s2">&quot;new_value&quot;</span>
+</pre></div>
+</div>
+<p>If the parameter does not exist, it will be created automatically.</p>
+</section>
+<section id="setting-a-parameter-with-ttl">
+<h3>Setting a Parameter with TTL<a class="headerlink" href="#setting-a-parameter-with-ttl" title="Permalink to this heading"></a></h3>
+<p>To set a parameter with a TTL (optional):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">robot</span> <span class="o">=</span> <span class="n">FleetRobot</span><span class="p">(</span><span class="s2">&quot;robot_id&quot;</span><span class="p">)</span>
+<span class="n">robot</span><span class="o">.</span><span class="n">Parameter</span><span class="p">[</span><span class="s2">&quot;parameter_name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">TTL</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># TTL in seconds</span>
+<span class="n">robot</span><span class="o">.</span><span class="n">Parameter</span><span class="p">[</span><span class="s2">&quot;parameter_name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">Value</span> <span class="o">=</span> <span class="s2">&quot;temporary_value&quot;</span>
+</pre></div>
+</div>
+<p>In this example, the <cite>Value</cite> of the parameter will reset to <cite>None</cite> after 10 seconds, and an <cite>expired</cite> event will be sent to subscribers.</p>
+<p>If the <cite>TTL</cite> is not set, the parameter’s <cite>Value</cite> will persist indefinitely.</p>
+</section>
+<section id="example-creating-and-using-parameters">
+<h3>Example: Creating and Using Parameters<a class="headerlink" href="#example-creating-and-using-parameters" title="Permalink to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">robot</span> <span class="o">=</span> <span class="n">FleetRobot</span><span class="p">(</span><span class="s2">&quot;robot_id&quot;</span><span class="p">)</span>
+
+<span class="c1"># Create a parameter without TTL (no expiration)</span>
+<span class="n">robot</span><span class="o">.</span><span class="n">Parameter</span><span class="p">[</span><span class="s2">&quot;mesh&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">Value</span> <span class="o">=</span> <span class="s2">&quot;mesh_name&quot;</span>
+
+<span class="c1"># Create a parameter with TTL</span>
+<span class="n">robot</span><span class="o">.</span><span class="n">Parameter</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">TTL</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># Expires after 5 seconds</span>
+<span class="n">robot</span><span class="o">.</span><span class="n">Parameter</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">Value</span> <span class="o">=</span> <span class="s2">&quot;active&quot;</span>
+
+<span class="c1"># Accessing parameter values</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">robot</span><span class="o">.</span><span class="n">Parameter</span><span class="p">[</span><span class="s2">&quot;mesh&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">Value</span><span class="p">)</span>  <span class="c1"># Output: &quot;mesh_name&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">robot</span><span class="o">.</span><span class="n">Parameter</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">Value</span><span class="p">)</span>  <span class="c1"># Output: &quot;active&quot;</span>
+
+<span class="c1"># After 5 seconds, the status parameter will expire</span>
+<span class="c1"># and its value will reset to None.</span>
+</pre></div>
+</div>
+</section>
+<section id="subscribing-to-parameter-events">
+<h3>Subscribing to Parameter Events<a class="headerlink" href="#subscribing-to-parameter-events" title="Permalink to this heading"></a></h3>
+<p>The <cite>expired</cite> event is sent to subscribers when a parameter’s <cite>Value</cite> expires. To monitor these events, use the websockets events mechanism provided by the system.</p>
+</section>
+</section>
+<section id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>The <cite>TTL</cite> attribute is <strong>optional</strong>. If not set, the parameter’s <cite>Value</cite> will persist indefinitely.</p></li>
+<li><p>The <cite>expired</cite> event is only triggered when a <cite>TTL</cite> is set and the <cite>Value</cite> expires.</p></li>
+<li><p>Parameters without a <cite>TTL</cite> will never expire unless explicitly modified.</p></li>
+</ul>
+<p>This functionality allows for flexible and time-sensitive parameter management for robots in the system.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="permissions.html" class="btn btn-neutral float-left" title="Resource permissions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Backend.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Read the Docs</span>
+        v: 3.2
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dt>Versions</dt>
+        <dl id="docs-versions"></dl>
+        <hr />
+        <a href="https://tech.michaelaltfield.net/2020/07/18/sphinx-rtd-github-pages-1/">Continuous
+            Documentation</a> hosting provided by <a href="https://pages.github.com/">GitHub Pages</a>.
+    </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

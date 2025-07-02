@@ -1,0 +1,353 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dal.classes.protocols package &mdash; data-access-layer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+
+  
+    <link rel="shortcut icon" href="_static/cropped-Mov.ai-favicon2-32x32.png"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="_static/versions.js?v=6808f9ef"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="dal.classes.utils package" href="dal.classes.utils.html" />
+    <link rel="prev" title="dal.classes.filesystem package" href="dal.classes.filesystem.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            data-access-layer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">data-access-layer</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">data-access-layer</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dal.html">dal package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="dal.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="dal.api.html">dal.api package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.archive.html">dal.archive package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.backup.html">dal.backup package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="dal.classes.html">dal.classes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.data.html">dal.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.db_handlers.html">dal.db_handlers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.exceptions.html">dal.exceptions package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.html">dal.helpers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.models.html">dal.models package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.movaidb.html">dal.movaidb package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.html">dal.plugins package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html">dal.scopes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html">dal.tools package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.utils.html">dal.utils package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html">dal.validation package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.html#module-dal">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="permissions.html">Resource permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="robot_parameters.html">Robot Parameters</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">data-access-layer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">data-access-layer</a></li>
+          <li class="breadcrumb-item"><a href="dal.html">dal package</a></li>
+          <li class="breadcrumb-item"><a href="dal.classes.html">dal.classes package</a></li>
+      <li class="breadcrumb-item active">dal.classes.protocols package</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/MOV-AI/data-access-layer/blob/3.2/docs/source/dal.classes.protocols.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dal-classes-protocols-package">
+<h1>dal.classes.protocols package<a class="headerlink" href="#dal-classes-protocols-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-dal.classes.protocols.redis">
+<span id="dal-classes-protocols-redis-module"></span><h2>dal.classes.protocols.redis module<a class="headerlink" href="#module-dal.classes.protocols.redis" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Moawiya Mograbi (<a class="reference external" href="mailto:moawiya&#37;&#52;&#48;mov&#46;ai">moawiya<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2022</p>
+<p>Redis related protocols to be used in new Mov-Node</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextClientIn">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.protocols.redis.</span></span><span class="sig-name descname"><span class="pre">ContextClientIn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.redis.ContextClientIn" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.classes.protocols.redis.ContextProtocolIn" title="dal.classes.protocols.redis.ContextProtocolIn"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContextProtocolIn</span></code></a></p>
+<p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ContextProtocolIn</strong> (<em>_type_</em>) – _description_</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextClientIn.ID">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ID</span></span><a class="headerlink" href="#dal.classes.protocols.redis.ContextClientIn.ID" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextClientOut">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.protocols.redis.</span></span><span class="sig-name descname"><span class="pre">ContextClientOut</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.redis.ContextClientOut" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.classes.protocols.redis.ContextProtocolOut" title="dal.classes.protocols.redis.ContextProtocolOut"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContextProtocolOut</span></code></a></p>
+<p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ContextProtocolOut</strong> (<em>_type_</em>) – _description_</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextClientOut.ID">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ID</span></span><a class="headerlink" href="#dal.classes.protocols.redis.ContextClientOut.ID" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextMsg">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.protocols.redis.</span></span><span class="sig-name descname"><span class="pre">ContextMsg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">changed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.redis.ContextMsg" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Message for Context
+data -&gt; dictionary of full context table
+changed -&gt; dictionary only of values changed</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextProtocolIn">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.protocols.redis.</span></span><span class="sig-name descname"><span class="pre">ContextProtocolIn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">ignore</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.redis.ContextProtocolIn" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>_summary_</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextProtocolIn.callback_wrapper">
+<span class="sig-name descname"><span class="pre">callback_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.redis.ContextProtocolIn.callback_wrapper" title="Permalink to this definition"></a></dt>
+<dd><p>Executes callback</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextProtocolIn.register_sub">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">register_sub</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.classes.protocols.redis.ContextProtocolIn.register_sub" title="Permalink to this definition"></a></dt>
+<dd><p>Subscribe to key.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextProtocolOut">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.protocols.redis.</span></span><span class="sig-name descname"><span class="pre">ContextProtocolOut</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.redis.ContextProtocolOut" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>_summary_</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextProtocolOut.send">
+<span class="sig-name descname"><span class="pre">send</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.redis.ContextProtocolOut.send" title="Permalink to this definition"></a></dt>
+<dd><p>Send function</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextServerIn">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.protocols.redis.</span></span><span class="sig-name descname"><span class="pre">ContextServerIn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.redis.ContextServerIn" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.classes.protocols.redis.ContextProtocolIn" title="dal.classes.protocols.redis.ContextProtocolIn"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContextProtocolIn</span></code></a></p>
+<p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ContextProtocolIn</strong> (<em>_type_</em>) – _description_</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextServerIn.ID">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ID</span></span><a class="headerlink" href="#dal.classes.protocols.redis.ContextServerIn.ID" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextServerOut">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.protocols.redis.</span></span><span class="sig-name descname"><span class="pre">ContextServerOut</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.redis.ContextServerOut" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.classes.protocols.redis.ContextProtocolOut" title="dal.classes.protocols.redis.ContextProtocolOut"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContextProtocolOut</span></code></a></p>
+<p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ContextProtocolOut</strong> (<em>_type_</em>) – _description_</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.classes.protocols.redis.ContextServerOut.ID">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ID</span></span><a class="headerlink" href="#dal.classes.protocols.redis.ContextServerOut.ID" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dal.classes.protocols">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dal.classes.protocols" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Moawiya Mograbi (<a class="reference external" href="mailto:moawiya&#37;&#52;&#48;mov&#46;ai">moawiya<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2022</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.classes.protocols.ContextClientIn">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.protocols.</span></span><span class="sig-name descname"><span class="pre">ContextClientIn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.ContextClientIn" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.classes.protocols.redis.ContextProtocolIn" title="dal.classes.protocols.redis.ContextProtocolIn"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContextProtocolIn</span></code></a></p>
+<p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ContextProtocolIn</strong> (<em>_type_</em>) – _description_</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.classes.protocols.ContextClientIn.ID">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ID</span></span><a class="headerlink" href="#dal.classes.protocols.ContextClientIn.ID" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.classes.protocols.ContextClientOut">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.protocols.</span></span><span class="sig-name descname"><span class="pre">ContextClientOut</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.ContextClientOut" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.classes.protocols.redis.ContextProtocolOut" title="dal.classes.protocols.redis.ContextProtocolOut"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContextProtocolOut</span></code></a></p>
+<p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ContextProtocolOut</strong> (<em>_type_</em>) – _description_</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.classes.protocols.ContextClientOut.ID">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ID</span></span><a class="headerlink" href="#dal.classes.protocols.ContextClientOut.ID" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.classes.protocols.ContextServerIn">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.protocols.</span></span><span class="sig-name descname"><span class="pre">ContextServerIn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.ContextServerIn" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.classes.protocols.redis.ContextProtocolIn" title="dal.classes.protocols.redis.ContextProtocolIn"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContextProtocolIn</span></code></a></p>
+<p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ContextProtocolIn</strong> (<em>_type_</em>) – _description_</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.classes.protocols.ContextServerIn.ID">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ID</span></span><a class="headerlink" href="#dal.classes.protocols.ContextServerIn.ID" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.classes.protocols.ContextServerOut">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.protocols.</span></span><span class="sig-name descname"><span class="pre">ContextServerOut</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.protocols.ContextServerOut" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.classes.protocols.redis.ContextProtocolOut" title="dal.classes.protocols.redis.ContextProtocolOut"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContextProtocolOut</span></code></a></p>
+<p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ContextProtocolOut</strong> (<em>_type_</em>) – _description_</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.classes.protocols.ContextServerOut.ID">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ID</span></span><a class="headerlink" href="#dal.classes.protocols.ContextServerOut.ID" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dal.classes.filesystem.html" class="btn btn-neutral float-left" title="dal.classes.filesystem package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dal.classes.utils.html" class="btn btn-neutral float-right" title="dal.classes.utils package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Backend.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Read the Docs</span>
+        v: 3.2
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dt>Versions</dt>
+        <dl id="docs-versions"></dl>
+        <hr />
+        <a href="https://tech.michaelaltfield.net/2020/07/18/sphinx-rtd-github-pages-1/">Continuous
+            Documentation</a> hosting provided by <a href="https://pages.github.com/">GitHub Pages</a>.
+    </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

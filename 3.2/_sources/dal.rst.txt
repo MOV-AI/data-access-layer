@@ -1,0 +1,32 @@
+dal package
+===========
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   dal.api
+   dal.archive
+   dal.backup
+   dal.classes
+   dal.data
+   dal.db_handlers
+   dal.exceptions
+   dal.helpers
+   dal.models
+   dal.movaidb
+   dal.plugins
+   dal.scopes
+   dal.tools
+   dal.utils
+   dal.validation
+
+Module contents
+---------------
+
+.. automodule:: dal
+   :members:
+   :undoc-members:
+   :show-inheritance:

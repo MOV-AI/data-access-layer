@@ -1,0 +1,380 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dal.classes package &mdash; data-access-layer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+
+  
+    <link rel="shortcut icon" href="_static/cropped-Mov.ai-favicon2-32x32.png"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="_static/versions.js?v=6808f9ef"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="dal.classes.common package" href="dal.classes.common.html" />
+    <link rel="prev" title="dal.backup package" href="dal.backup.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            data-access-layer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">data-access-layer</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">data-access-layer</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dal.html">dal package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="dal.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="dal.api.html">dal.api package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.archive.html">dal.archive package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.backup.html">dal.backup package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">dal.classes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.data.html">dal.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.db_handlers.html">dal.db_handlers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.exceptions.html">dal.exceptions package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.html">dal.helpers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.models.html">dal.models package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.movaidb.html">dal.movaidb package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.html">dal.plugins package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html">dal.scopes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html">dal.tools package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.utils.html">dal.utils package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html">dal.validation package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.html#module-dal">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="permissions.html">Resource permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="robot_parameters.html">Robot Parameters</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">data-access-layer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">data-access-layer</a></li>
+          <li class="breadcrumb-item"><a href="dal.html">dal package</a></li>
+      <li class="breadcrumb-item active">dal.classes package</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/MOV-AI/data-access-layer/blob/3.2/docs/source/dal.classes.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dal-classes-package">
+<h1>dal.classes package<a class="headerlink" href="#dal-classes-package" title="Permalink to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dal.classes.common.html">dal.classes.common package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dal.classes.common.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dal.classes.common.html#module-dal.classes.common.gitlink">dal.classes.common.gitlink module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.common.html#dal.classes.common.gitlink.GitLink"><code class="docutils literal notranslate"><span class="pre">GitLink</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.common.html#dal.classes.common.gitlink.GitLink.HTTPS_REGEX"><code class="docutils literal notranslate"><span class="pre">GitLink.HTTPS_REGEX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.common.html#dal.classes.common.gitlink.GitLink.SSH_REGEX"><code class="docutils literal notranslate"><span class="pre">GitLink.SSH_REGEX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.common.html#dal.classes.common.gitlink.GitLink.domain"><code class="docutils literal notranslate"><span class="pre">GitLink.domain</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.common.html#dal.classes.common.gitlink.GitLink.owner"><code class="docutils literal notranslate"><span class="pre">GitLink.owner</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.common.html#dal.classes.common.gitlink.GitLink.path"><code class="docutils literal notranslate"><span class="pre">GitLink.path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.common.html#dal.classes.common.gitlink.GitLink.remote"><code class="docutils literal notranslate"><span class="pre">GitLink.remote</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.common.html#dal.classes.common.gitlink.GitLink.repo"><code class="docutils literal notranslate"><span class="pre">GitLink.repo</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.common.html#dal.classes.common.gitlink.GitLink.repo_https_link"><code class="docutils literal notranslate"><span class="pre">GitLink.repo_https_link</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.common.html#dal.classes.common.gitlink.GitLink.repo_ssh_link"><code class="docutils literal notranslate"><span class="pre">GitLink.repo_ssh_link</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dal.classes.common.html#module-dal.classes.common.singleton">dal.classes.common.singleton module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.common.html#dal.classes.common.singleton.Singleton"><code class="docutils literal notranslate"><span class="pre">Singleton</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dal.classes.common.html#module-dal.classes.common">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dal.classes.filesystem.html">dal.classes.filesystem package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dal.classes.filesystem.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dal.classes.filesystem.html#module-dal.classes.filesystem.filesystem">dal.classes.filesystem.filesystem module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.filesystem.html#dal.classes.filesystem.filesystem.FileSystem"><code class="docutils literal notranslate"><span class="pre">FileSystem</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.filesystem.html#dal.classes.filesystem.filesystem.FileSystem.create_folder_recursively"><code class="docutils literal notranslate"><span class="pre">FileSystem.create_folder_recursively()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.filesystem.html#dal.classes.filesystem.filesystem.FileSystem.create_symbolic_link"><code class="docutils literal notranslate"><span class="pre">FileSystem.create_symbolic_link()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.filesystem.html#dal.classes.filesystem.filesystem.FileSystem.delete"><code class="docutils literal notranslate"><span class="pre">FileSystem.delete()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.filesystem.html#dal.classes.filesystem.filesystem.FileSystem.get_home_folder"><code class="docutils literal notranslate"><span class="pre">FileSystem.get_home_folder()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.filesystem.html#dal.classes.filesystem.filesystem.FileSystem.is_exist"><code class="docutils literal notranslate"><span class="pre">FileSystem.is_exist()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.filesystem.html#dal.classes.filesystem.filesystem.FileSystem.read"><code class="docutils literal notranslate"><span class="pre">FileSystem.read()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.filesystem.html#dal.classes.filesystem.filesystem.FileSystem.remove_recursively"><code class="docutils literal notranslate"><span class="pre">FileSystem.remove_recursively()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.filesystem.html#dal.classes.filesystem.filesystem.FileSystem.rename_folder"><code class="docutils literal notranslate"><span class="pre">FileSystem.rename_folder()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.filesystem.html#dal.classes.filesystem.filesystem.FileSystem.write"><code class="docutils literal notranslate"><span class="pre">FileSystem.write()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dal.classes.filesystem.html#module-dal.classes.filesystem">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.filesystem.html#dal.classes.filesystem.FileSystem"><code class="docutils literal notranslate"><span class="pre">FileSystem</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.filesystem.html#dal.classes.filesystem.FileSystem.create_folder_recursively"><code class="docutils literal notranslate"><span class="pre">FileSystem.create_folder_recursively()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.filesystem.html#dal.classes.filesystem.FileSystem.create_symbolic_link"><code class="docutils literal notranslate"><span class="pre">FileSystem.create_symbolic_link()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.filesystem.html#dal.classes.filesystem.FileSystem.delete"><code class="docutils literal notranslate"><span class="pre">FileSystem.delete()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.filesystem.html#dal.classes.filesystem.FileSystem.get_home_folder"><code class="docutils literal notranslate"><span class="pre">FileSystem.get_home_folder()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.filesystem.html#dal.classes.filesystem.FileSystem.is_exist"><code class="docutils literal notranslate"><span class="pre">FileSystem.is_exist()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.filesystem.html#dal.classes.filesystem.FileSystem.read"><code class="docutils literal notranslate"><span class="pre">FileSystem.read()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.filesystem.html#dal.classes.filesystem.FileSystem.remove_recursively"><code class="docutils literal notranslate"><span class="pre">FileSystem.remove_recursively()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.filesystem.html#dal.classes.filesystem.FileSystem.rename_folder"><code class="docutils literal notranslate"><span class="pre">FileSystem.rename_folder()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.filesystem.html#dal.classes.filesystem.FileSystem.write"><code class="docutils literal notranslate"><span class="pre">FileSystem.write()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dal.classes.protocols.html">dal.classes.protocols package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dal.classes.protocols.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dal.classes.protocols.html#module-dal.classes.protocols.redis">dal.classes.protocols.redis module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.protocols.html#dal.classes.protocols.redis.ContextClientIn"><code class="docutils literal notranslate"><span class="pre">ContextClientIn</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.protocols.html#dal.classes.protocols.redis.ContextClientIn.ID"><code class="docutils literal notranslate"><span class="pre">ContextClientIn.ID</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.protocols.html#dal.classes.protocols.redis.ContextClientOut"><code class="docutils literal notranslate"><span class="pre">ContextClientOut</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.protocols.html#dal.classes.protocols.redis.ContextClientOut.ID"><code class="docutils literal notranslate"><span class="pre">ContextClientOut.ID</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.protocols.html#dal.classes.protocols.redis.ContextMsg"><code class="docutils literal notranslate"><span class="pre">ContextMsg</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.protocols.html#dal.classes.protocols.redis.ContextProtocolIn"><code class="docutils literal notranslate"><span class="pre">ContextProtocolIn</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.protocols.html#dal.classes.protocols.redis.ContextProtocolIn.callback_wrapper"><code class="docutils literal notranslate"><span class="pre">ContextProtocolIn.callback_wrapper()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.protocols.html#dal.classes.protocols.redis.ContextProtocolIn.register_sub"><code class="docutils literal notranslate"><span class="pre">ContextProtocolIn.register_sub()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.protocols.html#dal.classes.protocols.redis.ContextProtocolOut"><code class="docutils literal notranslate"><span class="pre">ContextProtocolOut</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.protocols.html#dal.classes.protocols.redis.ContextProtocolOut.send"><code class="docutils literal notranslate"><span class="pre">ContextProtocolOut.send()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.protocols.html#dal.classes.protocols.redis.ContextServerIn"><code class="docutils literal notranslate"><span class="pre">ContextServerIn</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.protocols.html#dal.classes.protocols.redis.ContextServerIn.ID"><code class="docutils literal notranslate"><span class="pre">ContextServerIn.ID</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.protocols.html#dal.classes.protocols.redis.ContextServerOut"><code class="docutils literal notranslate"><span class="pre">ContextServerOut</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.protocols.html#dal.classes.protocols.redis.ContextServerOut.ID"><code class="docutils literal notranslate"><span class="pre">ContextServerOut.ID</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dal.classes.protocols.html#module-dal.classes.protocols">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.protocols.html#dal.classes.protocols.ContextClientIn"><code class="docutils literal notranslate"><span class="pre">ContextClientIn</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.protocols.html#dal.classes.protocols.ContextClientIn.ID"><code class="docutils literal notranslate"><span class="pre">ContextClientIn.ID</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.protocols.html#dal.classes.protocols.ContextClientOut"><code class="docutils literal notranslate"><span class="pre">ContextClientOut</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.protocols.html#dal.classes.protocols.ContextClientOut.ID"><code class="docutils literal notranslate"><span class="pre">ContextClientOut.ID</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.protocols.html#dal.classes.protocols.ContextServerIn"><code class="docutils literal notranslate"><span class="pre">ContextServerIn</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.protocols.html#dal.classes.protocols.ContextServerIn.ID"><code class="docutils literal notranslate"><span class="pre">ContextServerIn.ID</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.protocols.html#dal.classes.protocols.ContextServerOut"><code class="docutils literal notranslate"><span class="pre">ContextServerOut</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.protocols.html#dal.classes.protocols.ContextServerOut.ID"><code class="docutils literal notranslate"><span class="pre">ContextServerOut.ID</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dal.classes.utils.html">dal.classes.utils package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dal.classes.utils.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dal.classes.utils.html#module-dal.classes.utils.local_robot_info">dal.classes.utils.local_robot_info module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.local_robot_info.LocalRobotInfo"><code class="docutils literal notranslate"><span class="pre">LocalRobotInfo</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.local_robot_info.LocalRobotInfo.generate_identity_string"><code class="docutils literal notranslate"><span class="pre">LocalRobotInfo.generate_identity_string()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.local_robot_info.LocalRobotInfo.get_id"><code class="docutils literal notranslate"><span class="pre">LocalRobotInfo.get_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.local_robot_info.LocalRobotInfo.get_name"><code class="docutils literal notranslate"><span class="pre">LocalRobotInfo.get_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.local_robot_info.LocalRobotInfo.robot_id"><code class="docutils literal notranslate"><span class="pre">LocalRobotInfo.robot_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.local_robot_info.LocalRobotInfo.robot_name"><code class="docutils literal notranslate"><span class="pre">LocalRobotInfo.robot_name</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dal.classes.utils.html#module-dal.classes.utils.secretkey">dal.classes.utils.secretkey module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.secretkey.SecretKey"><code class="docutils literal notranslate"><span class="pre">SecretKey</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.secretkey.SecretKey.create"><code class="docutils literal notranslate"><span class="pre">SecretKey.create()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.secretkey.SecretKey.db"><code class="docutils literal notranslate"><span class="pre">SecretKey.db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.secretkey.SecretKey.get_secret"><code class="docutils literal notranslate"><span class="pre">SecretKey.get_secret()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.secretkey.SecretKey.is_exist"><code class="docutils literal notranslate"><span class="pre">SecretKey.is_exist()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.secretkey.SecretKey.log"><code class="docutils literal notranslate"><span class="pre">SecretKey.log</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.secretkey.SecretKey.remove"><code class="docutils literal notranslate"><span class="pre">SecretKey.remove()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.secretkey.SecretKey.secret_key_dict"><code class="docutils literal notranslate"><span class="pre">SecretKey.secret_key_dict</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.secretkey.SecretKey.type_name"><code class="docutils literal notranslate"><span class="pre">SecretKey.type_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.secretkey.SecretKey.update"><code class="docutils literal notranslate"><span class="pre">SecretKey.update()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dal.classes.utils.html#module-dal.classes.utils.token">dal.classes.utils.token module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.DBToken"><code class="docutils literal notranslate"><span class="pre">DBToken</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.EmptyDBToken"><code class="docutils literal notranslate"><span class="pre">EmptyDBToken</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.Token"><code class="docutils literal notranslate"><span class="pre">Token</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.Token.allowed_algorithms"><code class="docutils literal notranslate"><span class="pre">Token.allowed_algorithms</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.Token.decode_and_verify_token"><code class="docutils literal notranslate"><span class="pre">Token.decode_and_verify_token()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.Token.decode_no_verify_token"><code class="docutils literal notranslate"><span class="pre">Token.decode_no_verify_token()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.Token.encode_token"><code class="docutils literal notranslate"><span class="pre">Token.encode_token()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.Token.get_token_id"><code class="docutils literal notranslate"><span class="pre">Token.get_token_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.Token.get_token_obj"><code class="docutils literal notranslate"><span class="pre">Token.get_token_obj()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.Token.init_payload"><code class="docutils literal notranslate"><span class="pre">Token.init_payload()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.Token.log"><code class="docutils literal notranslate"><span class="pre">Token.log</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.Token.required_keys"><code class="docutils literal notranslate"><span class="pre">Token.required_keys</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.Token.revoke_token"><code class="docutils literal notranslate"><span class="pre">Token.revoke_token()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.Token.verify_token"><code class="docutils literal notranslate"><span class="pre">Token.verify_token()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.TokenManager"><code class="docutils literal notranslate"><span class="pre">TokenManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.TokenManager.db"><code class="docutils literal notranslate"><span class="pre">TokenManager.db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.TokenManager.is_token_exist"><code class="docutils literal notranslate"><span class="pre">TokenManager.is_token_exist()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.TokenManager.log"><code class="docutils literal notranslate"><span class="pre">TokenManager.log</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.TokenManager.remove_all_expired_tokens"><code class="docutils literal notranslate"><span class="pre">TokenManager.remove_all_expired_tokens()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.TokenManager.remove_all_tokens"><code class="docutils literal notranslate"><span class="pre">TokenManager.remove_all_tokens()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.TokenManager.remove_token"><code class="docutils literal notranslate"><span class="pre">TokenManager.remove_token()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.TokenManager.store_token"><code class="docutils literal notranslate"><span class="pre">TokenManager.store_token()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.TokenManager.token_type"><code class="docutils literal notranslate"><span class="pre">TokenManager.token_type</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.TokenObject"><code class="docutils literal notranslate"><span class="pre">TokenObject</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.UserToken"><code class="docutils literal notranslate"><span class="pre">UserToken</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.UserToken.generate_access_token"><code class="docutils literal notranslate"><span class="pre">UserToken.generate_access_token()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.UserToken.generate_refresh_token"><code class="docutils literal notranslate"><span class="pre">UserToken.generate_refresh_token()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.UserToken.get_refresh_id"><code class="docutils literal notranslate"><span class="pre">UserToken.get_refresh_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.UserToken.get_token_obj"><code class="docutils literal notranslate"><span class="pre">UserToken.get_token_obj()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.UserToken.init_payload"><code class="docutils literal notranslate"><span class="pre">UserToken.init_payload()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.classes.utils.html#dal.classes.utils.token.UserTokenObject"><code class="docutils literal notranslate"><span class="pre">UserTokenObject</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dal.classes.utils.html#module-dal.classes.utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-dal.classes.authentication">
+<span id="dal-classes-authentication-module"></span><h2>dal.classes.authentication module<a class="headerlink" href="#module-dal.classes.authentication" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.classes.authentication.AuthService">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.authentication.</span></span><span class="sig-name descname"><span class="pre">AuthService</span></span><a class="headerlink" href="#dal.classes.authentication.AuthService" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.classes.authentication.AuthService.get_token">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">movai_user</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.authentication.AuthService.get_token" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.classes.authentication.AuthService.get_username">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_username</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">remote</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">movai_user</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.classes.authentication.AuthService.get_username" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dal.classes">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dal.classes" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.classes.Singleton">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.classes.</span></span><span class="sig-name descname"><span class="pre">Singleton</span></span><a class="headerlink" href="#dal.classes.Singleton" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></p>
+<p>A Singleton metaclass, every class that is intended to be a Singleton
+have to inherit this class as metaclass, for example:</p>
+<dl class="simple">
+<dt>class Logger(metaclass=Singleton):</dt><dd><p>pass</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dal.backup.html" class="btn btn-neutral float-left" title="dal.backup package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dal.classes.common.html" class="btn btn-neutral float-right" title="dal.classes.common package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Backend.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Read the Docs</span>
+        v: 3.2
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dt>Versions</dt>
+        <dl id="docs-versions"></dl>
+        <hr />
+        <a href="https://tech.michaelaltfield.net/2020/07/18/sphinx-rtd-github-pages-1/">Continuous
+            Documentation</a> hosting provided by <a href="https://pages.github.com/">GitHub Pages</a>.
+    </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
