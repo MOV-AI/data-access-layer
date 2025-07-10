@@ -217,8 +217,13 @@ Proprietary and confidential</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.models.acl.NewACLManager.get_permissions">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_permissions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#dal.models.acl.NewACLManager.get_permissions" title="Permalink to this definition"></a></dt>
-<dd><p>:returns dict with available resources &amp; permissions</p>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_permissions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.models.acl.NewACLManager.get_permissions" title="Permalink to this definition"></a></dt>
+<dd><p>Get all available permissions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Available resources and permissions</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -2998,9 +3003,19 @@ Proprietary and confidential</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.models.role.</span></span><span class="sig-name descname"><span class="pre">Role</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref_or_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'global'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'__UNVERSIONED__'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.role.Role" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dal.models.model.Model" title="dal.models.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a></p>
 <p>Role Model (only of name)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.role.Role.DEPLOYER_RESOURCES">
+<span class="sig-name descname"><span class="pre">DEPLOYER_RESOURCES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'AclObject':</span> <span class="pre">['read'],</span> <span class="pre">'Annotation':</span> <span class="pre">['create',</span> <span class="pre">'read',</span> <span class="pre">'update',</span> <span class="pre">'delete'],</span> <span class="pre">'Applications':</span> <span class="pre">['AdminBoard',</span> <span class="pre">'FleetBoard',</span> <span class="pre">'mov-fe-app-ide',</span> <span class="pre">'mov-fe-app-launcher',</span> <span class="pre">'mov-fe-app-taskmanager'],</span> <span class="pre">'Callback':</span> <span class="pre">['create',</span> <span class="pre">'read',</span> <span class="pre">'update',</span> <span class="pre">'delete'],</span> <span class="pre">'Configuration':</span> <span class="pre">['read'],</span> <span class="pre">'EmailsAlertsConfig':</span> <span class="pre">['read',</span> <span class="pre">'update'],</span> <span class="pre">'EmailsAlertsRecipients':</span> <span class="pre">['read'],</span> <span class="pre">'Flow':</span> <span class="pre">['create',</span> <span class="pre">'read',</span> <span class="pre">'update',</span> <span class="pre">'delete'],</span> <span class="pre">'GraphicScene':</span> <span class="pre">['create',</span> <span class="pre">'read',</span> <span class="pre">'update',</span> <span class="pre">'delete'],</span> <span class="pre">'InternalUser':</span> <span class="pre">['read'],</span> <span class="pre">'Layout':</span> <span class="pre">['create',</span> <span class="pre">'read',</span> <span class="pre">'update',</span> <span class="pre">'delete'],</span> <span class="pre">'Node':</span> <span class="pre">['create',</span> <span class="pre">'read',</span> <span class="pre">'update',</span> <span class="pre">'delete'],</span> <span class="pre">'Package':</span> <span class="pre">['create',</span> <span class="pre">'read',</span> <span class="pre">'update',</span> <span class="pre">'delete'],</span> <span class="pre">'Role':</span> <span class="pre">['read'],</span> <span class="pre">'SharedDataEntry':</span> <span class="pre">['create',</span> <span class="pre">'read',</span> <span class="pre">'update',</span> <span class="pre">'delete'],</span> <span class="pre">'SharedDataTemplate':</span> <span class="pre">['create',</span> <span class="pre">'read',</span> <span class="pre">'update',</span> <span class="pre">'delete'],</span> <span class="pre">'TaskEntry':</span> <span class="pre">['create',</span> <span class="pre">'read',</span> <span class="pre">'update',</span> <span class="pre">'delete'],</span> <span class="pre">'TaskTemplate':</span> <span class="pre">['create',</span> <span class="pre">'read',</span> <span class="pre">'update',</span> <span class="pre">'delete']}</span></em><a class="headerlink" href="#dal.models.role.Role.DEPLOYER_RESOURCES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.role.Role.OPERATOR_RESOURCES">
+<span class="sig-name descname"><span class="pre">OPERATOR_RESOURCES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'Applications':</span> <span class="pre">['FleetBoard',</span> <span class="pre">'mov-fe-app-launcher'],</span> <span class="pre">'GraphicScene':</span> <span class="pre">['read']}</span></em><a class="headerlink" href="#dal.models.role.Role.OPERATOR_RESOURCES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.models.role.Role.create">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resources</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.role.Role.create" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resources</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#dal.models.role.Role" title="dal.models.role.Role"><span class="pre">Role</span></a></span></span><a class="headerlink" href="#dal.models.role.Role.create" title="Permalink to this definition"></a></dt>
 <dd><p>create a new Role object in DB</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -3022,28 +3037,9 @@ Proprietary and confidential</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="dal.models.role.Role.create_admin_role">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_admin_role</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.role.Role.create_admin_role" title="Permalink to this definition"></a></dt>
-<dd><p>creates default admin Role</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="dal.models.role.Role.create_default_roles">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_default_roles</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.role.Role.create_default_roles" title="Permalink to this definition"></a></dt>
-<dd><p>will create the default Roles for system
-Admin, Deployer, Operator</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.models.role.Role.create_deployer_role">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_deployer_role</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.role.Role.create_deployer_role" title="Permalink to this definition"></a></dt>
-<dd><p>creates default deployer role</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.models.role.Role.create_operator_role">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_operator_role</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.role.Role.create_operator_role" title="Permalink to this definition"></a></dt>
-<dd><p>creates default operator Role</p>
+<dd><p>Create default roles: Admin, Deployer, Operator</p>
 </dd></dl>
 
 <dl class="py method">
@@ -3072,6 +3068,20 @@ Admin, Deployer, Operator</p>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>RoleDoesNotExist</strong> – In case there is no Role with that name.</p></li>
 <li><p><strong>RoleError</strong> – if the role cannot be deleted for some reason.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.models.role.Role.set_role_resources">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_role_resources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">role</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resources</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.role.Role.set_role_resources" title="Permalink to this definition"></a></dt>
+<dd><p>Set role resources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>role</strong> (<em>str</em>) – The name of the Role to set resources for.</p></li>
+<li><p><strong>resources</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="dal.scopes.html#dal.scopes.structures.List" title="dal.scopes.structures.List"><em>List</em></a><em>[</em><em>str</em><em>]</em><em>]</em>) – A dictionary mapping resource names to their permissions.</p></li>
 </ul>
 </dd>
 </dl>
@@ -5938,8 +5948,13 @@ one with is much more expensive and should be avoided</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.models.NewACLManager.get_permissions">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_permissions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#dal.models.NewACLManager.get_permissions" title="Permalink to this definition"></a></dt>
-<dd><p>:returns dict with available resources &amp; permissions</p>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_permissions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.models.NewACLManager.get_permissions" title="Permalink to this definition"></a></dt>
+<dd><p>Get all available permissions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Available resources and permissions</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -6215,9 +6230,19 @@ instance</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.models.</span></span><span class="sig-name descname"><span class="pre">Role</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref_or_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'global'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'__UNVERSIONED__'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.Role" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dal.models.model.Model" title="dal.models.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a></p>
 <p>Role Model (only of name)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.Role.DEPLOYER_RESOURCES">
+<span class="sig-name descname"><span class="pre">DEPLOYER_RESOURCES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'AclObject':</span> <span class="pre">['read'],</span> <span class="pre">'Annotation':</span> <span class="pre">['create',</span> <span class="pre">'read',</span> <span class="pre">'update',</span> <span class="pre">'delete'],</span> <span class="pre">'Applications':</span> <span class="pre">['AdminBoard',</span> <span class="pre">'FleetBoard',</span> <span class="pre">'mov-fe-app-ide',</span> <span class="pre">'mov-fe-app-launcher',</span> <span class="pre">'mov-fe-app-taskmanager'],</span> <span class="pre">'Callback':</span> <span class="pre">['create',</span> <span class="pre">'read',</span> <span class="pre">'update',</span> <span class="pre">'delete'],</span> <span class="pre">'Configuration':</span> <span class="pre">['read'],</span> <span class="pre">'EmailsAlertsConfig':</span> <span class="pre">['read',</span> <span class="pre">'update'],</span> <span class="pre">'EmailsAlertsRecipients':</span> <span class="pre">['read'],</span> <span class="pre">'Flow':</span> <span class="pre">['create',</span> <span class="pre">'read',</span> <span class="pre">'update',</span> <span class="pre">'delete'],</span> <span class="pre">'GraphicScene':</span> <span class="pre">['create',</span> <span class="pre">'read',</span> <span class="pre">'update',</span> <span class="pre">'delete'],</span> <span class="pre">'InternalUser':</span> <span class="pre">['read'],</span> <span class="pre">'Layout':</span> <span class="pre">['create',</span> <span class="pre">'read',</span> <span class="pre">'update',</span> <span class="pre">'delete'],</span> <span class="pre">'Node':</span> <span class="pre">['create',</span> <span class="pre">'read',</span> <span class="pre">'update',</span> <span class="pre">'delete'],</span> <span class="pre">'Package':</span> <span class="pre">['create',</span> <span class="pre">'read',</span> <span class="pre">'update',</span> <span class="pre">'delete'],</span> <span class="pre">'Role':</span> <span class="pre">['read'],</span> <span class="pre">'SharedDataEntry':</span> <span class="pre">['create',</span> <span class="pre">'read',</span> <span class="pre">'update',</span> <span class="pre">'delete'],</span> <span class="pre">'SharedDataTemplate':</span> <span class="pre">['create',</span> <span class="pre">'read',</span> <span class="pre">'update',</span> <span class="pre">'delete'],</span> <span class="pre">'TaskEntry':</span> <span class="pre">['create',</span> <span class="pre">'read',</span> <span class="pre">'update',</span> <span class="pre">'delete'],</span> <span class="pre">'TaskTemplate':</span> <span class="pre">['create',</span> <span class="pre">'read',</span> <span class="pre">'update',</span> <span class="pre">'delete']}</span></em><a class="headerlink" href="#dal.models.Role.DEPLOYER_RESOURCES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.models.Role.OPERATOR_RESOURCES">
+<span class="sig-name descname"><span class="pre">OPERATOR_RESOURCES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'Applications':</span> <span class="pre">['FleetBoard',</span> <span class="pre">'mov-fe-app-launcher'],</span> <span class="pre">'GraphicScene':</span> <span class="pre">['read']}</span></em><a class="headerlink" href="#dal.models.Role.OPERATOR_RESOURCES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.models.Role.create">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resources</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.Role.create" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resources</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#dal.models.role.Role" title="dal.models.role.Role"><span class="pre">Role</span></a></span></span><a class="headerlink" href="#dal.models.Role.create" title="Permalink to this definition"></a></dt>
 <dd><p>create a new Role object in DB</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -6239,28 +6264,9 @@ instance</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="dal.models.Role.create_admin_role">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_admin_role</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.Role.create_admin_role" title="Permalink to this definition"></a></dt>
-<dd><p>creates default admin Role</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="dal.models.Role.create_default_roles">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_default_roles</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.Role.create_default_roles" title="Permalink to this definition"></a></dt>
-<dd><p>will create the default Roles for system
-Admin, Deployer, Operator</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.models.Role.create_deployer_role">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_deployer_role</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.Role.create_deployer_role" title="Permalink to this definition"></a></dt>
-<dd><p>creates default deployer role</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.models.Role.create_operator_role">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_operator_role</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.Role.create_operator_role" title="Permalink to this definition"></a></dt>
-<dd><p>creates default operator Role</p>
+<dd><p>Create default roles: Admin, Deployer, Operator</p>
 </dd></dl>
 
 <dl class="py method">
@@ -6289,6 +6295,20 @@ Admin, Deployer, Operator</p>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>RoleDoesNotExist</strong> – In case there is no Role with that name.</p></li>
 <li><p><strong>RoleError</strong> – if the role cannot be deleted for some reason.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.models.Role.set_role_resources">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_role_resources</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">role</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resources</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.Role.set_role_resources" title="Permalink to this definition"></a></dt>
+<dd><p>Set role resources.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>role</strong> (<em>str</em>) – The name of the Role to set resources for.</p></li>
+<li><p><strong>resources</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="dal.scopes.html#dal.scopes.structures.List" title="dal.scopes.structures.List"><em>List</em></a><em>[</em><em>str</em><em>]</em><em>]</em>) – A dictionary mapping resource names to their permissions.</p></li>
 </ul>
 </dd>
 </dl>
