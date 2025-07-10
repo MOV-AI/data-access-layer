@@ -100,8 +100,14 @@ class Role(Model):
             raise RoleAlreadyExist(error_msg)
 
     @classmethod
-    def create_role(cls, role: str, resources: Dict[str, List[str]]):
-        """Create role"""
+    def set_role_resources(cls, role: str, resources: Dict[str, List[str]]):
+        """Set role resources.
+
+        Args:
+            role (str): The name of the Role to set resources for.
+            resources (Dict[str, List[str]]): A dictionary mapping resource names to their permissions.
+
+        """
         if not Role.is_exist(role):
             cls.create(role, resources)
         else:
@@ -112,9 +118,9 @@ class Role(Model):
     @classmethod
     def create_default_roles(cls):
         """Create default roles: Admin, Deployer, Operator"""
-        cls.create_role(ADMIN_ROLE, NewACLManager.get_permissions())
-        cls.create_role(DEPLOYER_ROLE, cls.DEPLOYER_RESOURCES)
-        cls.create_role(OPERATOR_ROLE, cls.OPERATOR_RESOURCES)
+        cls.set_role_resources(ADMIN_ROLE, NewACLManager.get_permissions())
+        cls.set_role_resources(DEPLOYER_ROLE, cls.DEPLOYER_RESOURCES)
+        cls.set_role_resources(OPERATOR_ROLE, cls.OPERATOR_RESOURCES)
 
     def update(self, resources: Dict) -> None:
         """Update role data"""
