@@ -1,4 +1,4 @@
-# vTBD
+# v3.2.10
 - [BP-1441](https://movai.atlassian.net/browse/BP-1441): Operator does not have permission to get scene
 
 # v3.3.0
