@@ -40,6 +40,7 @@ Repository = "https://github.com/MOV-AI/data-access-layer"
 
 [project.scripts]
 dal_backup = "dal.tools.backup:main"
+mobdata = "dal.tools.mobdata:main"
 edit_yaml = "dal.tools.edit_yaml:main"
 secret_key = "dal.tools.secret_key:main"
 
