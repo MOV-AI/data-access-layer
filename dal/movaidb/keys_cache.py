@@ -1,4 +1,3 @@
-from enum import Enum
 """
 Module: keys_cache
 
@@ -14,6 +13,8 @@ Classes:
     - A class for managing an indexed cache in Redis. It provides methods for adding, removing, and retrieving keys
       based on their prefixes and types.
 """
+
+from enum import Enum
 from typing import Iterable, NamedTuple, Optional, Union
 
 from movai_core_shared import Log
@@ -23,17 +24,20 @@ LOGGER = Log.get_logger("dal.mov.ai")
 
 
 class RedisType(Enum):
-    STRING = 'string'
-    HASH = 'hash'
-    LIST = 'list'
-    SET = 'set'
-    ZSET = 'zset'
+    STRING = "string"
+    HASH = "hash"
+    LIST = "list"
+    SET = "set"
+    ZSET = "zset"
 
 
-KeyInfo = NamedTuple('KeyInfo', [
-    ('key', str),
-    ('type', RedisType),
-])
+KeyInfo = NamedTuple(
+    "KeyInfo",
+    [
+        ("key", str),
+        ("type", RedisType),
+    ],
+)
 
 
 class RedisIndexedCache:
@@ -45,11 +49,11 @@ class RedisIndexedCache:
         return f"{self.index_prefix}:{prefix}"
 
     def _get_prefix(self, key: str) -> str:
-        parts = key.split(',')
+        parts = key.split(",")
         for part in parts:
-            if ':' in part:
+            if ":" in part:
                 return part  # e.g., Flow:abc
-        return 'misc'
+        return "misc"
 
     def add_to_index(self, key: str, redis_type: Optional[RedisType] = None):
         if redis_type is None:
@@ -89,7 +93,7 @@ class RedisIndexedCache:
         for entry in entries:
             entry = entry.decode() if isinstance(entry, bytes) else entry
             try:
-                key, key_type = entry.rsplit('|', 1)
+                key, key_type = entry.rsplit("|", 1)
                 results.add(KeyInfo(key=key, type=RedisType(key_type)))
             except ValueError:
                 LOGGER.warning(f"Invalid entry format in index: {entry}")
@@ -100,7 +104,7 @@ class RedisIndexedCache:
         cursor = 0
         added_keys = 0
         while True:
-            cursor, keys = self._redis.scan(cursor=cursor, match='*', count=1000)
+            cursor, keys = self._redis.scan(cursor=cursor, match="*", count=1000)
             for key in keys:
                 key = key.decode() if isinstance(key, bytes) else key
                 try:

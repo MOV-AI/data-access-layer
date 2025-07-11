@@ -1,4 +1,3 @@
-
 import asyncio
 from os import getenv
 import warnings
@@ -184,4 +183,3 @@ class Redis(metaclass=Singleton):
 
     def local_pubsub(self) -> redis.client.PubSub:
         return self.db_local.pubsub()
-

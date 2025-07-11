@@ -8,17 +8,17 @@ from typing import List, Tuple, Any
 
 
 DATA_VALID = {
-    'Robot': {
-        '2dd2cac0bb7b439f8cc923852a19a290': {
-            'Status': {
-                'active_flow': '',
-                'nodes_lchd': [],
-                'persistent_nodes_lchd': [],
-                'active_states': [],
-                'core_lchd': [],
-                'locks': [],
-                'timestamp': 1750946517.3606594,
-                'active_scene': ''
+    "Robot": {
+        "2dd2cac0bb7b439f8cc923852a19a290": {
+            "Status": {
+                "active_flow": "",
+                "nodes_lchd": [],
+                "persistent_nodes_lchd": [],
+                "active_states": [],
+                "core_lchd": [],
+                "locks": [],
+                "timestamp": 1750946517.3606594,
+                "active_scene": "",
             }
         }
     }
@@ -37,34 +37,27 @@ SCHEMA = {
             "Notifications": "list",
             "Alerts": "hash",
             "Status": "hash",
-            "Parameter": {
-                "$name": {
-                    "Value": "any",
-                    "TTL": "int",
-                    "_timestamp": "float"
-                }
-            }
+            "Parameter": {"$name": {"Value": "any", "TTL": "int", "_timestamp": "float"}},
         }
     }
 }
 
 EXPECTED_KEYS: List[Tuple[str, Any, str]] = [
     (
-        'Robot:2dd2cac0bb7b439f8cc923852a19a290,Status:',
+        "Robot:2dd2cac0bb7b439f8cc923852a19a290,Status:",
         {
-            'active_flow': '',
-            'nodes_lchd': [],
-            'persistent_nodes_lchd': [],
-            'active_states': [],
-            'core_lchd': [],
-            'locks': [],
-            'timestamp': 1750946517.3606594,
-            'active_scene': ''
+            "active_flow": "",
+            "nodes_lchd": [],
+            "persistent_nodes_lchd": [],
+            "active_states": [],
+            "core_lchd": [],
+            "locks": [],
+            "timestamp": 1750946517.3606594,
+            "active_scene": "",
         },
-        'hash'
+        "hash",
     )
 ]
-
 
 
 class TestMovaiDB(unittest.TestCase):
@@ -187,25 +180,13 @@ class TestExtractKeys(unittest.TestCase):
         self.assertEqual(result, EXPECTED_KEYS)
 
     def test_missing_key_raises(self):
-        bad_data = {
-            'Robot': {
-                'some_id': {
-                    'MissingStatus': {}
-                }
-            }
-        }
+        bad_data = {"Robot": {"some_id": {"MissingStatus": {}}}}
         with self.assertRaises(ValueError) as context:
             extract_keys(bad_data, SCHEMA)
         self.assertIn("Unexpected key", str(context.exception))
 
     def test_reference_key(self):
-        data = {
-            'Robot': {
-                'robot42': {
-                    'RobotName': 'robot42'
-                }
-            }
-        }
-        expected = [('Robot:robot42,RobotName:robot42', '', '&name')]
+        data = {"Robot": {"robot42": {"RobotName": "robot42"}}}
+        expected = [("Robot:robot42,RobotName:robot42", "", "&name")]
         result = extract_keys(data, SCHEMA)
         self.assertEqual(result, expected)

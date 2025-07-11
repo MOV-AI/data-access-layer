@@ -83,9 +83,7 @@ def longest_common_prefix(strings: List[str]) -> str:
 
 
 def extract_keys(
-    data: Dict[str, Any],
-    schema: Dict[str, Any],
-    path: str = ""
+    data: Dict[str, Any], schema: Dict[str, Any], path: str = ""
 ) -> List[Tuple[str, Any, str]]:
     """
     Validates a nested dictionary against a schema and returns a list of (key_path, value, type).
@@ -370,11 +368,13 @@ class MovaiDB:
                     output_keys[keyinfo.type].append(keyinfo.key)
             else:
                 rtype = self.db_read.type(key).decode("utf-8")
-                if rtype == 'none':
+                if rtype == "none":
                     # Key does not exist, skip it
                     continue
                 output_keys[RedisType(rtype)].append(key)
-        LOGGER.warning("get_cached_keys called with input: %s, returning keys: %s", _input, output_keys)
+        LOGGER.warning(
+            "get_cached_keys called with input: %s, returning keys: %s", _input, output_keys
+        )
         return output_keys
 
     def get2(self, _input: dict) -> Dict[str, Any]:
@@ -391,7 +391,9 @@ class MovaiDB:
                 LOGGER.warning(
                     "get_value called with a dict that has more than one type of value. "
                     "Returning only the string values."
-                    "%s - %s", all_keys, keys
+                    "%s - %s",
+                    all_keys,
+                    keys,
                 )
         else:
             keys = [self.dict_to_keys(_input)[0][0]]
@@ -434,26 +436,22 @@ class MovaiDB:
             if rtype == RedisType.string:
                 for key, value in zip(keys, self.db_read.mget(keys)):
                     if not value:
-                        LOGGER.error(
-                            "Key '%s' not found in Redis. The index cache is out of sync.")
+                        LOGGER.error("Key '%s' not found in Redis. The index cache is out of sync.")
                         continue
                     kv.append((key, self.decode_value(value)))
-
 
             elif rtype == RedisType.hash:
                 for key in keys:
                     get_hash = self.db_read.hgetall(key)
                     if not get_hash:
-                        LOGGER.error(
-                            "Key '%s' not found in Redis. The index cache is out of sync.")
+                        LOGGER.error("Key '%s' not found in Redis. The index cache is out of sync.")
                         continue
                     kv.append((key, self.sort_dict(self.decode_hash(get_hash))))
             elif rtype == RedisType.list:
                 for key in keys:
                     get_list = self.db_read.lrange(key, 0, -1)
                     if not get_list:
-                        LOGGER.error(
-                            "Key '%s' not found in Redis. The index cache is out of sync.")
+                        LOGGER.error("Key '%s' not found in Redis. The index cache is out of sync.")
                         continue
                     kv.append((key, self.decode_list(get_list)))
 
