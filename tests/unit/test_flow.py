@@ -14,7 +14,7 @@ class FlowTests(unittest.TestCase):
     maxDiff = None
 
     @pytest.mark.skipif()  # this validation is currently being done in the flow-initiator repository. Future refactor should centralize all flow validations
-    @fake_redis("dal.movaidb.database.Connection", recording_dir=test_dir)
+    @fake_redis("dal.movaidb.redis_clients.Connection", recording_dir=test_dir)
     @fake_redis("dal.plugins.persistence.redis.redis.Connection", recording_dir=test_dir)
     def test_no_remap_two_inports(self):
         node_pub1 = {
@@ -482,7 +482,7 @@ class FlowTests(unittest.TestCase):
         # TODO evaluate the error message
 
     @pytest.mark.skipif()
-    @fake_redis("dal.movaidb.database.Connection", recording_dir=test_dir)
+    @fake_redis("dal.movaidb.redis_clients.Connection", recording_dir=test_dir)
     @fake_redis("dal.plugins.persistence.redis.redis.Connection", recording_dir=test_dir)
     def test_remap_four_nodes_linked_direct_non_remapable(self):
         node_pub1 = {

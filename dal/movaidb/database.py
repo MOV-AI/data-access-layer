@@ -386,7 +386,7 @@ class MovaiDB:
         if search:  # value might be on the key so we need a search
             # keys = self.search(_input)
             all_keys = self.get_cached_keys(_input)
-            keys = all_keys.pop(RedisType.string, [])
+            keys = all_keys.pop(RedisType.STRING, [])
             if all_keys:
                 LOGGER.warning(
                     "get_value called with a dict that has more than one type of value. "
@@ -433,21 +433,21 @@ class MovaiDB:
 
         kv = list()
         for rtype, keys in self.get_cached_keys(_input).items():
-            if rtype == RedisType.string:
+            if rtype == RedisType.STRING:
                 for key, value in zip(keys, self.db_read.mget(keys)):
                     if not value:
                         LOGGER.error("Key '%s' not found in Redis. The index cache is out of sync.")
                         continue
                     kv.append((key, self.decode_value(value)))
 
-            elif rtype == RedisType.hash:
+            elif rtype == RedisType.HASH:
                 for key in keys:
                     get_hash = self.db_read.hgetall(key)
                     if not get_hash:
                         LOGGER.error("Key '%s' not found in Redis. The index cache is out of sync.")
                         continue
                     kv.append((key, self.sort_dict(self.decode_hash(get_hash))))
-            elif rtype == RedisType.list:
+            elif rtype == RedisType.LIST:
                 for key in keys:
                     get_list = self.db_read.lrange(key, 0, -1)
                     if not get_list:
@@ -485,11 +485,11 @@ class MovaiDB:
                     previous_key = self.search(search_dict)
                     if not previous_key:
                         db_set.set(key, value, ex=ex, px=px, nx=nx, xx=xx)
-                        self.indexed_cache.add_to_index(key, RedisType.string)
+                        self.indexed_cache.add_to_index(key, RedisType.STRING)
                     elif len(previous_key) == 1:
                         db_set.rename(previous_key[0], key)
                         self.indexed_cache.remove_from_index(previous_key[0])
-                        self.indexed_cache.add_to_index(key, RedisType.string)
+                        self.indexed_cache.add_to_index(key, RedisType.STRING)
                     else:
                         print("More that 1 key in Redis for the same structure value")
                 else:
@@ -500,17 +500,17 @@ class MovaiDB:
                             db_set.delete(key)
                             db_set.hmset(key, value)
                             self.indexed_cache.remove_from_index(key)
-                            self.indexed_cache.add_to_index(key, RedisType.hash)
+                            self.indexed_cache.add_to_index(key, RedisType.HASH)
                     elif source == "list":
                         assert isinstance(value, list)
                         for lval in value:
                             if pickl:
                                 lval = pickle.dumps(lval)
                             db_set.rpush(key, lval)
-                        self.indexed_cache.add_to_index(key, RedisType.list)
+                        self.indexed_cache.add_to_index(key, RedisType.LIST)
                     else:
                         db_set.set(key, value, ex=ex, px=px, nx=nx, xx=xx)
-                        self.indexed_cache.add_to_index(key, RedisType.string)
+                        self.indexed_cache.add_to_index(key, RedisType.STRING)
             except Exception as e:
                 LOGGER.error("Something went wrong while saving this in Redis: %s", e)
 
@@ -728,7 +728,7 @@ class MovaiDB:
         """Gets a full list from Redis"""
         if search:
             all_keys = self.get_cached_keys(_input)
-            keys = all_keys.pop(RedisType.list, [])
+            keys = all_keys.pop(RedisType.LIST, [])
             if all_keys:
                 LOGGER.warning(
                     "get_value called with a dict that has more than one type of value. "
@@ -745,7 +745,7 @@ class MovaiDB:
         """Gets a full hash from Redis"""
         if search:
             all_keys = self.get_cached_keys(_input)
-            keys = all_keys.pop(RedisType.hash, [])
+            keys = all_keys.pop(RedisType.HASH, [])
             if all_keys:
                 LOGGER.warning(
                     "get_value called with a dict that has more than one type of value. "
