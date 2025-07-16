@@ -254,3 +254,8 @@ async def test_async_redis_stress_pubsub_rw(global_db):
 
     pool.close()
     await pool.wait_closed()
+
+
+def teardown_module(module):
+    """Ensure Redis pool cleanup task is stopped after tests."""
+    SharedPoolRegistry.stop_cleanup_task()
