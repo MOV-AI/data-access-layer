@@ -329,7 +329,7 @@ class FlowTests(unittest.TestCase):
 
         self.assertEqual(list(remaps.keys())[0], port_pub2_key)
 
-    @fake_redis("dal.movaidb.database.Connection", recording_dir=test_dir)
+    @fake_redis("dal.movaidb.redis_clients.Connection", recording_dir=test_dir)
     @fake_redis("dal.plugins.persistence.redis.redis.Connection", recording_dir=test_dir)
     def test_remap_four_nodes_adj_non_remapables(self):
         node_pub1 = {

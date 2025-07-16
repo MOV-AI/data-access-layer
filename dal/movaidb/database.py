@@ -363,15 +363,8 @@ class MovaiDB:
         """
         output_keys = defaultdict(list)
         for key, _, _ in self.dict_to_keys(_input):
-            if key[-1] == "*":
-                for keyinfo in self.indexed_cache.get_keys_by_prefix(key[:-1]):
-                    output_keys[keyinfo.type].append(keyinfo.key)
-            else:
-                rtype = self.db_read.type(key).decode("utf-8")
-                if rtype == "none":
-                    # Key does not exist, skip it
-                    continue
-                output_keys[RedisType(rtype)].append(key)
+            for keyinfo in self.indexed_cache.get_keys_by_prefix(key[:-1]):
+                output_keys[keyinfo.type].append(keyinfo.key)
         LOGGER.warning(
             "get_cached_keys called with input: %s, returning keys: %s", _input, output_keys
         )
