@@ -163,20 +163,15 @@ async def test_async_redis_stress_pubsub_rw(global_db):
     sub_ready = asyncio.Event()
 
     async def publisher():
-        print("[Publisher] Starting...")
         await sub_ready.wait()  # Wait for subscriber to be ready
         pub = await aioredis.create_redis(address)
         for i in range(num_messages):
             await pub.publish(channel, f"msg-{i}")
             results["published"] += 1
-            if (i + 1) % 20 == 0:
-                print(f"[Publisher] Published {i+1}/{num_messages}")
         pub.close()
         await pub.wait_closed()
-        print("[Publisher] Done.")
 
     async def subscriber():
-        print("[Subscriber] Starting...")
         sub = await aioredis.create_redis(address)
         res = await sub.subscribe(channel)
         ch = res[0]
@@ -187,39 +182,28 @@ async def test_async_redis_stress_pubsub_rw(global_db):
             if msg is not None:
                 results["received"] += 1
                 count += 1
-                if count % 20 == 0:
-                    print(f"[Subscriber] Received {count}/{num_messages}")
         await sub.unsubscribe(channel)
         sub.close()
         await sub.wait_closed()
-        print("[Subscriber] Done.")
 
     async def writer(task_id):
-        print(f"[Writer-{task_id}] Starting...")
         cli = await aioredis.create_redis(address)
         for i in range(num_messages):
             key = f"stress:key:{task_id}:{i}"
             await cli.set(key, f"val-{i}")
             results["writes"] += 1
-            if (i + 1) % 25 == 0:
-                print(f"[Writer-{task_id}] Wrote {i+1}/{num_messages}")
         cli.close()
         await cli.wait_closed()
-        print(f"[Writer-{task_id}] Done.")
 
     async def reader(task_id):
-        print(f"[Reader-{task_id}] Starting...")
         cli = await aioredis.create_redis(address)
         for i in range(num_messages):
             key = f"stress:key:{task_id}:{i}"
             val = await cli.get(key)
             if val is not None:
                 results["reads"] += 1
-            if (i + 1) % 25 == 0:
-                print(f"[Reader-{task_id}] Read {i+1}/{num_messages}")
         cli.close()
         await cli.wait_closed()
-        print(f"[Reader-{task_id}] Done.")
 
     # Launch tasks
     print("[Main] Launching publisher, subscriber, and writers...")
