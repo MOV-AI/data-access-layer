@@ -52,12 +52,12 @@ class SharedPoolRegistry:
                 # Create weak reference for cleanup tracking
                 cls._proxies[key] = weakref.proxy(cls._pools[key])
             cls._last_used[key] = time.time()
-            LOGGER.debug(
-                "Pool %s: created=%s, using existing=%s",
-                key,
-                key not in cls._pools,
-                key in cls._pools,
-            )
+            # LOGGER.debug(
+            #     "Pool %s: created=%s, using existing=%s",
+            #     key,
+            #     key not in cls._pools,
+            #     key in cls._pools,
+            # )
         return cls._pools[key]
 
     @classmethod

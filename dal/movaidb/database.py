@@ -703,13 +703,20 @@ class MovaiDB:
                 key, _, _ = elem
                 self.loop.create_task(self.task_subscriber("__keyspace@*__:%s" % key, function))
 
+    @property
+    async def async_pubsub(self):
+        """Return an aioredis pubsub pool for async operations."""
+        client = await AioRedisClient.get_client()
+        # Use slave_pubsub by default for async pubsub
+        return getattr(client, "slave_pubsub")
+
     async def task_subscriber(
         self, key: str, callback, port_name: Optional[str] = None, node_name: Optional[str] = None
     ) -> None:
-        """Calls a callback every time it gets a message."""
-        # Acquires a connection from free pool.
-        # Creates new connection if needed.
-        _conn = await self.pubsub.acquire()
+        """Calls a callback every time it gets a message (async, aioredis)."""
+        # Acquires a connection from aioredis pool.
+        pubsub_pool = await self.async_pubsub
+        _conn = await pubsub_pool.acquire()
         # Create Redis interface
         conn = aioredis.Redis(_conn)
         # Switch connection to Pub/Sub mode and subscribe to specified patterns
