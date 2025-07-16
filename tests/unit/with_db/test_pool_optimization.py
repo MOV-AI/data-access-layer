@@ -17,6 +17,7 @@ def get_process_memory():
         "vms": process.memory_info().vms / 1024 / 1024,  # MB
     }
 
+
 @pytest.mark.asyncio
 async def test_async_pool(global_db):
     """Test async Redis pool memory usage."""
@@ -33,7 +34,10 @@ async def test_async_pool(global_db):
     os.environ["REDIS_ASYNC_POOL_MAX"] = "32"
 
     try:
-        address = (os.environ.get("REDIS_MASTER_HOST", "localhost"), int(os.environ.get("REDIS_MASTER_PORT", 6379)))
+        address = (
+            os.environ.get("REDIS_MASTER_HOST", "localhost"),
+            int(os.environ.get("REDIS_MASTER_PORT", 6379)),
+        )
         pool = await aioredis.create_redis_pool(
             address, pool_cls=aioredis.ConnectionsPool, **PoolConfig.get_pool_config("async")
         )
@@ -80,7 +84,6 @@ async def test_async_pool(global_db):
         assert False, f"Async pool test failed: {e}"
 
 
-
 def test_sync_pool(global_db):
     """Test synchronous Redis pool memory usage."""
     print("\nTesting Sync Redis Pool Memory Usage")
@@ -95,7 +98,10 @@ def test_sync_pool(global_db):
     os.environ["REDIS_MASTER_POOL_SIZE"] = "10"
 
     try:
-        address = (os.environ.get("REDIS_MASTER_HOST", "localhost"), int(os.environ.get("REDIS_MASTER_PORT", 6379)))
+        address = (
+            os.environ.get("REDIS_MASTER_HOST", "localhost"),
+            int(os.environ.get("REDIS_MASTER_PORT", 6379)),
+        )
         pool = redis.ConnectionPool(
             host=address[0], port=address[1], db=0, **PoolConfig.get_pool_config("master")
         )
@@ -127,6 +133,7 @@ def test_sync_pool(global_db):
         print(f"Error in sync pool test: {e}")
         assert False, f"Sync pool test failed: {e}"
 
+
 @pytest.mark.asyncio
 async def test_async_redis_stress_pubsub_rw(global_db):
     """Stress test async Redis pool with pub/sub, read, and write operations."""
@@ -140,7 +147,10 @@ async def test_async_redis_stress_pubsub_rw(global_db):
     os.environ["REDIS_ASYNC_POOL_MIN"] = "1"
     os.environ["REDIS_ASYNC_POOL_MAX"] = "32"
 
-    address = (os.environ.get("REDIS_MASTER_HOST", "localhost"), int(os.environ.get("REDIS_MASTER_PORT", 6379)))
+    address = (
+        os.environ.get("REDIS_MASTER_HOST", "localhost"),
+        int(os.environ.get("REDIS_MASTER_PORT", 6379)),
+    )
     pool = await aioredis.create_redis_pool(
         address, pool_cls=aioredis.ConnectionsPool, **PoolConfig.get_pool_config("async")
     )
@@ -159,7 +169,7 @@ async def test_async_redis_stress_pubsub_rw(global_db):
         for i in range(num_messages):
             await pub.publish(channel, f"msg-{i}")
             results["published"] += 1
-            if (i+1) % 20 == 0:
+            if (i + 1) % 20 == 0:
                 print(f"[Publisher] Published {i+1}/{num_messages}")
         pub.close()
         await pub.wait_closed()
@@ -191,7 +201,7 @@ async def test_async_redis_stress_pubsub_rw(global_db):
             key = f"stress:key:{task_id}:{i}"
             await cli.set(key, f"val-{i}")
             results["writes"] += 1
-            if (i+1) % 25 == 0:
+            if (i + 1) % 25 == 0:
                 print(f"[Writer-{task_id}] Wrote {i+1}/{num_messages}")
         cli.close()
         await cli.wait_closed()
@@ -205,7 +215,7 @@ async def test_async_redis_stress_pubsub_rw(global_db):
             val = await cli.get(key)
             if val is not None:
                 results["reads"] += 1
-            if (i+1) % 25 == 0:
+            if (i + 1) % 25 == 0:
                 print(f"[Reader-{task_id}] Read {i+1}/{num_messages}")
         cli.close()
         await cli.wait_closed()
@@ -225,7 +235,9 @@ async def test_async_redis_stress_pubsub_rw(global_db):
     # Memory after stress test
     pool_mem = get_process_memory()
     print(f"After Stress - RSS: {pool_mem['rss']:.2f}MB, VMS: {pool_mem['vms']:.2f}MB")
-    print(f"Difference   - RSS: {pool_mem['rss'] - initial_mem['rss']:.2f}MB, VMS: {pool_mem['vms'] - initial_mem['vms']:.2f}MB")
+    print(
+        f"Difference   - RSS: {pool_mem['rss'] - initial_mem['rss']:.2f}MB, VMS: {pool_mem['vms'] - initial_mem['vms']:.2f}MB"
+    )
 
     stats = SharedPoolRegistry.get_pool_stats()
     print("\nPool Statistics:")
@@ -242,5 +254,3 @@ async def test_async_redis_stress_pubsub_rw(global_db):
 
     pool.close()
     await pool.wait_closed()
-
-
