@@ -13,7 +13,5 @@ from dal.models.baseuser import BaseUser
 class RemoteUser(BaseUser):
     """This class represents the remote user object as record in the DB."""
 
-    pass
-
 
 Model.register_model_class("RemoteUser", RemoteUser)
