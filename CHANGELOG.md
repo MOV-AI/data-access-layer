@@ -1,3 +1,6 @@
+# vTBD
+- Fast-forward version to 3.2.11 due to 3.2.10 being done out of branch (see PR #311)
+
 # v3.2.9
 - [BP-1429](https://movai.atlassian.net/browse/BP-1429): Enable tests using docker compose in dal
 
