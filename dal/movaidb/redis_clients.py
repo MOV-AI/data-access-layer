@@ -6,16 +6,17 @@ import aioredis
 import redis
 from redis import Connection
 from movai_core_shared import Log
+from movai_core_shared.envvars import (
+    REDIS_MASTER_HOST,
+    REDIS_MASTER_PORT,
+    REDIS_SLAVE_HOST,
+    REDIS_SLAVE_PORT,
+    REDIS_LOCAL_HOST,
+    REDIS_LOCAL_PORT,
+)
 
 from dal.classes.common.singleton import Singleton
 
-
-REDIS_MASTER_HOST = getenv("REDIS_MASTER_HOST", "redis-master")
-REDIS_MASTER_PORT = int(getenv("REDIS_MASTER_PORT", 6379))
-REDIS_SLAVE_HOST = getenv("REDIS_SLAVE_HOST", REDIS_MASTER_HOST)
-REDIS_SLAVE_PORT = int(getenv("REDIS_SLAVE_PORT", REDIS_MASTER_PORT))
-REDIS_LOCAL_HOST = getenv("REDIS_LOCAL_HOST", "redis-local")
-REDIS_LOCAL_PORT = int(getenv("REDIS_LOCAL_PORT", 6379))
 
 LOGGER = Log.get_logger("dal.mov.ai")
 

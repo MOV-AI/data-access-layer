@@ -1,17 +1,6 @@
 """
-Module: keys_cache
-
 This module provides functionality for managing a Redis-based indexed cache. It includes utilities for indexing Redis keys
 based on their prefixes and types, as well as retrieving and managing these keys efficiently.
-
-Classes:
----------
-1. RedisType(Enum):
-    - Enum representing the different Redis data types (STRING, HASH, LIST, SET, ZSET).
-
-2. RedisIndexedCache:
-    - A class for managing an indexed cache in Redis. It provides methods for adding, removing, and retrieving keys
-      based on their prefixes and types.
 """
 
 from enum import Enum
@@ -24,6 +13,8 @@ LOGGER = Log.get_logger("dal.mov.ai")
 
 
 class RedisType(Enum):
+    """Enum representing the different Redis data types (STRING, HASH, LIST, SET, ZSET)"""
+
     STRING = "string"
     HASH = "hash"
     LIST = "list"
@@ -41,6 +32,9 @@ KeyInfo = NamedTuple(
 
 
 class RedisIndexedCache:
+    """A class for managing an indexed cache in Redis. It provides methods for adding,
+    removing, and retrieving keys based on their prefixes and types."""
+
     def __init__(self, redis_client: redis.Redis, index_prefix: str = "__index__"):
         self._redis: redis.Redis = redis_client
         self.index_prefix = index_prefix
@@ -68,8 +62,7 @@ class RedisIndexedCache:
         index_key = self._get_index_key(prefix)
         entries = self._redis.smembers(index_key)
         for entry in entries:
-            entry_str = entry.decode() if isinstance(entry, bytes) else entry
-            if entry_str.startswith(f"{key}|"):
+            if entry.startswith(f"{key}|"):
                 self._redis.srem(index_key, entry)
                 break
 
@@ -91,7 +84,6 @@ class RedisIndexedCache:
         entries = self._redis.smembers(index_key)
         results = set()
         for entry in entries:
-            entry = entry.decode() if isinstance(entry, bytes) else entry
             try:
                 key, key_type = entry.rsplit("|", 1)
                 results.add(KeyInfo(key=key, type=RedisType(key_type)))
