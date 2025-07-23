@@ -111,5 +111,4 @@ class Node(Model):
         return scopes.from_path(tpl, scope="Ports")
 
 
-# Register class as model of scope Flow
 Model.register_model_class("Node", Node)

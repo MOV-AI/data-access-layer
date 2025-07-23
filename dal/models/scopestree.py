@@ -866,7 +866,7 @@ class ScopeWorkspace(WorkspaceNode):
         Override the default delete method to also
         unload the document from this scopes tree
         """
-        ret = super().delete(data=data, **kwargs)
+        super().delete(data=data, **kwargs)
         try:
             scope = data.scope
             ref = data.ref
@@ -883,8 +883,6 @@ class ScopeWorkspace(WorkspaceNode):
         except ValueError:
             # not loaded
             pass
-
-        return ret
 
     def rebuild_indexes(self):
         """

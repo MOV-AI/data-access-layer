@@ -39,7 +39,5 @@ class Ports(Model):
         """Returns True if the port is a nodelet server"""
         return self.Template == ROS1_NODELETSERVER
 
-    # default __init__
-
 
 Model.register_model_class("Ports", Ports)

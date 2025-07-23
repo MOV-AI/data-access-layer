@@ -16,6 +16,3 @@ class System(Model):
     """System Model
 
     use deprecated instead"""
-
-
-# Model.register_model_class("System", System)

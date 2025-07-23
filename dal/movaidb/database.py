@@ -265,7 +265,7 @@ class MovaiDB:
         ] = {}  # First key is the Version, the second is the scope
 
         def __init__(self, version: str = "latest", url: str = __SCHEMAS_URL__):
-            super(type(self), self).__init__()
+            super(type(self), self).__init__()  # pylint: disable=bad-super-call
             # We force the version of the schemas to the deprecated version
             version = "1.0"
             self.__url = path.join(url, version)

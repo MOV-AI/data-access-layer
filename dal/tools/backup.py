@@ -156,11 +156,12 @@ class Backup:
                     # force it
                     continue
                 # else, *
+                names = all_default
                 try:
                     all_default.__getattribute__("__call__")
                     names = all_default(_type)
                 except AttributeError:
-                    names = all_default
+                    pass
                 finally:
                     objects[_type] += names
             # endfor line in manifest
@@ -217,22 +218,16 @@ class Importer(Backup):
 
     def run(self, objects: dict = {}):
         """Imports the objects defined in the manifest."""
-        if len(objects) == 0:
-            # means import all we find
-            # so ...
-            def should_import(scope):
+
+        def should_import(scope):
+            if len(objects) == 0:
                 return True
+            return scope in objects
 
-            def get_objects(scope):
+        def get_objects(scope):
+            if len(objects) == 0:
                 return None
-
-        else:
-
-            def should_import(scope):
-                return scope in objects
-
-            def get_objects(scope):
-                return None if None in objects[scope] else objects[scope]
+            return None if None in objects[scope] else objects[scope]
 
         for scope_name in Backup.SCOPES:
             if not should_import(scope_name):
@@ -267,11 +262,11 @@ class Importer(Backup):
 
     def _list_files(self, scope, extract=None, match=None):
         """Lists files in the given scope."""
-        extractor = extract
-        if extract is None:
 
-            def extractor(file):
-                return file
+        def default_extractor(file):
+            return file
+
+        extractor = default_extractor if extract is None else extract
 
         matcher = match
         if matcher is None:
@@ -350,7 +345,7 @@ class Importer(Backup):
             return self._list_files(scope, extract, list_match)
         return self._get_files(scope, names, build, get_match)
 
-    def _import_data(self, scope, name, data):
+    def _import_data(self, scope, name, data):  # pylint: disable=method-hidden
         """Imports data to the database."""
         # remove unwanted keys
         if self._delete:
@@ -545,12 +540,10 @@ class Importer(Backup):
 
     def import_ports(self, names=None):
         def to_import(ports):
-            return ports in names or ports.split("/")[0] in names
-
-        if names is None:
-
-            def to_import(ports):
+            """Check if the port is in the names or if the port's package is in the names."""
+            if names is None:
                 return True
+            return ports in names or ports.split("/")[0] in names
 
         packages = None
         if names is not None:
@@ -1553,7 +1546,7 @@ class Remover(Backup):
         if name not in self._removed[scope]:
             self._removed[scope].append(name)
 
-    def _remove_data(self, scope, name):
+    def _remove_data(self, scope, name):  # pylint: disable=method-hidden
         """Deletes a scope:name pair if existent in the database.
 
         Args:

@@ -1,3 +1,6 @@
+# vTBD
+- Add pylint, remove deadcode (dalapi, protocols, packagefile)
+
 # v3.3.1
 - Fix version number, the version still includes [BP-1441](https://movai.atlassian.net/browse/BP-1441): Operator does not have permission to get scene
 

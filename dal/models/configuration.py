@@ -12,10 +12,7 @@ import yaml
 from dal.movaidb import MovaiDB
 from .model import Model
 from dal.helpers.cache import ThreadSafeCache
-from movai_core_shared.logger import Log
 from dal.classes.common.singleton import Singleton
-
-LOGGER = Log.get_logger("ParamParser.mov.ai")
 
 
 class ConfigurationCache(metaclass=Singleton):
@@ -40,8 +37,6 @@ class Configuration(Model):
     """
     Provides xml or yaml configuration
     """
-
-    logger = Log.get_logger("ParamParser.mov.ai")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -93,5 +88,4 @@ class Configuration(Model):
         return value
 
 
-# Register class as model of scope Flow
 Model.register_model_class("Configuration", Configuration)
