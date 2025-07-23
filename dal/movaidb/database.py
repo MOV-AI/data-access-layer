@@ -28,6 +28,8 @@ from dal.classes import Singleton
 from dal.plugins.classes import Resource
 from movai_core_shared.exceptions import InvalidStructure
 from movai_core_shared.logger import Log
+from dal.pool_config import PoolConfig
+from dal.shared_pool import SharedPoolRegistry
 
 StrOrDictRecursive = Union[str, None, Dict[str, "StrOrDictRecursive"]]
 
@@ -176,17 +178,16 @@ class AioRedisClient(metaclass=Singleton):
                             if conn_config.get("mode") == "SUB":
                                 _conn = await aioredis.create_pool(
                                     address,
-                                    minsize=1,
-                                    maxsize=100,
                                     pool_cls=aioredis.ConnectionsPool,
+                                    **PoolConfig.get_pool_config("async")
+                                    or {"minsize": 1, "maxsize": 3},
                                 )
                             else:
                                 _conn = await aioredis.create_redis_pool(
                                     address,
-                                    minsize=2,
-                                    maxsize=100,
-                                    timeout=1,
                                     pool_cls=aioredis.ConnectionsPool,
+                                    **PoolConfig.get_pool_config("async")
+                                    or {"minsize": 1, "maxsize": 3, "timeout": 1},
                                 )
 
                         except Exception as e:
@@ -211,26 +212,55 @@ class Redis(metaclass=Singleton):
     """
 
     def __init__(self):
-        self.master_pool = redis.ConnectionPool(
+        self._master_pool = None
+        self._slave_pool = None
+        self._local_pool = None
+        self.thread = None
+
+    def _create_master_pool(self):
+        return redis.ConnectionPool(
             connection_class=Connection,
             host=MovaiDB.REDIS_MASTER_HOST,
             port=MovaiDB.REDIS_MASTER_PORT,
             db=0,
+            # single_connection_client=False,
+            **PoolConfig.get_pool_config("master"),
         )
-        self.slave_pool = redis.ConnectionPool(
+
+    def _create_slave_pool(self):
+        return redis.ConnectionPool(
             connection_class=Connection,
             host=MovaiDB.REDIS_SLAVE_HOST,
             port=MovaiDB.REDIS_SLAVE_PORT,
             db=0,
+            # single_connection_client=False,
+            **PoolConfig.get_pool_config("slave"),
         )
-        self.local_pool = redis.ConnectionPool(
+
+    def _create_local_pool(self):
+        return redis.ConnectionPool(
             connection_class=Connection,
             host=MovaiDB.REDIS_LOCAL_HOST,
             port=MovaiDB.REDIS_LOCAL_PORT,
             db=0,
+            # single_connection_client=False,
+            **PoolConfig.get_pool_config("local"),
         )
 
-        self.thread = None
+    @property
+    def master_pool(self) -> redis.ConnectionPool:
+        """Lazy initialization of master pool through registry."""
+        return SharedPoolRegistry.get_pool("master", self._create_master_pool)
+
+    @property
+    def slave_pool(self) -> redis.ConnectionPool:
+        """Lazy initialization of slave pool through registry."""
+        return SharedPoolRegistry.get_pool("slave", self._create_slave_pool)
+
+    @property
+    def local_pool(self) -> redis.ConnectionPool:
+        """Lazy initialization of local pool through registry."""
+        return SharedPoolRegistry.get_pool("local", self._create_local_pool)
 
     @property
     def db_global(self) -> redis.Redis:
@@ -361,11 +391,14 @@ class MovaiDB:
     ) -> None:
         self.db_read: redis.Redis
         self.db_write: redis.Redis
-        self.pubsub: redis.client.PubSub
+        self._pubsub: Optional[redis.client.PubSub] = None
+        self._subscription_queue = []
+        self.db_name = db  # Store the db name for pubsub initialization
 
         self.movaidb = databases or Redis()
         for attribute, val in self.db_dict[db].items():
-            setattr(self, attribute, getattr(self.movaidb, val))
+            if attribute != "pubsub":  # Defer pubsub initialization
+                setattr(self, attribute, getattr(self.movaidb, val))
 
         if _api_version == "latest":
             self.api_struct = MovaiDB.API(url=__SCHEMAS_URL__).get_api()
@@ -380,6 +413,24 @@ class MovaiDB:
                 self.loop = asyncio.get_event_loop()
             except Exception:
                 self.loop = asyncio.new_event_loop()
+
+        # Start pool cleanup task
+        SharedPoolRegistry.start_cleanup_task(self.loop)
+
+    @property
+    def pubsub(self) -> redis.client.PubSub:
+        """Lazy initialization of pubsub client."""
+        if self._pubsub is None:
+            pubsub_attr = self.db_dict[self.db_name]["pubsub"]
+            if pubsub_attr == "local_pubsub":
+                self._pubsub = self.movaidb.local_pubsub()
+            else:
+                self._pubsub = self.movaidb.slave_pubsub
+            # Process any queued subscriptions
+            for channel, callback in self._subscription_queue:
+                self._pubsub.subscribe(**{channel: callback})
+            self._subscription_queue.clear()
+        return self._pubsub
 
     def search(self, _input: dict) -> list:
         """
@@ -652,13 +703,20 @@ class MovaiDB:
                 key, _, _ = elem
                 self.loop.create_task(self.task_subscriber("__keyspace@*__:%s" % key, function))
 
+    @property
+    async def async_pubsub(self):
+        """Return an aioredis pubsub pool for async operations."""
+        client = await AioRedisClient.get_client()
+        # Use slave_pubsub by default for async pubsub
+        return getattr(client, "slave_pubsub")
+
     async def task_subscriber(
         self, key: str, callback, port_name: Optional[str] = None, node_name: Optional[str] = None
     ) -> None:
-        """Calls a callback every time it gets a message."""
-        # Acquires a connection from free pool.
-        # Creates new connection if needed.
-        _conn = await self.pubsub.acquire()
+        """Calls a callback every time it gets a message (async, aioredis)."""
+        # Acquires a connection from aioredis pool.
+        pubsub_pool = await self.async_pubsub
+        _conn = await pubsub_pool.acquire()
         # Create Redis interface
         conn = aioredis.Redis(_conn)
         # Switch connection to Pub/Sub mode and subscribe to specified patterns
