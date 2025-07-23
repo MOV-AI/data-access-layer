@@ -22,6 +22,7 @@ from .scope import Scope
 from .statemachine import StateMachine, SMVars
 from .structures import Struct
 from .system import System
+from .translation import Translation
 from .user import User
 from .widget import Widget
 
@@ -44,6 +45,7 @@ __all__ = [
     "SMVars",
     "Struct",
     "System",
+    "Translation",
     "User",
     "Widget",
 ]

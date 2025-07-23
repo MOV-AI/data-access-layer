@@ -36,7 +36,9 @@ class Scope(Struct):
 
         if new:
             if self.movaidb.exists_by_args(scope=scope, Name=name):
-                raise AlreadyExist("This already exists. To edit dont send the 'new' flag")
+                raise AlreadyExist(
+                    "%s %s already exists, to edit dont send the 'new' flag" % (scope, name)
+                )
         else:
             if not self.movaidb.exists_by_args(scope=scope, Name=name):
                 raise DoesNotExist(
