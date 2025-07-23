@@ -12,7 +12,6 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, Iterable, Optional, Tuple, TypedDict, Union, cast, TYPE_CHECKING
 
 from movai_core_shared.consts import ROS1_NODELETSERVER
-from movai_core_shared.logger import Log
 from dal.helpers.flow import GFlow
 from dal.helpers.parsers import ParamParser
 from .model import Model
@@ -65,8 +64,6 @@ class Flow(Model):
     __END__ = "END/END/END"
     __GRAPH_GEN__ = GFlow
     __PARAM_PARSER__ = ParamParser
-
-    logger = Log.get_logger("Flow.mov.ai")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -490,5 +487,4 @@ class Flow(Model):
         return output
 
 
-# Register class as model of scope Flow
 Model.register_model_class("Flow", Flow)

@@ -1,7 +1,5 @@
-[MESSAGES CONTROL]
-disable=logging-fstring-interpolation
-ignore=setup.py,
-ignore-patterns=.*_test.*?py,.*test_.*?py,.*test.*?py,.*pb2.*,.*yml, .*toml, .*txt, .*md
-
-[FORMAT]
+[MAIN]
+ignore-paths=dal/api/gitapi.py,tests/
 max-line-length=100
+errors-only=
+disable=import-error
