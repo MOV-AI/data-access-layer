@@ -148,14 +148,6 @@ dal.models.package module
    :undoc-members:
    :show-inheritance:
 
-dal.models.packagefile module
------------------------------
-
-.. automodule:: dal.models.packagefile
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 dal.models.ports module
 -----------------------
 

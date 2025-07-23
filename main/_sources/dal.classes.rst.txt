@@ -9,7 +9,6 @@ Subpackages
 
    dal.classes.common
    dal.classes.filesystem
-   dal.classes.protocols
    dal.classes.utils
 
 Submodules
