@@ -1,4 +1,4 @@
-# vTBD
+# v3.2.11
 - Fast-forward version to 3.2.11 due to 3.2.10 being done out of branch (see PR #311)
 - [BP-1441](https://movai.atlassian.net/browse/BP-1441): Operator does not have permission to get scene
 
