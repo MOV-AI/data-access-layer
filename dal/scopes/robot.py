@@ -132,7 +132,7 @@ class Robot(Scope):
                 LOGGER.warning(
                     f"Going to send command {command} to Robot {self.RobotName} through redis! Transition failed as spawner is no longer listening to redis! "
                     f"Is zmq set? ({hasattr(self, 'spawner_client')}) | "
-                    f"is initialized? ({self.spawner_client is not None}) | "
+                    f"Is zmq client initialized? ({self.spawner_client is not None}) | "
                     f"it the target of command to self? {self.RobotName == DEVICE_NAME}"
                 )
             command_data = pickle.dumps(command_data)
