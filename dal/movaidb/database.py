@@ -315,16 +315,6 @@ class MovaiDB:
         def values(self):
             return type(self).__API__[self.__version].values()
 
-        @classmethod
-        def get_schema(cls, version, name):
-            """
-            return scope schema for the specifed version
-            """
-            try:
-                return cls(version=version).get_api()[name]
-            except KeyError:
-                return {}
-
         def get_api(self):
             """
             return the current API
