@@ -1,4 +1,4 @@
-# vTBD
+# v3.4.0
 - Add pylint, remove deadcode (dalapi, protocols, packagefile)
 
 # v3.3.1
