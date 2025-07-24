@@ -33,6 +33,7 @@ class InternalUser(BaseUser):
         super_user: bool = False,
         read_only: bool = False,
         send_report: bool = False,
+        language: str = "en",
     ) -> BaseUser:
         """Creates a new internal user
 
@@ -60,6 +61,7 @@ class InternalUser(BaseUser):
             super_user=super_user,
             read_only=read_only,
             send_report=send_report,
+            language=language,
         )
         try:
             user._validate_password_complexity(password)
