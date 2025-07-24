@@ -1,5 +1,5 @@
 [MAIN]
-ignore-paths=dal/api/gitapi.py,tests/
+ignore-paths=tests/
 max-line-length=100
 errors-only=
 disable=import-error
