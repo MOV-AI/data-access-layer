@@ -12,6 +12,7 @@ from dal.plugins.classes import PluginManager, Resource
 from .tree import TreeNode, DictNode, ObjectNode, PropertyNode, CallableNode
 from .serialization import ObjectDeserializer
 from .version import VersionNode
+from dal.validation import SCHEMA_FOLDER_PATH
 
 
 class SchemaNode(DictNode):
@@ -141,10 +142,10 @@ class SchemasTree(CallableNode):
         except KeyError:
             pass
 
-        schema_file = path.join(__SCHEMAS_URL__, version, f"{name}.json")
+        schema_file = path.join(SCHEMA_FOLDER_PATH, version, f"{name}.json")
 
         if not Resource.exists(schema_file):
-            raise FileNotFoundError(f"{__SCHEMAS_URL__}/{version}/{name}.json")
+            raise FileNotFoundError(f"{SCHEMA_FOLDER_PATH}/{version}/{name}.json")
 
         try:
             version_tree = self._children[version]
@@ -198,7 +199,6 @@ class SchemaDeserializer(ObjectDeserializer, PluginManager):
 
 
 dir_path = path.dirname(path.realpath(__file__))
-__SCHEMAS_URL__ = f"file://{dir_path}/../validation/schema"
 
 # The schemas tree should only be one instance,
 # most probably we should implement the singleton pattern

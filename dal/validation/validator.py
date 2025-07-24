@@ -1,20 +1,21 @@
 """
-   Copyright (C) Mov.ai  - All Rights Reserved
-   Unauthorized copying of this file, via any medium is strictly prohibited
-   Proprietary and confidential
+Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential
 
-   Developers:
-   - Moawiya Mograbi (moawiya@mov.ai) - 2022
+Developers:
+- Moawiya Mograbi (moawiya@mov.ai) - 2022
 """
 
 from os import listdir
-from os.path import dirname, realpath, isdir
+from os.path import isdir
 from pathlib import Path
 from re import search
 
 from .schema import Schema
 from json import loads as load_json
-from dal.exceptions import SchemaTypeNotKnown, ValidationError, SchemaVersionError
+from dal.exceptions import SchemaTypeNotKnown, SchemaVersionError
+from .constants import SCHEMA_FOLDER_PATH
 
 
 class JsonValidator:
@@ -55,15 +56,11 @@ class JsonValidator:
         return True
 
     def _init_schemas(self):
-        """will initialize schemas objects in the schema folder
-        for all of our configuration files
-        """
-        # validator is in the root of validation module
-        validation_path = dirname(realpath(__file__))
-
-        schema_version_folder = f"{validation_path}/schema/{self._version}"
+        """Initialize schemas objects in the schema folder for all of our configuration files."""
+        schema_version_folder = f"{SCHEMA_FOLDER_PATH}/{self._version}"
         if not isdir(schema_version_folder):
             raise SchemaVersionError(f"version {self._version} does not exist in schema folder")
+
         for schema_json in listdir(schema_version_folder):
             m = search(r"(\w+)\.schema\.json", schema_json)
             if m is not None:
