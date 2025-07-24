@@ -16,9 +16,6 @@ for example:
 from os import getenv
 from .basearchive import BaseArchive
 
-# in order to register Git Archive
-from dal.api.gitapi import GitManager
-
 # default archive is GIT
 BaseArchive.set_active_archive(getenv("ACTIVE_ARCHIVE", "Git"))
 Archive = BaseArchive()
