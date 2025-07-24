@@ -43,7 +43,7 @@ def global_db(set_redis_ip, docker_services):
     from dal.movaidb.database import MovaiDB
 
     db = MovaiDB()
-    time.sleep(0.5)  # wait for db to be ready
+    time.sleep(2)  # wait for db to be ready
     return db
 
 
@@ -52,7 +52,6 @@ def scopes_robot(global_db):
     from dal.scopes.robot import Robot
 
     robot = Robot()
-    time.sleep(0.5)  # wait for db to be ready
     return robot
 
 
@@ -61,5 +60,4 @@ def models_message(global_db):
     from dal.models.message import Message
 
     msg = Message
-    time.sleep(0.5)  # wait for db to be ready
     return msg
