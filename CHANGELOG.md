@@ -1,4 +1,4 @@
-# vTBD
+# v3.4.1
 - Fix mobdata usage (missing 1 required positional argument: 'args')
 
 # v3.4.0
