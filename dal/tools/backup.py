@@ -1581,7 +1581,8 @@ class Remover(Backup):
             self.set_removed(scope, name)
 
 
-def main(args) -> int:
+def backup(args) -> int:
+    """Main function to handle the backup actions based on provided arguments."""
     project = args.project
     recursive = not args.individual
 
@@ -1652,7 +1653,8 @@ def main(args) -> int:
     return 1
 
 
-if __name__ == "__main__":
+def main() -> int:
+    """Main function to handle command line arguments and execute the backup tool."""
     warnings.warn(
         "The module tools.backup is deprecated, please use mobdata.",
         DeprecationWarning,
@@ -1740,6 +1742,10 @@ if __name__ == "__main__":
 
     args, _ = parser.parse_known_args()
 
-    ret_code = main(args)
+    ret_code = backup(args)
 
-    exit(ret_code)
+    return ret_code
+
+
+if __name__ == "__main__":
+    exit(main())
