@@ -1015,8 +1015,6 @@ class ScopesTree(CallableNode):
         except KeyError:
             if workspace == "global":
                 plugin = Persistence.get_plugin_class("redis")(workspace="global")
-            elif workspace == "git":
-                plugin = Persistence.get_plugin_class("git")()
             else:
                 plugin = Persistence.get_plugin_class("filesystem")(workspace=workspace)
 
