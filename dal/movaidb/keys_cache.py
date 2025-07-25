@@ -62,7 +62,7 @@ class RedisIndexedCache:
         index_key = self._get_index_key(prefix)
         entries = self._redis.smembers(index_key)
         for entry in entries:
-            if entry.startswith(f"{key}|"):
+            if entry.decode().startswith(f"{key}|"):
                 self._redis.srem(index_key, entry)
                 break
 
@@ -85,7 +85,7 @@ class RedisIndexedCache:
         results = set()
         for entry in entries:
             try:
-                key, key_type = entry.rsplit("|", 1)
+                key, key_type = entry.decode().rsplit("|", 1)
                 results.add(KeyInfo(key=key, type=RedisType(key_type)))
             except ValueError:
                 LOGGER.warning(f"Invalid entry format in index: {entry}")
