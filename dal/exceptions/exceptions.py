@@ -28,6 +28,7 @@ class SchemaErr(IntEnum):
     BASE_SCHEMA_ERR = 200
     SCHEMA_VERSION_ERR = 201
     SCHEMA_TYPE_NOT_KNOWN = 202
+    SCHEMA_LOAD_ERR = 203
 
 
 class ValidationErr(IntEnum):
@@ -123,6 +124,11 @@ class SchemaVersionError(SchemaException):
 class SchemaTypeNotKnown(SchemaException):
     def __init__(self, *args: object) -> None:
         super().__init__(SchemaErr.SCHEMA_TYPE_NOT_KNOWN, *args)
+
+
+class SchemaLoadError(SchemaException):
+    def __init__(self, *args: object) -> None:
+        super().__init__(SchemaErr.SCHEMA_LOAD_ERR, *args)
 
 
 # Validation Errors

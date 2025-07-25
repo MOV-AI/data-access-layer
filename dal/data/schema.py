@@ -145,7 +145,7 @@ class SchemasTree(CallableNode):
         schema_file = path.join(SCHEMA_FOLDER_PATH, version, f"{name}.json")
 
         if not Resource.exists(schema_file):
-            raise FileNotFoundError(f"{SCHEMA_FOLDER_PATH}/{version}/{name}.json")
+            raise FileNotFoundError(schema_file)
 
         try:
             version_tree = self._children[version]

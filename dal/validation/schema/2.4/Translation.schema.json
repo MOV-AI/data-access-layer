@@ -1,0 +1,28 @@
+{
+    "$id": "Translation.schema.json",
+    "$version": "2.4",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Translation Schema",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "./common/base.schema.json"
+        },
+        {
+            "type": "object",
+            "Description": "All of the other fields",
+            "properties": {
+                "Translations": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]+$": {
+                            "type": "string",
+                            "description": "Translation for the given language"
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "unevaluatedProperties": false
+}
