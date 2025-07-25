@@ -15,6 +15,7 @@ Welcome to data-access-layer's documentation!
    modules
    permissions
    robot_parameters
+   schemas
 
 .. include:: readme.rst
 

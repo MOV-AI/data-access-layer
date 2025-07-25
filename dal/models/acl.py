@@ -49,6 +49,7 @@ class ResourceType(Enum):
     StateMachine = "StateMachine"
     TaskEntry = "TaskEntry"
     TaskTemplate = "TaskTemplate"
+    Translation = "Translation"
 
 
 class ApplicationsType(Enum):

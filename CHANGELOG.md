@@ -1,3 +1,6 @@
+# vTBD
+- [BP-1463](https://movai.atlassian.net/browse/BP-1463): Create translation scope
+
 # v3.4.1
 - Fix mobdata usage (missing 1 required positional argument: 'args')
 
