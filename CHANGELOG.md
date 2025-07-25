@@ -1,9 +1,12 @@
-# v3.4.1
+# v3.4.2
 - [BP-1456](https://movai.atlassian.net/browse/BP-1456): Add support for user language configuration
   - Introduced `language` attribute for `BaseUser` and `InternalUser` models.
   - Added validation for `language` using `VALID_LANGUAGES` from `movai_core_shared.consts`.
   - Updated JSON schemas (`InternalUser.json` and `User.json`) to include the `Language` field.
   - Added getter and setter for the `language` property in `BaseUser`.
+ 
+# v3.4.1
+- Fix mobdata usage (missing 1 required positional argument: 'args')
 
 # v3.4.0
 - Add pylint, remove deadcode (dalapi, protocols, packagefile)
