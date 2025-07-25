@@ -1,5 +1,9 @@
+# v3.4.1
+- Fix mobdata usage (missing 1 required positional argument: 'args')
+
 # v3.4.0
 - Add pylint, remove deadcode (dalapi, protocols, packagefile)
+- Remove Git classes
 
 # v3.3.1
 - Fix version number, the version still includes [BP-1441](https://movai.atlassian.net/browse/BP-1441): Operator does not have permission to get scene
