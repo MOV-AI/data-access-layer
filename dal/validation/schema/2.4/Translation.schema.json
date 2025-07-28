@@ -6,7 +6,7 @@
     "type": "object",
     "allOf": [
         {
-            "$ref": "./common/base.schema.json"
+            "$ref": "common/base.schema.json"
         },
         {
             "type": "object",

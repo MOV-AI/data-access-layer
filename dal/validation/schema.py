@@ -6,9 +6,8 @@ Developers:
 - Moawiya Mograbi (moawiya@mov.ai) - 2022
 """
 
-from json import loads as load_json
-from os.path import dirname
 from pathlib import Path
+from typing import TypedDict
 
 from referencing import Registry, Resource
 from jsonschema import Draft202012Validator
@@ -17,79 +16,59 @@ from jsonschema import ValidationError
 from dal.classes.filesystem import FileSystem
 
 
-class Schema:
-    def __init__(self, schema_path: str):
-        self._path = schema_path
-        content = FileSystem.read(schema_path)
-        self._schema = load_json(content)
-        self._version = Schema._get_schema_version(self._schema)
+class ValidationResult(TypedDict):
+    status: bool
+    message: str
 
-        # load base_schema manually
-        # tried to use Registry(retrieve=retrieve_from_filesystem) but failed
-        """
+
+class Schema:
+    def __init__(self, schema_path: Path):
+        self._path: Path = schema_path
+
         def retrieve_from_filesystem(uri: str):
-            path = Path(uri)
-            contents = json.loads(path.read_text())
+            """Retrieve a referenced schema from the filesystem.
+
+            Args:
+                uri (str): The URI of the schema to retrieve.
+                    Must be a relative path from main schema directory.
+
+            Returns:
+                Resource: A Resource object containing the schema contents.
+
+            """
+            path = self._path.parent / uri
+            print(path)
+            contents = FileSystem.read_json(path)
             return Resource.from_contents(contents)
 
-        registry = Registry(retrieve=retrieve_from_filesystem).with_resource(
-            f"file://{dirname(schema_path)}/",
-            self._schema,
-        )
-        """
-        common = "common/base.schema.json"
-        registry = Registry().with_resource(
-            "common/base.schema.json",
-            Resource.from_contents(load_json(FileSystem.read(f"{dirname(schema_path)}/{common}"))),
-        )
+        # registry with the ability to retrieve schemas from the filesystem
+        registry = Registry(retrieve=retrieve_from_filesystem)
+
+        # load main schema into the validator
         self.validator = Draft202012Validator(
-            self._schema,
+            FileSystem.read_json(self._path),
             registry=registry,
         )
 
-    @staticmethod
-    def _get_schema_version(schema_obj) -> float:
-        """will exctract the schema version from it.
+    def validate(self, data: dict) -> ValidationResult:
+        """Validate data against the schema.
 
         Args:
-            schema_obj (dict): the schema dictionary object
-
-        Raises:
-            SchemaVersionError: in case there was a problem with the version
+            data (dict): The data to be validated.
 
         Returns:
-            float: the version in float
-        """
-        version = schema_obj["$version"]
-        return float(version)
+            ValidationResult: Validation results.
 
-    @property
-    def version(self):
-        return self._version
-
-    def validate(self, inst: dict) -> dict:
-        """validate the schema class against given dictionary
-
-        Args:
-            inst (dict): the dictionary that need to be validated.
-
-        Returns:
-            dict: a dictionary including status/error and a message.
-                    - status: True if succeeded otherwise False
-                    - message: error or success message
-                    - path: the path of the error in case there is one
         """
         status = True
         message = ""
-        path = ""
         try:
-            self.validator.validate(inst)
+            self.validator.validate(data)
         except ValidationError as e:
             status = False
-            path = "/" + "/".join(e.path)
-            message = e.message
+            message = f"Data schema violation: {e.message}"
         except Exception as e:
             status = False
             message = str(e)
 
-        return {"status": status, "message": message, "path": path}
+        return ValidationResult(status=status, message=message)

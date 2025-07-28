@@ -8,10 +8,10 @@ Developers:
 """
 
 from os import listdir
-from os.path import isdir
 from re import search
 import urllib
 from typing import Dict
+from pathlib import Path
 
 from .schema import Schema
 from dal.exceptions import SchemaTypeNotKnown, SchemaVersionError
@@ -33,18 +33,19 @@ class JsonValidator(metaclass=Singleton):
 
     def _init_schemas(self):
         """Initialize schemas objects in the schema folder for all of our configuration files."""
-        schema_folder = urllib.parse.urlparse(SCHEMA_FOLDER_PATH).path
-        schema_version_folder = f"{schema_folder}/{self.VERSION}"
+        schema_folder = Path(
+            urllib.parse.urlparse(SCHEMA_FOLDER_PATH).path
+        )  # remove 'file://' prefix
+        version_folder = schema_folder / self.VERSION
 
-        if not isdir(schema_version_folder):
-            raise SchemaVersionError(f"Version folder {schema_version_folder} does not exist")
+        if not version_folder.exists():
+            raise SchemaVersionError(f"Version folder {version_folder} does not exist")
 
-        for schema_json in listdir(schema_version_folder):
-            m = search(r"(\w+)\.schema\.json", schema_json)
+        for schema_json in version_folder.iterdir():
+            m = search(r"(\w+)\.schema\.json", schema_json.name)
             if m is not None:
                 schema_type = m.group(1)
-                schema_path = f"{schema_version_folder}/{schema_json}"
-                self.schema_types[schema_type] = Schema(schema_path)
+                self.schema_types[schema_type] = Schema(schema_json)
 
     def validate(self, scope: str, data: dict):
         """Validate the content against the schema of the given scope.
