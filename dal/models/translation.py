@@ -1,9 +1,9 @@
-"""Traslation model"""
+"""Translation model"""
 from .model import Model
 
 
 class Translation(Model):
-    """Traslation model"""
+    """Translation model"""
 
 
 Model.register_model_class("Translation", Translation)
