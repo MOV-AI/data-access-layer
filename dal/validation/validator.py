@@ -16,23 +16,25 @@ from typing import Dict
 from .schema import Schema
 from dal.exceptions import SchemaTypeNotKnown, SchemaVersionError
 from .constants import SCHEMA_FOLDER_PATH
+from dal.classes.common.singleton import Singleton
 
 
-class JsonValidator:
+class JsonValidator(metaclass=Singleton):
     """Validator responsible to load schema json files and validate files according
     to it's type.
 
     """
 
-    def __init__(self, version: str):
+    VERSION = "2.4"
+
+    def __init__(self):
         self.schema_types: Dict[str, Schema] = {}
-        self._version = version
         self._init_schemas()
 
     def _init_schemas(self):
         """Initialize schemas objects in the schema folder for all of our configuration files."""
         schema_folder = urllib.parse.urlparse(SCHEMA_FOLDER_PATH).path
-        schema_version_folder = f"{schema_folder}/{self._version}"
+        schema_version_folder = f"{schema_folder}/{self.VERSION}"
 
         if not isdir(schema_version_folder):
             raise SchemaVersionError(f"Version folder {schema_version_folder} does not exist")

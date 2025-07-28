@@ -23,7 +23,7 @@ class Scope(Struct):
 
     permissions = ["create", "read", "update", "delete"]
 
-    validator = JsonValidator("2.4")
+    validator = JsonValidator()
 
     scopes_to_validate = ["Translation"]
 
