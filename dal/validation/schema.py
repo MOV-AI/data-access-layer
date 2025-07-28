@@ -1,19 +1,20 @@
-"""
-   Copyright (C) Mov.ai  - All Rights Reserved
-   Unauthorized copying of this file, via any medium is strictly prohibited
-   Proprietary and confidential
+"""Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential
 
-   Developers:
-   - Moawiya Mograbi (moawiya@mov.ai) - 2022
+Developers:
+- Moawiya Mograbi (moawiya@mov.ai) - 2022
 """
 
-from jsonschema import RefResolver
-from jsonschema import validate as json_validate
-from jsonschema.exceptions import ValidationError
 from json import loads as load_json
-from os.path import abspath, dirname
+from os.path import dirname
+from pathlib import Path
+
+from referencing import Registry, Resource
+from jsonschema import Draft202012Validator
+from jsonschema import ValidationError
+
 from dal.classes.filesystem import FileSystem
-from dal.exceptions import SchemaVersionError
 
 
 class Schema:
@@ -22,9 +23,28 @@ class Schema:
         content = FileSystem.read(schema_path)
         self._schema = load_json(content)
         self._version = Schema._get_schema_version(self._schema)
-        full_path = abspath(schema_path)
-        self._resolver = RefResolver(
-            base_uri=f"file://{dirname(full_path)}/", referrer=self._schema
+
+        # load base_schema manually
+        # tried to use Registry(retrieve=retrieve_from_filesystem) but failed
+        """
+        def retrieve_from_filesystem(uri: str):
+            path = Path(uri)
+            contents = json.loads(path.read_text())
+            return Resource.from_contents(contents)
+
+        registry = Registry(retrieve=retrieve_from_filesystem).with_resource(
+            f"file://{dirname(schema_path)}/",
+            self._schema,
+        )
+        """
+        common = "common/base.schema.json"
+        registry = Registry().with_resource(
+            "common/base.schema.json",
+            Resource.from_contents(load_json(FileSystem.read(f"{dirname(schema_path)}/{common}"))),
+        )
+        self.validator = Draft202012Validator(
+            self._schema,
+            registry=registry,
         )
 
     @staticmethod
@@ -63,7 +83,7 @@ class Schema:
         message = ""
         path = ""
         try:
-            json_validate(instance=inst, schema=self._schema, resolver=self._resolver)
+            self.validator.validate(inst)
         except ValidationError as e:
             status = False
             path = "/" + "/".join(e.path)
