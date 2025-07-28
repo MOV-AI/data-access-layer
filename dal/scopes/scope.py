@@ -6,11 +6,20 @@ Proprietary and confidential
 Developers:
 - Manuel Silva (manuel.silva@mov.ai) - 2020
 - Tiago Paulino (tiago@mov.ai) - 2020
+
+Attributes:
+    SCOPES_TO_VALIDATE: List of scopes that will be validated before writing into redis.
+
 """
+from typing import List
+
 from movai_core_shared.exceptions import DoesNotExist, AlreadyExist
 from .structures import Struct
 from dal.movaidb import MovaiDB
 from dal.validation import JsonValidator
+
+
+SCOPES_TO_VALIDATE: List[str] = ["Translation"]
 
 
 class Scope(Struct):
@@ -24,8 +33,6 @@ class Scope(Struct):
     permissions = ["create", "read", "update", "delete"]
 
     validator = JsonValidator()
-
-    scopes_to_validate = ["Translation"]
 
     def __init__(self, scope, name, version, new=False, db="global"):
         self.__dict__["name"] = name
@@ -129,5 +136,5 @@ class Scope(Struct):
             ValueError: If the data does not conform to the schema.
 
         """
-        if scope in cls.scopes_to_validate:
+        if scope in SCOPES_TO_VALIDATE:
             cls.validator.validate(scope, data)
