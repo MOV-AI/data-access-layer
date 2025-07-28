@@ -20,8 +20,8 @@ from movai_core_shared.consts import (
     EXECUTE_PERMISSION,
     RESET_PERMISSION,
 )
-from movai_core_shared.envvars import REST_SCOPES
 from movai_core_shared.logger import Log
+from dal.utils.constants import REST_SCOPES
 from dal.models.scopestree import ScopesTree, scopes
 
 
