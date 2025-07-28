@@ -1,4 +1,4 @@
-"""Tranlation scope."""
+"""Translation scope."""
 from .scope import Scope
 
 
