@@ -363,9 +363,16 @@ class MovaiDB:
         """
         output_keys = defaultdict(list)
         for key, _, _ in self.dict_to_keys(_input):
-            for keyinfo in self.indexed_cache.get_keys_by_prefix(key[:-1]):
-                output_keys[keyinfo.type].append(keyinfo.key)
-        LOGGER.warning(
+            if "*" in key:
+                for keyinfo in self.indexed_cache.get_keys_by_prefix(key):
+                    output_keys[keyinfo.type].append(keyinfo.key)
+            else:
+                key_type = self.db_read.type(key).decode()
+                if key_type == "none":
+                    LOGGER.warning("Key '%s' not found in Redis.", key)
+                    continue
+                output_keys[RedisType(key_type)].append(key)
+        LOGGER.debug(
             "get_cached_keys called with input: %s, returning keys: %s", _input, output_keys
         )
         return output_keys
@@ -484,7 +491,7 @@ class MovaiDB:
                         self.indexed_cache.remove_from_index(previous_key[0])
                         self.indexed_cache.add_to_index(key, RedisType.STRING)
                     else:
-                        print("More that 1 key in Redis for the same structure value")
+                        LOGGER.warning("More that 1 key in Redis for the same structure value")
                 else:
                     if source == "hash":
                         assert isinstance(value, dict)
@@ -641,7 +648,7 @@ class MovaiDB:
             try:
                 self.db_write.lpush(key, value)
             except:
-                print('Something went wrong while saving "%s" in Redis' % (key))
+                LOGGER.error('Something went wrong while saving "%s" in Redis', key)
 
     def push(self, _input: dict, pickl: bool = True):
         """Push a value to the right of a Redis list"""
@@ -652,7 +659,7 @@ class MovaiDB:
             try:
                 self.db_write.rpush(key, value)
             except:
-                print('Something went wrong while saving "%s" in Redis' % (key))
+                LOGGER.error('Something went wrong while saving "%s" in Redis', key)
 
     def rpop(self, _input: dict):
         """Pop a value from the right of a Redis list"""
@@ -692,7 +699,7 @@ class MovaiDB:
                 for hash_field in value:
                     self.db_write.hset(key, hash_field, pickle.dumps(value[hash_field]))
             except:
-                print('Something went wrong while saving "%s" in Redis' % (key))
+                LOGGER.error('Something went wrong while saving "%s" in Redis', key)
 
     def hget(self, _input: dict, hash_field: str, search=True):
         """Return the value of a key within the hash name"""
@@ -780,7 +787,7 @@ class MovaiDB:
             try:
                 self.db_write.hmset(key, value)
             except:
-                print('Something went wrong while saving "%s" in Redis' % (key))
+                LOGGER.error('Something went wrong while saving "%s" in Redis', key)
             self.db_write.publish(key, str(changed_hkeys))
 
     # ===================  Pipe Commands  =================================
