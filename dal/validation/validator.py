@@ -7,7 +7,6 @@ Developers:
 - Moawiya Mograbi (moawiya@mov.ai) - 2022
 """
 
-from os import listdir
 from re import search
 import urllib
 from typing import Dict
