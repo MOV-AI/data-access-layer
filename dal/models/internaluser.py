@@ -12,7 +12,7 @@ from movai_core_shared.consts import INTERNAL_DOMAIN
 from movai_core_shared.exceptions import PasswordError, PasswordComplexityError
 
 from dal.models.model import Model
-from dal.models.baseuser import BaseUser
+from dal.models.baseuser import DEFAULT_LANGUAGE, BaseUser
 from dal.models.user import User
 
 
@@ -33,7 +33,7 @@ class InternalUser(BaseUser):
         super_user: bool = False,
         read_only: bool = False,
         send_report: bool = False,
-        language: str = "en",
+        language: str = DEFAULT_LANGUAGE,
     ) -> BaseUser:
         """Creates a new internal user
 

@@ -1,4 +1,6 @@
 """Translation model"""
+from typing import List
+
 from dal.movaidb.database import MovaiDB
 from .model import Model
 
@@ -6,7 +8,8 @@ from .model import Model
 class Translation(Model):
     """Translation model"""
 
-    def get_available_languages(self) -> list:
+    @staticmethod
+    def get_available_languages() -> List[str]:
         """Fetch the list of available languages.
 
         Returns:

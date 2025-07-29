@@ -11,6 +11,7 @@ from __future__ import annotations
 from typing import Dict, List, Set, cast
 from datetime import datetime
 
+from dal.models.translation import Translation
 from movai_core_shared.common.utils import create_principal_name
 from movai_core_shared.exceptions import (
     InvalidStructure,
@@ -20,7 +21,6 @@ from movai_core_shared.exceptions import (
 )
 from movai_core_shared.consts import (
     EXECUTE_PERMISSION,
-    VALID_LANGUAGES,
 )
 
 from dal.models.scopestree import ScopesTree, scopes
@@ -28,6 +28,9 @@ from dal.models.model import Model
 from dal.models.acl import NewACLManager
 from dal.scopes.application import Application
 from dal.models.acl import ResourceType, ApplicationsType
+
+
+DEFAULT_LANGUAGE = "en"
 
 
 class BaseUser(Model):
@@ -63,7 +66,7 @@ class BaseUser(Model):
         super_user: bool = False,
         read_only: bool = False,
         send_report: bool = False,
-        language: str = "en",
+        language: str = DEFAULT_LANGUAGE,
     ) -> Model:
         """Create a new BaseUser
 
@@ -106,7 +109,7 @@ class BaseUser(Model):
         if cls.is_exist(domain_name, account_name):
             error_msg = f"The requested user {account_name}@{domain_name} " "already exist"
             raise UserAlreadyExist(error_msg)
-        if language not in VALID_LANGUAGES:
+        if language not in Translation.get_available_languages():
             error_msg = f"Language {language} is not supported"
             cls.log.error(error_msg)
             raise ValueError(error_msg)
