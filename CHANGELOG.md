@@ -1,4 +1,4 @@
-# vTBD
+# v3.5.0
 - [BP-1463](https://movai.atlassian.net/browse/BP-1463): Create translation scope
 
 # v3.4.1
