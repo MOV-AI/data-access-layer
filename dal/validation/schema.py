@@ -37,7 +37,6 @@ class Schema:
 
             """
             path = self._path.parent / uri
-            print(path)
             contents = FileSystem.read_json(path)
             return Resource.from_contents(contents)
 

@@ -5,7 +5,7 @@
   - Updated JSON schemas (`InternalUser.json` and `User.json`) to include the `Language` field.
   - Added getter and setter for the `language` property in `BaseUser`.
  
-# vTBD
+# v3.5.0
 - [BP-1463](https://movai.atlassian.net/browse/BP-1463): Create translation scope
 
 # v3.4.1
