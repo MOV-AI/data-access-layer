@@ -1,0 +1,14 @@
+{
+  "_version": "1.0",
+  "schema": {
+    "$name": {
+      "Label": "str",
+      "User": "str",
+      "LastUpdate": "any",
+      "Info": "str",
+      "Translations": {
+        "$name": "str"
+      }
+    }
+  }
+}
