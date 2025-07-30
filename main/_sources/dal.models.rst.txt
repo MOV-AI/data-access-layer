@@ -188,6 +188,14 @@ dal.models.system module
    :undoc-members:
    :show-inheritance:
 
+dal.models.translation module
+-----------------------------
+
+.. automodule:: dal.models.translation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dal.models.user module
 ----------------------
 

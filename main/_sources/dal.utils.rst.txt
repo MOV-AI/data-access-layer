@@ -12,6 +12,14 @@ dal.utils.callback module
    :undoc-members:
    :show-inheritance:
 
+dal.utils.constants module
+--------------------------
+
+.. automodule:: dal.utils.constants
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dal.utils.middleware module
 ---------------------------
 

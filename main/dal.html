@@ -74,6 +74,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="permissions.html">Resource permissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="robot_parameters.html">Robot Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schemas.html">Schemas and validation</a></li>
 </ul>
 
         </div>
@@ -738,6 +739,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.acl.ResourceType.StateMachine"><code class="docutils literal notranslate"><span class="pre">ResourceType.StateMachine</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.acl.ResourceType.TaskEntry"><code class="docutils literal notranslate"><span class="pre">ResourceType.TaskEntry</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.acl.ResourceType.TaskTemplate"><code class="docutils literal notranslate"><span class="pre">ResourceType.TaskTemplate</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.acl.ResourceType.Translation"><code class="docutils literal notranslate"><span class="pre">ResourceType.Translation</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1198,6 +1200,10 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="dal.models.html#module-dal.models.system">dal.models.system module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="dal.models.html#dal.models.system.System"><code class="docutils literal notranslate"><span class="pre">System</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dal.models.html#module-dal.models.translation">dal.models.translation module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.models.html#dal.models.translation.Translation"><code class="docutils literal notranslate"><span class="pre">Translation</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="dal.models.html#module-dal.models.user">dal.models.user module</a><ul>
@@ -2045,7 +2051,9 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="dal.scopes.html#module-dal.scopes.scope">dal.scopes.scope module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.scope.SCOPES_TO_VALIDATE"><code class="docutils literal notranslate"><span class="pre">SCOPES_TO_VALIDATE</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.scope.Scope"><code class="docutils literal notranslate"><span class="pre">Scope</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.scope.Scope.validator"><code class="docutils literal notranslate"><span class="pre">Scope.validator</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.scope.Scope.Name"><code class="docutils literal notranslate"><span class="pre">Scope.Name</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.scope.Scope.calc_scope_update"><code class="docutils literal notranslate"><span class="pre">Scope.calc_scope_update()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.scope.Scope.db"><code class="docutils literal notranslate"><span class="pre">Scope.db</span></code></a></li>
@@ -2057,6 +2065,8 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.scope.Scope.permissions"><code class="docutils literal notranslate"><span class="pre">Scope.permissions</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.scope.Scope.remove"><code class="docutils literal notranslate"><span class="pre">Scope.remove()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.scope.Scope.remove_partial"><code class="docutils literal notranslate"><span class="pre">Scope.remove_partial()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.scope.Scope.validate_format"><code class="docutils literal notranslate"><span class="pre">Scope.validate_format()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#id0"><code class="docutils literal notranslate"><span class="pre">Scope.validator</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -2116,6 +2126,16 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.system.System.db"><code class="docutils literal notranslate"><span class="pre">System.db</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.system.System.movaidb"><code class="docutils literal notranslate"><span class="pre">System.movaidb</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.system.System.scope"><code class="docutils literal notranslate"><span class="pre">System.scope</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dal.scopes.html#module-dal.scopes.translation">dal.scopes.translation module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.translation.Translation"><code class="docutils literal notranslate"><span class="pre">Translation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.translation.Translation.Name"><code class="docutils literal notranslate"><span class="pre">Translation.Name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.translation.Translation.db"><code class="docutils literal notranslate"><span class="pre">Translation.db</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.translation.Translation.movaidb"><code class="docutils literal notranslate"><span class="pre">Translation.movaidb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.translation.Translation.scope"><code class="docutils literal notranslate"><span class="pre">Translation.scope</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -2361,6 +2381,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.Scope"><code class="docutils literal notranslate"><span class="pre">Scope</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Scope.validator"><code class="docutils literal notranslate"><span class="pre">Scope.validator</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Scope.Name"><code class="docutils literal notranslate"><span class="pre">Scope.Name</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Scope.calc_scope_update"><code class="docutils literal notranslate"><span class="pre">Scope.calc_scope_update()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Scope.db"><code class="docutils literal notranslate"><span class="pre">Scope.db</span></code></a></li>
@@ -2372,6 +2393,8 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Scope.permissions"><code class="docutils literal notranslate"><span class="pre">Scope.permissions</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Scope.remove"><code class="docutils literal notranslate"><span class="pre">Scope.remove()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Scope.remove_partial"><code class="docutils literal notranslate"><span class="pre">Scope.remove_partial()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Scope.validate_format"><code class="docutils literal notranslate"><span class="pre">Scope.validate_format()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#id1"><code class="docutils literal notranslate"><span class="pre">Scope.validator</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.StateMachine"><code class="docutils literal notranslate"><span class="pre">StateMachine</span></code></a><ul>
@@ -2403,6 +2426,13 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.System.db"><code class="docutils literal notranslate"><span class="pre">System.db</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.System.movaidb"><code class="docutils literal notranslate"><span class="pre">System.movaidb</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.System.scope"><code class="docutils literal notranslate"><span class="pre">System.scope</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.Translation"><code class="docutils literal notranslate"><span class="pre">Translation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Translation.Name"><code class="docutils literal notranslate"><span class="pre">Translation.Name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Translation.db"><code class="docutils literal notranslate"><span class="pre">Translation.db</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Translation.movaidb"><code class="docutils literal notranslate"><span class="pre">Translation.movaidb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Translation.scope"><code class="docutils literal notranslate"><span class="pre">Translation.scope</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.User"><code class="docutils literal notranslate"><span class="pre">User</span></code></a><ul>
@@ -2590,6 +2620,11 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="dal.utils.html#module-dal.utils.constants">dal.utils.constants module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.utils.html#dal.utils.constants.REST_SCOPES"><code class="docutils literal notranslate"><span class="pre">REST_SCOPES</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dal.utils.html#dal.utils.constants.SCOPES_TO_TRACK"><code class="docutils literal notranslate"><span class="pre">SCOPES_TO_TRACK</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="dal.utils.html#dal-utils-middleware-module">dal.utils.middleware module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dal.utils.html#module-dal.utils.redis_mocks">dal.utils.redis_mocks module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="dal.utils.html#dal.utils.redis_mocks.FakeAsyncConnection"><code class="docutils literal notranslate"><span class="pre">FakeAsyncConnection</span></code></a><ul>
@@ -2615,10 +2650,15 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="dal.validation.html">dal.validation package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dal.validation.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dal.validation.html#module-dal.validation.constants">dal.validation.constants module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dal.validation.html#module-dal.validation.schema">dal.validation.schema module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.schema.Schema"><code class="docutils literal notranslate"><span class="pre">Schema</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.schema.Schema.validate"><code class="docutils literal notranslate"><span class="pre">Schema.validate()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.schema.Schema.version"><code class="docutils literal notranslate"><span class="pre">Schema.version</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.schema.ValidationResult"><code class="docutils literal notranslate"><span class="pre">ValidationResult</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.schema.ValidationResult.message"><code class="docutils literal notranslate"><span class="pre">ValidationResult.message</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.schema.ValidationResult.status"><code class="docutils literal notranslate"><span class="pre">ValidationResult.status</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -2633,7 +2673,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="dal.validation.html#module-dal.validation.validator">dal.validation.validator module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.validator.JsonValidator"><code class="docutils literal notranslate"><span class="pre">JsonValidator</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.validator.JsonValidator.load_schema"><code class="docutils literal notranslate"><span class="pre">JsonValidator.load_schema()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.validator.JsonValidator.VERSION"><code class="docutils literal notranslate"><span class="pre">JsonValidator.VERSION</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.validator.JsonValidator.validate"><code class="docutils literal notranslate"><span class="pre">JsonValidator.validate()</span></code></a></li>
 </ul>
 </li>
@@ -2641,13 +2681,13 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="dal.validation.html#module-dal.validation">Module contents</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.JsonValidator"><code class="docutils literal notranslate"><span class="pre">JsonValidator</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.JsonValidator.load_schema"><code class="docutils literal notranslate"><span class="pre">JsonValidator.load_schema()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.JsonValidator.VERSION"><code class="docutils literal notranslate"><span class="pre">JsonValidator.VERSION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.JsonValidator.schema_types"><code class="docutils literal notranslate"><span class="pre">JsonValidator.schema_types</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.JsonValidator.validate"><code class="docutils literal notranslate"><span class="pre">JsonValidator.validate()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.Schema"><code class="docutils literal notranslate"><span class="pre">Schema</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.Schema.validate"><code class="docutils literal notranslate"><span class="pre">Schema.validate()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.Schema.version"><code class="docutils literal notranslate"><span class="pre">Schema.version</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.Template"><code class="docutils literal notranslate"><span class="pre">Template</span></code></a><ul>

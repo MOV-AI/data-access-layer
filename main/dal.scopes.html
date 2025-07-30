@@ -74,6 +74,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="permissions.html">Resource permissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="robot_parameters.html">Robot Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schemas.html">Schemas and validation</a></li>
 </ul>
 
         </div>
@@ -1443,11 +1444,33 @@ Proprietary and confidential</p>
 <p>Developers:
 - Manuel Silva (<a class="reference external" href="mailto:manuel&#46;silva&#37;&#52;&#48;mov&#46;ai">manuel<span>&#46;</span>silva<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020
 - Tiago Paulino (<a class="reference external" href="mailto:tiago&#37;&#52;&#48;mov&#46;ai">tiago<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.scopes.scope.SCOPES_TO_VALIDATE">
+<span class="sig-prename descclassname"><span class="pre">dal.scopes.scope.</span></span><span class="sig-name descname"><span class="pre">SCOPES_TO_VALIDATE</span></span><a class="headerlink" href="#dal.scopes.scope.SCOPES_TO_VALIDATE" title="Permalink to this definition"></a></dt>
+<dd><p>List of scopes that will be validated before writing into redis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#dal.scopes.structures.List" title="dal.scopes.structures.List">List</a>[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="dal.scopes.scope.Scope">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.scopes.scope.</span></span><span class="sig-name descname"><span class="pre">Scope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'global'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.scope.Scope" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dal.scopes.structures.Struct" title="dal.scopes.structures.Struct"><code class="xref py py-class docutils literal notranslate"><span class="pre">Struct</span></code></a></p>
-<p>A scope</p>
+<p>Scope main class.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.scopes.scope.Scope.validator">
+<span class="sig-name descname"><span class="pre">validator</span></span><a class="headerlink" href="#dal.scopes.scope.Scope.validator" title="Permalink to this definition"></a></dt>
+<dd><p>Validator for the scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dal.validation.html#dal.validation.validator.JsonValidator" title="dal.validation.validator.JsonValidator">JsonValidator</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dal.scopes.scope.Scope.Name">
 <span class="sig-name descname"><span class="pre">Name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dal.scopes.scope.Scope.Name" title="Permalink to this definition"></a></dt>
@@ -1455,8 +1478,22 @@ Proprietary and confidential</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.scope.Scope.calc_scope_update">
-<span class="sig-name descname"><span class="pre">calc_scope_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">old_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.scope.Scope.calc_scope_update" title="Permalink to this definition"></a></dt>
-<dd><p>Calc the objects differences and returns list with dict keys to delete/set</p>
+<span class="sig-name descname"><span class="pre">calc_scope_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">old_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.scope.Scope.calc_scope_update" title="Permalink to this definition"></a></dt>
+<dd><p>Calc the objects differences and returns list with dict keys to delete/set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>old_dict</strong> (<em>dict</em>) – Old scope dictionary.</p></li>
+<li><p><strong>new_dict</strong> (<em>dict</em>) – New scope dictionary.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="dal.exceptions.html#dal.exceptions.exceptions.SchemaTypeNotKnown" title="dal.exceptions.exceptions.SchemaTypeNotKnown"><strong>SchemaTypeNotKnown</strong></a> – If the scope is not known to the validator.</p></li>
+<li><p><strong>ValueError</strong> – If the data does not conform to the schema.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1506,6 +1543,25 @@ Proprietary and confidential</p>
 <span class="sig-name descname"><span class="pre">remove_partial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict_key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.scope.Scope.remove_partial" title="Permalink to this definition"></a></dt>
 <dd><p>Remove Scope key</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.scope.Scope.validate_format">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.scope.Scope.validate_format" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the data is in a valid format for this scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="dal.exceptions.html#dal.exceptions.exceptions.SchemaTypeNotKnown" title="dal.exceptions.exceptions.SchemaTypeNotKnown"><strong>SchemaTypeNotKnown</strong></a> – If the scope is not known to the validator.</p></li>
+<li><p><strong>ValueError</strong> – If the data does not conform to the schema.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">validator</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;dal.validation.validator.JsonValidator</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#id0" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -1749,6 +1805,37 @@ Proprietary and confidential</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dal.scopes.system.System.scope">
 <span class="sig-name descname"><span class="pre">scope</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'System'</span></em><a class="headerlink" href="#dal.scopes.system.System.scope" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dal.scopes.translation">
+<span id="dal-scopes-translation-module"></span><h2>dal.scopes.translation module<a class="headerlink" href="#module-dal.scopes.translation" title="Permalink to this heading"></a></h2>
+<p>Translation scope.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.scopes.translation.Translation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.scopes.translation.</span></span><span class="sig-name descname"><span class="pre">Translation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'latest'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'global'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.translation.Translation" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.scopes.scope.Scope" title="dal.scopes.scope.Scope"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scope</span></code></a></p>
+<p>Translation scope.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.scopes.translation.Translation.Name">
+<span class="sig-name descname"><span class="pre">Name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dal.scopes.translation.Translation.Name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.scopes.translation.Translation.db">
+<span class="sig-name descname"><span class="pre">db</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dal.scopes.translation.Translation.db" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.scopes.translation.Translation.movaidb">
+<span class="sig-name descname"><span class="pre">movaidb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="dal.movaidb.html#dal.movaidb.database.MovaiDB" title="dal.movaidb.database.MovaiDB"><span class="pre">MovaiDB</span></a></em><a class="headerlink" href="#dal.scopes.translation.Translation.movaidb" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.scopes.translation.Translation.scope">
+<span class="sig-name descname"><span class="pre">scope</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Translation'</span></em><a class="headerlink" href="#dal.scopes.translation.Translation.scope" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -3161,7 +3248,18 @@ When Robot groups are implemented it should merge with the group configuration</
 <dt class="sig sig-object py" id="dal.scopes.Scope">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.scopes.</span></span><span class="sig-name descname"><span class="pre">Scope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'global'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.Scope" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dal.scopes.structures.Struct" title="dal.scopes.structures.Struct"><code class="xref py py-class docutils literal notranslate"><span class="pre">Struct</span></code></a></p>
-<p>A scope</p>
+<p>Scope main class.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.scopes.Scope.validator">
+<span class="sig-name descname"><span class="pre">validator</span></span><a class="headerlink" href="#dal.scopes.Scope.validator" title="Permalink to this definition"></a></dt>
+<dd><p>Validator for the scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dal.validation.html#dal.validation.validator.JsonValidator" title="dal.validation.validator.JsonValidator">JsonValidator</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dal.scopes.Scope.Name">
 <span class="sig-name descname"><span class="pre">Name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dal.scopes.Scope.Name" title="Permalink to this definition"></a></dt>
@@ -3169,8 +3267,22 @@ When Robot groups are implemented it should merge with the group configuration</
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.Scope.calc_scope_update">
-<span class="sig-name descname"><span class="pre">calc_scope_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">old_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.Scope.calc_scope_update" title="Permalink to this definition"></a></dt>
-<dd><p>Calc the objects differences and returns list with dict keys to delete/set</p>
+<span class="sig-name descname"><span class="pre">calc_scope_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">old_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.Scope.calc_scope_update" title="Permalink to this definition"></a></dt>
+<dd><p>Calc the objects differences and returns list with dict keys to delete/set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>old_dict</strong> (<em>dict</em>) – Old scope dictionary.</p></li>
+<li><p><strong>new_dict</strong> (<em>dict</em>) – New scope dictionary.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="dal.exceptions.html#dal.exceptions.exceptions.SchemaTypeNotKnown" title="dal.exceptions.exceptions.SchemaTypeNotKnown"><strong>SchemaTypeNotKnown</strong></a> – If the scope is not known to the validator.</p></li>
+<li><p><strong>ValueError</strong> – If the data does not conform to the schema.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
@@ -3220,6 +3332,25 @@ When Robot groups are implemented it should merge with the group configuration</
 <span class="sig-name descname"><span class="pre">remove_partial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict_key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.Scope.remove_partial" title="Permalink to this definition"></a></dt>
 <dd><p>Remove Scope key</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.Scope.validate_format">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.Scope.validate_format" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the data is in a valid format for this scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="dal.exceptions.html#dal.exceptions.exceptions.SchemaTypeNotKnown" title="dal.exceptions.exceptions.SchemaTypeNotKnown"><strong>SchemaTypeNotKnown</strong></a> – If the scope is not known to the validator.</p></li>
+<li><p><strong>ValueError</strong> – If the data does not conform to the schema.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">validator</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;dal.validation.validator.JsonValidator</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#id1" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -3355,6 +3486,33 @@ When Robot groups are implemented it should merge with the group configuration</
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dal.scopes.System.scope">
 <span class="sig-name descname"><span class="pre">scope</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'System'</span></em><a class="headerlink" href="#dal.scopes.System.scope" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.scopes.Translation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.scopes.</span></span><span class="sig-name descname"><span class="pre">Translation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'latest'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'global'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.Translation" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.scopes.scope.Scope" title="dal.scopes.scope.Scope"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scope</span></code></a></p>
+<p>Translation scope.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.scopes.Translation.Name">
+<span class="sig-name descname"><span class="pre">Name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dal.scopes.Translation.Name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.scopes.Translation.db">
+<span class="sig-name descname"><span class="pre">db</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dal.scopes.Translation.db" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.scopes.Translation.movaidb">
+<span class="sig-name descname"><span class="pre">movaidb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="dal.movaidb.html#dal.movaidb.database.MovaiDB" title="dal.movaidb.database.MovaiDB"><span class="pre">MovaiDB</span></a></em><a class="headerlink" href="#dal.scopes.Translation.movaidb" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.scopes.Translation.scope">
+<span class="sig-name descname"><span class="pre">scope</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Translation'</span></em><a class="headerlink" href="#dal.scopes.Translation.scope" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

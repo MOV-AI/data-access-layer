@@ -74,6 +74,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="permissions.html">Resource permissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="robot_parameters.html">Robot Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schemas.html">Schemas and validation</a></li>
 </ul>
 
         </div>
@@ -176,12 +177,6 @@ Proprietary and confidential</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.API.get_schema">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.API.get_schema" title="Permalink to this definition"></a></dt>
-<dd><p>return scope schema for the specifed version</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.API.keys">
 <span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">a</span> <span class="pre">set-like</span> <span class="pre">object</span> <span class="pre">providing</span> <span class="pre">a</span> <span class="pre">view</span> <span class="pre">on</span> <span class="pre">D's</span> <span class="pre">keys</span></span></span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.API.keys" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
@@ -264,7 +259,7 @@ Proprietary and confidential</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.create_pipe">
-<span class="sig-name descname"><span class="pre">create_pipe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">write</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.create_pipe" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">create_pipe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">write</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Pipeline</span></span></span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.create_pipe" title="Permalink to this definition"></a></dt>
 <dd><p>Create a pipeline</p>
 </dd></dl>
 
@@ -323,7 +318,7 @@ Proprietary and confidential</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.execute_pipe">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">execute_pipe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipe</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.execute_pipe" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">execute_pipe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Pipeline</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.execute_pipe" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -673,12 +668,6 @@ Proprietary and confidential</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="dal.movaidb.MovaiDB.API.get_schema">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.MovaiDB.API.get_schema" title="Permalink to this definition"></a></dt>
-<dd><p>return scope schema for the specifed version</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="dal.movaidb.MovaiDB.API.keys">
 <span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">a</span> <span class="pre">set-like</span> <span class="pre">object</span> <span class="pre">providing</span> <span class="pre">a</span> <span class="pre">view</span> <span class="pre">on</span> <span class="pre">D's</span> <span class="pre">keys</span></span></span><a class="headerlink" href="#dal.movaidb.MovaiDB.API.keys" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
@@ -761,7 +750,7 @@ Proprietary and confidential</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.movaidb.MovaiDB.create_pipe">
-<span class="sig-name descname"><span class="pre">create_pipe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">write</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.MovaiDB.create_pipe" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">create_pipe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">write</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Pipeline</span></span></span><a class="headerlink" href="#dal.movaidb.MovaiDB.create_pipe" title="Permalink to this definition"></a></dt>
 <dd><p>Create a pipeline</p>
 </dd></dl>
 
@@ -830,7 +819,7 @@ Proprietary and confidential</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.movaidb.MovaiDB.execute_pipe">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">execute_pipe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipe</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.MovaiDB.execute_pipe" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">execute_pipe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Pipeline</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.MovaiDB.execute_pipe" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">

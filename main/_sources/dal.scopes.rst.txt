@@ -132,6 +132,14 @@ dal.scopes.system module
    :undoc-members:
    :show-inheritance:
 
+dal.scopes.translation module
+-----------------------------
+
+.. automodule:: dal.scopes.translation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dal.scopes.user module
 ----------------------
 

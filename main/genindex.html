@@ -48,6 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="modules.html">data-access-layer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="permissions.html">Resource permissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="robot_parameters.html">Robot Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schemas.html">Schemas and validation</a></li>
 </ul>
 
         </div>
@@ -682,12 +683,6 @@
         <li><a href="dal.models.html#dal.models.role.Role.create_default_roles">(dal.models.role.Role class method)</a>
 </li>
       </ul></li>
-      <li><a href="dal.classes.filesystem.html#dal.classes.filesystem.FileSystem.create_folder_recursively">create_folder_recursively() (dal.classes.filesystem.FileSystem static method)</a>
-
-      <ul>
-        <li><a href="dal.classes.filesystem.html#dal.classes.filesystem.filesystem.FileSystem.create_folder_recursively">(dal.classes.filesystem.filesystem.FileSystem static method)</a>
-</li>
-      </ul></li>
       <li><a href="dal.models.html#dal.models.User.create_id">create_id() (dal.models.User method)</a>
 
       <ul>
@@ -718,12 +713,6 @@
 
       <ul>
         <li><a href="dal.movaidb.html#dal.movaidb.MovaiDB.create_pipe">(dal.movaidb.MovaiDB method)</a>
-</li>
-      </ul></li>
-      <li><a href="dal.classes.filesystem.html#dal.classes.filesystem.FileSystem.create_symbolic_link">create_symbolic_link() (dal.classes.filesystem.FileSystem static method)</a>
-
-      <ul>
-        <li><a href="dal.classes.filesystem.html#dal.classes.filesystem.filesystem.FileSystem.create_symbolic_link">(dal.classes.filesystem.filesystem.FileSystem static method)</a>
 </li>
       </ul></li>
       <li><a href="dal.data.html#dal.data.workspace.WorkspaceNode.create_version">create_version() (dal.data.workspace.WorkspaceNode method)</a>
@@ -1168,6 +1157,13 @@
 </li>
       </ul></li>
       <li>
+    dal.models.translation
+
+      <ul>
+        <li><a href="dal.models.html#module-dal.models.translation">module</a>
+</li>
+      </ul></li>
+      <li>
     dal.models.user
 
       <ul>
@@ -1462,6 +1458,13 @@
 </li>
       </ul></li>
       <li>
+    dal.scopes.translation
+
+      <ul>
+        <li><a href="dal.scopes.html#module-dal.scopes.translation">module</a>
+</li>
+      </ul></li>
+      <li>
     dal.scopes.user
 
       <ul>
@@ -1527,6 +1530,13 @@
 </li>
       </ul></li>
       <li>
+    dal.utils.constants
+
+      <ul>
+        <li><a href="dal.utils.html#module-dal.utils.constants">module</a>
+</li>
+      </ul></li>
+      <li>
     dal.utils.redis_mocks
 
       <ul>
@@ -1538,6 +1548,13 @@
 
       <ul>
         <li><a href="dal.validation.html#module-dal.validation">module</a>
+</li>
+      </ul></li>
+      <li>
+    dal.validation.constants
+
+      <ul>
+        <li><a href="dal.validation.html#module-dal.validation.constants">module</a>
 </li>
       </ul></li>
       <li>
@@ -1625,6 +1642,10 @@
         <li><a href="dal.scopes.html#dal.scopes.System.db">(dal.scopes.System attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.system.System.db">(dal.scopes.system.System attribute)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.Translation.db">(dal.scopes.Translation attribute)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.translation.Translation.db">(dal.scopes.translation.Translation attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.User.db">(dal.scopes.User attribute)</a>
 </li>
@@ -1725,13 +1746,9 @@
         <li><a href="dal.models.html#dal.models.lock.Lock.DEFAULT_MAX_RETRIES">(dal.models.lock.Lock attribute)</a>
 </li>
       </ul></li>
-      <li><a href="dal.classes.filesystem.html#dal.classes.filesystem.FileSystem.delete">delete() (dal.classes.filesystem.FileSystem static method)</a>
+      <li><a href="dal.data.html#dal.data.workspace.WorkspaceNode.delete">delete() (dal.data.workspace.WorkspaceNode method)</a>
 
       <ul>
-        <li><a href="dal.classes.filesystem.html#dal.classes.filesystem.filesystem.FileSystem.delete">(dal.classes.filesystem.filesystem.FileSystem static method)</a>
-</li>
-        <li><a href="dal.data.html#dal.data.workspace.WorkspaceNode.delete">(dal.data.workspace.WorkspaceNode method)</a>
-</li>
         <li><a href="dal.models.html#dal.models.FlowLinks.delete">(dal.models.FlowLinks method)</a>
 </li>
         <li><a href="dal.models.html#dal.models.flowlinks.FlowLinks.delete">(dal.models.flowlinks.FlowLinks method)</a>
@@ -2655,12 +2672,6 @@
         <li><a href="dal.movaidb.html#dal.movaidb.MovaiDB.get_hash">(dal.movaidb.MovaiDB method)</a>
 </li>
       </ul></li>
-      <li><a href="dal.classes.filesystem.html#dal.classes.filesystem.FileSystem.get_home_folder">get_home_folder() (dal.classes.filesystem.FileSystem static method)</a>
-
-      <ul>
-        <li><a href="dal.classes.filesystem.html#dal.classes.filesystem.filesystem.FileSystem.get_home_folder">(dal.classes.filesystem.filesystem.FileSystem static method)</a>
-</li>
-      </ul></li>
       <li><a href="dal.classes.utils.html#dal.classes.utils.local_robot_info.LocalRobotInfo.get_id">get_id() (dal.classes.utils.local_robot_info.LocalRobotInfo static method)</a>
 </li>
       <li><a href="dal.backup.html#dal.backup.backup.BackupManager.get_job_state">get_job_state() (dal.backup.backup.BackupManager static method)</a>
@@ -3095,12 +3106,6 @@
         <li><a href="dal.models.html#dal.models.ACLManager.get_roles">(dal.models.ACLManager static method)</a>
 </li>
       </ul></li>
-      <li><a href="dal.movaidb.html#dal.movaidb.database.MovaiDB.API.get_schema">get_schema() (dal.movaidb.database.MovaiDB.API class method)</a>
-
-      <ul>
-        <li><a href="dal.movaidb.html#dal.movaidb.MovaiDB.API.get_schema">(dal.movaidb.MovaiDB.API class method)</a>
-</li>
-      </ul></li>
       <li><a href="dal.data.html#dal.data.archive.RemoteArchive.get_scope">get_scope() (dal.data.archive.RemoteArchive method)</a>
 
       <ul>
@@ -3471,13 +3476,9 @@
         <li><a href="dal.models.html#dal.models.nodeinst.NodeInst.is_dummy">(dal.models.nodeinst.NodeInst property)</a>
 </li>
       </ul></li>
-      <li><a href="dal.classes.filesystem.html#dal.classes.filesystem.FileSystem.is_exist">is_exist() (dal.classes.filesystem.FileSystem static method)</a>
+      <li><a href="dal.classes.utils.html#dal.classes.utils.secretkey.SecretKey.is_exist">is_exist() (dal.classes.utils.secretkey.SecretKey class method)</a>
 
       <ul>
-        <li><a href="dal.classes.filesystem.html#dal.classes.filesystem.filesystem.FileSystem.is_exist">(dal.classes.filesystem.filesystem.FileSystem static method)</a>
-</li>
-        <li><a href="dal.classes.utils.html#dal.classes.utils.secretkey.SecretKey.is_exist">(dal.classes.utils.secretkey.SecretKey class method)</a>
-</li>
         <li><a href="dal.models.html#dal.models.AclObject.is_exist">(dal.models.AclObject class method)</a>
 </li>
         <li><a href="dal.models.html#dal.models.aclobject.AclObject.is_exist">(dal.models.aclobject.AclObject class method)</a>
@@ -3941,12 +3942,6 @@
       </ul></li>
       <li><a href="dal.utils.html#dal.utils.callback.UserFunctions.load_libraries">load_libraries() (dal.utils.callback.UserFunctions method)</a>
 </li>
-      <li><a href="dal.validation.html#dal.validation.JsonValidator.load_schema">load_schema() (dal.validation.JsonValidator method)</a>
-
-      <ul>
-        <li><a href="dal.validation.html#dal.validation.validator.JsonValidator.load_schema">(dal.validation.validator.JsonValidator method)</a>
-</li>
-      </ul></li>
       <li><a href="dal.movaidb.html#dal.movaidb.database.MovaiDB.API.load_schemas_from_files">load_schemas_from_files() (dal.movaidb.database.MovaiDB.API method)</a>
 
       <ul>
@@ -4073,6 +4068,8 @@
         <li><a href="dal.scopes.html#dal.scopes.message.Message">(class in dal.scopes.message)</a>
 </li>
       </ul></li>
+      <li><a href="dal.validation.html#dal.validation.schema.ValidationResult.message">message (dal.validation.schema.ValidationResult attribute)</a>
+</li>
       <li><a href="dal.backup.html#dal.backup.backup.BackupJob.metadata">metadata (dal.backup.backup.BackupJob property)</a>
 </li>
       <li><a href="dal.models.html#dal.models.InternalUser.min_password_length">min_password_length (dal.models.InternalUser attribute)</a>
@@ -4209,6 +4206,8 @@
 </li>
         <li><a href="dal.models.html#module-dal.models.system">dal.models.system</a>
 </li>
+        <li><a href="dal.models.html#module-dal.models.translation">dal.models.translation</a>
+</li>
         <li><a href="dal.models.html#module-dal.models.user">dal.models.user</a>
 </li>
         <li><a href="dal.models.html#module-dal.models.var">dal.models.var</a>
@@ -4293,6 +4292,8 @@
 </li>
         <li><a href="dal.scopes.html#module-dal.scopes.system">dal.scopes.system</a>
 </li>
+        <li><a href="dal.scopes.html#module-dal.scopes.translation">dal.scopes.translation</a>
+</li>
         <li><a href="dal.scopes.html#module-dal.scopes.user">dal.scopes.user</a>
 </li>
         <li><a href="dal.scopes.html#module-dal.scopes.widget">dal.scopes.widget</a>
@@ -4311,9 +4312,13 @@
 </li>
         <li><a href="dal.utils.html#module-dal.utils.callback">dal.utils.callback</a>
 </li>
+        <li><a href="dal.utils.html#module-dal.utils.constants">dal.utils.constants</a>
+</li>
         <li><a href="dal.utils.html#module-dal.utils.redis_mocks">dal.utils.redis_mocks</a>
 </li>
         <li><a href="dal.validation.html#module-dal.validation">dal.validation</a>
+</li>
+        <li><a href="dal.validation.html#module-dal.validation.constants">dal.validation.constants</a>
 </li>
         <li><a href="dal.validation.html#module-dal.validation.schema">dal.validation.schema</a>
 </li>
@@ -4394,6 +4399,10 @@
         <li><a href="dal.scopes.html#dal.scopes.System.movaidb">(dal.scopes.System attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.system.System.movaidb">(dal.scopes.system.System attribute)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.Translation.movaidb">(dal.scopes.Translation attribute)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.translation.Translation.movaidb">(dal.scopes.translation.Translation attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.User.movaidb">(dal.scopes.User attribute)</a>
 </li>
@@ -4488,6 +4497,10 @@
         <li><a href="dal.scopes.html#dal.scopes.System.Name">(dal.scopes.System attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.system.System.Name">(dal.scopes.system.System attribute)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.Translation.Name">(dal.scopes.Translation attribute)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.translation.Translation.Name">(dal.scopes.translation.Translation attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.User.Name">(dal.scopes.User attribute)</a>
 </li>
@@ -4974,13 +4987,9 @@
         <li><a href="dal.models.html#dal.models.lock.Lock.reacquire">(dal.models.lock.Lock method)</a>
 </li>
       </ul></li>
-      <li><a href="dal.classes.filesystem.html#dal.classes.filesystem.FileSystem.read">read() (dal.classes.filesystem.FileSystem static method)</a>
+      <li><a href="dal.data.html#dal.data.workspace.WorkspaceNode.read">read() (dal.data.workspace.WorkspaceNode method)</a>
 
       <ul>
-        <li><a href="dal.classes.filesystem.html#dal.classes.filesystem.filesystem.FileSystem.read">(dal.classes.filesystem.filesystem.FileSystem static method)</a>
-</li>
-        <li><a href="dal.data.html#dal.data.workspace.WorkspaceNode.read">(dal.data.workspace.WorkspaceNode method)</a>
-</li>
         <li><a href="dal.plugins.classes.html#dal.plugins.classes.persistence.PersistencePlugin.read">(dal.plugins.classes.persistence.PersistencePlugin method)</a>
 </li>
         <li><a href="dal.plugins.classes.html#dal.plugins.classes.PersistencePlugin.read">(dal.plugins.classes.PersistencePlugin method)</a>
@@ -5018,9 +5027,13 @@
         <li><a href="dal.models.html#dal.models.scopestree.ScopesTree.read_from_path">(dal.models.scopestree.ScopesTree method)</a>
 </li>
       </ul></li>
-      <li><a href="dal.plugins.classes.html#dal.plugins.classes.Resource.read_json">read_json() (dal.plugins.classes.Resource static method)</a>
+      <li><a href="dal.classes.filesystem.html#dal.classes.filesystem.FileSystem.read_json">read_json() (dal.classes.filesystem.FileSystem static method)</a>
 
       <ul>
+        <li><a href="dal.classes.filesystem.html#dal.classes.filesystem.filesystem.FileSystem.read_json">(dal.classes.filesystem.filesystem.FileSystem static method)</a>
+</li>
+        <li><a href="dal.plugins.classes.html#dal.plugins.classes.Resource.read_json">(dal.plugins.classes.Resource static method)</a>
+</li>
         <li><a href="dal.plugins.classes.html#dal.plugins.classes.resource.Resource.read_json">(dal.plugins.classes.resource.Resource static method)</a>
 </li>
         <li><a href="dal.plugins.classes.html#dal.plugins.classes.resource.ResourcePlugin.read_json">(dal.plugins.classes.resource.ResourcePlugin method)</a>
@@ -5312,12 +5325,6 @@
         <li><a href="dal.scopes.html#dal.scopes.scope.Scope.remove_partial">(dal.scopes.scope.Scope method)</a>
 </li>
       </ul></li>
-      <li><a href="dal.classes.filesystem.html#dal.classes.filesystem.FileSystem.remove_recursively">remove_recursively() (dal.classes.filesystem.FileSystem static method)</a>
-
-      <ul>
-        <li><a href="dal.classes.filesystem.html#dal.classes.filesystem.filesystem.FileSystem.remove_recursively">(dal.classes.filesystem.filesystem.FileSystem static method)</a>
-</li>
-      </ul></li>
       <li><a href="dal.models.html#dal.models.AclObject.remove_role">remove_role() (dal.models.AclObject method)</a>
 
       <ul>
@@ -5362,12 +5369,6 @@
         <li><a href="dal.scopes.html#dal.scopes.Struct.rename">(dal.scopes.Struct method)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.structures.Struct.rename">(dal.scopes.structures.Struct method)</a>
-</li>
-      </ul></li>
-      <li><a href="dal.classes.filesystem.html#dal.classes.filesystem.FileSystem.rename_folder">rename_folder() (dal.classes.filesystem.FileSystem static method)</a>
-
-      <ul>
-        <li><a href="dal.classes.filesystem.html#dal.classes.filesystem.filesystem.FileSystem.rename_folder">(dal.classes.filesystem.filesystem.FileSystem static method)</a>
 </li>
       </ul></li>
       <li><a href="dal.helpers.html#dal.helpers.Helpers.replace_dict_values">replace_dict_values() (dal.helpers.Helpers static method)</a>
@@ -5419,6 +5420,8 @@
 </li>
       </ul></li>
       <li><a href="dal.models.html#dal.models.acl.ResourceType">ResourceType (class in dal.models.acl)</a>
+</li>
+      <li><a href="dal.utils.html#dal.utils.constants.REST_SCOPES">REST_SCOPES (in module dal.utils.constants)</a>
 </li>
       <li><a href="dal.data.html#dal.data.archive.RemoteArchive.restore">restore() (dal.data.archive.RemoteArchive method)</a>
 
@@ -5582,6 +5585,8 @@
       </ul></li>
       <li><a href="dal.exceptions.html#dal.exceptions.exceptions.SchemaErr.SCHEMA_TYPE_NOT_KNOWN">SCHEMA_TYPE_NOT_KNOWN (dal.exceptions.exceptions.SchemaErr attribute)</a>
 </li>
+      <li><a href="dal.validation.html#dal.validation.JsonValidator.schema_types">schema_types (dal.validation.JsonValidator attribute)</a>
+</li>
       <li><a href="dal.models.html#dal.models.ScopeInstanceVersionNode.schema_version">schema_version (dal.models.ScopeInstanceVersionNode property)</a>
 
       <ul>
@@ -5723,6 +5728,10 @@
 </li>
         <li><a href="dal.scopes.html#dal.scopes.system.System.scope">(dal.scopes.system.System attribute)</a>
 </li>
+        <li><a href="dal.scopes.html#dal.scopes.Translation.scope">(dal.scopes.Translation attribute)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.translation.Translation.scope">(dal.scopes.translation.Translation attribute)</a>
+</li>
         <li><a href="dal.scopes.html#dal.scopes.User.scope">(dal.scopes.User attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.user.User.scope">(dal.scopes.user.User attribute)</a>
@@ -5765,6 +5774,10 @@
 </li>
       </ul></li>
       <li><a href="dal.tools.html#dal.tools.backup.Backup.SCOPES">SCOPES (dal.tools.backup.Backup attribute)</a>
+</li>
+      <li><a href="dal.utils.html#dal.utils.constants.SCOPES_TO_TRACK">SCOPES_TO_TRACK (in module dal.utils.constants)</a>
+</li>
+      <li><a href="dal.scopes.html#dal.scopes.scope.SCOPES_TO_VALIDATE">SCOPES_TO_VALIDATE (in module dal.scopes.scope)</a>
 </li>
       <li><a href="dal.models.html#dal.models.ScopesTree">ScopesTree (class in dal.models)</a>
 
@@ -6114,6 +6127,8 @@
         <li><a href="dal.models.html#dal.models.acl.ResourceType.StateMachine">(dal.models.acl.ResourceType attribute)</a>
 </li>
       </ul></li>
+      <li><a href="dal.validation.html#dal.validation.schema.ValidationResult.status">status (dal.validation.schema.ValidationResult attribute)</a>
+</li>
       <li><a href="dal.classes.utils.html#dal.classes.utils.token.TokenManager.store_token">store_token() (dal.classes.utils.token.TokenManager class method)</a>
 </li>
       <li><a href="dal.scopes.html#dal.scopes.Struct">Struct (class in dal.scopes)</a>
@@ -6218,14 +6233,14 @@
       </ul></li>
       <li><a href="dal.tools.html#dal.tools.backup.test_reachable">test_reachable() (in module dal.tools.backup)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.models.html#dal.models.Lock.th_reacquire">th_reacquire() (dal.models.Lock method)</a>
 
       <ul>
         <li><a href="dal.models.html#dal.models.lock.Lock.th_reacquire">(dal.models.lock.Lock method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.helpers.html#dal.helpers.cache.ThreadSafeCache">ThreadSafeCache (class in dal.helpers.cache)</a>
 </li>
       <li><a href="dal.models.html#dal.models.Lock.timeout">timeout (dal.models.Lock attribute)</a>
@@ -6254,6 +6269,16 @@
 
       <ul>
         <li><a href="dal.models.html#dal.models.model.Model.track_object">(dal.models.model.Model method)</a>
+</li>
+      </ul></li>
+      <li><a href="dal.models.html#dal.models.translation.Translation">Translation (class in dal.models.translation)</a>
+
+      <ul>
+        <li><a href="dal.scopes.html#dal.scopes.Translation">(class in dal.scopes)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.translation.Translation">(class in dal.scopes.translation)</a>
+</li>
+        <li><a href="dal.models.html#dal.models.acl.ResourceType.Translation">(dal.models.acl.ResourceType attribute)</a>
 </li>
       </ul></li>
       <li><a href="dal.data.html#dal.data.TreeNode">TreeNode (class in dal.data)</a>
@@ -6446,6 +6471,12 @@
         <li><a href="dal.plugins.persistence.filesystem.html#dal.plugins.persistence.filesystem.FilesystemPlugin.validate_data">(dal.plugins.persistence.filesystem.FilesystemPlugin method)</a>
 </li>
       </ul></li>
+      <li><a href="dal.scopes.html#dal.scopes.Scope.validate_format">validate_format() (dal.scopes.Scope class method)</a>
+
+      <ul>
+        <li><a href="dal.scopes.html#dal.scopes.scope.Scope.validate_format">(dal.scopes.scope.Scope class method)</a>
+</li>
+      </ul></li>
       <li><a href="dal.movaidb.html#dal.movaidb.database.MovaiDB.validate_path">validate_path() (dal.movaidb.database.MovaiDB static method)</a>
 
       <ul>
@@ -6472,6 +6503,14 @@
 </li>
       <li><a href="dal.exceptions.html#dal.exceptions.exceptions.ValidationException">ValidationException</a>
 </li>
+      <li><a href="dal.validation.html#dal.validation.schema.ValidationResult">ValidationResult (class in dal.validation.schema)</a>
+</li>
+      <li><a href="dal.scopes.html#dal.scopes.Scope.validator">validator (dal.scopes.Scope attribute)</a>, <a href="dal.scopes.html#id1">[1]</a>
+
+      <ul>
+        <li><a href="dal.scopes.html#dal.scopes.scope.Scope.validator">(dal.scopes.scope.Scope attribute)</a>, <a href="dal.scopes.html#id0">[1]</a>
+</li>
+      </ul></li>
       <li><a href="dal.data.html#dal.data.schema.SchemaPropertyNode.value">value (dal.data.schema.SchemaPropertyNode property)</a>
 
       <ul>
@@ -6553,9 +6592,11 @@
 </li>
         <li><a href="dal.movaidb.html#dal.movaidb.MovaiDB.API.version">(dal.movaidb.MovaiDB.API property)</a>
 </li>
-        <li><a href="dal.validation.html#dal.validation.Schema.version">(dal.validation.Schema property)</a>
-</li>
-        <li><a href="dal.validation.html#dal.validation.schema.Schema.version">(dal.validation.schema.Schema property)</a>
+      </ul></li>
+      <li><a href="dal.validation.html#dal.validation.JsonValidator.VERSION">VERSION (dal.validation.JsonValidator attribute)</a>
+
+      <ul>
+        <li><a href="dal.validation.html#dal.validation.validator.JsonValidator.VERSION">(dal.validation.validator.JsonValidator attribute)</a>
 </li>
       </ul></li>
       <li><a href="dal.exceptions.html#dal.exceptions.exceptions.GitErr.VERSION_DOES_NOT_EXIST_ERR">VERSION_DOES_NOT_EXIST_ERR (dal.exceptions.exceptions.GitErr attribute)</a>
@@ -6644,23 +6685,19 @@
         <li><a href="dal.data.html#dal.data.workspace.WorkspaceManager">(class in dal.data.workspace)</a>
 </li>
       </ul></li>
-      <li><a href="dal.data.html#dal.data.workspace.WorkspaceNode">WorkspaceNode (class in dal.data.workspace)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dal.data.html#dal.data.workspace.WorkspaceNode">WorkspaceNode (class in dal.data.workspace)</a>
+</li>
       <li><a href="dal.data.html#dal.data.WorkspaceObject">WorkspaceObject (class in dal.data)</a>
 
       <ul>
         <li><a href="dal.data.html#dal.data.workspace.WorkspaceObject">(class in dal.data.workspace)</a>
 </li>
       </ul></li>
-      <li><a href="dal.classes.filesystem.html#dal.classes.filesystem.FileSystem.write">write() (dal.classes.filesystem.FileSystem static method)</a>
+      <li><a href="dal.data.html#dal.data.workspace.WorkspaceNode.write">write() (dal.data.workspace.WorkspaceNode method)</a>
 
       <ul>
-        <li><a href="dal.classes.filesystem.html#dal.classes.filesystem.filesystem.FileSystem.write">(dal.classes.filesystem.filesystem.FileSystem static method)</a>
-</li>
-        <li><a href="dal.data.html#dal.data.workspace.WorkspaceNode.write">(dal.data.workspace.WorkspaceNode method)</a>
-</li>
         <li><a href="dal.models.html#dal.models.ScopeInstanceVersionNode.write">(dal.models.ScopeInstanceVersionNode method)</a>
 </li>
         <li><a href="dal.models.html#dal.models.scopestree.ScopeInstanceVersionNode.write">(dal.models.scopestree.ScopeInstanceVersionNode method)</a>
