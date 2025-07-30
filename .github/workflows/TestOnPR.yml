@@ -5,7 +5,7 @@ on:
       - '**/**'
 jobs:
   CI:
-    uses: MOV-AI/.github/.github/workflows/py-workflow.yml@v2.3
+    uses: MOV-AI/.github/.github/workflows/py-workflow.yml@debug-coverage
     with:
       pre_commit: true
       deploy: false
