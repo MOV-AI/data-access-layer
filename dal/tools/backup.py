@@ -92,8 +92,7 @@ class Factory:
 
 
 class Backup:
-    MOVAI_USERSPACE = os.getenv("MOVAI_USERSPACE")
-    _ROOT_PATH = f"{MOVAI_USERSPACE}/database"
+    """Base class for Importer and Exporter."""
 
     SCOPES = [
         "Flow",
@@ -118,7 +117,7 @@ class Backup:
     def __init__(self, project, debug: bool = False, recursive=True):
         self.project = project
         self.recursive = recursive
-        self.project_path = os.path.join(Backup._ROOT_PATH, project)
+        self.project_path = os.path.abspath(project)
 
         if debug:
             self.log = print
