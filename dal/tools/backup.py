@@ -115,7 +115,6 @@ class Backup:
     ]
 
     def __init__(self, project, debug: bool = False, recursive=True):
-        self.project = project
         self.recursive = recursive
         self.project_path = os.path.abspath(project)
 
