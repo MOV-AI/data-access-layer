@@ -1,7 +1,6 @@
 """Tests for backup tool."""
 import os
 from pathlib import Path
-import pytest
 
 CURR_DIR = Path(os.path.dirname(os.path.realpath(__file__)))
 METADATA_FOLDER = CURR_DIR / ".." / "data" / "metadata"
