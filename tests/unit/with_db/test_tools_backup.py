@@ -88,8 +88,6 @@ class TestToolsBackup:
             "delete_me_fr.po",
         ]
 
-        print(f"Checking {to_check} in {tmp_path}")
-
         equal, diff, err = cmpfiles(
             METADATA_FOLDER / "Translation", tmp_path / "Translation", to_check
         )
