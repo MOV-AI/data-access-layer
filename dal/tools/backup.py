@@ -72,8 +72,6 @@ class ExportException(Exception):
 class RemoveException(Exception):
     """Exception used when removing metadata."""
 
-    pass
-
 
 class Factory:
     CLASSES_CACHE = {}
@@ -203,8 +201,6 @@ class Importer(Backup):
                 print(path[len(self.project_path) + 1 :]) for path in paths
             ]
         else:
-            from dal.movaidb.database import MovaiDB
-
             self._db = MovaiDB()
             self.dry_print = lambda *paths: None
 
@@ -1532,8 +1528,6 @@ class Remover(Backup):
             # remove project root dir from it, plus an extra '/' (+1)
             self.dry_print = lambda *paths: [print(path) for path in paths]
         else:
-            from dal.movaidb.database import MovaiDB
-
             self._db = MovaiDB()
             self.dry_print = lambda *paths: None
 

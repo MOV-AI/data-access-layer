@@ -6,9 +6,6 @@
    Developers:
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
 """
-from io import BytesIO, StringIO
-from json import JSONDecodeError, load
-from os import path
 from dal.plugins.classes import Resource, ResourcePlugin, ResourceException
 
 

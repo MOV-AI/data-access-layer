@@ -245,7 +245,7 @@ class InternalUser(BaseUser):
             raise ValueError(error_msg)
 
         if not self.verify_password(current_password):
-            error_msg = "Current password validation failed. " "Could not change user password"
+            error_msg = "Current password validation failed, could not change user password"
             self.log.error(error_msg)
             raise PasswordError(error_msg)
 
