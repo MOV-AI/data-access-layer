@@ -2,17 +2,14 @@
 import os
 from pathlib import Path
 
-CURR_DIR = Path(os.path.dirname(os.path.realpath(__file__)))
-METADATA_FOLDER = CURR_DIR / ".." / "data" / "metadata"
-
 
 class TestTranslation:
-    def test_translation(self, global_db):
+    def test_translation(self, global_db, metadata_folder):
         from dal.tools.backup import Importer
         from dal.scopes import Translation
 
         tool = Importer(
-            METADATA_FOLDER,
+            metadata_folder,
             force=True,
             dry=False,
             debug=False,
