@@ -1,4 +1,4 @@
-# vTBD
+# v3.6.0
 - [BP-1472](https://movai.atlassian.net/browse/BP-1472): Import / remove / remove Translation scope
 
 # v3.5.1
