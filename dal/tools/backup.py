@@ -752,10 +752,8 @@ class Importer(Backup):
                 if not lang:
                     continue
 
-                data["Translation"][name]["Translations"][lang[0]] = {}
-
                 with open(file) as data_file:
-                    data["Translation"][name]["Translations"][lang[0]]["po"] = data_file.read()
+                    data["Translation"][name]["Translations"][lang[0]] = {"po": data_file.read()}
 
             self._import_data("Translation", name, data)
 
