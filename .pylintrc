@@ -1,5 +1,4 @@
 [MAIN]
-ignore-paths=tests/
 max-line-length=100
 disable=import-error,
     missing-function-docstring,

@@ -1,6 +1,5 @@
 """Tests for backup tool."""
 import os
-from pathlib import Path
 from filecmp import cmpfiles
 
 

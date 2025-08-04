@@ -1,6 +1,4 @@
 """Tests for scopes."""
-import os
-from pathlib import Path
 
 
 class TestTranslation:
