@@ -6,11 +6,8 @@
    Developers:
    - Moawiya Mograbi (moawiya@mov.ai) - 2022
 """
-from git import cmd as git_cmd
-from git import GitCommandError
 from re import search
 from os.path import join
-from dal.exceptions import RepositoryDoesNotExist
 
 
 class GitLink:

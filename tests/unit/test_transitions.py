@@ -4,6 +4,8 @@ from unittest.mock import MagicMock, patch
 from dal.models.flow import Flow
 from dal.models.flowlinks import FlowLinks
 
+# pylint: disable=not-callable
+
 
 class TestFlowGetNodeDependencies(unittest.TestCase):
     def setUp(self):

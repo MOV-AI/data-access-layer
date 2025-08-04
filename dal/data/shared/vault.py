@@ -2,7 +2,6 @@ from datetime import timedelta
 from importlib.util import find_spec
 from os import getenv, environ
 
-from movai_core_shared.logger import Log
 from movai_core_shared.core.secure import generate_secret_string
 from movai_core_shared.envvars import (
     FLEET_NAME,

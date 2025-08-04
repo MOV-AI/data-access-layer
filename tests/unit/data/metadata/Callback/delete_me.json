@@ -10,7 +10,13 @@
             "Message": "",
             "User": "",
             "Version": "",
-            "VersionDelta": {}
+            "VersionDelta": {},
+            "Py3Lib": {
+                "Application": {
+                    "Class": "Application",
+                    "Module": "API2.Application"
+                }
+            }
         }
     }
 }

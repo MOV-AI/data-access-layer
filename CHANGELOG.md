@@ -1,3 +1,6 @@
+# vTBD
+- [BP-1472](https://movai.atlassian.net/browse/BP-1472): Import / remove / remove Translation scope
+
 # v3.5.1
 - [BP-1476](https://movai.atlassian.net/browse/BP-1476): tools.backup root-path (-r) parameter is not working
 
