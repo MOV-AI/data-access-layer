@@ -75,6 +75,7 @@
 <li class="toctree-l1"><a class="reference internal" href="permissions.html">Resource permissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="robot_parameters.html">Robot Parameters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schemas.html">Schemas and validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backup.html">Import, export and remove</a></li>
 </ul>
 
         </div>
@@ -123,7 +124,7 @@ Proprietary and confidential</p>
 <p>Base class for Importer and Exporter.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dal.tools.backup.Backup.SCOPES">
-<span class="sig-name descname"><span class="pre">SCOPES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['Flow',</span> <span class="pre">'Node',</span> <span class="pre">'StateMachine',</span> <span class="pre">'Callback',</span> <span class="pre">'GraphicScene',</span> <span class="pre">'Annotation',</span> <span class="pre">'Package',</span> <span class="pre">'Ports',</span> <span class="pre">'Message',</span> <span class="pre">'GraphicAsset',</span> <span class="pre">'Layout',</span> <span class="pre">'Robot',</span> <span class="pre">'System',</span> <span class="pre">'Configuration',</span> <span class="pre">'TaskTemplate',</span> <span class="pre">'SharedDataTemplate',</span> <span class="pre">'SharedDataEntry']</span></em><a class="headerlink" href="#dal.tools.backup.Backup.SCOPES" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">SCOPES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['Flow',</span> <span class="pre">'Node',</span> <span class="pre">'StateMachine',</span> <span class="pre">'Callback',</span> <span class="pre">'GraphicScene',</span> <span class="pre">'Annotation',</span> <span class="pre">'Package',</span> <span class="pre">'Ports',</span> <span class="pre">'Message',</span> <span class="pre">'GraphicAsset',</span> <span class="pre">'Layout',</span> <span class="pre">'Robot',</span> <span class="pre">'System',</span> <span class="pre">'Configuration',</span> <span class="pre">'TaskTemplate',</span> <span class="pre">'Translation',</span> <span class="pre">'SharedDataTemplate',</span> <span class="pre">'SharedDataEntry']</span></em><a class="headerlink" href="#dal.tools.backup.Backup.SCOPES" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -260,6 +261,11 @@ Proprietary and confidential</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Exporter.export_tasktemplate">
 <span class="sig-name descname"><span class="pre">export_tasktemplate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Exporter.export_tasktemplate" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.tools.backup.Exporter.export_translation">
+<span class="sig-name descname"><span class="pre">export_translation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Exporter.export_translation" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -430,6 +436,12 @@ Proprietary and confidential</p>
 <dt class="sig sig-object py" id="dal.tools.backup.Importer.import_tasktemplate">
 <span class="sig-name descname"><span class="pre">import_tasktemplate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Importer.import_tasktemplate" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.tools.backup.Importer.import_translation">
+<span class="sig-name descname"><span class="pre">import_translation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.backup.Importer.import_translation" title="Permalink to this definition"></a></dt>
+<dd><p>Import translation, read all po files.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.tools.backup.Importer.imported">

@@ -22,6 +22,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Import, export and remove" href="backup.html" />
     <link rel="prev" title="Robot Parameters" href="robot_parameters.html" /> 
 </head>
 
@@ -51,10 +52,15 @@
 <li class="toctree-l1"><a class="reference internal" href="permissions.html">Resource permissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="robot_parameters.html">Robot Parameters</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Schemas and validation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#available-schemas">Available schemas</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#data-validation">Data validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#available-schemas">Available schemas</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#custom-object-model">1.0 - Custom object model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#unused">2.0 - Unused</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-validation">2.4 - Data validation</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="backup.html">Import, export and remove</a></li>
 </ul>
 
         </div>
@@ -83,19 +89,33 @@
              
   <section id="schemas-and-validation">
 <h1>Schemas and validation<a class="headerlink" href="#schemas-and-validation" title="Permalink to this heading"></a></h1>
-<p>Written after an incomplete review.</p>
 <section id="available-schemas">
 <h2>Available schemas<a class="headerlink" href="#available-schemas" title="Permalink to this heading"></a></h2>
 <ul class="simple">
-<li><p><cite>1.0</cite> - used to determine how scope fields are written into redis</p></li>
-<li><p><cite>2.0</cite> - seems not to be used</p></li>
-<li><p><cite>2.4</cite> - used to validate scope fields before writing into redis</p></li>
+<li><p><cite>1.0</cite></p></li>
+<li><p><cite>2.0</cite></p></li>
+<li><p><cite>2.4</cite></p></li>
 </ul>
+<section id="custom-object-model">
+<h3>1.0 - Custom object model<a class="headerlink" href="#custom-object-model" title="Permalink to this heading"></a></h3>
+<p>Defines a custom object model which determines how scopes are stored in the key value database.
+Some patterns result in unexpected behaviors.</p>
+<p>Reading fields defined with the following pattern is not possible:</p>
+<div class="highlight-JSON notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;$name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;str&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="unused">
+<h3>2.0 - Unused<a class="headerlink" href="#unused" title="Permalink to this heading"></a></h3>
+<p>Unused schema.</p>
 </section>
 <section id="data-validation">
-<h2>Data validation<a class="headerlink" href="#data-validation" title="Permalink to this heading"></a></h2>
-<p>Scopes data may be validated before writing into redis.</p>
+<h3>2.4 - Data validation<a class="headerlink" href="#data-validation" title="Permalink to this heading"></a></h3>
+<p>Jsonschemas used for full data validation of some scopes objects.</p>
 <p>See which data is validated in <cite>SCOPES_TO_VALIDATE</cite> of <a class="reference internal" href="dal.scopes.html#dal-scopes-package"><span class="std std-ref">ResourceType</span></a>.</p>
+</section>
 </section>
 </section>
 
@@ -104,6 +124,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="robot_parameters.html" class="btn btn-neutral float-left" title="Robot Parameters" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="backup.html" class="btn btn-neutral float-right" title="Import, export and remove" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
