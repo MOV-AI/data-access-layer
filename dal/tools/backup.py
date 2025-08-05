@@ -343,6 +343,20 @@ class Importer(Backup):
 
     def _import_data(self, scope, name, data):  # pylint: disable=method-hidden
         """Imports data to the database."""
+
+        try:
+            ScopeClass = Factory.get_class(scope)
+            ScopeClass.validate_format(scope, data[scope][name])
+        except ValueError as exc:
+            _msg = f"Failed to import, invalid schema for '{scope}:{name}'"
+            if self.validate:
+                self.log(_msg)
+                raise ImportException(exc) from exc
+            else:
+                # force print
+                print(_msg)
+            return
+
         # remove unwanted keys
         if self._delete:
             try:
@@ -360,7 +374,7 @@ class Importer(Backup):
             except Exception:
                 pass
         try:
-            self._db.set(data, validate=self.validate)
+            self._db.set(data)
             self.set_imported(scope, name)
         except Exception:
             _msg = f"Failed to import '{scope}:{name}'"
