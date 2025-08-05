@@ -89,3 +89,25 @@ class TestToolsBackup:
         assert set(equal) == set(to_check)
         assert not diff
         assert not err
+
+    def test_import_invalid_data(
+        self, global_db, metadata_folder_invalid_data, manifest_file_invalid_data, capsys
+    ):
+        """Test import validates and reports invalid data."""
+        from dal.tools.backup import Importer
+
+        tool = Importer(
+            metadata_folder_invalid_data,
+            force=True,
+            dry=False,
+            debug=False,
+            recursive=False,
+            clean_old_data=True,
+        )
+
+        objects = tool.read_manifest(manifest_file_invalid_data)
+
+        tool.run(objects)
+
+        captured = capsys.readouterr()
+        assert "Failed to import, invalid schema for 'Translation:delete_me'" in captured.out
