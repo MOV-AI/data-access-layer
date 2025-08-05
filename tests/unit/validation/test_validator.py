@@ -4,24 +4,19 @@ import time
 
 from dal.validation import JsonValidator
 from dal.exceptions import SchemaTypeNotKnown
+from dal.classes.filesystem import FileSystem
 
 
 @pytest.fixture
-def valid_data():
-    return {
-        "Label": "test",
-        "LastUpdate": {"user": "N/A", "date": "N/A"},
-        "Translations": {"en": "test", "pt": "teste", "es": "prueba"},
-    }
+def valid_data(metadata_folder):
+    data = FileSystem.read_json(metadata_folder / "Translation" / "delete_me.json")
+    return data["Translation"]["delete_me"]
 
 
 @pytest.fixture
-def invalid_data():
-    return {
-        "Label": "test",
-        "LastUpdate": {"user": "N/A", "date": "N/A"},
-        "Translations": "invalid_data",
-    }
+def invalid_data(metadata_folder_invalid_data):
+    data = FileSystem.read_json(metadata_folder_invalid_data / "Translation" / "delete_me.json")
+    return data["Translation"]["delete_me"]
 
 
 class TestJsonValidator:

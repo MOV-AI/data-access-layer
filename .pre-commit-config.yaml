@@ -11,7 +11,7 @@ repos:
     - id: end-of-file-fixer         # fixes missing line ending in end of file
       exclude: |
           (?x)^(
-              tests/unit/data/metadata/.*
+              tests/unit/data/.*
           )$
     - id: mixed-line-ending         # fixes line files line ending
       args: [--fix=lf]

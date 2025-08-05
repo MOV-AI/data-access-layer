@@ -16,8 +16,16 @@
                     "type": "object",
                     "patternProperties": {
                         "^[a-z]+$": {
-                            "type": "string",
-                            "description": "Translation for the given language"
+                            "type": "object",
+                            "properties": {
+                                "po": {
+                                    "type": "string",
+                                    "description": "PO file content for the translation"
+                                }
+                            },
+                            "required": [
+                                "po"
+                            ]
                         }
                     }
                 }
