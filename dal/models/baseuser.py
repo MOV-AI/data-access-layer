@@ -11,7 +11,6 @@ from __future__ import annotations
 from typing import Dict, List, Set, cast
 from datetime import datetime
 
-from dal.models.translation import Translation
 from movai_core_shared.common.utils import create_principal_name
 from movai_core_shared.exceptions import (
     InvalidStructure,
@@ -109,10 +108,6 @@ class BaseUser(Model):
         if cls.is_exist(domain_name, account_name):
             error_msg = f"The requested user {account_name}@{domain_name} " "already exist"
             raise UserAlreadyExist(error_msg)
-        if language not in Translation.get_available_languages():
-            error_msg = f"Language {language} is not supported"
-            cls.log.error(error_msg)
-            raise ValueError(error_msg)
 
         principal_name = create_principal_name(domain_name, account_name)
         user = scopes().create(scope=cls.__name__, ref=principal_name)
@@ -166,10 +161,6 @@ class BaseUser(Model):
             )
             self.log.warning(error_msg)
             raise InvalidStructure(error_msg)
-        if "Language" in user_params and user_params["Language"] not in VALID_LANGUAGES:
-            error_msg = f"Language {user_params['Language']} is not supported"
-            self.log.error(error_msg)
-            raise ValueError(error_msg)
         self.common_name = user_params.get("CommonName", self.common_name)
         self.roles = user_params.get("Roles", self.roles)
         self.email = user_params.get("Email", self.email)
@@ -427,12 +418,10 @@ class BaseUser(Model):
             value (str): sets the language of the user.
 
         Raises:
-            ValueError: if supplied argument is not in the correct type or not in VALID_LANGUAGES.
+            ValueError: if supplied argument is not in the correct type.
         """
         if not isinstance(value, str):
             raise ValueError("The language argument must be a string")
-        if value not in VALID_LANGUAGES:
-            raise ValueError(f"The language argument must be one of {VALID_LANGUAGES}")
         self.Language = value
 
     @property
