@@ -1,4 +1,4 @@
-# vTBD
+# v3.7.0
 - [BP-1456](https://movai.atlassian.net/browse/BP-1456): Add support for user language configuration
   - Introduced `language` attribute for `BaseUser` and `InternalUser` models.
   - Added validation for `language` using `VALID_LANGUAGES` from `movai_core_shared.consts`.
