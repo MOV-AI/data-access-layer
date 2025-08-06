@@ -5,6 +5,12 @@
   - Updated JSON schemas (`InternalUser.json` and `User.json`) to include the `Language` field.
   - Added getter and setter for the `language` property in `BaseUser`.
  
+# v3.6.0
+- [BP-1472](https://movai.atlassian.net/browse/BP-1472): Import / remove / remove Translation scope
+
+# v3.5.1
+- [BP-1476](https://movai.atlassian.net/browse/BP-1476): tools.backup root-path (-r) parameter is not working
+
 # v3.5.0
 - [BP-1463](https://movai.atlassian.net/browse/BP-1463): Create translation scope
 

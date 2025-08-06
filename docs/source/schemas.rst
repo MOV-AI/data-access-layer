@@ -1,18 +1,35 @@
 Schemas and validation
 ======================
 
-Written after an incomplete review.
-
 Available schemas
 -----------------
 
-- `1.0` - used to determine how scope fields are written into redis
-- `2.0` - seems not to be used
-- `2.4` - used to validate scope fields before writing into redis
+- `1.0`
+- `2.0`
+- `2.4`
 
-Data validation
----------------
+1.0 - Custom object model
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Scopes data may be validated before writing into redis.
+Defines a custom object model which determines how scopes are stored in the key value database.
+Some patterns result in unexpected behaviors.
+
+Reading fields defined with the following pattern is not possible:
+
+.. code-block:: JSON
+
+    {
+        "$name": "str"
+    }
+
+2.0 - Unused
+~~~~~~~~~~~~
+
+Unused schema.
+
+2.4 - Data validation
+~~~~~~~~~~~~~~~~~~~~~
+
+Jsonschemas used for full data validation of some scopes objects.
 
 See which data is validated in `SCOPES_TO_VALIDATE` of :ref:`ResourceType<dal.scopes package>`.

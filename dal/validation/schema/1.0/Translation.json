@@ -3,11 +3,11 @@
   "schema": {
     "$name": {
       "Label": "str",
-      "User": "str",
       "LastUpdate": "any",
-      "Info": "str",
       "Translations": {
-        "$name": "str"
+        "$name": {
+          "po": "str"
+        }
       }
     }
   }

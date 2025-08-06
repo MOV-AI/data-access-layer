@@ -11,7 +11,6 @@ Module that implements Configuration scope class
 import pickle
 import yaml
 from box import Box
-from movai_core_shared.exceptions import DoesNotExist
 from dal.movaidb import MovaiDB
 from dal.helpers.cache import ThreadSafeCache
 from .scope import Scope

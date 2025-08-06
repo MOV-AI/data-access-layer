@@ -54,7 +54,7 @@ class TokenObject:
             if "refresh_id" in token:
                 self.refresh_id = token["refresh_id"]
         except KeyError:
-            error_msg = f"Token has missing key"
+            error_msg = "Token has missing key"
             raise InvalidToken(error_msg)
 
 
@@ -144,7 +144,7 @@ class TokenManager:
     @classmethod
     def remove_all_tokens(cls):
         """Removes all token from db."""
-        cls.log.info(f"Removing all tokens from token list.")
+        cls.log.info("Removing all tokens from token list.")
         tokens = cls.db().get(EmptyDBToken(None, cls.token_type))
         tokens = tokens.get(cls.token_type)
         if tokens is not None:
@@ -156,7 +156,7 @@ class TokenManager:
         """Removes all the tokens that their expiration
         time has passed.
         """
-        cls.log.info(f"Removing all expired tokens.")
+        cls.log.info("Removing all expired tokens.")
         tokens = cls.db().get(EmptyDBToken(None, cls.token_type))
         tokens = tokens.get(cls.token_type)
         current_time = current_timestamp_int()
@@ -189,7 +189,7 @@ class Token:
         Returns:
             (dict): the payload of the token.
         """
-        cls.log.debug(f"Initializing token payload.")
+        cls.log.debug("Initializing token payload.")
         payload = {}
         payload["sub"] = subject
         payload["iss"] = cls._issuer

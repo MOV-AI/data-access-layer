@@ -114,8 +114,7 @@ class Message(Model):
                     msg_list = list(db_scopes.Message[package].Msg)
                 except KeyError:
                     # package not found
-                    logger.warning(f"package not found")
-                    pass
+                    logger.warning("package not found")
         if msg_type in ("srv", "all"):
             try:
                 srv_list = [msg[pkg_len:] for msg in rosmsg.list_srvs(package, rospack)]
@@ -125,8 +124,7 @@ class Message(Model):
                     srv_list = list(db_scopes.Message[package].Srv)
                 except KeyError:
                     # package not found
-                    logger.warning(f"package not found")
-                    pass
+                    logger.warning("package not found")
         if msg_type == "action":
             try:
                 temp_msg_list = [msg[pkg_len:] for msg in rosmsg.list_msgs(package, rospack)]
@@ -138,8 +136,7 @@ class Message(Model):
                     action_list = list(db_scopes.Message[package].Action)
                 except KeyError:
                     # not found
-                    logger.warning(f"KeyError after rospkg.common.ResourceNotFound")
-                    pass
+                    logger.warning("KeyError after rospkg.common.ResourceNotFound")
 
         return list(set(msg_list + srv_list + action_list))
 
