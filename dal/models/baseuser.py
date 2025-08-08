@@ -25,11 +25,9 @@ from movai_core_shared.consts import (
 from dal.models.scopestree import ScopesTree, scopes
 from dal.models.model import Model
 from dal.models.acl import NewACLManager
-from dal.scopes.application import Application
 from dal.models.acl import ResourceType, ApplicationsType
-
-
-DEFAULT_LANGUAGE = "en"
+from dal.scopes.application import Application
+from dal.scopes.translation import DEFAULT_LANGUAGE
 
 
 class BaseUser(Model):

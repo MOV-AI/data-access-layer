@@ -1,5 +1,7 @@
-"""Translation scope."""
 from .scope import Scope
+
+
+DEFAULT_LANGUAGE = "en"
 
 
 class Translation(Scope):

@@ -12,8 +12,9 @@ from movai_core_shared.consts import INTERNAL_DOMAIN
 from movai_core_shared.exceptions import PasswordError, PasswordComplexityError
 
 from dal.models.model import Model
-from dal.models.baseuser import DEFAULT_LANGUAGE, BaseUser
+from dal.models.baseuser import BaseUser
 from dal.models.user import User
+from dal.scopes.translation import DEFAULT_LANGUAGE
 
 
 class InternalUser(BaseUser):
