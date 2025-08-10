@@ -1,7 +1,63 @@
 import unittest
 import unittest.mock
 
-from dal.movaidb.database import MovaiDB
+from dal.movaidb.database import MovaiDB, extract_keys
+
+import unittest
+from typing import List, Tuple, Any
+
+
+DATA_VALID = {
+    "Robot": {
+        "2dd2cac0bb7b439f8cc923852a19a290": {
+            "Status": {
+                "active_flow": "",
+                "nodes_lchd": [],
+                "persistent_nodes_lchd": [],
+                "active_states": [],
+                "core_lchd": [],
+                "locks": [],
+                "timestamp": 1750946517.3606594,
+                "active_scene": "",
+            }
+        }
+    }
+}
+
+SCHEMA = {
+    "Robot": {
+        "$name": {
+            "Label": "str",
+            "RobotName": "&name",
+            "IP": "ip_add",
+            "RobotType": "str",
+            "RobotModel": "str",
+            "Info": "str",
+            "Actions": "list",
+            "Notifications": "list",
+            "Alerts": "hash",
+            "Status": "hash",
+            "Parameter": {"$name": {"Value": "any", "TTL": "int", "_timestamp": "float"}},
+        }
+    }
+}
+
+EXPECTED_KEYS: List[Tuple[str, Any, str]] = [
+    (
+        "Robot:2dd2cac0bb7b439f8cc923852a19a290,Status:",
+        {
+            "active_flow": "",
+            "nodes_lchd": [],
+            "persistent_nodes_lchd": [],
+            "active_states": [],
+            "core_lchd": [],
+            "locks": [],
+            "timestamp": 1750946517.3606594,
+            "active_scene": "",
+        },
+        "hash",
+    )
+]
 
 
 class TestMovaiDB(unittest.TestCase):
@@ -45,23 +101,6 @@ class TestMovaiDB(unittest.TestCase):
         source_dict = {}
         expected_output = {}
         self.assertEqual(MovaiDB.args_to_dict(source_dict, repl), expected_output)
-
-    def test_validate(self):
-        data = {"Value": ["ps_vis_area"]}
-        api = {"Value": "any"}
-        base_key = "SharedDataEntry:ps_group_1,Field:vis_areas,"
-        keys = [
-            ("SharedDataEntry:ps_group_1,Field:scan_areas,Value:", ["ps_1"], "any"),
-            ("SharedDataEntry:ps_group_1,Field:scan_point,Value:", "ps_scan_point", "any"),
-        ]
-
-        expected_result = [
-            ("SharedDataEntry:ps_group_1,Field:scan_areas,Value:", ["ps_1"], "any"),
-            ("SharedDataEntry:ps_group_1,Field:scan_point,Value:", "ps_scan_point", "any"),
-            ("SharedDataEntry:ps_group_1,Field:vis_areas,Value:", ["ps_vis_area"], "any"),
-        ]
-        MovaiDB.validate(data, api, base_key, keys)
-        self.assertEqual(keys, expected_result)
 
     def test_keys_to_dict(self):
         kv = [("Robot:f488dd196a8c441c97a227a315048fc7,RobotName:241_107", "")]
@@ -133,3 +172,21 @@ class TestMovaiDB(unittest.TestCase):
         with unittest.mock.patch.object(movaidb.db_read, "scan_iter", new=mock_scan_iter):
             # Call the search method
             self.assertTrue(movaidb.exists_by_args("SharedDataEntry", Name="ps_group_1"))
+
+
+class TestExtractKeys(unittest.TestCase):
+    def test_valid_structure(self):
+        result = extract_keys(DATA_VALID, SCHEMA)
+        self.assertEqual(result, EXPECTED_KEYS)
+
+    def test_missing_key_raises(self):
+        bad_data = {"Robot": {"some_id": {"MissingStatus": {}}}}
+        with self.assertRaises(ValueError) as context:
+            extract_keys(bad_data, SCHEMA)
+        self.assertIn("Unexpected key", str(context.exception))
+
+    def test_reference_key(self):
+        data = {"Robot": {"robot42": {"RobotName": "robot42"}}}
+        expected = [("Robot:robot42,RobotName:robot42", "", "&name")]
+        result = extract_keys(data, SCHEMA)
+        self.assertEqual(result, expected)
