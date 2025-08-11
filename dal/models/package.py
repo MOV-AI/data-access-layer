@@ -37,7 +37,7 @@ class Package(Model):
 
         return csum.hexdigest()
 
-    def add(*args, **kwargs):
+    def add(self, *args, **kwargs):
         """This shouldn't be needed in the new API"""
         raise NotImplementedError()
 

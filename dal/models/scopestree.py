@@ -866,7 +866,7 @@ class ScopeWorkspace(WorkspaceNode):
         Override the default delete method to also
         unload the document from this scopes tree
         """
-        ret = super().delete(data=data, **kwargs)
+        super().delete(data=data, **kwargs)
         try:
             scope = data.scope
             ref = data.ref
@@ -883,8 +883,6 @@ class ScopeWorkspace(WorkspaceNode):
         except ValueError:
             # not loaded
             pass
-
-        return ret
 
     def rebuild_indexes(self):
         """
@@ -1017,8 +1015,6 @@ class ScopesTree(CallableNode):
         except KeyError:
             if workspace == "global":
                 plugin = Persistence.get_plugin_class("redis")(workspace="global")
-            elif workspace == "git":
-                plugin = Persistence.get_plugin_class("git")()
             else:
                 plugin = Persistence.get_plugin_class("filesystem")(workspace=workspace)
 

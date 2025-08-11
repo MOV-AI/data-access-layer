@@ -18,13 +18,16 @@ from movai_core_shared.exceptions import (
     UserDoesNotExist,
     UserPermissionsError,
 )
-from movai_core_shared.consts import EXECUTE_PERMISSION
+from movai_core_shared.consts import (
+    EXECUTE_PERMISSION,
+)
 
 from dal.models.scopestree import ScopesTree, scopes
 from dal.models.model import Model
 from dal.models.acl import NewACLManager
-from dal.scopes.application import Application
 from dal.models.acl import ResourceType, ApplicationsType
+from dal.scopes.application import Application
+from dal.scopes.translation import DEFAULT_LANGUAGE
 
 
 class BaseUser(Model):
@@ -40,6 +43,7 @@ class BaseUser(Model):
         "SuperUser",
         "ReadOnly",
         "SendReport",
+        "Language",
     }
 
     def __init__(self, *args, **kwargs):
@@ -59,6 +63,7 @@ class BaseUser(Model):
         super_user: bool = False,
         read_only: bool = False,
         send_report: bool = False,
+        language: str = DEFAULT_LANGUAGE,
     ) -> Model:
         """Create a new BaseUser
 
@@ -75,6 +80,7 @@ class BaseUser(Model):
                 read only permissions.
             send_report (bool): a flag which represents if the user is allowed
                 to send reports.
+            language (str): the language of the user interface for the user.
 
         Raises:
             ValueError: if domain_name or account_name aren't of type str.
@@ -112,8 +118,9 @@ class BaseUser(Model):
         user.super_user = super_user
         user.read_only = read_only
         user.send_report = send_report
+        user.language = language
         user.write()
-        msg = f"Successfully created new {cls.__name__} named:" f"{principal_name}"
+        msg = f"Successfully created new {cls.__name__} named:{principal_name}"
         cls.log.info(msg)
         return user
 
@@ -146,7 +153,10 @@ class BaseUser(Model):
                 InternalUser model.
         """
         if not any(key in user_params.keys() for key in self.update_keys):
-            error_msg = f"Json fields aren't found in " f"{self.__class__.__name__} attributes."
+            error_msg = (
+                f"Json fields aren't found in "
+                f"{self.__class__.__name__} attributes. Valid fields are: {self.update_keys}"
+            )
             self.log.warning(error_msg)
             raise InvalidStructure(error_msg)
         self.common_name = user_params.get("CommonName", self.common_name)
@@ -155,6 +165,7 @@ class BaseUser(Model):
         self.super_user = user_params.get("SuperUser", self.super_user)
         self.read_only = user_params.get("ReadOnly", self.read_only)
         self.send_report = user_params.get("SendReport", self.send_report)
+        self.language = user_params.get("Language", self.language)
         self.write()
 
     @property
@@ -387,6 +398,29 @@ class BaseUser(Model):
         if not isinstance(value, bool):
             raise ValueError("The flag agrument must be of type bool")
         self.SendReport = value
+
+    @property
+    def language(self) -> str:
+        """returns the language of the base user.
+
+        Returns:
+            (str): the language (e.g., "en", "fr").
+        """
+        return str(self.Language)
+
+    @language.setter
+    def language(self, value: str) -> None:
+        """sets the value of the language property.
+
+        Args:
+            value (str): sets the language of the user.
+
+        Raises:
+            ValueError: if supplied argument is not in the correct type.
+        """
+        if not isinstance(value, str):
+            raise ValueError("The language argument must be a string")
+        self.Language = value
 
     @property
     def last_update(self) -> float:

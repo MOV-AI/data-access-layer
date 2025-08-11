@@ -13,7 +13,7 @@ _________________________________
 | GraphicScene  |   22.7  MB    |
 ---------------------------------
 """
-
+from typing import Optional
 from cachetools import TTLCache
 from threading import Lock
 
@@ -25,8 +25,9 @@ TTL_SECONDS = 3 * 3600  # (3 hour)
 
 
 class ThreadSafeCache:
-    _instance = None
+    _instance: Optional["ThreadSafeCache"] = None
     _lock = Lock()
+    cache: TTLCache
 
     def __new__(cls, maxsize=100, ttl=TTL_SECONDS):
         if not cls._instance:

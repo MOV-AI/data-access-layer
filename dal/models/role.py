@@ -68,6 +68,7 @@ class Role(Model):
         "SharedDataTemplate": _DEFAULT_RESOUCE_PERM,
         "TaskEntry": _DEFAULT_RESOUCE_PERM,
         "TaskTemplate": _DEFAULT_RESOUCE_PERM,
+        "Translation": _DEFAULT_RESOUCE_PERM,
     }
 
     OPERATOR_RESOURCES = {

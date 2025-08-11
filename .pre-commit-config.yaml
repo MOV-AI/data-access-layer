@@ -9,6 +9,10 @@ repos:
     - id: check-yaml                # checks if yaml files are valid
     - id: debug-statements          # checks if debug statements are to be commited
     - id: end-of-file-fixer         # fixes missing line ending in end of file
+      exclude: |
+          (?x)^(
+              tests/unit/data/.*
+          )$
     - id: mixed-line-ending         # fixes line files line ending
       args: [--fix=lf]
     - id: trailing-whitespace       # removes trailing whitespaces from text files
@@ -18,3 +22,8 @@ repos:
     hooks:
     - id: black
       args: [--line-length=100]
+
+  - repo: https://github.com/pycqa/pylint
+    rev: v2.17.5
+    hooks:
+    - id: pylint

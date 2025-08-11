@@ -12,7 +12,6 @@ from .aclobject import AclObject
 from .application import Application
 from .baseuser import BaseUser
 from .callback import Callback
-from .configuration import Configuration
 from .container import Container
 from .flow import Flow
 from .flowlinks import FlowLinks
@@ -25,7 +24,6 @@ from .model import Model
 from .node import Node
 from .nodeinst import NodeInst
 from .package import Package
-from .packagefile import PackageFile
 from .ports import Ports
 from .remoteuser import RemoteUser
 from .role import Role
@@ -90,7 +88,6 @@ __all__ = [
     "Node",
     "NodeInst",
     "Package",
-    "PackageFile",
     "Ports",
     "RemoteUser",
     "Role",

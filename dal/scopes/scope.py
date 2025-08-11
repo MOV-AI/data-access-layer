@@ -1,31 +1,44 @@
 """
-   Copyright (C) Mov.ai  - All Rights Reserved
-   Unauthorized copying of this file, via any medium is strictly prohibited
-   Proprietary and confidential
+Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential
 
-   Developers:
-   - Manuel Silva (manuel.silva@mov.ai) - 2020
-   - Tiago Paulino (tiago@mov.ai) - 2020
+Developers:
+- Manuel Silva (manuel.silva@mov.ai) - 2020
+- Tiago Paulino (tiago@mov.ai) - 2020
+
+Attributes:
+    SCOPES_TO_VALIDATE: List of scopes that will be validated before writing into redis.
+
 """
-import os
+from typing import List
+
 from movai_core_shared.exceptions import DoesNotExist, AlreadyExist
 from .structures import Struct
 from dal.movaidb import MovaiDB
-from dal.validation import SCHEMA_FOLDER_PATH
+from dal.validation import JsonValidator
+
+
+SCOPES_TO_VALIDATE: List[str] = ["Translation"]
 
 
 class Scope(Struct):
-    """
-    A scope
+    """Scope main class.
+
+    Attributes:
+        validator (JsonValidator): Validator for the scope.
+
     """
 
     permissions = ["create", "read", "update", "delete"]
+
+    validator = JsonValidator()
 
     def __init__(self, scope, name, version, new=False, db="global"):
         self.__dict__["name"] = name
         self.__dict__["scope"] = scope
 
-        template_struct = MovaiDB.API(url=SCHEMA_FOLDER_PATH)[scope]
+        template_struct = MovaiDB.API()[scope]
 
         # we then need to get this from database!!!!
         self.__dict__["struct"] = template_struct
@@ -36,15 +49,28 @@ class Scope(Struct):
 
         if new:
             if self.movaidb.exists_by_args(scope=scope, Name=name):
-                raise AlreadyExist("This already exists. To edit dont send the 'new' flag")
+                raise AlreadyExist(
+                    "%s %s already exists, to edit dont send the 'new' flag" % (scope, name)
+                )
         else:
             if not self.movaidb.exists_by_args(scope=scope, Name=name):
                 raise DoesNotExist(
                     f"{name} does not exist yet. If you wish to create please use 'new=True'"
                 )
 
-    def calc_scope_update(self, old_dict, new_dict):
-        """Calc the objects differences and returns list with dict keys to delete/set"""
+    def calc_scope_update(self, old_dict: dict, new_dict: dict):
+        """Calc the objects differences and returns list with dict keys to delete/set.
+
+        Args:
+            old_dict (dict): Old scope dictionary.
+            new_dict (dict): New scope dictionary.
+
+        Raises:
+            SchemaTypeNotKnown: If the scope is not known to the validator.
+            ValueError: If the data does not conform to the schema.
+
+        """
+        self.validate_format(self.scope, new_dict)
         structure = self.__dict__.get("struct").get("$name")
         return MovaiDB().calc_scope_update(old_dict, new_dict, structure)
 
@@ -100,3 +126,15 @@ class Scope(Struct):
         except KeyError:
             pass  # when does not exist
         return names_list
+
+    @classmethod
+    def validate_format(cls, scope, data: dict):
+        """Check if the data is in a valid format for this scope.
+
+        Raises:
+            SchemaTypeNotKnown: If the scope is not known to the validator.
+            ValueError: If the data does not conform to the schema.
+
+        """
+        if scope in SCOPES_TO_VALIDATE:
+            cls.validator.validate(scope, data)

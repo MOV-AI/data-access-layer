@@ -12,7 +12,8 @@
       "ReadOnly": "bool",
       "SuperUser": "bool",
       "SendReport": "bool",
-      "LastUpdate": "any"
+      "LastUpdate": "any",
+      "Language": "str"
     }
   }
 }

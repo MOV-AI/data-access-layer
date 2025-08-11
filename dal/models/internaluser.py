@@ -14,6 +14,7 @@ from movai_core_shared.exceptions import PasswordError, PasswordComplexityError
 from dal.models.model import Model
 from dal.models.baseuser import BaseUser
 from dal.models.user import User
+from dal.scopes.translation import DEFAULT_LANGUAGE
 
 
 class InternalUser(BaseUser):
@@ -33,6 +34,7 @@ class InternalUser(BaseUser):
         super_user: bool = False,
         read_only: bool = False,
         send_report: bool = False,
+        language: str = DEFAULT_LANGUAGE,
     ) -> BaseUser:
         """Creates a new internal user
 
@@ -60,6 +62,7 @@ class InternalUser(BaseUser):
             super_user=super_user,
             read_only=read_only,
             send_report=send_report,
+            language=language,
         )
         try:
             user._validate_password_complexity(password)
@@ -245,7 +248,7 @@ class InternalUser(BaseUser):
             raise ValueError(error_msg)
 
         if not self.verify_password(current_password):
-            error_msg = "Current password validation failed. " "Could not change user password"
+            error_msg = "Current password validation failed, could not change user password"
             self.log.error(error_msg)
             raise PasswordError(error_msg)
 

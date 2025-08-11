@@ -8,7 +8,7 @@ import time
 from pathlib import Path
 
 CURR_DIR = Path(os.path.dirname(os.path.realpath(__file__)))
-METADATA_FOLDER = CURR_DIR / "metadata"
+DATA_FOLDER = CURR_DIR / "data"
 DOCKER_COMPOSE = CURR_DIR / "docker-compose.yml"
 
 
@@ -43,7 +43,7 @@ def global_db(set_redis_ip, docker_services):
     from dal.movaidb.database import MovaiDB
 
     db = MovaiDB()
-    time.sleep(0.5)  # wait for db to be ready
+    time.sleep(2)  # wait for db to be ready
     return db
 
 
@@ -52,7 +52,6 @@ def scopes_robot(global_db):
     from dal.scopes.robot import Robot
 
     robot = Robot()
-    time.sleep(0.5)  # wait for db to be ready
     return robot
 
 
@@ -61,5 +60,24 @@ def models_message(global_db):
     from dal.models.message import Message
 
     msg = Message
-    time.sleep(0.5)  # wait for db to be ready
     return msg
+
+
+@pytest.fixture(scope="session")
+def metadata_folder():
+    return DATA_FOLDER / "valid" / "metadata"
+
+
+@pytest.fixture(scope="session")
+def manifest_file():
+    return DATA_FOLDER / "valid" / "manifest.txt"
+
+
+@pytest.fixture(scope="session")
+def metadata_folder_invalid_data():
+    return DATA_FOLDER / "invalid" / "metadata"
+
+
+@pytest.fixture(scope="session")
+def manifest_file_invalid_data():
+    return DATA_FOLDER / "invalid" / "manifest.txt"

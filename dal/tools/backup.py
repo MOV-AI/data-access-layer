@@ -18,6 +18,7 @@ import re
 import sys
 from importlib import import_module
 import warnings
+from pathlib import Path
 
 from dal.movaidb import MovaiDB
 
@@ -71,8 +72,6 @@ class ExportException(Exception):
 class RemoveException(Exception):
     """Exception used when removing metadata."""
 
-    pass
-
 
 class Factory:
     CLASSES_CACHE = {}
@@ -92,8 +91,7 @@ class Factory:
 
 
 class Backup:
-    MOVAI_USERSPACE = os.getenv("MOVAI_USERSPACE")
-    _ROOT_PATH = f"{MOVAI_USERSPACE}/database"
+    """Base class for Importer and Exporter."""
 
     SCOPES = [
         "Flow",
@@ -111,14 +109,14 @@ class Backup:
         "System",
         "Configuration",
         "TaskTemplate",
+        "Translation",
         "SharedDataTemplate",
         "SharedDataEntry",
     ]
 
     def __init__(self, project, debug: bool = False, recursive=True):
-        self.project = project
         self.recursive = recursive
-        self.project_path = os.path.join(Backup._ROOT_PATH, project)
+        self.project_path = os.path.abspath(project)
 
         if debug:
             self.log = print
@@ -156,11 +154,12 @@ class Backup:
                     # force it
                     continue
                 # else, *
+                names = all_default
                 try:
                     all_default.__getattribute__("__call__")
                     names = all_default(_type)
                 except AttributeError:
-                    names = all_default
+                    pass
                 finally:
                     objects[_type] += names
             # endfor line in manifest
@@ -202,8 +201,6 @@ class Importer(Backup):
                 print(path[len(self.project_path) + 1 :]) for path in paths
             ]
         else:
-            from dal.movaidb.database import MovaiDB
-
             self._db = MovaiDB()
             self.dry_print = lambda *paths: None
 
@@ -217,22 +214,16 @@ class Importer(Backup):
 
     def run(self, objects: dict = {}):
         """Imports the objects defined in the manifest."""
-        if len(objects) == 0:
-            # means import all we find
-            # so ...
-            def should_import(scope):
+
+        def should_import(scope):
+            if len(objects) == 0:
                 return True
+            return scope in objects
 
-            def get_objects(scope):
+        def get_objects(scope):
+            if len(objects) == 0:
                 return None
-
-        else:
-
-            def should_import(scope):
-                return scope in objects
-
-            def get_objects(scope):
-                return None if None in objects[scope] else objects[scope]
+            return None if None in objects[scope] else objects[scope]
 
         for scope_name in Backup.SCOPES:
             if not should_import(scope_name):
@@ -267,11 +258,11 @@ class Importer(Backup):
 
     def _list_files(self, scope, extract=None, match=None):
         """Lists files in the given scope."""
-        extractor = extract
-        if extract is None:
 
-            def extractor(file):
-                return file
+        def default_extractor(file):
+            return file
+
+        extractor = default_extractor if extract is None else extract
 
         matcher = match
         if matcher is None:
@@ -350,8 +341,22 @@ class Importer(Backup):
             return self._list_files(scope, extract, list_match)
         return self._get_files(scope, names, build, get_match)
 
-    def _import_data(self, scope, name, data):
+    def _import_data(self, scope, name, data):  # pylint: disable=method-hidden
         """Imports data to the database."""
+
+        try:
+            ScopeClass = Factory.get_class(scope)
+            ScopeClass.validate_format(scope, data[scope][name])
+        except ValueError as exc:
+            _msg = f"Failed to import, invalid schema for '{scope}:{name}'"
+            if self.validate:
+                self.log(_msg)
+                raise ImportException(exc) from exc
+            else:
+                # force print
+                print(_msg)
+            return
+
         # remove unwanted keys
         if self._delete:
             try:
@@ -369,7 +374,7 @@ class Importer(Backup):
             except Exception:
                 pass
         try:
-            self._db.set(data, validate=self.validate)
+            self._db.set(data)
             self.set_imported(scope, name)
         except Exception:
             _msg = f"Failed to import '{scope}:{name}'"
@@ -545,12 +550,10 @@ class Importer(Backup):
 
     def import_ports(self, names=None):
         def to_import(ports):
-            return ports in names or ports.split("/")[0] in names
-
-        if names is None:
-
-            def to_import(ports):
+            """Check if the port is in the names or if the port's package is in the names."""
+            if names is None:
                 return True
+            return ports in names or ports.split("/")[0] in names
 
         packages = None
         if names is not None:
@@ -731,6 +734,38 @@ class Importer(Backup):
                             self.import_default("Annotation", annotations)
 
             self._import_data("GraphicScene", name, data)
+
+    def import_translation(self, names=None):
+        """Import translation, read all po files."""
+        files = self.get_files("Translation", names)
+
+        for name, file_path in files:
+            if self.imported("Translation", name):
+                continue
+
+            self.dry_print(file_path)
+
+            with open(file_path) as file:
+                data = json.load(file)
+
+            data["Translation"][name]["Translations"] = {}
+
+            parent = Path(file_path).parent
+            lang_pattern = re.compile(f"^{name}_([a-z]+)\.po$")
+
+            # look for po files
+            for file in parent.iterdir():
+                if not file.is_file():
+                    continue
+
+                lang = lang_pattern.findall(file.name)
+                if not lang:
+                    continue
+
+                with open(file) as data_file:
+                    data["Translation"][name]["Translations"][lang[0]] = {"po": data_file.read()}
+
+            self._import_data("Translation", name, data)
 
     def dependencies_ports(self, ports: dict):
         if "Package" in ports["Data"]:
@@ -1249,6 +1284,21 @@ class Exporter(Backup):
 
         self.export_default("GraphicScene", name)
 
+    def export_translation(self, name):
+        name = _from_path(name)
+
+        if self.exported("Translation", name):
+            return
+
+        Translation = Factory.get_class("Translation")
+
+        self.export_default("Translation", name)
+        obj = Translation(name)
+
+        for lang, data in obj.Translations.items():
+            code_path = os.path.join(self.project_path, "Translation", f"{name}_{lang}.po")
+            self.code2file(data.po, code_path)
+
     def export_configuration(self, name):
         name = _from_path(name)
         if self.exported("Configuration", name):
@@ -1291,6 +1341,11 @@ class Exporter(Backup):
         # remove the yaml from configuration, yaml should only exists in .yaml
         try:
             del b["Yaml"]
+        except KeyError:
+            pass
+        # remove the translations from json, translations should only exists in .po
+        try:
+            del b["Translations"]
         except KeyError:
             pass
         # the Dummy field is deprecated, to keep compatibility
@@ -1487,8 +1542,6 @@ class Remover(Backup):
             # remove project root dir from it, plus an extra '/' (+1)
             self.dry_print = lambda *paths: [print(path) for path in paths]
         else:
-            from dal.movaidb.database import MovaiDB
-
             self._db = MovaiDB()
             self.dry_print = lambda *paths: None
 
@@ -1553,7 +1606,7 @@ class Remover(Backup):
         if name not in self._removed[scope]:
             self._removed[scope].append(name)
 
-    def _remove_data(self, scope, name):
+    def _remove_data(self, scope, name):  # pylint: disable=method-hidden
         """Deletes a scope:name pair if existent in the database.
 
         Args:
@@ -1588,7 +1641,8 @@ class Remover(Backup):
             self.set_removed(scope, name)
 
 
-def main(args) -> int:
+def backup(args) -> int:
+    """Main function to handle the backup actions based on provided arguments."""
     project = args.project
     recursive = not args.individual
 
@@ -1659,7 +1713,8 @@ def main(args) -> int:
     return 1
 
 
-if __name__ == "__main__":
+def main() -> int:
+    """Main function to handle command line arguments and execute the backup tool."""
     warnings.warn(
         "The module tools.backup is deprecated, please use mobdata.",
         DeprecationWarning,
@@ -1747,6 +1802,10 @@ if __name__ == "__main__":
 
     args, _ = parser.parse_known_args()
 
-    ret_code = main(args)
+    ret_code = backup(args)
 
-    exit(ret_code)
+    return ret_code
+
+
+if __name__ == "__main__":
+    exit(main())

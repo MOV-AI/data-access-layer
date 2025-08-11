@@ -28,6 +28,7 @@ from dal.classes import Singleton
 from dal.plugins.classes import Resource
 from movai_core_shared.exceptions import InvalidStructure
 from movai_core_shared.logger import Log
+from dal.validation import SCHEMA_FOLDER_PATH
 
 StrOrDictRecursive = Union[str, None, Dict[str, "StrOrDictRecursive"]]
 
@@ -35,7 +36,6 @@ LOGGER = Log.get_logger("dal.mov.ai")
 
 
 dal_directory = path.dirname(dal.__file__)
-__SCHEMAS_URL__ = f"file://{dal_directory}/validation/schema"
 
 
 def longest_common_prefix(strings: List[str]) -> str:
@@ -264,8 +264,8 @@ class MovaiDB:
             str, Dict[str, Dict]
         ] = {}  # First key is the Version, the second is the scope
 
-        def __init__(self, version: str = "latest", url: str = __SCHEMAS_URL__):
-            super(type(self), self).__init__()
+        def __init__(self, version: str = "latest", url: str = SCHEMA_FOLDER_PATH):
+            super(type(self), self).__init__()  # pylint: disable=bad-super-call
             # We force the version of the schemas to the deprecated version
             version = "1.0"
             self.__url = path.join(url, version)
@@ -315,16 +315,6 @@ class MovaiDB:
         def values(self):
             return type(self).__API__[self.__version].values()
 
-        @classmethod
-        def get_schema(cls, version, name):
-            """
-            return scope schema for the specifed version
-            """
-            try:
-                return cls(version=version).get_api()[name]
-            except KeyError:
-                return {}
-
         def get_api(self):
             """
             return the current API
@@ -368,10 +358,10 @@ class MovaiDB:
             setattr(self, attribute, getattr(self.movaidb, val))
 
         if _api_version == "latest":
-            self.api_struct = MovaiDB.API(url=__SCHEMAS_URL__).get_api()
+            self.api_struct = MovaiDB.API(url=SCHEMA_FOLDER_PATH).get_api()
         else:
             # we then need to get this from database!!!!
-            self.api_struct = MovaiDB.API(version=_api_version, url=__SCHEMAS_URL__).get_api()
+            self.api_struct = MovaiDB.API(version=_api_version, url=SCHEMA_FOLDER_PATH).get_api()
         self.api_star = self.template_to_star(self.api_struct)
 
         self.loop = loop
@@ -816,14 +806,14 @@ class MovaiDB:
             self.db_write.publish(key, str(changed_hkeys))
 
     # ===================  Pipe Commands  =================================
-    def create_pipe(self, write=True):  # redis.client.Pipeline
+    def create_pipe(self, write=True) -> Pipeline:
         """Create a pipeline"""
         if write:
             return self.db_write.pipeline()
         return self.db_read.pipeline()
 
     @staticmethod
-    def execute_pipe(pipe):
+    def execute_pipe(pipe: Pipeline):
         return pipe.execute()
 
     # ===================  Convert and Validate  ==========================

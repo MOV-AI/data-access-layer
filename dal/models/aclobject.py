@@ -144,7 +144,7 @@ class AclObject(Model):
             account_name = principal_name.split("@")[0]
             return account_name
         else:
-            cls.log.error("principlal name doesn't contain the seperator" "character @")
+            cls.log.error("principal name doesn't contain the separator character @")
 
     @classmethod
     def get_domain_name(cls, principal_name: str) -> str:
@@ -160,7 +160,7 @@ class AclObject(Model):
             domain_name = principal_name.split("@")[1]
             return domain_name
         else:
-            cls.log.error("principlal name doesn't contain the seperator" "character @")
+            cls.log.error("principal name doesn't contain the separator character @")
 
     @classmethod
     def get_object_by_name(cls, domain_name: str, account_name: str) -> Model:

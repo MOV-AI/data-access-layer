@@ -13,7 +13,7 @@ import copy
 import time
 import importlib
 from os import getenv
-from typing import TYPE_CHECKING, Any, Dict
+from typing import Any, Dict
 from asyncio import CancelledError
 
 from movai_core_shared.logger import Log
@@ -233,11 +233,12 @@ class Callback:
                     cls._scene = scopes.from_path(scene_name, scope="GraphicScene")
                 except KeyboardInterrupt:
                     LOGGER.warning(
-                        f"[KILLED] Callback forcefully killed while initializing. It was trying to load Scene {scene_name}. Callback: {_cb_name} , Node: {_node_name}"
+                        "[KILLED] Callback forcefully killed while initializing. It was trying to load Scene %s.",
+                        scene_name,
                     )
                     sys.exit(1)
                 except:
-                    LOGGER.error(f'Scene "{scene_name}" was not found')
+                    LOGGER.error("Scene %s was not found", scene_name)
         return cls._scene
 
     def execute(self, msg: Any = None) -> None:
