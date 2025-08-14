@@ -321,19 +321,6 @@ class MovaiDB:
             """
             return type(self).__API__[self.__version]
 
-    db_dict = {
-        "global": {
-            "db_read": "db_slave",
-            "db_write": "db_global",
-            "pubsub": "slave_pubsub",
-        },
-        "local": {
-            "db_read": "db_local",
-            "db_write": "db_local",
-            "pubsub": "local_pubsub",
-        },
-    }
-
     REDIS_MASTER_HOST = getenv("REDIS_MASTER_HOST", "redis-master")
     REDIS_MASTER_PORT = int(getenv("REDIS_MASTER_PORT", 6379))
     REDIS_SLAVE_PORT = int(getenv("REDIS_SLAVE_PORT", REDIS_MASTER_PORT))
@@ -349,13 +336,18 @@ class MovaiDB:
         loop=None,
         databases=None,
     ) -> None:
-        self.db_read: redis.Redis
-        self.db_write: redis.Redis
-        self.pubsub: redis.client.PubSub
-
+        # TODO this results in different classes being used
+        # some from redis, some from aioredis - which is deprecated
         self.movaidb = databases or Redis()
-        for attribute, val in self.db_dict[db].items():
-            setattr(self, attribute, getattr(self.movaidb, val))
+
+        if db == "global":
+            self.db_read: redis.Redis = self.movaidb.db_slave
+            self.db_write: redis.Redis = self.movaidb.db_global
+            self.pubsub: redis.client.PubSub = self.movaidb.slave_pubsub
+        else:
+            self.db_read: redis.Redis = self.movaidb.db_local
+            self.db_write: redis.Redis = self.movaidb.db_local
+            self.pubsub: redis.client.PubSub = self.movaidb.local_pubsub
 
         if _api_version == "latest":
             self.api_struct = MovaiDB.API(url=SCHEMA_FOLDER_PATH).get_api()
@@ -370,6 +362,8 @@ class MovaiDB:
                 self.loop = asyncio.get_event_loop()
             except Exception:
                 self.loop = asyncio.new_event_loop()
+
+        self._background_tasks = set()
 
     def search(self, _input: dict) -> list:
         """
@@ -933,7 +927,10 @@ class MovaiDB:
     def subscribe_by_args(self, scope, function, **kwargs):
         """Subscribe to a redis pattern giving arguments"""
         search_dict = self.get_search_dict(scope, **kwargs)
-        self.loop.create_task(self.subscribe(search_dict, function))
+        task = self.loop.create_task(self.subscribe(search_dict, function))
+
+        self._background_tasks.add(task)
+        task.add_done_callback(self._background_tasks.discard)
 
     @staticmethod
     def dict_to_args(_input: dict) -> dict:
