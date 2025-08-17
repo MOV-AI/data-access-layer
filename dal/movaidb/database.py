@@ -15,7 +15,7 @@ import pickle
 import warnings
 from os import getenv, path
 from re import split
-from typing import Any, Dict, Generator, List, Optional, Tuple, Union
+from typing import Any, Dict, Generator, List, Optional, Protocol, Tuple, Union
 
 import aioredis
 import dal
@@ -69,6 +69,11 @@ def longest_common_prefix(strings: List[str]) -> str:
             ):
                 return strings[0][0:char_index]
     return strings[0]
+
+
+class Subscriber(Protocol):
+    def __call__(self, data: dict, deleted: bool) -> None:
+        ...
 
 
 class SubscribeManager(metaclass=Singleton):
@@ -625,7 +630,11 @@ class MovaiDB:
         """Subscribes to a specific channel"""
         for elem in self.dict_to_keys(_input):
             key, _, _ = elem
-            self.loop.create_task(self.task_subscriber(key + "*", function, port_name, node_name))
+            task = self.loop.create_task(
+                self.task_subscriber(key + "*", function, port_name, node_name)
+            )
+            self._background_tasks.add(task)
+            task.add_done_callback(self._background_tasks.discard)
 
     async def subscribe(self, _input: dict, function):
         """Subscribes to a KeySpace event"""
@@ -634,7 +643,11 @@ class MovaiDB:
 
             for elem in self.dict_to_keys(_input):
                 key, _, _ = elem
-                self.loop.create_task(self.task_subscriber("__keyspace@*__:%s" % key, function))
+                task = self.loop.create_task(
+                    self.task_subscriber("__keyspace@*__:%s" % key, function)
+                )
+                self._background_tasks.add(task)
+                task.add_done_callback(self._background_tasks.discard)
 
     async def task_subscriber(
         self, key: str, callback, port_name: Optional[str] = None, node_name: Optional[str] = None
@@ -928,9 +941,21 @@ class MovaiDB:
         """Subscribe to a redis pattern giving arguments"""
         search_dict = self.get_search_dict(scope, **kwargs)
         task = self.loop.create_task(self.subscribe(search_dict, function))
-
         self._background_tasks.add(task)
         task.add_done_callback(self._background_tasks.discard)
+
+    def subscribe_by_args_decoded(self, scope, function: Subscriber, **kwargs):
+        """Same as subscribe_by_args but decodes the notification
+        sent back by Redis"""
+
+        def decode_callback(msg: Tuple[bytes, str]):
+            key, event = msg
+            key = key.decode("utf-8")[len("__keyspace@0__:") :]  # remove prefix
+            val = self.keys_to_dict([(key, "")])
+            deleted = event == "del"
+            function(val, deleted=deleted)
+
+        self.subscribe_by_args(scope, decode_callback, **kwargs)
 
     @staticmethod
     def dict_to_args(_input: dict) -> dict:
