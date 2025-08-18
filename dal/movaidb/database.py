@@ -73,7 +73,13 @@ def longest_common_prefix(strings: List[str]) -> str:
 
 class Subscriber(Protocol):
     def __call__(self, data: dict, deleted: bool) -> None:
-        ...
+        """Expected signature for subscriber functions.
+
+        data: Info about the key that was changed. The format is
+              the same as the one returned by `search_by_args` and
+              other similar MovaiDB methods.
+        deleted: True if the key was deleted, False if it was updated.
+        """
 
 
 class SubscribeManager(metaclass=Singleton):
