@@ -89,7 +89,7 @@ class JsonValidator(metaclass=Singleton):
 
 
 class POFileValidator:
-    """ Confirm the PO file has a valid format """
+    """Confirm the PO file has a valid format"""
 
     def validate(self, scope: str, data: dict):
         """Validate the content against the schema of the given scope.
@@ -104,7 +104,9 @@ class POFileValidator:
 
         """
         if scope != "Translation":
-            raise SchemaTypeNotKnown(f"POFileValidator only supports 'Translation' scope, got {scope}")
+            raise SchemaTypeNotKnown(
+                f"POFileValidator only supports 'Translation' scope, got {scope}"
+            )
 
         # Use the Babel library to validate the PO file format
 
@@ -117,7 +119,9 @@ class POFileValidator:
             except PoFileError as e:
                 raise ValueError(f"Invalid PO file format for language {language}: {str(e)}")
             except Exception as e:
-                raise ValueError(f"An error occurred while validating the PO file for language {language}: {str(e)}")
+                raise ValueError(
+                    f"An error occurred while validating the PO file for language {language}: {str(e)}"
+                )
 
 
 class TranslationValidator:
@@ -134,7 +138,9 @@ class TranslationValidator:
 
         """
         if scope != "Translation":
-            raise SchemaTypeNotKnown(f"TranslationValidator only supports 'Translation' scope, got {scope}")
+            raise SchemaTypeNotKnown(
+                f"TranslationValidator only supports 'Translation' scope, got {scope}"
+            )
 
         JsonValidator().validate(scope, data)
         POFileValidator().validate(scope, data)
