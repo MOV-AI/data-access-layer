@@ -1,3 +1,8 @@
+# vTBD
+- [BP-1462](https://movai.atlassian.net/browse/BP-1462): Translation implementation
+  - Singleton - lock only on first instantiation
+  - Add `subscribe_by_args_decoded` to simplify subscription
+
 # v3.7.1
 - [BP-1470](https://movai.atlassian.net/browse/BP-1470): Move DEFAULT_LANGUAGE to central location
 

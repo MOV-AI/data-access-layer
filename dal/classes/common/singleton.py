@@ -24,7 +24,9 @@ class Singleton(type):
     _lock = threading.Lock()
 
     def __call__(cls, *args, **kwargs):
-        with cls._lock:
-            if cls not in cls._instances:
-                cls._instances[cls] = super().__call__(*args, **kwargs)
-            return cls._instances[cls]
+        if cls not in cls._instances:
+            with cls._lock:
+                # double check since it could be created while waiting for the lock
+                if cls not in cls._instances:
+                    cls._instances[cls] = super().__call__(*args, **kwargs)
+        return cls._instances[cls]
