@@ -180,6 +180,10 @@ def locale_type(value):
 if __name__ == "__main__":
     import argparse
 
+    if sys.version_info < (3, 9):
+        print("This script requires Python 3.9 or higher.")
+        sys.exit(1)
+
     parser = argparse.ArgumentParser(
         description="Extract i18n strings from Python files and generate a .po file."
     )
