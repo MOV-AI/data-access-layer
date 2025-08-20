@@ -8,10 +8,15 @@ from datetime import datetime
 from itertools import chain
 from typing import List
 
-import astunparse
 from babel.core import Locale
 from babel.messages.catalog import Catalog
 from babel.messages.pofile import write_po
+
+try:
+    from ast import unparse
+except ImportError:
+    # astunparse is a backport for Python < 3.9
+    from astunparse import unparse
 
 
 @dataclass
@@ -75,7 +80,7 @@ class CallVisitor(NodeVisitor):
                     and keyword.value.value is True
                 ):
                     first_arg = funccall.args[0]
-                    log_string = astunparse.unparse(first_arg).strip()
+                    log_string = unparse(first_arg).strip()
                     is_f_string = False
                     if isinstance(first_arg, JoinedStr):
                         # We don't want the leading 'f' from f-strings, they're just strings to us
