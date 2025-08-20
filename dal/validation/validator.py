@@ -7,24 +7,26 @@ Developers:
 - Moawiya Mograbi (moawiya@mov.ai) - 2022
 """
 
-from re import search
 import urllib
-from typing import Dict, Protocol
-from pathlib import Path
 from io import StringIO
+from pathlib import Path
+from re import search
+from typing import Dict, Protocol
 
-from babel.messages.pofile import read_po, PoFileError
+from babel.messages.pofile import PoFileError, read_po
 
-from .schema import Schema
-from dal.exceptions import SchemaTypeNotKnown, SchemaVersionError
-from .constants import SCHEMA_FOLDER_PATH
 from dal.classes.common.singleton import Singleton
+from dal.exceptions import SchemaTypeNotKnown, SchemaVersionError
+
+from .constants import SCHEMA_FOLDER_PATH
+from .schema import Schema
 
 
 class Validator(Protocol):
     """Protocol for validators that validate data against a schema."""
 
-    def validate(self, scope: str, data: dict) -> None:
+    @staticmethod
+    def validate(scope: str, data: dict) -> None:
         """Validate the content against the schema of the given scope.
 
         Args:
@@ -91,7 +93,8 @@ class JsonValidator(metaclass=Singleton):
 class POFileValidator:
     """Confirm the PO file has a valid format"""
 
-    def validate(self, scope: str, data: dict):
+    @staticmethod
+    def validate(scope: str, data: dict):
         """Validate the content against the schema of the given scope.
 
         Args:
@@ -125,7 +128,8 @@ class POFileValidator:
 
 
 class TranslationValidator:
-    def validate(self, scope: str, data: dict):
+    @staticmethod
+    def validate(scope: str, data: dict):
         """Validate the content against the schema of the given scope.
 
         Args:
