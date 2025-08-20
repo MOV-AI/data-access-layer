@@ -1,5 +1,5 @@
 from ast import Attribute, Constant, JoinedStr, Name, NodeVisitor, Call, PyCF_ONLY_AST
-import astor
+import astunparse
 from dataclasses import dataclass
 from typing import List
 import logging
@@ -73,7 +73,7 @@ class CallVisitor(NodeVisitor):
                     and keyword.value.value is True
                 ):
                     first_arg = funccall.args[0]
-                    log_string = astor.to_source(first_arg)
+                    log_string = astunparse.unparse(first_arg).strip()
                     is_f_string = False
                     if isinstance(first_arg, JoinedStr):
                         # We don't want the leading 'f' from f-strings, they're just strings to us

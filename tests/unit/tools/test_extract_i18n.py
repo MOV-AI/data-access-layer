@@ -24,7 +24,7 @@ logger.info(f'Work conditions not met: {s}', ui=True)
         assert strings[0].is_f_string is True
         assert strings[0].value == "Work conditions not met: {s}"
 
-    def test_parametrized_sring(self, tmp_path):
+    def test_parametrized_string(self, tmp_path):
         with open(tmp_path / "test.py", "w") as f:
             f.write(
                 """
