@@ -1,4 +1,5 @@
-from ast import Attribute, Constant, JoinedStr, Name, NodeVisitor, Call, PyCF_ONLY_AST, unparse
+from ast import Attribute, Constant, JoinedStr, Name, NodeVisitor, Call, PyCF_ONLY_AST
+import astor
 from dataclasses import dataclass
 from typing import List
 import logging
@@ -72,7 +73,7 @@ class CallVisitor(NodeVisitor):
                     and keyword.value.value is True
                 ):
                     first_arg = funccall.args[0]
-                    log_string = unparse(first_arg)
+                    log_string = astor.to_source(first_arg)
                     is_f_string = False
                     if isinstance(first_arg, JoinedStr):
                         # We don't want the leading 'f' from f-strings, they're just strings to us
@@ -113,8 +114,8 @@ def parse_code(code: str, filename: str) -> List[SourceString]:
         visitor = CallVisitor(filename)
         visitor.visit(tree)
         return visitor.strings
-    except Exception as e:
-        logging.warning(f"Failed to parse code: {e}")
+    except Exception:
+        logging.warning("Failed to parse code", exc_info=True)
         return []
 
 
@@ -143,7 +144,7 @@ def parse_directory(dir_path: str) -> List[SourceString]:
                             string.filename = file_path
                             all_strings.append(string)
                 except Exception as e:
-                    logging.warning(f"Failed to read or parse file {file_path}: {e}")
+                    logging.warning("Failed to read or parse file {file_path}", exc_info=True)
     return all_strings
 
 
@@ -179,10 +180,6 @@ def locale_type(value):
 
 if __name__ == "__main__":
     import argparse
-
-    if sys.version_info < (3, 9):
-        print("This script requires Python 3.9 or higher.")
-        sys.exit(1)
 
     parser = argparse.ArgumentParser(
         description="Extract i18n strings from Python files and generate a .po file."
