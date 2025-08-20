@@ -80,7 +80,7 @@ class CallVisitor(NodeVisitor):
                         log_string = log_string[2:-1]
                         is_f_string = True
                     elif isinstance(first_arg, Constant) and isinstance(first_arg.value, str):
-                        log_string = first_arg.value[1:-1]
+                        log_string = log_string[1:-1]
                     else:
                         log_string = f"<{log_string}>"
 
