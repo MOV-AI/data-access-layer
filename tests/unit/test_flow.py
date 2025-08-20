@@ -652,8 +652,6 @@ class FlowParamsTests(unittest.TestCase):
     @patch("dal.models.scopestree.Persistence.get_plugin_class")
     def test_missing_flow_param(self, mock_get_plugin):
         # Clear existing Redis plugins, if any
-        from dal.models.scopestree import scopes
-
         del scopes._children["global"]
 
         # Set up mocks

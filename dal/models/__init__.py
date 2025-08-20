@@ -12,7 +12,6 @@ from .aclobject import AclObject
 from .application import Application
 from .baseuser import BaseUser
 from .callback import Callback
-from .configuration import Configuration
 from .container import Container
 from .flow import Flow
 from .flowlinks import FlowLinks

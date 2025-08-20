@@ -1,3 +1,6 @@
+default_language_version:
+    # force all unspecified python hooks to run python3
+    python: python3.8
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
@@ -9,6 +12,10 @@ repos:
     - id: check-yaml                # checks if yaml files are valid
     - id: debug-statements          # checks if debug statements are to be commited
     - id: end-of-file-fixer         # fixes missing line ending in end of file
+      exclude: |
+          (?x)^(
+              tests/unit/data/.*
+          )$
     - id: mixed-line-ending         # fixes line files line ending
       args: [--fix=lf]
     - id: trailing-whitespace       # removes trailing whitespaces from text files

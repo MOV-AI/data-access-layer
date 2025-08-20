@@ -159,7 +159,7 @@ class SecretKeyTool:
     def __call__(self, **kwargs):
         """initialize the tool and execute the command."""
         if "command" not in kwargs:
-            error_msg = f"Can not find the command field in kwargs dictionary."
+            error_msg = "Can not find the command field in kwargs dictionary."
             print(error_msg)
             return EINVAL
         command = kwargs["command"]

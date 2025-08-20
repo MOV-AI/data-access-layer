@@ -6,7 +6,6 @@
    Developers:
    - Alexandre Pires  (alexandre.pires@mov.ai) - 2020
 """
-import os
 import pickle
 import re
 import json

@@ -16,7 +16,7 @@ import pickle
 import warnings
 from os import path
 from re import split
-from typing import Any, Dict, Generator, List, Optional, Tuple, Union
+from typing import Any, Dict, Generator, List, Optional, Protocol, Tuple, Union
 
 import aioredis
 import dal
@@ -39,6 +39,7 @@ from dal.classes import Singleton
 from dal.plugins.classes import Resource
 from movai_core_shared.exceptions import InvalidStructure
 from movai_core_shared.logger import Log
+from dal.validation import SCHEMA_FOLDER_PATH
 
 StrOrDictRecursive = Union[str, None, Dict[str, "StrOrDictRecursive"]]
 
@@ -46,7 +47,29 @@ LOGGER = Log.get_logger("dal.mov.ai")
 
 
 dal_directory = path.dirname(dal.__file__)
-__SCHEMAS_URL__ = f"file://{dal_directory}/validation/schema"
+
+
+class Subscriber(Protocol):
+    def __call__(self, data: dict, deleted: bool) -> None:
+        """Expected signature for subscriber functions.
+
+        data: Info about the key that was changed. The format is
+              the same as the one returned by `search_by_args` and
+              other similar MovaiDB methods.
+        deleted: True if the key was deleted, False if it was updated.
+        """
+
+
+class SubscribeManager(metaclass=Singleton):
+    _key_map = {}
+
+    @classmethod
+    def register_sub(cls, key):
+        cls._key_map[key] = None
+
+    @classmethod
+    def unregister_sub(cls, key):
+        del cls._key_map[key]
 
 
 def longest_common_prefix(strings: List[str]) -> str:
@@ -167,7 +190,7 @@ class MovaiDB:
             str, Dict[str, Dict]
         ] = {}  # First key is the Version, the second is the scope
 
-        def __init__(self, version: str = "latest", url: str = __SCHEMAS_URL__):
+        def __init__(self, version: str = "latest", url: str = SCHEMA_FOLDER_PATH):
             super(type(self), self).__init__()  # pylint: disable=bad-super-call
             # We force the version of the schemas to the deprecated version
             version = "1.0"
@@ -218,34 +241,11 @@ class MovaiDB:
         def values(self):
             return type(self).__API__[self.__version].values()
 
-        @classmethod
-        def get_schema(cls, version, name):
-            """
-            return scope schema for the specifed version
-            """
-            try:
-                return cls(version=version).get_api()[name]
-            except KeyError:
-                return {}
-
         def get_api(self):
             """
             return the current API
             """
             return type(self).__API__[self.__version]
-
-    db_dict = {
-        "global": {
-            "db_read": "db_slave",
-            "db_write": "db_global",
-            "pubsub": "slave_pubsub",
-        },
-        "local": {
-            "db_read": "db_local",
-            "db_write": "db_local",
-            "pubsub": "local_pubsub",
-        },
-    }
 
     # for backward compatibility
     REDIS_MASTER_HOST = REDIS_MASTER_HOST
@@ -263,21 +263,26 @@ class MovaiDB:
         loop=None,
         databases=None,
     ) -> None:
-        self.db_read: redis.Redis
-        self.db_write: redis.Redis
-        self.pubsub: redis.client.PubSub
-
+        # TODO this results in different classes being used
+        # some from redis, some from aioredis - which is deprecated
         self.movaidb = databases or Redis()
-        for attribute, val in self.db_dict[db].items():
-            setattr(self, attribute, getattr(self.movaidb, val))
+
+        if db == "global":
+            self.db_read: redis.Redis = self.movaidb.db_slave
+            self.db_write: redis.Redis = self.movaidb.db_global
+            self.pubsub: redis.client.PubSub = self.movaidb.slave_pubsub
+        else:
+            self.db_read: redis.Redis = self.movaidb.db_local
+            self.db_write: redis.Redis = self.movaidb.db_local
+            self.pubsub: redis.client.PubSub = self.movaidb.local_pubsub
 
         self.indexed_cache = RedisIndexedCache(self.db_read)
 
         if _api_version == "latest":
-            self.api_struct = MovaiDB.API(url=__SCHEMAS_URL__).get_api()
+            self.api_struct = MovaiDB.API(url=SCHEMA_FOLDER_PATH).get_api()
         else:
             # we then need to get this from database!!!!
-            self.api_struct = MovaiDB.API(version=_api_version, url=__SCHEMAS_URL__).get_api()
+            self.api_struct = MovaiDB.API(version=_api_version, url=SCHEMA_FOLDER_PATH).get_api()
         self.api_star = self.template_to_star(self.api_struct)
 
         self.loop = loop
@@ -286,6 +291,8 @@ class MovaiDB:
                 self.loop = asyncio.get_event_loop()
             except Exception:
                 self.loop = asyncio.new_event_loop()
+
+        self._background_tasks = set()
 
     def initialize(self) -> None:
         self.indexed_cache.initialize_keys_cache()
@@ -604,7 +611,11 @@ class MovaiDB:
         """Subscribes to a specific channel"""
         for elem in self.dict_to_keys(_input):
             key, _, _ = elem
-            self.loop.create_task(self.task_subscriber(key + "*", function, port_name, node_name))
+            task = self.loop.create_task(
+                self.task_subscriber(key + "*", function, port_name, node_name)
+            )
+            self._background_tasks.add(task)
+            task.add_done_callback(self._background_tasks.discard)
 
     async def subscribe(self, _input: dict, function):
         """Subscribes to a KeySpace event"""
@@ -613,7 +624,11 @@ class MovaiDB:
 
             for elem in self.dict_to_keys(_input):
                 key, _, _ = elem
-                self.loop.create_task(self.task_subscriber("__keyspace@*__:%s" % key, function))
+                task = self.loop.create_task(
+                    self.task_subscriber("__keyspace@*__:%s" % key, function)
+                )
+                self._background_tasks.add(task)
+                task.add_done_callback(self._background_tasks.discard)
 
     async def task_subscriber(
         self, key: str, callback, port_name: Optional[str] = None, node_name: Optional[str] = None
@@ -791,14 +806,14 @@ class MovaiDB:
             self.db_write.publish(key, str(changed_hkeys))
 
     # ===================  Pipe Commands  =================================
-    def create_pipe(self, write=True):  # redis.client.Pipeline
+    def create_pipe(self, write=True) -> Pipeline:
         """Create a pipeline"""
         if write:
             return self.db_write.pipeline()
         return self.db_read.pipeline()
 
     @staticmethod
-    def execute_pipe(pipe):
+    def execute_pipe(pipe: Pipeline):
         return pipe.execute()
 
     # ===================  Convert and Validate  ==========================
@@ -882,7 +897,22 @@ class MovaiDB:
     def subscribe_by_args(self, scope, function, **kwargs):
         """Subscribe to a redis pattern giving arguments"""
         search_dict = self.get_search_dict(scope, **kwargs)
-        self.loop.create_task(self.subscribe(search_dict, function))
+        task = self.loop.create_task(self.subscribe(search_dict, function))
+        self._background_tasks.add(task)
+        task.add_done_callback(self._background_tasks.discard)
+
+    def subscribe_by_args_decoded(self, scope, function: Subscriber, **kwargs):
+        """Same as subscribe_by_args but decodes the notification
+        sent back by Redis"""
+
+        def decode_callback(msg: Tuple[bytes, str]):
+            key, event = msg
+            key = key.decode("utf-8")[len("__keyspace@0__:") :]  # remove prefix
+            val = self.keys_to_dict([(key, "")])
+            deleted = event == "del"
+            function(val, deleted=deleted)
+
+        self.subscribe_by_args(scope, decode_callback, **kwargs)
 
     @staticmethod
     def dict_to_args(_input: dict) -> dict:

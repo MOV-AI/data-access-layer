@@ -1,0 +1,11 @@
+Callback:delete_me
+Configuration:delete_me
+Flow:delete_me
+Node:delete_me
+Translation:delete_me
+# commented since movai_core_enterprise is not installed
+# Annotation:delete_me
+# GraphicScene:delete_me
+# Layout:delete_me
+# SharedDataEntry:delete_me_opt0
+# SharedDataTemplate:delete_me

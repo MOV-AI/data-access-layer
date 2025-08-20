@@ -1,0 +1,36 @@
+{
+    "$id": "Translation.schema.json",
+    "$version": "2.4",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Translation Schema",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "common/base.schema.json"
+        },
+        {
+            "type": "object",
+            "Description": "All of the other fields",
+            "properties": {
+                "Translations": {
+                    "type": "object",
+                    "patternProperties": {
+                        "^[a-z]+$": {
+                            "type": "object",
+                            "properties": {
+                                "po": {
+                                    "type": "string",
+                                    "description": "PO file content for the translation"
+                                }
+                            },
+                            "required": [
+                                "po"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "unevaluatedProperties": false
+}

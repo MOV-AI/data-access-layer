@@ -13,7 +13,7 @@ import copy
 import time
 import importlib
 from os import getenv
-from typing import TYPE_CHECKING, Any, Dict
+from typing import Any, Dict
 from asyncio import CancelledError
 
 from movai_core_shared.logger import Log

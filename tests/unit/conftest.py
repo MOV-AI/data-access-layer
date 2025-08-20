@@ -8,7 +8,7 @@ import time
 from pathlib import Path
 
 CURR_DIR = Path(os.path.dirname(os.path.realpath(__file__)))
-METADATA_FOLDER = CURR_DIR / "metadata"
+DATA_FOLDER = CURR_DIR / "data"
 DOCKER_COMPOSE = CURR_DIR / "docker-compose.yml"
 
 
@@ -61,3 +61,23 @@ def models_message(global_db):
 
     msg = Message
     return msg
+
+
+@pytest.fixture(scope="session")
+def metadata_folder():
+    return DATA_FOLDER / "valid" / "metadata"
+
+
+@pytest.fixture(scope="session")
+def manifest_file():
+    return DATA_FOLDER / "valid" / "manifest.txt"
+
+
+@pytest.fixture(scope="session")
+def metadata_folder_invalid_data():
+    return DATA_FOLDER / "invalid" / "metadata"
+
+
+@pytest.fixture(scope="session")
+def manifest_file_invalid_data():
+    return DATA_FOLDER / "invalid" / "manifest.txt"

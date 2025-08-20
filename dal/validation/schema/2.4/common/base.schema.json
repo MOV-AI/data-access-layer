@@ -17,25 +17,18 @@
             "type": "string"
         },
         "LastUpdate": {
-            "anyOf": [
-                {
-                    "properties": {
-                        "date": {
-                            "type": "string"
-                        },
-                        "user": {
-                            "type": "string"
-                        }
-                    },
-                    "type": "object",
-                    "required": [
-                        "user",
-                        "date"
-                    ]
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
                 },
-                {
+                "user": {
                     "type": "string"
                 }
+            },
+            "required": [
+                "user",
+                "date"
             ]
         }
     },
