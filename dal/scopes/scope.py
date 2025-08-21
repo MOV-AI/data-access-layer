@@ -13,6 +13,7 @@ Attributes:
 """
 from typing import List
 
+from dal.validation.validator import Validator
 from movai_core_shared.exceptions import DoesNotExist, AlreadyExist
 from .structures import Struct
 from dal.movaidb import MovaiDB
@@ -32,7 +33,7 @@ class Scope(Struct):
 
     permissions = ["create", "read", "update", "delete"]
 
-    validator = JsonValidator()
+    validator: Validator = JsonValidator()
 
     def __init__(self, scope, name, version, new=False, db="global"):
         self.__dict__["name"] = name
