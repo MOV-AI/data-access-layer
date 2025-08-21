@@ -211,7 +211,7 @@ def make_json_file(output_path: str, name: str) -> None:
         )
 
 
-if __name__ == "__main__":
+def main():
     import argparse
 
     parser = argparse.ArgumentParser(
@@ -269,3 +269,7 @@ if __name__ == "__main__":
         pass
     make_po_file(strings, args.output_path, args.name, Locale.parse("pt"))
     make_json_file(args.output_path, args.name)
+
+
+if __name__ == "__main__":
+    main()
