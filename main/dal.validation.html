@@ -259,6 +259,86 @@ to it’s type.</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.validator.POFileValidator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.validator.</span></span><span class="sig-name descname"><span class="pre">POFileValidator</span></span><a class="headerlink" href="#dal.validation.validator.POFileValidator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Confirm the PO file has a valid format</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.validation.validator.POFileValidator.validate">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.validator.POFileValidator.validate" title="Permalink to this definition"></a></dt>
+<dd><p>Validate the content against the schema of the given scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope</strong> (<em>str</em>) – The type of the schema to validate against.</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – The data to validate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="dal.exceptions.html#dal.exceptions.exceptions.SchemaTypeNotKnown" title="dal.exceptions.exceptions.SchemaTypeNotKnown"><strong>SchemaTypeNotKnown</strong></a> – If the scope is not known to the validator.</p></li>
+<li><p><strong>ValueError</strong> – If the data does not conform to the schema.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.validator.TranslationValidator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.validator.</span></span><span class="sig-name descname"><span class="pre">TranslationValidator</span></span><a class="headerlink" href="#dal.validation.validator.TranslationValidator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.validation.validator.TranslationValidator.validate">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.validator.TranslationValidator.validate" title="Permalink to this definition"></a></dt>
+<dd><p>Validate the content against the schema of the given scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope</strong> (<em>str</em>) – The type of the schema to validate against.</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – The data to validate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="dal.exceptions.html#dal.exceptions.exceptions.SchemaTypeNotKnown" title="dal.exceptions.exceptions.SchemaTypeNotKnown"><strong>SchemaTypeNotKnown</strong></a> – If the scope is not known to the validator.</p></li>
+<li><p><strong>ValueError</strong> – If the data does not conform to the schema.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.validator.Validator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.validator.</span></span><span class="sig-name descname"><span class="pre">Validator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.validator.Validator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
+<p>Protocol for validators that validate data against a schema.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.validation.validator.Validator.validate">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.validation.validator.Validator.validate" title="Permalink to this definition"></a></dt>
+<dd><p>Validate the content against the schema of the given scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope</strong> (<em>str</em>) – The type of the schema to validate against.</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – The data to validate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="dal.exceptions.html#dal.exceptions.exceptions.SchemaTypeNotKnown" title="dal.exceptions.exceptions.SchemaTypeNotKnown"><strong>SchemaTypeNotKnown</strong></a> – If the scope is not known to the validator.</p></li>
+<li><p><strong>ValueError</strong> – If the data does not conform to the schema.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-dal.validation">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dal.validation" title="Permalink to this heading"></a></h2>
