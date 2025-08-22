@@ -622,6 +622,205 @@ would be performed.</p>
 <dd></dd></dl>
 
 </section>
+<section id="module-dal.tools.extract_i18n">
+<span id="dal-tools-extract-i18n-module"></span><h2>dal.tools.extract_i18n module<a class="headerlink" href="#module-dal.tools.extract_i18n" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.tools.extract_i18n.CallVisitor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.tools.extract_i18n.</span></span><span class="sig-name descname"><span class="pre">CallVisitor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.extract_i18n.CallVisitor" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NodeVisitor</span></code></p>
+<p>AST visitor that collects strings from logging function calls
+where the ‘ui’ keyword argument is set to True.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.tools.extract_i18n.CallVisitor.filename">
+<span class="sig-name descname"><span class="pre">filename</span></span><a class="headerlink" href="#dal.tools.extract_i18n.CallVisitor.filename" title="Permalink to this definition"></a></dt>
+<dd><p>The name of the file being parsed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.tools.extract_i18n.CallVisitor.strings">
+<span class="sig-name descname"><span class="pre">strings</span></span><a class="headerlink" href="#dal.tools.extract_i18n.CallVisitor.strings" title="Permalink to this definition"></a></dt>
+<dd><p>List of extracted SourceString objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dal.scopes.html#dal.scopes.structures.List" title="dal.scopes.structures.List">List</a>[<a class="reference internal" href="#dal.tools.extract_i18n.SourceString" title="dal.tools.extract_i18n.SourceString">SourceString</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.tools.extract_i18n.CallVisitor.visit_Call">
+<span class="sig-name descname"><span class="pre">visit_Call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">funccall</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Call</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.tools.extract_i18n.CallVisitor.visit_Call" title="Permalink to this definition"></a></dt>
+<dd><p>Visits each function call node in the AST. If the call is to a logging function
+(‘info’, ‘warning’, ‘error’, or ‘exception’) and has a keyword argument ‘ui=True’,
+it extracts the first argument (the log message) as a string. The extracted string,
+along with its location (line number, column offset, and filename), is stored for
+later use. Handles both regular strings and f-strings, and falls back to a placeholder
+if the argument type is unexpected.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.tools.extract_i18n.SourceString">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.tools.extract_i18n.</span></span><span class="sig-name descname"><span class="pre">SourceString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lineno</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_f_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.extract_i18n.SourceString" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents a string extracted from source code, along with its location.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.tools.extract_i18n.SourceString.value">
+<span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#dal.tools.extract_i18n.SourceString.value" title="Permalink to this definition"></a></dt>
+<dd><p>The extracted string value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.tools.extract_i18n.SourceString.lineno">
+<span class="sig-name descname"><span class="pre">lineno</span></span><a class="headerlink" href="#dal.tools.extract_i18n.SourceString.lineno" title="Permalink to this definition"></a></dt>
+<dd><p>The line number in the source file where the string appears.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.tools.extract_i18n.SourceString.col_offset">
+<span class="sig-name descname"><span class="pre">col_offset</span></span><a class="headerlink" href="#dal.tools.extract_i18n.SourceString.col_offset" title="Permalink to this definition"></a></dt>
+<dd><p>The column offset in the source file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.tools.extract_i18n.SourceString.filename">
+<span class="sig-name descname"><span class="pre">filename</span></span><a class="headerlink" href="#dal.tools.extract_i18n.SourceString.filename" title="Permalink to this definition"></a></dt>
+<dd><p>The name of the source file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">col_offset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id0" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">filename</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id1" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.tools.extract_i18n.SourceString.is_f_string">
+<span class="sig-name descname"><span class="pre">is_f_string</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#dal.tools.extract_i18n.SourceString.is_f_string" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">lineno</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id2" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id3" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dal.tools.extract_i18n.confirm_overwrite">
+<span class="sig-prename descclassname"><span class="pre">dal.tools.extract_i18n.</span></span><span class="sig-name descname"><span class="pre">confirm_overwrite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.extract_i18n.confirm_overwrite" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dal.tools.extract_i18n.main">
+<span class="sig-prename descclassname"><span class="pre">dal.tools.extract_i18n.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.extract_i18n.main" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dal.tools.extract_i18n.make_json_file">
+<span class="sig-prename descclassname"><span class="pre">dal.tools.extract_i18n.</span></span><span class="sig-name descname"><span class="pre">make_json_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.tools.extract_i18n.make_json_file" title="Permalink to this definition"></a></dt>
+<dd><p>Create a JSON file that lists the metadata translation file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output_path</strong> (<em>Path</em>) – Directory to save the JSON file.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of the metadata translation file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dal.tools.extract_i18n.make_po_file">
+<span class="sig-prename descclassname"><span class="pre">dal.tools.extract_i18n.</span></span><span class="sig-name descname"><span class="pre">make_po_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#dal.tools.extract_i18n.SourceString" title="dal.tools.extract_i18n.SourceString"><span class="pre">SourceString</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">locale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Locale</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.tools.extract_i18n.make_po_file" title="Permalink to this definition"></a></dt>
+<dd><p>Write extracted strings to a .po file for translation using Babel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>strings</strong> (<a class="reference internal" href="dal.scopes.html#dal.scopes.structures.List" title="dal.scopes.structures.List"><em>List</em></a><em>[</em><a class="reference internal" href="#dal.tools.extract_i18n.SourceString" title="dal.tools.extract_i18n.SourceString"><em>SourceString</em></a><em>]</em>) – List of SourceString objects to write.</p></li>
+<li><p><strong>output_path</strong> (<em>str</em>) – Directory to save the .po file.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of the metadata translation file.</p></li>
+<li><p><strong>locale</strong> (<em>str</em>) – Locale code for the .po file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dal.tools.extract_i18n.parse_code">
+<span class="sig-prename descclassname"><span class="pre">dal.tools.extract_i18n.</span></span><span class="sig-name descname"><span class="pre">parse_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#dal.tools.extract_i18n.SourceString" title="dal.tools.extract_i18n.SourceString"><span class="pre">SourceString</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.tools.extract_i18n.parse_code" title="Permalink to this definition"></a></dt>
+<dd><p>Parse Python source code and extract strings from logging calls
+with ‘ui=True’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>code</strong> (<em>str</em>) – The Python source code to parse.</p></li>
+<li><p><strong>filename</strong> (<em>str</em>) – The name of the source file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of extracted SourceString objects.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dal.scopes.html#dal.scopes.structures.List" title="dal.scopes.structures.List">List</a>[<a class="reference internal" href="#dal.tools.extract_i18n.SourceString" title="dal.tools.extract_i18n.SourceString">SourceString</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dal.tools.extract_i18n.parse_directory">
+<span class="sig-prename descclassname"><span class="pre">dal.tools.extract_i18n.</span></span><span class="sig-name descname"><span class="pre">parse_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#dal.tools.extract_i18n.SourceString" title="dal.tools.extract_i18n.SourceString"><span class="pre">SourceString</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.tools.extract_i18n.parse_directory" title="Permalink to this definition"></a></dt>
+<dd><p>Recursively parse all Python files in a directory, extracting
+strings from logging calls with ‘ui=True’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dir_path</strong> (<em>str</em>) – Path to the directory containing Python files.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of all extracted SourceString objects.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dal.scopes.html#dal.scopes.structures.List" title="dal.scopes.structures.List">List</a>[<a class="reference internal" href="#dal.tools.extract_i18n.SourceString" title="dal.tools.extract_i18n.SourceString">SourceString</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 <section id="module-dal.tools.mobdata">
 <span id="dal-tools-mobdata-module"></span><h2>dal.tools.mobdata module<a class="headerlink" href="#module-dal.tools.mobdata" title="Permalink to this heading"></a></h2>
 <p>Tool to import, export and remove data.</p>

@@ -20,6 +20,14 @@ dal.tools.edit\_yaml module
    :undoc-members:
    :show-inheritance:
 
+dal.tools.extract\_i18n module
+------------------------------
+
+.. automodule:: dal.tools.extract_i18n
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dal.tools.mobdata module
 ------------------------
 
