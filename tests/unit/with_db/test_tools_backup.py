@@ -110,4 +110,7 @@ class TestToolsBackup:
         tool.run(objects)
 
         captured = capsys.readouterr()
-        assert "Failed to import, invalid schema for 'Translation:delete_me'" in captured.out
+        assert (
+            "Failed to import Translation:delete_me - Invalid data for scope Translation"
+            in captured.out
+        )

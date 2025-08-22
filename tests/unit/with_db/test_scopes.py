@@ -25,3 +25,22 @@ class TestTranslation:
         assert "fr" in trans.Translations
         assert "Olá mundo." in trans.Translations["pt"].po
         assert "Bonjour le monde." in trans.Translations["fr"].po
+
+    def test_translation_invalid_po(self, global_db, metadata_folder_invalid_data, capsys):
+        from dal.tools.backup import Importer
+
+        tool = Importer(
+            metadata_folder_invalid_data,
+            force=True,
+            dry=False,
+            debug=False,
+            recursive=False,
+            clean_old_data=True,
+        )
+
+        data = {"Translation": ["invalid_po"]}
+
+        tool.run(data)
+
+        captured = capsys.readouterr()
+        assert "Invalid PO file format for language pt" in captured.out
