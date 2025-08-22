@@ -1,12 +1,13 @@
+import argparse
 import json
 import logging
 import os
-import sys
 from ast import Attribute, Call, Constant, JoinedStr, Name, NodeVisitor, PyCF_ONLY_AST
 from dataclasses import dataclass
 from datetime import datetime
 from itertools import chain
 from typing import List
+from pathlib import Path
 
 from babel.core import Locale
 from babel.messages.catalog import Catalog
@@ -136,6 +137,7 @@ def parse_directory(dir_path: str) -> List[SourceString]:
 
     Returns:
         List[SourceString]: List of all extracted SourceString objects.
+
     """
     all_strings = []
 
@@ -154,10 +156,22 @@ def parse_directory(dir_path: str) -> List[SourceString]:
                     logging.warning(
                         "Failed to read or parse file %s: %s", file_path, e, exc_info=True
                     )
+
     return all_strings
 
 
-def make_po_file(strings: List[SourceString], output_path: str, name: str, locale: Locale) -> None:
+def confirm_overwrite(file: Path):
+    # Check if output file exists and confirm overwrite
+    if file.exists():
+        response = input(f"File '{file}' already exists. Overwrite? [y/N]: ").strip().lower()
+        if response != "y":
+            print("Aborted.")
+            exit(1)
+
+        file.unlink()
+
+
+def make_po_file(strings: List[SourceString], output_path: Path, name: str, locale: Locale) -> None:
     """
     Write extracted strings to a .po file for translation using Babel.
 
@@ -167,7 +181,7 @@ def make_po_file(strings: List[SourceString], output_path: str, name: str, local
         name (str): Name of the metadata translation file.
         locale (str): Locale code for the .po file.
     """
-    po_path = os.path.join(output_path, f"{name}_{locale.language}.po")
+    po_path = output_path / f"{name}_{locale.language}.po"
     catalog = Catalog(
         creation_date=datetime.now(),
         locale=locale,
@@ -178,19 +192,23 @@ def make_po_file(strings: List[SourceString], output_path: str, name: str, local
             string.value, locations=[(string.filename, string.lineno)], auto_comments=comments
         )
 
+    confirm_overwrite(po_path)
+
     with open(po_path, "wb") as po_file:
         write_po(po_file, catalog)
 
 
-def make_json_file(output_path: str, name: str) -> None:
+def make_json_file(output_path: Path, name: str) -> None:
     """
     Create a JSON file that lists the metadata translation file.
 
     Args:
-        output_path (str): Directory to save the JSON file.
+        output_path (Path): Directory to save the JSON file.
         name (str): Name of the metadata translation file.
     """
-    json_path = os.path.join(output_path, f"{name}.json")
+    json_path = output_path / f"{name}.json"
+
+    confirm_overwrite(json_path)
 
     with open(json_path, "w", encoding="utf-8") as json_file:
         json_file.write(
@@ -212,18 +230,14 @@ def make_json_file(output_path: str, name: str) -> None:
 
 
 def main():
-    import argparse
-
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description=(
-            "Extract i18n strings from Python files and generate a .po file.\n"
-            "The tool will:\n\n"
-            "* Look for ui=True logs\n"
-            "* Perform reasonable changes to the .py files\n"
-            "* Collect logs\n"
-            "* Write logs in the translation file\n"
-            "* Append the translation file to the manifest.txt\n"
+            "Extract i18n strings from Python files and generate a .po file.\n\n"
+            "The tool:\n\n"
+            "* Looks for ui=True logs\n"
+            "* Collects the log messages\n"
+            "* Writes the log messages in the translation file\n"
         ),
     )
     parser.add_argument(
@@ -232,43 +246,30 @@ def main():
         nargs=1,
         action="append",
         required=True,
-        help="Directories containing Python files to scan (can be used multiple times)",
+        help="directories containing Python files to scan (can be used multiple times)",
     )
-    parser.add_argument("-n", "--name", required=True, help="Name of the metadata translation file")
     parser.add_argument(
         "-p",
         "--output-path",
         required=True,
-        help="Metadata folder where to save the translation file",
+        help="metadata folder where to save the translation file",
     )
+    parser.add_argument("-n", "--name", required=True, help="name of the metadata translation file")
 
     args = parser.parse_args()
 
     print(f"Extracting i18n strings from directories: {args.dir}")
 
-    # Check if output file exists and confirm overwrite
-    if os.path.exists(args.output_path):
-        response = (
-            input(f"Directory '{args.output_path}' already exists. Overwrite? [y/N]: ")
-            .strip()
-            .lower()
-        )
-        if response != "y":
-            print("Aborted.")
-            exit(1)
-
     strings = list(chain.from_iterable(parse_directory(dir[0]) for dir in args.dir))
-    print(
-        f"Extracted {len(strings)} strings.\nWriting to {args.output_path}",
-        file=sys.stderr,
-    )
 
-    try:
-        os.mkdir(args.output_path)
-    except FileExistsError:
-        pass
-    make_po_file(strings, args.output_path, args.name, Locale.parse("pt"))
-    make_json_file(args.output_path, args.name)
+    print(f"Extracted {len(strings)} strings.")
+    print(f"Writing to {Path(args.output_path).resolve()}")
+
+    files_path = Path(args.output_path) / "Translation"
+    files_path.mkdir(parents=True, exist_ok=True)
+
+    make_po_file(strings, files_path, args.name, Locale.parse("pt"))
+    make_json_file(files_path, args.name)
 
 
 if __name__ == "__main__":

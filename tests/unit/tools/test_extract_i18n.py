@@ -39,3 +39,23 @@ logger.info('Work conditions not met: %s', s, ui=True)
         assert strings[0].filename == str(tmp_path / "test.py")
         assert strings[0].is_f_string is False
         assert strings[0].value == "Work conditions not met: %s"
+
+    def test_long_log_msg(self, tmp_path):
+        with open(tmp_path / "test.py", "w") as f:
+            f.write(
+                """
+if ((len(possible_goals) == 0) or (last_goal not in possible_goals)):
+    logger.error('Bad use of pick next slot! Node must be used after scan_pickup or scan_drop only.', ui=True, action="Check workflow design")
+    gd.oport['none'].send()
+"""
+            )
+
+        strings = parse_directory(tmp_path)
+        assert len(strings) == 1
+        assert strings[0].lineno == 3
+        assert strings[0].filename == str(tmp_path / "test.py")
+        assert strings[0].is_f_string is False
+        assert (
+            strings[0].value
+            == "Bad use of pick next slot! Node must be used after scan_pickup or scan_drop only."
+        )

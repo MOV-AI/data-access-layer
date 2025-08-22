@@ -45,7 +45,7 @@ dal_backup = "dal.tools.backup:main"
 mobdata = "dal.tools.mobdata:main"
 edit_yaml = "dal.tools.edit_yaml:main"
 secret_key = "dal.tools.secret_key:main"
-translation = "dal.tools.extract_i18n:main"
+logs4translation = "dal.tools.extract_i18n:main"
 
 [tool.setuptools.packages.find]
 include = ["dal*"]
