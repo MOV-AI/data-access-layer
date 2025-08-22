@@ -1,3 +1,7 @@
+# v3.9.0
+- [BP-1462](https://movai.atlassian.net/browse/BP-1462): Translation implementation
+  - Add tool to collect logs to be translated
+
 # v3.8.0
 - [BP-1462](https://movai.atlassian.net/browse/BP-1462): Translation implementation
   - Singleton - lock only on first instantiation
