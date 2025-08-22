@@ -348,7 +348,7 @@ class Importer(Backup):
             ScopeClass = Factory.get_class(scope)
             ScopeClass.validate_format(scope, data[scope][name])
         except ValueError as exc:
-            _msg = f"Failed to import, invalid schema for '{scope}:{name}'"
+            _msg = f"Failed to import {scope}:{name} - {exc}"
             if self.validate:
                 self.log(_msg)
                 raise ImportException(exc) from exc
