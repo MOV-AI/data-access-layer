@@ -1,4 +1,4 @@
-# vTBD
+# v3.9.1
 - [BP-1488](https://movai.atlassian.net/browse/BP-1488): Translation PO file name separator is valid for metadata name
 
 # v3.9.0
