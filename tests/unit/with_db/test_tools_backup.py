@@ -79,8 +79,8 @@ class TestToolsBackup:
 
         to_check = [
             "delete_me.json",
-            "delete_me_pt.po",
-            "delete_me_fr.po",
+            "delete_me.pt.po",
+            "delete_me.fr.po",
         ]
 
         equal, diff, err = cmpfiles(
