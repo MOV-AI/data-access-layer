@@ -1,3 +1,6 @@
+# vTBD
+- [BP-1488](https://movai.atlassian.net/browse/BP-1488): Translation PO file name separator is valid for metadata name
+
 # v3.9.0
 - [BP-1462](https://movai.atlassian.net/browse/BP-1462): Translation implementation
   - Add tool to collect logs to be translated

@@ -751,7 +751,7 @@ class Importer(Backup):
             data["Translation"][name]["Translations"] = {}
 
             parent = Path(file_path).parent
-            lang_pattern = re.compile(f"^{name}_([a-z]+)\.po$")
+            lang_pattern = re.compile(f"^{name}\.([a-z]+)\.po$")
 
             # look for po files
             for file in parent.iterdir():
@@ -1296,7 +1296,7 @@ class Exporter(Backup):
         obj = Translation(name)
 
         for lang, data in obj.Translations.items():
-            code_path = os.path.join(self.project_path, "Translation", f"{name}_{lang}.po")
+            code_path = os.path.join(self.project_path, "Translation", f"{name}.{lang}.po")
             self.code2file(data.po, code_path)
 
     def export_configuration(self, name):
