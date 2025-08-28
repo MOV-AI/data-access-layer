@@ -181,7 +181,7 @@ def make_po_file(strings: List[SourceString], output_path: Path, name: str, loca
         name (str): Name of the metadata translation file.
         locale (str): Locale code for the .po file.
     """
-    po_path = output_path / f"{name}_{locale.language}.po"
+    po_path = output_path / f"{name}.{locale.language}.po"
     catalog = Catalog(
         creation_date=datetime.now(),
         locale=locale,

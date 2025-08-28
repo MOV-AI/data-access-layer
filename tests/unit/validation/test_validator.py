@@ -3,7 +3,7 @@ import pytest
 import time
 
 from dal.validation import JsonValidator
-from dal.exceptions import SchemaTypeNotKnown
+import dal.exceptions
 from dal.classes.filesystem import FileSystem
 
 
@@ -35,7 +35,7 @@ class TestJsonValidator:
     def test_validate_with_unknown_type(self, valid_data):
         """Test that an unknown type raises SchemaTypeNotKnown."""
         validator = JsonValidator()
-        with pytest.raises(SchemaTypeNotKnown):
+        with pytest.raises(dal.exceptions.SchemaTypeNotKnown):
             validator.validate("UnknownType", valid_data)
 
     def test_validation_performance(self, valid_data):
