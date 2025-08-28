@@ -11,6 +11,13 @@ from dal.tools.extract_i18n import main
 DATA_PATH = Path(__file__).parent / "data"
 
 
+@dataclass
+class Args:
+    dir: List[str]
+    output_path: str
+    name: str
+
+
 class TestExtractI18n:
     def test_f_string(self, tmp_path):
         with open(tmp_path / "test.py", "w") as f:
@@ -74,14 +81,6 @@ s="reason"
 logger.info(f'Work conditions not met: {s}', ui=True)
 """
             )
-
-        main
-
-        @dataclass
-        class Args:
-            dir: List[str]
-            output_path: str
-            name: str
 
         args = Args(dir=[(str(tmp_path),)], output_path=tmp_path, name="test")
 
