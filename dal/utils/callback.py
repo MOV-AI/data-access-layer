@@ -36,7 +36,7 @@ from dal.scopes.fleetrobot import FleetRobot
 from dal.scopes.message import Message
 from dal.scopes.robot import Robot
 from dal.scopes.statemachine import StateMachine
-
+from dal.scopes.alert import Alert
 
 try:
     from movai_core_enterprise.message_client_handlers.alerts import Alerts
@@ -130,6 +130,7 @@ class UserFunctions:
                 metrics = Metrics()
                 self.globals.update(
                     {
+                        "Alert": Alert,
                         "Alerts": Alerts,
                         "Annotation": Annotation,
                         "GraphicAsset": GraphicAsset,

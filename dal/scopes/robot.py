@@ -13,7 +13,6 @@ from typing import Optional
 import asyncio
 import uuid
 import pickle
-import json
 
 from movai_core_shared.core.message_client import MessageClient, AsyncMessageClient
 from movai_core_shared.exceptions import DoesNotExist
@@ -74,6 +73,7 @@ class Robot(Scope):
             self.fleet.RobotType = ""
             self.RobotModel = ""
             self.fleet.RobotModel = ""
+            self.fleet.ActiveAlerts = {}
         # default : ipc:///opt/mov.ai/comm/SpawnerServer-{DEVICE_NAME}-{FLEET_NAME}.sock"
         server = SPAWNER_BIND_ADDR
         self.__dict__["spawner_client"] = MessageClient(server_addr=server, robot_id=self.name)
@@ -101,36 +101,37 @@ class Robot(Scope):
         self.RobotModel = model
         self.fleet.RobotModel = model
 
-    def add_active_alert(self, alert_id: str, info, info_params="", action="", action_params=""):
+    def add_active_alert(
+        self, alert_id: str, info, alert_label="", info_params="", action="", action_params=""
+    ):
         """Add an active alert to the Robot"""
         if "ActiveAlerts" not in self.fleet.__dict__:
-            self.fleet.ActiveAlerts = []
-        for active in self.fleet.ActiveAlerts:
-            alert_obj = json.loads(active)
-            if alert_obj["id"] == alert_id:
-                return
-        self.fleet.ActiveAlerts.append({
-            "id":alert_id,
-            "timestamp": "today",  # TODO: add timestamp\
+            self.fleet.ActiveAlerts = {}
+
+        if alert_id in self.fleet.ActiveAlerts:
+            return
+
+        self.fleet.ActiveAlerts[alert_id] = {
+            "alert_label": alert_label,
+            "timestamp": "today",  # TODO: add timestamp
             "info": info,
             "info_params": info_params,
             "action": action,
             "action_params": action_params,
-            })
+        }
 
     def remove_alert(self, alert_id: str):
         """Remove an active alert from the Robot"""
         if "ActiveAlerts" in self.fleet.__dict__:
-            for active in self.fleet.ActiveAlerts:
-                alert_obj = json.loads(active)
-                if alert_obj["id"] == alert_id:
-                    self.fleet.ActiveAlerts.remove(active)
-                    break
+            if alert_id in self.fleet.ActiveAlerts:
+                self.fleet.ActiveAlerts.pop(alert_id)
 
-    def clear_alerts(self, ):
+    def clear_alerts(
+        self,
+    ):
         """Clear all active alerts from the Robot, or specific alert if alert_id is given"""
         if "Alerts" in self.__dict__:
-            self.fleet.ActiveAlerts = []
+            self.fleet.ActiveAlerts = {}
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot
