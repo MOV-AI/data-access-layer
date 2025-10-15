@@ -112,6 +112,7 @@ class Backup:
         "Translation",
         "SharedDataTemplate",
         "SharedDataEntry",
+        "Alert",
     ]
 
     def __init__(self, project, debug: bool = False, recursive=True):

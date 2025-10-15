@@ -7,6 +7,7 @@
    - Moawiya Mograbi  (moawiya@mov.ai) - 2022
 """
 from .application import Application
+from .alert import Alert
 from .callback import Callback
 from .configuration import Config, Configuration
 from .fleetrobot import FleetRobot
@@ -48,6 +49,7 @@ __all__ = [
     "Translation",
     "User",
     "Widget",
+    "Alert",
 ]
 
 try:
