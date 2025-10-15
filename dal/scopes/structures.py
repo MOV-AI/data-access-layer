@@ -109,6 +109,10 @@ class Hash(dict):
             return False
         return True
 
+    def clear(self):
+        for key in list(self.keys()):
+            self.pop(key)
+
 
 class Struct:
 

@@ -129,9 +129,10 @@ class Robot(Scope):
     def clear_alerts(
         self,
     ):
-        """Clear all active alerts from the Robot, or specific alert if alert_id is given"""
-        if "Alerts" in self.__dict__:
-            self.fleet.ActiveAlerts = {}
+        """Clear all active alerts from the Robot"""
+        if "ActiveAlerts" in self.__dict__:
+            LOGGER.warning(f"Clearing all alerts from robot {self.RobotName}")
+            self.fleet.ActiveAlerts.clear()
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot
