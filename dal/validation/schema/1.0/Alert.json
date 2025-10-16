@@ -3,9 +3,9 @@
   "schema": {
     "$name": {
       "AlertId": "str",
-      "Action": "str",
-      "Info": "str",
       "AlertLabel": "str",
+      "Info": "str",
+      "Action": "str",
       "LastUpdate": "any"
     }
   }

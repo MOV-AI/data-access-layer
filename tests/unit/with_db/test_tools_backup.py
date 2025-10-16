@@ -1,5 +1,6 @@
 """Tests for backup tool."""
 import os
+import json
 from filecmp import cmpfiles
 
 
@@ -89,6 +90,39 @@ class TestToolsBackup:
         assert set(equal) == set(to_check)
         assert not diff
         assert not err
+
+    def test_import_export_alert(self, global_db, metadata_folder, manifest_file, tmp_path):
+        """Test alert import and export."""
+        from dal.tools.backup import Importer, Exporter
+
+        importer = Importer(
+            metadata_folder,
+            force=True,
+            dry=False,
+            debug=False,
+            recursive=False,
+            clean_old_data=True,
+        )
+
+        data = {"Alert": ["delete_me"]}
+
+        importer.run(data)
+
+        exporter = Exporter(
+            tmp_path,
+            debug=False,
+            recursive=False,
+        )
+
+        exporter.run(data)
+
+        imported_file = metadata_folder / "Alert" / "delete_me.json"
+        exported_file = tmp_path / "Alert" / "delete_me.json"
+        with open(imported_file, "r") as f1, open(exported_file, "r") as f2:
+            imported_content = json.load(f1)
+            exported_content = json.load(f2)
+
+            assert imported_content == exported_content
 
     def test_import_invalid_data(
         self, global_db, metadata_folder_invalid_data, manifest_file_invalid_data, capsys

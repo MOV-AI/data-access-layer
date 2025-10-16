@@ -1,2 +1,3 @@
 Translation:delete_me
 Translation:invalid_po
+Alert:delete_me
