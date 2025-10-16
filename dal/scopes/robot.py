@@ -73,7 +73,6 @@ class Robot(Scope):
             self.fleet.RobotType = ""
             self.RobotModel = ""
             self.fleet.RobotModel = ""
-            self.fleet.ActiveAlerts = {}
         # default : ipc:///opt/mov.ai/comm/SpawnerServer-{DEVICE_NAME}-{FLEET_NAME}.sock"
         server = SPAWNER_BIND_ADDR
         self.__dict__["spawner_client"] = MessageClient(server_addr=server, robot_id=self.name)
