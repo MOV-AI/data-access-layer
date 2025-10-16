@@ -1,0 +1,44 @@
+{
+    "$id": "alert.schema.json",
+    "$version": "2.4",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Alert Schema",
+    "type": "object",
+    "properties": {
+        "AlertId": {
+            "type": "string"
+        },
+        "AlertLabel": {
+            "type": "string",
+            "pattern": "^[a-zA-Z\\.0-9_-]+$"
+        },
+        "Action": {
+            "type": "string"
+        },
+        "Info": {
+            "type": "string"
+        },
+        "LastUpdate": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "user": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "user",
+                "date"
+            ]
+        }
+    },
+    "required": [
+        "AlertId",
+        "AlertLabel",
+        "Info",
+        "Action"
+    ],
+    "unevaluatedProperties": false
+}

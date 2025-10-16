@@ -23,6 +23,7 @@ from movai_core_shared.logger import Log
 from dal.scopes.scope import Scope
 from dal.movaidb import MovaiDB
 from dal.scopes.fleetrobot import FleetRobot
+
 from .configuration import Configuration
 
 LOGGER = Log.get_logger("dal.mov.ai")
@@ -98,6 +99,39 @@ class Robot(Scope):
         """Set the Model of the Robot"""
         self.RobotModel = model
         self.fleet.RobotModel = model
+
+    def add_active_alert(
+        self, alert_id: str, info, alert_label="", info_params="", action="", action_params=""
+    ):
+        """Add an active alert to the Robot"""
+        if "ActiveAlerts" not in self.fleet.__dict__:
+            self.fleet.ActiveAlerts = {}
+
+        if alert_id in self.fleet.ActiveAlerts:
+            return
+
+        self.fleet.ActiveAlerts[alert_id] = {
+            "alert_label": alert_label,
+            "timestamp": "today",  # TODO: add timestamp
+            "info": info,
+            "info_params": info_params,
+            "action": action,
+            "action_params": action_params,
+        }
+
+    def remove_alert(self, alert_id: str):
+        """Remove an active alert from the Robot"""
+        if "ActiveAlerts" in self.fleet.__dict__:
+            if alert_id in self.fleet.ActiveAlerts:
+                self.fleet.ActiveAlerts.pop(alert_id)
+
+    def clear_alerts(
+        self,
+    ):
+        """Clear all active alerts from the Robot"""
+        if "ActiveAlerts" in self.__dict__:
+            LOGGER.warning(f"Clearing all alerts from robot {self.RobotName}")
+            self.fleet.ActiveAlerts.clear()
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot

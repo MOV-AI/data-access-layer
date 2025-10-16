@@ -8,7 +8,6 @@
 
    Backup a.k.a. Import Export tool
 """
-
 import argparse
 import hashlib
 import json
@@ -112,6 +111,7 @@ class Backup:
         "Translation",
         "SharedDataTemplate",
         "SharedDataEntry",
+        "Alert",
     ]
 
     def __init__(self, project, debug: bool = False, recursive=True):
@@ -253,7 +253,7 @@ class Importer(Backup):
         if scope not in self._imported:
             self._imported[scope] = []
         if name not in self._imported[scope]:
-            self.log(f"Imported {scope}:{name}")
+            self.log(f"Importedss {scope}:{name}")
             self._imported[scope].append(name)
 
     def _list_files(self, scope, extract=None, match=None):
@@ -343,7 +343,6 @@ class Importer(Backup):
 
     def _import_data(self, scope, name, data):  # pylint: disable=method-hidden
         """Imports data to the database."""
-
         try:
             ScopeClass = Factory.get_class(scope)
             ScopeClass.validate_format(scope, data[scope][name])

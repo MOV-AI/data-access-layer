@@ -11,6 +11,7 @@
       "Actions": "list",
       "Notifications": "list",
       "Alerts": "hash",
+      "ActiveAlerts": "hash",
       "Status": "hash",
       "Parameter": {
         "$name": {

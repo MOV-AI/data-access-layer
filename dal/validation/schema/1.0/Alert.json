@@ -1,0 +1,12 @@
+{
+  "_version": "1.0",
+  "schema": {
+    "$name": {
+      "AlertId": "str",
+      "AlertLabel": "str",
+      "Info": "str",
+      "Action": "str",
+      "LastUpdate": "any"
+    }
+  }
+}
