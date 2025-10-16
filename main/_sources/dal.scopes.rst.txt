@@ -4,6 +4,14 @@ dal.scopes package
 Submodules
 ----------
 
+dal.scopes.alert module
+-----------------------
+
+.. automodule:: dal.scopes.alert
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dal.scopes.application module
 -----------------------------
 

@@ -1812,6 +1812,16 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="dal.scopes.html">dal.scopes package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dal.scopes.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dal.scopes.html#module-dal.scopes.alert">dal.scopes.alert module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.alert.Alert"><code class="docutils literal notranslate"><span class="pre">Alert</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.alert.Alert.activate"><code class="docutils literal notranslate"><span class="pre">Alert.activate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.alert.Alert.clear_alerts"><code class="docutils literal notranslate"><span class="pre">Alert.clear_alerts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.alert.Alert.deactivate"><code class="docutils literal notranslate"><span class="pre">Alert.deactivate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.alert.Alert.scope"><code class="docutils literal notranslate"><span class="pre">Alert.scope</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="dal.scopes.html#module-dal.scopes.application">dal.scopes.application module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.application.Application"><code class="docutils literal notranslate"><span class="pre">Application</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.application.Application.permissions"><code class="docutils literal notranslate"><span class="pre">Application.permissions</span></code></a></li>
@@ -1992,10 +2002,13 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="dal.scopes.html#module-dal.scopes.robot">dal.scopes.robot module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.robot.Robot"><code class="docutils literal notranslate"><span class="pre">Robot</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.robot.Robot.add_active_alert"><code class="docutils literal notranslate"><span class="pre">Robot.add_active_alert()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.robot.Robot.async_send_cmd"><code class="docutils literal notranslate"><span class="pre">Robot.async_send_cmd()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.robot.Robot.async_spawner_client"><code class="docutils literal notranslate"><span class="pre">Robot.async_spawner_client</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.robot.Robot.clear_alerts"><code class="docutils literal notranslate"><span class="pre">Robot.clear_alerts()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.robot.Robot.cls_update_status"><code class="docutils literal notranslate"><span class="pre">Robot.cls_update_status()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.robot.Robot.get_states"><code class="docutils literal notranslate"><span class="pre">Robot.get_states()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.robot.Robot.remove_alert"><code class="docutils literal notranslate"><span class="pre">Robot.remove_alert()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.robot.Robot.scope"><code class="docutils literal notranslate"><span class="pre">Robot.scope</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.robot.Robot.send_cmd"><code class="docutils literal notranslate"><span class="pre">Robot.send_cmd()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.robot.Robot.set_ip"><code class="docutils literal notranslate"><span class="pre">Robot.set_ip()</span></code></a></li>
@@ -2062,6 +2075,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="dal.scopes.html#module-dal.scopes.structures">dal.scopes.structures module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.structures.Hash"><code class="docutils literal notranslate"><span class="pre">Hash</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.structures.Hash.clear"><code class="docutils literal notranslate"><span class="pre">Hash.clear()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.structures.Hash.delete"><code class="docutils literal notranslate"><span class="pre">Hash.delete()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.structures.Hash.get"><code class="docutils literal notranslate"><span class="pre">Hash.get()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.structures.Hash.pop"><code class="docutils literal notranslate"><span class="pre">Hash.pop()</span></code></a></li>
@@ -2141,6 +2155,16 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="dal.scopes.html#module-dal.scopes">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.Alert"><code class="docutils literal notranslate"><span class="pre">Alert</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Alert.Name"><code class="docutils literal notranslate"><span class="pre">Alert.Name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Alert.activate"><code class="docutils literal notranslate"><span class="pre">Alert.activate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Alert.clear_alerts"><code class="docutils literal notranslate"><span class="pre">Alert.clear_alerts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Alert.db"><code class="docutils literal notranslate"><span class="pre">Alert.db</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Alert.deactivate"><code class="docutils literal notranslate"><span class="pre">Alert.deactivate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Alert.movaidb"><code class="docutils literal notranslate"><span class="pre">Alert.movaidb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Alert.scope"><code class="docutils literal notranslate"><span class="pre">Alert.scope</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.Application"><code class="docutils literal notranslate"><span class="pre">Application</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Application.Name"><code class="docutils literal notranslate"><span class="pre">Application.Name</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Application.db"><code class="docutils literal notranslate"><span class="pre">Application.db</span></code></a></li>
@@ -2313,12 +2337,15 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.Robot"><code class="docutils literal notranslate"><span class="pre">Robot</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Robot.Name"><code class="docutils literal notranslate"><span class="pre">Robot.Name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Robot.add_active_alert"><code class="docutils literal notranslate"><span class="pre">Robot.add_active_alert()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Robot.async_send_cmd"><code class="docutils literal notranslate"><span class="pre">Robot.async_send_cmd()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Robot.async_spawner_client"><code class="docutils literal notranslate"><span class="pre">Robot.async_spawner_client</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Robot.clear_alerts"><code class="docutils literal notranslate"><span class="pre">Robot.clear_alerts()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Robot.cls_update_status"><code class="docutils literal notranslate"><span class="pre">Robot.cls_update_status()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Robot.db"><code class="docutils literal notranslate"><span class="pre">Robot.db</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Robot.get_states"><code class="docutils literal notranslate"><span class="pre">Robot.get_states()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Robot.movaidb"><code class="docutils literal notranslate"><span class="pre">Robot.movaidb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Robot.remove_alert"><code class="docutils literal notranslate"><span class="pre">Robot.remove_alert()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Robot.scope"><code class="docutils literal notranslate"><span class="pre">Robot.scope</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Robot.send_cmd"><code class="docutils literal notranslate"><span class="pre">Robot.send_cmd()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Robot.set_ip"><code class="docutils literal notranslate"><span class="pre">Robot.set_ip()</span></code></a></li>

@@ -156,6 +156,12 @@
         <li><a href="dal.models.html#dal.models.lock.Lock.acquire">(dal.models.lock.Lock method)</a>
 </li>
       </ul></li>
+      <li><a href="dal.scopes.html#dal.scopes.Alert.activate">activate() (dal.scopes.Alert method)</a>
+
+      <ul>
+        <li><a href="dal.scopes.html#dal.scopes.alert.Alert.activate">(dal.scopes.alert.Alert method)</a>
+</li>
+      </ul></li>
       <li><a href="dal.models.html#dal.models.FlowLinks.add">add() (dal.models.FlowLinks method)</a>
 
       <ul>
@@ -176,6 +182,12 @@
         <li><a href="dal.scopes.html#dal.scopes.Struct.add">(dal.scopes.Struct method)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.structures.Struct.add">(dal.scopes.structures.Struct method)</a>
+</li>
+      </ul></li>
+      <li><a href="dal.scopes.html#dal.scopes.Robot.add_active_alert">add_active_alert() (dal.scopes.Robot method)</a>
+
+      <ul>
+        <li><a href="dal.scopes.html#dal.scopes.robot.Robot.add_active_alert">(dal.scopes.robot.Robot method)</a>
 </li>
       </ul></li>
       <li><a href="dal.scopes.html#dal.scopes.FleetRobot.add_alert">add_alert() (dal.scopes.FleetRobot method)</a>
@@ -218,6 +230,12 @@
 </li>
       <li><a href="dal.movaidb.html#dal.movaidb.database.AioRedisClient">AioRedisClient (class in dal.movaidb.database)</a>
 </li>
+      <li><a href="dal.scopes.html#dal.scopes.Alert">Alert (class in dal.scopes)</a>
+
+      <ul>
+        <li><a href="dal.scopes.html#dal.scopes.alert.Alert">(class in dal.scopes.alert)</a>
+</li>
+      </ul></li>
       <li><a href="dal.models.html#dal.models.NodeInst.all">all (dal.models.NodeInst property)</a>
 
       <ul>
@@ -516,6 +534,18 @@
         <li><a href="dal.backup.html#dal.backup.RestoreManager.clean_jobs">(dal.backup.RestoreManager static method)</a>
 </li>
       </ul></li>
+      <li><a href="dal.scopes.html#dal.scopes.structures.Hash.clear">clear() (dal.scopes.structures.Hash method)</a>
+</li>
+      <li><a href="dal.scopes.html#dal.scopes.Alert.clear_alerts">clear_alerts() (dal.scopes.Alert method)</a>
+
+      <ul>
+        <li><a href="dal.scopes.html#dal.scopes.alert.Alert.clear_alerts">(dal.scopes.alert.Alert method)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.Robot.clear_alerts">(dal.scopes.Robot method)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.robot.Robot.clear_alerts">(dal.scopes.robot.Robot method)</a>
+</li>
+      </ul></li>
       <li><a href="dal.utils.html#dal.utils.redis_mocks.FakeAsyncConnection.close">close() (dal.utils.redis_mocks.FakeAsyncConnection method)</a>
 </li>
       <li><a href="dal.utils.html#dal.utils.redis_mocks.FakeAsyncConnection.closed">closed (dal.utils.redis_mocks.FakeAsyncConnection property)</a>
@@ -560,12 +590,12 @@
         <li><a href="dal.models.html#dal.models.acl.ResourceType.Configuration">(dal.models.acl.ResourceType attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.models.html#dal.models.configuration.ConfigurationCache">ConfigurationCache (class in dal.models.configuration)</a>
 </li>
       <li><a href="dal.tools.html#dal.tools.extract_i18n.confirm_overwrite">confirm_overwrite() (in module dal.tools.extract_i18n)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.models.html#dal.models.Container">Container (class in dal.models)</a>
 
       <ul>
@@ -1346,6 +1376,13 @@
 </li>
       </ul></li>
       <li>
+    dal.scopes.alert
+
+      <ul>
+        <li><a href="dal.scopes.html#module-dal.scopes.alert">module</a>
+</li>
+      </ul></li>
+      <li>
     dal.scopes.application
 
       <ul>
@@ -1587,9 +1624,11 @@
       </ul></li>
       <li><a href="dal.exceptions.html#dal.exceptions.exceptions.DalException">DalException</a>
 </li>
-      <li><a href="dal.scopes.html#dal.scopes.Application.db">db (dal.scopes.Application attribute)</a>
+      <li><a href="dal.scopes.html#dal.scopes.Alert.db">db (dal.scopes.Alert attribute)</a>
 
       <ul>
+        <li><a href="dal.scopes.html#dal.scopes.Application.db">(dal.scopes.Application attribute)</a>
+</li>
         <li><a href="dal.scopes.html#dal.scopes.Callback.db">(dal.scopes.Callback attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.Configuration.db">(dal.scopes.Configuration attribute)</a>
@@ -1673,6 +1712,12 @@
 </li>
       <li><a href="dal.classes.utils.html#dal.classes.utils.token.DBToken">DBToken (class in dal.classes.utils.token)</a>
 </li>
+      <li><a href="dal.scopes.html#dal.scopes.Alert.deactivate">deactivate() (dal.scopes.Alert method)</a>
+
+      <ul>
+        <li><a href="dal.scopes.html#dal.scopes.alert.Alert.deactivate">(dal.scopes.alert.Alert method)</a>
+</li>
+      </ul></li>
       <li><a href="dal.classes.utils.html#dal.classes.utils.token.Token.decode_and_verify_token">decode_and_verify_token() (dal.classes.utils.token.Token class method)</a>
 </li>
       <li><a href="dal.movaidb.html#dal.movaidb.database.MovaiDB.decode_hash">decode_hash() (dal.movaidb.database.MovaiDB method)</a>
@@ -4263,6 +4308,8 @@
 </li>
         <li><a href="dal.scopes.html#module-dal.scopes">dal.scopes</a>
 </li>
+        <li><a href="dal.scopes.html#module-dal.scopes.alert">dal.scopes.alert</a>
+</li>
         <li><a href="dal.scopes.html#module-dal.scopes.application">dal.scopes.application</a>
 </li>
         <li><a href="dal.scopes.html#module-dal.scopes.callback">dal.scopes.callback</a>
@@ -4340,9 +4387,11 @@
         <li><a href="dal.movaidb.html#dal.movaidb.database.MovaiDB">(class in dal.movaidb.database)</a>
 </li>
       </ul></li>
-      <li><a href="dal.scopes.html#dal.scopes.Application.movaidb">movaidb (dal.scopes.Application attribute)</a>
+      <li><a href="dal.scopes.html#dal.scopes.Alert.movaidb">movaidb (dal.scopes.Alert attribute)</a>
 
       <ul>
+        <li><a href="dal.scopes.html#dal.scopes.Application.movaidb">(dal.scopes.Application attribute)</a>
+</li>
         <li><a href="dal.scopes.html#dal.scopes.Callback.movaidb">(dal.scopes.Callback attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.Configuration.movaidb">(dal.scopes.Configuration attribute)</a>
@@ -4416,9 +4465,11 @@
         <li><a href="dal.models.html#dal.models.scopestree.ScopeDictNode.name">(dal.models.scopestree.ScopeDictNode property)</a>
 </li>
       </ul></li>
-      <li><a href="dal.scopes.html#dal.scopes.Application.Name">Name (dal.scopes.Application attribute)</a>
+      <li><a href="dal.scopes.html#dal.scopes.Alert.Name">Name (dal.scopes.Alert attribute)</a>
 
       <ul>
+        <li><a href="dal.scopes.html#dal.scopes.Application.Name">(dal.scopes.Application attribute)</a>
+</li>
         <li><a href="dal.scopes.html#dal.scopes.Callback.Name">(dal.scopes.Callback attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.Configuration.Name">(dal.scopes.Configuration attribute)</a>
@@ -4482,10 +4533,10 @@
         <li><a href="dal.models.html#dal.models.acl.NewACLManager">(class in dal.models.acl)</a>
 </li>
       </ul></li>
-      <li><a href="dal.exceptions.html#dal.exceptions.exceptions.ArchiveErr.NO_ACTIVE_ARCHIVE_REGISTERED">NO_ACTIVE_ARCHIVE_REGISTERED (dal.exceptions.exceptions.ArchiveErr attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dal.exceptions.html#dal.exceptions.exceptions.ArchiveErr.NO_ACTIVE_ARCHIVE_REGISTERED">NO_ACTIVE_ARCHIVE_REGISTERED (dal.exceptions.exceptions.ArchiveErr attribute)</a>
+</li>
       <li><a href="dal.exceptions.html#dal.exceptions.exceptions.GitErr.NO_CHANGES_TO_COMMIT_ERR">NO_CHANGES_TO_COMMIT_ERR (dal.exceptions.exceptions.GitErr attribute)</a>
 </li>
       <li><a href="dal.exceptions.html#dal.exceptions.NoActiveArchiveRegistered">NoActiveArchiveRegistered</a>, <a href="dal.exceptions.html#dal.exceptions.exceptions.NoActiveArchiveRegistered">[1]</a>
@@ -5263,6 +5314,10 @@
       <ul>
         <li><a href="dal.scopes.html#dal.scopes.fleetrobot.FleetRobot.remove_alert">(dal.scopes.fleetrobot.FleetRobot method)</a>
 </li>
+        <li><a href="dal.scopes.html#dal.scopes.Robot.remove_alert">(dal.scopes.Robot method)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.robot.Robot.remove_alert">(dal.scopes.robot.Robot method)</a>
+</li>
       </ul></li>
       <li><a href="dal.classes.utils.html#dal.classes.utils.token.TokenManager.remove_all_expired_tokens">remove_all_expired_tokens() (dal.classes.utils.token.TokenManager class method)</a>
 </li>
@@ -5640,6 +5695,10 @@
         <li><a href="dal.models.html#dal.models.scopestree.ScopeObjectNode.scope">(dal.models.scopestree.ScopeObjectNode property)</a>
 </li>
         <li><a href="dal.models.html#dal.models.scopestree.ScopePropertyNode.scope">(dal.models.scopestree.ScopePropertyNode property)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.Alert.scope">(dal.scopes.Alert attribute)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.alert.Alert.scope">(dal.scopes.alert.Alert attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.Application.scope">(dal.scopes.Application attribute)</a>
 </li>
