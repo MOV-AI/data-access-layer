@@ -15,7 +15,7 @@ import uuid
 import pickle
 
 from movai_core_shared.core.message_client import MessageClient, AsyncMessageClient
-from movai_core_shared.core.message_client_handlers._alert_metrics import AlertMetricsFactory
+from movai_core_enterprise.message_client_handlers._alert_metrics import AlertMetricsFactory
 from movai_core_shared.exceptions import DoesNotExist
 from movai_core_shared.consts import COMMAND_HANDLER_MSG_TYPE, TIMEOUT_SEND_CMD_RESPONSE
 from movai_core_shared.envvars import SPAWNER_BIND_ADDR, DEVICE_NAME
