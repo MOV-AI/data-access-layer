@@ -9,12 +9,13 @@
 
    Module that implements Robot namespace
 """
-from typing import Optional
+from typing import Optional, TypedDict
 import asyncio
 import uuid
 import pickle
 
 from movai_core_shared.core.message_client import MessageClient, AsyncMessageClient
+from movai_core_shared.core.message_client_handlers._alert_metrics import AlertMetricsFactory
 from movai_core_shared.exceptions import DoesNotExist
 from movai_core_shared.consts import COMMAND_HANDLER_MSG_TYPE, TIMEOUT_SEND_CMD_RESPONSE
 from movai_core_shared.envvars import SPAWNER_BIND_ADDR, DEVICE_NAME
@@ -23,10 +24,17 @@ from movai_core_shared.logger import Log
 from dal.scopes.scope import Scope
 from dal.movaidb import MovaiDB
 from dal.scopes.fleetrobot import FleetRobot
-
+from datetime import datetime
 from .configuration import Configuration
-
 LOGGER = Log.get_logger("dal.mov.ai")
+
+class AlertMetric(TypedDict):
+    activation_date="",
+    deactivation_date="",
+    info="",
+    action="",
+    alert_label="",
+    deactivation_reason="",
 
 
 class Robot(Scope):
@@ -38,6 +46,7 @@ class Robot(Scope):
 
     spawner_client: MessageClient
     async_spawner_client: AsyncMessageClient
+    alert_metrics = AlertMetricsFactory.create()  # initialize metrics if enabled
 
     scope = "Robot"
 
@@ -112,7 +121,7 @@ class Robot(Scope):
 
         self.fleet.ActiveAlerts[alert_id] = {
             "alert_label": alert_label,
-            "timestamp": "today",  # TODO: add timestamp
+            "activation_date": datetime.now().strftime("%d/%m/%Y at %H:%M:%S"),
             "info": info,
             "info_params": info_params,
             "action": action,
@@ -123,7 +132,17 @@ class Robot(Scope):
         """Remove an active alert from the Robot"""
         if "ActiveAlerts" in self.fleet.__dict__:
             if alert_id in self.fleet.ActiveAlerts:
-                self.fleet.ActiveAlerts.pop(alert_id)
+                alert = self.fleet.ActiveAlerts.pop(alert_id)
+
+                alert_metric = AlertMetric(
+                    alert_label=alert["alert_label"],
+                    activation_date=alert["activation_date"],
+                    deactivation_date=datetime.now().strftime("%d/%m/%Y at %H:%M:%S"),
+                    info=alert["info"],
+                    action=alert["action"],
+                )
+                self.metrics.add("alert_events", **alert_metric)
+
 
     def clear_alerts(
         self,
