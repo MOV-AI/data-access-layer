@@ -18,5 +18,5 @@ SCOPES_TO_TRACK = [
     "Annotation",
     "Layout",
     "GraphicScene",
-    "Translation"
+    "Translation",
 ]
