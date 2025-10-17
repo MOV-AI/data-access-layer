@@ -15,7 +15,6 @@ import uuid
 import pickle
 
 from movai_core_shared.core.message_client import MessageClient, AsyncMessageClient
-from movai_core_enterprise.message_client_handlers._alert_metrics import AlertMetricsFactory
 from movai_core_shared.exceptions import DoesNotExist
 from movai_core_shared.consts import COMMAND_HANDLER_MSG_TYPE, TIMEOUT_SEND_CMD_RESPONSE
 from movai_core_shared.envvars import SPAWNER_BIND_ADDR, DEVICE_NAME
@@ -28,13 +27,17 @@ from datetime import datetime
 from .configuration import Configuration
 LOGGER = Log.get_logger("dal.mov.ai")
 
-class AlertMetric(TypedDict):
+class DeactivationType:
+    REQUESTED = "requested"
+    AUTO_CLEARED = "auto_cleared"
+
+class AlertData(TypedDict):
     activation_date="",
     deactivation_date="",
     info="",
     action="",
     alert_label="",
-    deactivation_reason="",
+    deactivation_type=""
 
 
 class Robot(Scope):
@@ -46,7 +49,6 @@ class Robot(Scope):
 
     spawner_client: MessageClient
     async_spawner_client: AsyncMessageClient
-    alert_metrics = AlertMetricsFactory.create()  # initialize metrics if enabled
 
     scope = "Robot"
 
@@ -121,36 +123,53 @@ class Robot(Scope):
 
         self.fleet.ActiveAlerts[alert_id] = {
             "alert_label": alert_label,
-            "activation_date": datetime.now().strftime("%d/%m/%Y at %H:%M:%S"),
+            "activation_date": str(datetime.now()),
             "info": info,
             "info_params": info_params,
             "action": action,
             "action_params": action_params,
         }
 
-    def remove_alert(self, alert_id: str):
+    def pop_alert(self, alert_id: str, deactivation_type: str = DeactivationType.REQUESTED) -> Optional[AlertData]:
         """Remove an active alert from the Robot"""
         if "ActiveAlerts" in self.fleet.__dict__:
             if alert_id in self.fleet.ActiveAlerts:
                 alert = self.fleet.ActiveAlerts.pop(alert_id)
 
-                alert_metric = AlertMetric(
+                alert_metric = AlertData(
+                    alert_id=alert_id,
                     alert_label=alert["alert_label"],
                     activation_date=alert["activation_date"],
-                    deactivation_date=datetime.now().strftime("%d/%m/%Y at %H:%M:%S"),
+                    deactivation_date=str(datetime.now()),
                     info=alert["info"],
                     action=alert["action"],
+                    deactivation_type=deactivation_type,
                 )
-                self.metrics.add("alert_events", **alert_metric)
+                return alert_metric
+
 
 
     def clear_alerts(
         self,
+        deactivation_type: str = DeactivationType.AUTO_CLEARED
     ):
         """Clear all active alerts from the Robot"""
         if "ActiveAlerts" in self.__dict__:
             LOGGER.warning(f"Clearing all alerts from robot {self.RobotName}")
+            alert_metrics = []
+            for alert_id, alert in self.fleet.ActiveAlerts.items():
+                alert_metric = AlertData(
+                    alert_id=alert_id,
+                    alert_label=alert["alert_label"],
+                    activation_date=alert["activation_date"],
+                    deactivation_date=str(datetime.now()),
+                    info=alert["info"],
+                    action=alert["action"],
+                    deactivation_type=deactivation_type,
+                )
+                alert_metrics.append(alert_metric)
             self.fleet.ActiveAlerts.clear()
+            return alert_metrics
 
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot
