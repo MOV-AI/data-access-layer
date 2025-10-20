@@ -16,7 +16,11 @@ import pickle
 
 from movai_core_shared.core.message_client import MessageClient, AsyncMessageClient
 from movai_core_shared.exceptions import DoesNotExist
-from movai_core_shared.consts import COMMAND_HANDLER_MSG_TYPE, TIMEOUT_SEND_CMD_RESPONSE
+from movai_core_shared.consts import (
+    COMMAND_HANDLER_MSG_TYPE,
+    TIMEOUT_SEND_CMD_RESPONSE,
+    DeactivationType,
+)
 from movai_core_shared.envvars import SPAWNER_BIND_ADDR, DEVICE_NAME
 from movai_core_shared.logger import Log
 
@@ -27,11 +31,6 @@ from datetime import datetime
 from .configuration import Configuration
 
 LOGGER = Log.get_logger("dal.mov.ai")
-
-
-class DeactivationType:
-    REQUESTED = "requested"
-    AUTO_CLEARED = "auto_cleared"
 
 
 class AlertData(TypedDict):
@@ -152,7 +151,7 @@ class Robot(Scope):
                 )
                 return alert_metric
 
-    def clear_alerts(self, deactivation_type: str = DeactivationType.AUTO_CLEARED):
+    def clear_alerts(self, deactivation_type: str = DeactivationType.REQUESTED):
         """Clear all active alerts from the Robot"""
         if "ActiveAlerts" in self.__dict__:
             LOGGER.warning(f"Clearing all alerts from robot {self.RobotName}")

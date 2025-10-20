@@ -1,6 +1,7 @@
 from dal.scopes.scope import Scope
 from dal.scopes.robot import Robot
 from movai_core_shared.logger import Log
+from movai_core_shared.consts import DeactivationType
 
 try:
     from movai_core_enterprise.message_client_handlers._alert_metrics import AlertMetricsFactory
@@ -29,13 +30,13 @@ class Alert(Scope):
             info_params=kwargs,
         )
 
-    def deactivate(self):
-        alert_metric = Robot().pop_alert(self.AlertId)
+    def deactivate(self, deactivation_type: str = DeactivationType.REQUESTED):
+        alert_metric = Robot().pop_alert(self.AlertId, deactivation_type=deactivation_type)
         if enterprise:
             self.alert_metrics.add("alert_events", **alert_metric)
 
-    def clear_alerts(self):
-        alert_metrics = Robot().clear_alerts()
+    def clear_alerts(self, deactivation_type: str = DeactivationType.REQUESTED):
+        alert_metrics = Robot().clear_alerts(deactivation_type=deactivation_type)
         if enterprise:
             for alert_metric in alert_metrics:
                 self.alert_metrics.add("alert_events", **alert_metric)
