@@ -25,19 +25,22 @@ from dal.movaidb import MovaiDB
 from dal.scopes.fleetrobot import FleetRobot
 from datetime import datetime
 from .configuration import Configuration
+
 LOGGER = Log.get_logger("dal.mov.ai")
+
 
 class DeactivationType:
     REQUESTED = "requested"
     AUTO_CLEARED = "auto_cleared"
 
+
 class AlertData(TypedDict):
-    activation_date="",
-    deactivation_date="",
-    info="",
-    action="",
-    alert_label="",
-    deactivation_type=""
+    activation_date = ("",)
+    deactivation_date = ("",)
+    info = ("",)
+    action = ("",)
+    alert_label = ("",)
+    deactivation_type = ""
 
 
 class Robot(Scope):
@@ -130,7 +133,9 @@ class Robot(Scope):
             "action_params": action_params,
         }
 
-    def pop_alert(self, alert_id: str, deactivation_type: str = DeactivationType.REQUESTED) -> Optional[AlertData]:
+    def pop_alert(
+        self, alert_id: str, deactivation_type: str = DeactivationType.REQUESTED
+    ) -> Optional[AlertData]:
         """Remove an active alert from the Robot"""
         if "ActiveAlerts" in self.fleet.__dict__:
             if alert_id in self.fleet.ActiveAlerts:
@@ -147,12 +152,7 @@ class Robot(Scope):
                 )
                 return alert_metric
 
-
-
-    def clear_alerts(
-        self,
-        deactivation_type: str = DeactivationType.AUTO_CLEARED
-    ):
+    def clear_alerts(self, deactivation_type: str = DeactivationType.AUTO_CLEARED):
         """Clear all active alerts from the Robot"""
         if "ActiveAlerts" in self.__dict__:
             LOGGER.warning(f"Clearing all alerts from robot {self.RobotName}")

@@ -24,7 +24,7 @@ class TestRobotActiveAlerts:
         assert entry["alert_label"] == "Test label"
         assert entry["info"] == "Test info"
         assert entry["action"] == "Test action"
-        assert "timestamp" in entry
+        assert "activation_date" in entry
 
         # Try adding the same alert again
         robot.add_active_alert(alert_id, info="Duplicate")
@@ -32,7 +32,7 @@ class TestRobotActiveAlerts:
         assert len(robot.fleet.ActiveAlerts) == 1
 
         # Remove the alert
-        robot.remove_alert(alert_id)
+        robot.pop_alert(alert_id)
         assert alert_id not in robot.fleet.ActiveAlerts
 
         # Add multiple alerts and clear all

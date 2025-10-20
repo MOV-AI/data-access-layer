@@ -4,6 +4,7 @@ from movai_core_shared.logger import Log
 
 try:
     from movai_core_enterprise.message_client_handlers._alert_metrics import AlertMetricsFactory
+
     enterprise = True
 except ImportError:
     enterprise = False
@@ -16,11 +17,10 @@ class Alert(Scope):
     if enterprise:
         alert_metrics = AlertMetricsFactory.create()  # initialize metrics if enabled
 
-
     def __init__(self, alert_id: str = "", version="latest", new=False, db="global"):
         super().__init__(scope="Alert", name=alert_id, version=version, new=new, db=db)
 
-    def activate(self,**kwargs):
+    def activate(self, **kwargs):
         Robot().add_active_alert(
             self.AlertId,
             info=self.Info,
