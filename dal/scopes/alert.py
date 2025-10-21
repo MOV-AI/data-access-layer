@@ -19,24 +19,27 @@ class Alert(Scope):
         alert_metrics = AlertMetricsFactory.create()  # initialize metrics if enabled
 
     def __init__(self, alert_id: str = "", version="latest", new=False, db="global"):
+        self.__dict__["alert_id"] = alert_id
         super().__init__(scope="Alert", name=alert_id, version=version, new=new, db=db)
 
     def activate(self, **kwargs):
         Robot().add_active_alert(
-            self.AlertId,
+            self.alert_id,
             info=self.Info,
+            label=self.Label,
             action=self.Action,
-            alert_label=self.AlertLabel,
+            title=self.Title,
             info_params=kwargs,
         )
 
     def deactivate(self, deactivation_type: str = DeactivationType.REQUESTED):
-        alert_metric = Robot().pop_alert(self.AlertId, deactivation_type=deactivation_type)
+        alert_metric = Robot().pop_alert(self.alert_id, deactivation_type=deactivation_type)
         if enterprise:
             self.alert_metrics.add("alert_events", **alert_metric)
 
-    def clear_alerts(self, deactivation_type: str = DeactivationType.REQUESTED):
+    @classmethod
+    def clear_alerts(cls, deactivation_type: str = DeactivationType.REQUESTED):
         alert_metrics = Robot().clear_alerts(deactivation_type=deactivation_type)
         if enterprise:
             for alert_metric in alert_metrics:
-                self.alert_metrics.add("alert_events", **alert_metric)
+                cls.alert_metrics.add("alert_events", **alert_metric)

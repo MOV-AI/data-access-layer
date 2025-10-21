@@ -19,4 +19,5 @@ SCOPES_TO_TRACK = [
     "Layout",
     "GraphicScene",
     "Translation",
+    "Alert",
 ]

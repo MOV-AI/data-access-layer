@@ -253,7 +253,7 @@ class Importer(Backup):
         if scope not in self._imported:
             self._imported[scope] = []
         if name not in self._imported[scope]:
-            self.log(f"Importedss {scope}:{name}")
+            self.log(f"Imported {scope}:{name}")
             self._imported[scope].append(name)
 
     def _list_files(self, scope, extract=None, match=None):

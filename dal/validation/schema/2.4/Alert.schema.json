@@ -5,12 +5,15 @@
     "title": "Alert Schema",
     "type": "object",
     "properties": {
-        "AlertId": {
+        "Title": {
             "type": "string"
         },
-        "AlertLabel": {
+        "Label": {
             "type": "string",
             "pattern": "^[a-zA-Z\\.0-9_-]+$"
+        },
+        "User": {
+            "type": "string"
         },
         "Action": {
             "type": "string"
@@ -35,8 +38,8 @@
         }
     },
     "required": [
-        "AlertId",
-        "AlertLabel",
+        "Label",
+        "Title",
         "Info",
         "Action"
     ],

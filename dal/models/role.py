@@ -45,6 +45,7 @@ class Role(Model):
 
     DEPLOYER_RESOURCES = {
         "AclObject": [READ_PERMISSION],
+        "Alert": _DEFAULT_RESOUCE_PERM,
         "Annotation": _DEFAULT_RESOUCE_PERM,
         "Applications": [
             "AdminBoard",

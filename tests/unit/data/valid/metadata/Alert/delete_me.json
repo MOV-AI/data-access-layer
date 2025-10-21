@@ -1,10 +1,11 @@
 {
     "Alert": {
         "delete_me": {
-            "AlertId": "delete_me",
             "Action": "Random action",
             "Info": "Random info",
-            "AlertLabel": "delete_me",
+            "Label": "delete_me",
+            "User": "movai@internal",
+            "Title": "Delete Me",
             "LastUpdate": {
                 "date": "31/03/2025 at 07:48:07",
                 "user": "movai@internal"
