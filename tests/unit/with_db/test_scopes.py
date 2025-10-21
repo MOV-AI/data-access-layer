@@ -67,7 +67,6 @@ class TestAlert:
 
         alert = Alert("delete_me")
 
-        assert alert.AlertId == "delete_me"
         assert alert.Action == "Random action"
         assert alert.Info == "Random info"
         assert alert.AlertLabel == "delete_me"
