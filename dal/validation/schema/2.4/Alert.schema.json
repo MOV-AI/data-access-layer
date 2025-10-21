@@ -9,7 +9,8 @@
             "type": "string"
         },
         "Label": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^[a-zA-Z\\.0-9_-]+$"
         },
         "User": {
             "type": "string"
