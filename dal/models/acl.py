@@ -50,6 +50,7 @@ class ResourceType(Enum):
     TaskEntry = "TaskEntry"
     TaskTemplate = "TaskTemplate"
     Translation = "Translation"
+    Alert = "Alert"
 
 
 class ApplicationsType(Enum):

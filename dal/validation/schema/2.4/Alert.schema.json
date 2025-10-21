@@ -5,7 +5,7 @@
     "title": "Alert Schema",
     "type": "object",
     "properties": {
-        "AlertTitle": {
+        "Title": {
             "type": "string"
         },
         "Label": {
@@ -39,7 +39,7 @@
     },
     "required": [
         "Label",
-        "AlertTitle",
+        "Title",
         "Info",
         "Action"
     ],

@@ -39,7 +39,7 @@ class AlertData(TypedDict):
     deactivation_date = ("",)
     info = ("",)
     action = ("",)
-    alert_title = ("",)
+    title = ("",)
     deactivation_type = ""
 
 
@@ -119,7 +119,7 @@ class Robot(Scope):
         alert_id: str,
         info,
         label="",
-        alert_title="",
+        title="",
         info_params="",
         action="",
         action_params="",
@@ -132,12 +132,12 @@ class Robot(Scope):
             return
 
         self.fleet.ActiveAlerts[alert_id] = {
-            "label": label,
-            "alert_title": alert_title,
+            "Label": label,
+            "Title": title,
             "activation_date": str(datetime.now()),
-            "info": info,
+            "Info": info,
             "info_params": info_params,
-            "action": action,
+            "Action": action,
             "action_params": action_params,
         }
 
@@ -151,12 +151,12 @@ class Robot(Scope):
 
                 alert_metric = AlertData(
                     alert_id=alert_id,
-                    label=alert["label"],
-                    alert_title=alert["alert_title"],
+                    Label=alert["Label"],
+                    title=alert["Title"],
                     activation_date=alert["activation_date"],
                     deactivation_date=str(datetime.now()),
-                    info=alert["info"],
-                    action=alert["action"],
+                    info=alert["Info"],
+                    action=alert["Action"],
                     deactivation_type=deactivation_type,
                 )
                 return alert_metric
@@ -169,12 +169,12 @@ class Robot(Scope):
             for alert_id, alert in self.fleet.ActiveAlerts.items():
                 alert_metric = AlertData(
                     alert_id=alert_id,
-                    label=alert["label"],
-                    alert_title=alert["alert_title"],
+                    Label=alert["Label"],
+                    title=alert["Title"],
                     activation_date=alert["activation_date"],
                     deactivation_date=str(datetime.now()),
-                    info=alert["info"],
-                    action=alert["action"],
+                    info=alert["Info"],
+                    action=alert["Action"],
                     deactivation_type=deactivation_type,
                 )
                 alert_metrics.append(alert_metric)

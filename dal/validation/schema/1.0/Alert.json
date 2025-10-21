@@ -4,7 +4,7 @@
     "$name": {
       "Label": "str",
       "User": "str",
-      "AlertTitle": "str",
+      "Title": "str",
       "Info": "str",
       "Action": "str",
       "LastUpdate": "any"

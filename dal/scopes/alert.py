@@ -28,7 +28,7 @@ class Alert(Scope):
             info=self.Info,
             label=self.Label,
             action=self.Action,
-            alert_title=self.AlertTitle,
+            title=self.Title,
             info_params=kwargs,
         )
 

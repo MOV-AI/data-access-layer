@@ -5,7 +5,7 @@
             "Info": "Random info",
             "Label": "delete_me",
             "User": "movai@internal",
-            "AlertTitle": "Delete Me",
+            "Title": "Delete Me",
             "LastUpdate": {
                 "date": "31/03/2025 at 07:48:07",
                 "user": "movai@internal"
