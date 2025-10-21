@@ -37,8 +37,9 @@ class Alert(Scope):
         if enterprise:
             self.alert_metrics.add("alert_events", **alert_metric)
 
-    def clear_alerts(self, deactivation_type: str = DeactivationType.REQUESTED):
+    @classmethod
+    def clear_alerts(cls, deactivation_type: str = DeactivationType.REQUESTED):
         alert_metrics = Robot().clear_alerts(deactivation_type=deactivation_type)
         if enterprise:
             for alert_metric in alert_metrics:
-                self.alert_metrics.add("alert_events", **alert_metric)
+                cls.alert_metrics.add("alert_events", **alert_metric)
