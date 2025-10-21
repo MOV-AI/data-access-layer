@@ -20,7 +20,7 @@ from dal.movaidb import MovaiDB
 from dal.validation import JsonValidator
 
 
-SCOPES_TO_VALIDATE: List[str] = ["Translation"]
+SCOPES_TO_VALIDATE: List[str] = ["Translation", "Alert"]
 
 
 class Scope(Struct):
