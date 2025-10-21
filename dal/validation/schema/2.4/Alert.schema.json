@@ -5,9 +5,14 @@
     "title": "Alert Schema",
     "type": "object",
     "properties": {
-        "AlertLabel": {
-            "type": "string",
-            "pattern": "^[a-zA-Z\\.0-9_-]+$"
+        "AlertTitle": {
+            "type": "string"
+        },
+        "Label": {
+            "type": "string"
+        },
+        "User": {
+            "type": "string"
         },
         "Action": {
             "type": "string"
@@ -32,7 +37,8 @@
         }
     },
     "required": [
-        "AlertLabel",
+        "Label",
+        "AlertTitle",
         "Info",
         "Action"
     ],

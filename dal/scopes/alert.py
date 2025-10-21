@@ -26,8 +26,9 @@ class Alert(Scope):
         Robot().add_active_alert(
             self.alert_id,
             info=self.Info,
+            label=self.Label,
             action=self.Action,
-            alert_label=self.AlertLabel,
+            alert_title=self.AlertTitle,
             info_params=kwargs,
         )
 

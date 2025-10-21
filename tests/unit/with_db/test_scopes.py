@@ -69,5 +69,7 @@ class TestAlert:
 
         assert alert.Action == "Random action"
         assert alert.Info == "Random info"
-        assert alert.AlertLabel == "delete_me"
+        assert alert.Label == "delete_me"
+        assert alert.AlertTitle == "Delete Me"
+        assert alert.User == "movai@internal"
         assert hasattr(alert, "LastUpdate")

@@ -34,11 +34,12 @@ LOGGER = Log.get_logger("dal.mov.ai")
 
 
 class AlertData(TypedDict):
+    label = ("",)
     activation_date = ("",)
     deactivation_date = ("",)
     info = ("",)
     action = ("",)
-    alert_label = ("",)
+    alert_title = ("",)
     deactivation_type = ""
 
 
@@ -114,7 +115,14 @@ class Robot(Scope):
         self.fleet.RobotModel = model
 
     def add_active_alert(
-        self, alert_id: str, info, alert_label="", info_params="", action="", action_params=""
+        self,
+        alert_id: str,
+        info,
+        label="",
+        alert_title="",
+        info_params="",
+        action="",
+        action_params="",
     ):
         """Add an active alert to the Robot"""
         if "ActiveAlerts" not in self.fleet.__dict__:
@@ -124,7 +132,8 @@ class Robot(Scope):
             return
 
         self.fleet.ActiveAlerts[alert_id] = {
-            "alert_label": alert_label,
+            "label": label,
+            "alert_title": alert_title,
             "activation_date": str(datetime.now()),
             "info": info,
             "info_params": info_params,
@@ -142,7 +151,8 @@ class Robot(Scope):
 
                 alert_metric = AlertData(
                     alert_id=alert_id,
-                    alert_label=alert["alert_label"],
+                    label=alert["label"],
+                    alert_title=alert["alert_title"],
                     activation_date=alert["activation_date"],
                     deactivation_date=str(datetime.now()),
                     info=alert["info"],
@@ -159,7 +169,8 @@ class Robot(Scope):
             for alert_id, alert in self.fleet.ActiveAlerts.items():
                 alert_metric = AlertData(
                     alert_id=alert_id,
-                    alert_label=alert["alert_label"],
+                    label=alert["label"],
+                    alert_title=alert["alert_title"],
                     activation_date=alert["activation_date"],
                     deactivation_date=str(datetime.now()),
                     info=alert["info"],

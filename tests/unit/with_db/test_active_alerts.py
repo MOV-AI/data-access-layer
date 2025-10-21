@@ -12,8 +12,9 @@ class TestRobotActiveAlerts:
         alert_id = "alert_001"
         robot.add_active_alert(
             alert_id=alert_id,
+            label="test_label",
             info="Test info",
-            alert_label="Test label",
+            alert_title="Test Title",
             action="Test action",
         )
 
@@ -21,8 +22,9 @@ class TestRobotActiveAlerts:
         assert alert_id in robot.fleet.ActiveAlerts
 
         entry = robot.fleet.ActiveAlerts[alert_id]
-        assert entry["alert_label"] == "Test label"
+        assert entry["label"] == "test_label"
         assert entry["info"] == "Test info"
+        assert entry["alert_title"] == "Test Title"
         assert entry["action"] == "Test action"
         assert "activation_date" in entry
 

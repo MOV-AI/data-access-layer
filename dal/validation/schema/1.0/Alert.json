@@ -2,7 +2,9 @@
   "_version": "1.0",
   "schema": {
     "$name": {
-      "AlertLabel": "str",
+      "Label": "str",
+      "User": "str",
+      "AlertTitle": "str",
       "Info": "str",
       "Action": "str",
       "LastUpdate": "any"
