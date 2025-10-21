@@ -151,7 +151,7 @@ class Robot(Scope):
 
                 alert_metric = AlertData(
                     alert_id=alert_id,
-                    Label=alert["Label"],
+                    label=alert["Label"],
                     title=alert["Title"],
                     activation_date=alert["activation_date"],
                     deactivation_date=str(datetime.now()),
@@ -169,7 +169,7 @@ class Robot(Scope):
             for alert_id, alert in self.fleet.ActiveAlerts.items():
                 alert_metric = AlertData(
                     alert_id=alert_id,
-                    Label=alert["Label"],
+                    label=alert["Label"],
                     title=alert["Title"],
                     activation_date=alert["activation_date"],
                     deactivation_date=str(datetime.now()),
