@@ -1,4 +1,4 @@
-# vTBD
+# v3.10.1
 - [BP-1519](https://movai.atlassian.net/browse/BP-1519): Edit Alert schema
 
 # v3.10.0
