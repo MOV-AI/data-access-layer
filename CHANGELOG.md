@@ -1,3 +1,7 @@
+# v3.10.0
+- [BP-1521](https://movai.atlassian.net/browse/BP-1521): Logic to activate and deactivate alert
+- [BP-1520](https://movai.atlassian.net/browse/BP-1520): Deactivate alerts on start / stop flow
+
 # v3.9.1
 - [BP-1488](https://movai.atlassian.net/browse/BP-1488): Translation PO file name separator is valid for metadata name
 
