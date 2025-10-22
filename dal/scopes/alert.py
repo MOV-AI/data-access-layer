@@ -24,7 +24,7 @@ class Alert(Scope):
         super().__init__(scope="Alert", name=alert_id, version=version, new=new, db=db)
         with Alert._lock:
             if enterprise and Alert.alert_metrics is None:
-                Alert.alert_metrics = AlertMetricsFactory.get_instance().get_alert_metrics()
+                Alert.alert_metrics = AlertMetricsFactory.create()
 
     def activate(self, **kwargs):
         Robot().add_active_alert(
