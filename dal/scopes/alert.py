@@ -23,7 +23,6 @@ class Alert(Scope):
         self.__dict__["alert_id"] = alert_id
         super().__init__(scope="Alert", name=alert_id, version=version, new=new, db=db)
 
-
     def activate(self, **kwargs):
         Robot().add_active_alert(
             self.alert_id,
