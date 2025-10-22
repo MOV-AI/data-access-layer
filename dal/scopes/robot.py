@@ -9,7 +9,7 @@
 
    Module that implements Robot namespace
 """
-from typing import Optional, TypedDict
+from typing import List, Optional
 import asyncio
 import uuid
 import pickle
@@ -23,6 +23,11 @@ from movai_core_shared.consts import (
 )
 from movai_core_shared.envvars import SPAWNER_BIND_ADDR, DEVICE_NAME
 from movai_core_shared.logger import Log
+from movai_core_shared.messages.alert_data import (
+    AlertActivationData,
+    AlertDeactivationData,
+    AlertData,
+)
 
 from dal.scopes.scope import Scope
 from dal.movaidb import MovaiDB
@@ -31,16 +36,6 @@ from datetime import datetime
 from .configuration import Configuration
 
 LOGGER = Log.get_logger("dal.mov.ai")
-
-
-class AlertData(TypedDict):
-    label = ("",)
-    activation_date = ("",)
-    deactivation_date = ("",)
-    info = ("",)
-    action = ("",)
-    title = ("",)
-    deactivation_type = ""
 
 
 class Robot(Scope):
@@ -117,12 +112,7 @@ class Robot(Scope):
     def add_active_alert(
         self,
         alert_id: str,
-        info,
-        label="",
-        title="",
-        info_params="",
-        action="",
-        action_params="",
+        data: AlertActivationData,
     ):
         """Add an active alert to the Robot"""
         if "ActiveAlerts" not in self.fleet.__dict__:
@@ -131,15 +121,7 @@ class Robot(Scope):
         if alert_id in self.fleet.ActiveAlerts:
             return
 
-        self.fleet.ActiveAlerts[alert_id] = {
-            "Label": label,
-            "Title": title,
-            "activation_date": str(datetime.now()),
-            "Info": info,
-            "info_params": info_params,
-            "Action": action,
-            "action_params": action_params,
-        }
+        self.fleet.ActiveAlerts[alert_id] = data.model_dump()
 
     def pop_alert(
         self, alert_id: str, deactivation_type: str = DeactivationType.REQUESTED
@@ -149,33 +131,32 @@ class Robot(Scope):
             if alert_id in self.fleet.ActiveAlerts:
                 alert = self.fleet.ActiveAlerts.pop(alert_id)
 
-                alert_metric = AlertData(
-                    alert_id=alert_id,
-                    label=alert["Label"],
-                    title=alert["Title"],
-                    activation_date=alert["activation_date"],
-                    deactivation_date=str(datetime.now()),
-                    info=alert["Info"],
-                    action=alert["Action"],
+                activation = AlertActivationData(**alert)
+                deactivation = AlertDeactivationData(
+                    deactivation_date=datetime.now().isoformat(),
                     deactivation_type=deactivation_type,
                 )
-                return alert_metric
+                return AlertData(
+                    alert_id=alert_id,
+                    **activation.model_dump(),
+                    **deactivation.model_dump(),
+                )
 
-    def clear_alerts(self, deactivation_type: str = DeactivationType.REQUESTED):
+    def clear_alerts(self, deactivation_type: str = DeactivationType.REQUESTED) -> List[AlertData]:
         """Clear all active alerts from the Robot"""
         if "ActiveAlerts" in self.__dict__:
             LOGGER.warning(f"Clearing all alerts from robot {self.RobotName}")
             alert_metrics = []
             for alert_id, alert in self.fleet.ActiveAlerts.items():
+                activation = AlertActivationData(**alert)
+                deactivation = AlertDeactivationData(
+                    deactivation_date=datetime.now().isoformat(),
+                    deactivation_type=deactivation_type,
+                )
                 alert_metric = AlertData(
                     alert_id=alert_id,
-                    label=alert["Label"],
-                    title=alert["Title"],
-                    activation_date=alert["activation_date"],
-                    deactivation_date=str(datetime.now()),
-                    info=alert["Info"],
-                    action=alert["Action"],
-                    deactivation_type=deactivation_type,
+                    **activation.model_dump(),
+                    **deactivation.model_dump(),
                 )
                 alert_metrics.append(alert_metric)
             self.fleet.ActiveAlerts.clear()
