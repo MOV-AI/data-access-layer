@@ -49,4 +49,4 @@ class Alert(Scope):
         alert_metrics = Robot().clear_alerts(deactivation_type=deactivation_type)
         if enterprise:
             for alert_metric in alert_metrics:
-                cls.alert_metrics.add("alert_events", **alert_metric)
+                cls.alert_metrics.add("alert_events", **alert_metric.model_dump())
