@@ -103,3 +103,29 @@ class TestAlerts:
 
         # Check that ActiveAlerts is empty
         assert robot.fleet.ActiveAlerts == {}
+
+    def test_duplicate_alert_activation_and_deactivation(self, global_db):
+        """Test that activating the same alert multiple times does not duplicate it."""
+
+        robot = Robot()
+
+        if hasattr(robot.fleet, "ActiveAlerts"):
+            robot.fleet.ActiveAlerts.clear()
+
+        # Create two Alert instances with the same alert_id
+        alert_id = "alert_001"
+        alert = Alert(alert_id=alert_id, new=True)
+        duplicate_alert = Alert(alert_id=alert_id, new=True)
+
+        # Activate both alerts
+        alert.activate()
+        duplicate_alert.activate()
+
+        # Check that there is only one instance of the alert
+        assert len(robot.fleet.ActiveAlerts) == 1
+        assert alert_id in robot.fleet.ActiveAlerts
+
+        # Both alerts reference the same issue
+        # Deactivate the alert using the duplicate instance should remove it
+        duplicate_alert.deactivate()
+        assert alert_id not in robot.fleet.ActiveAlerts
