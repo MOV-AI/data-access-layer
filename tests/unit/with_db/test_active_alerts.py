@@ -144,6 +144,6 @@ class TestAlerts:
         assert alert_id in robot.fleet.ActiveAlerts
 
         # Both alerts reference the same issue
-        # Deactivate the alert using the duplicate instance should remove it
+        # Deactivating the alert using the duplicate instance should remove it
         duplicate_alert.deactivate()
         assert alert_id not in robot.fleet.ActiveAlerts
