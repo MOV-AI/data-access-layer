@@ -1,3 +1,4 @@
+import pytest
 from dal.scopes.alert import Alert
 from dal.scopes.robot import Robot
 
@@ -49,6 +50,23 @@ class TestRobotActiveAlerts:
         assert robot.fleet.ActiveAlerts == {}
 
 
+@pytest.fixture(scope="class", autouse=True)
+def import_alerts(request, metadata_folder):
+    """Fixture to import alerts before running tests in the class."""
+    from dal.tools.backup import Importer
+
+    tool = Importer(
+        metadata_folder,
+        force=True,
+        dry=False,
+        debug=False,
+        recursive=False,
+        clean_old_data=True,
+    )
+    data = {"Alert": ["delete_me"]}
+    tool.run(data)
+
+
 class TestAlerts:
     def test_alert_activation_deactivation(self, global_db):
         """Test that Alert activation and deactivation works properly."""
@@ -58,8 +76,8 @@ class TestAlerts:
         if hasattr(robot.fleet, "ActiveAlerts"):
             robot.fleet.ActiveAlerts.clear()
 
-        alert_id = "alert_001"
-        alert = Alert(alert_id=alert_id, new=True)
+        alert_id = "delete_me"
+        alert = Alert(alert_id=alert_id)
 
         # Activate the alert
         alert.activate(param1="value1")
@@ -89,14 +107,14 @@ class TestAlerts:
             robot.fleet.ActiveAlerts.clear()
 
         # Add multiple alerts
-        alert1 = Alert(alert_id="alert_001", new=True)
-        alert2 = Alert(alert_id="alert_002", new=True)
+        alert1 = Alert(alert_id="delete_me")
+        alert2 = Alert(alert_id="delete_me_2", new=True)
 
         alert1.activate()
         alert2.activate()
 
-        assert "alert_001" in robot.fleet.ActiveAlerts
-        assert "alert_002" in robot.fleet.ActiveAlerts
+        assert "delete_me" in robot.fleet.ActiveAlerts
+        assert "delete_me_2" in robot.fleet.ActiveAlerts
 
         # Clear all alerts
         Alert.clear_alerts()
@@ -113,9 +131,9 @@ class TestAlerts:
             robot.fleet.ActiveAlerts.clear()
 
         # Create two Alert instances with the same alert_id
-        alert_id = "alert_001"
-        alert = Alert(alert_id=alert_id, new=True)
-        duplicate_alert = Alert(alert_id=alert_id, new=True)
+        alert_id = "delete_me"
+        alert = Alert(alert_id=alert_id)
+        duplicate_alert = Alert(alert_id=alert_id)
 
         # Activate both alerts
         alert.activate()
