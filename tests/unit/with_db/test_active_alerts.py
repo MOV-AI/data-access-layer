@@ -90,11 +90,8 @@ class TestAlerts:
 
         # Verify the contents of the active alert
         entry = robot.fleet.ActiveAlerts[alert_id]
-        assert entry["Info"] == alert.Info
-        assert entry["Label"] == alert.Label
-        assert entry["Title"] == alert.Title
-        assert entry["Action"] == alert.Action
-        assert entry["info_params"]["param1"] == "value1"
+        assert datetime.fromisoformat(entry["activation_date"])
+        assert entry["args"] == '{"param1": "value1"}'
 
         # Deactivate the alert
         alert.deactivate()
