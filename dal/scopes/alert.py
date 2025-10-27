@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+from threading import Lock
 
 from dal.scopes.scope import Scope
 from dal.scopes.robot import Robot
@@ -19,8 +20,8 @@ LOGGER = Log.get_logger("dal.mov.ai")
 
 class Alert(Scope):
     scope = "Alert"
-    if enterprise:
-        alert_metrics = AlertMetricsFactory.create()  # initialize metrics if enabled
+    alert_metrics = None
+    _lock = Lock()
 
     def __init__(self, alert_id: str = "", version="latest", new=False, db="global"):
         self.__dict__["alert_id"] = alert_id
@@ -42,11 +43,19 @@ class Alert(Scope):
             return
 
         if enterprise:
-            self.alert_metrics.add("alert_events", **alert_metric.model_dump())
+            Alert.get_alert_metrics_handler().add("alert_events", **alert_metric.model_dump())
 
     @classmethod
     def clear_alerts(cls, deactivation_type: str = DeactivationType.REQUESTED):
         alert_metrics = Robot().clear_alerts(deactivation_type=deactivation_type)
         if enterprise:
             for alert_metric in alert_metrics:
-                cls.alert_metrics.add("alert_events", **alert_metric.model_dump())
+                Alert.get_alert_metrics_handler().add("alert_events", **alert_metric.model_dump())
+
+    @classmethod
+    def get_alert_metrics_handler(cls):
+        with Alert._lock:
+            if enterprise and Alert.alert_metrics is None:
+                Alert.alert_metrics = AlertMetricsFactory.create()
+
+        return Alert.alert_metrics
