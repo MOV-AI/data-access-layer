@@ -382,8 +382,22 @@ if not logs a warning.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.fleetrobot.FleetRobot.list_all">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.fleetrobot.FleetRobot.list_all" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.scopes.fleetrobot.FleetRobot.list_all" title="Permalink to this definition"></a></dt>
 <dd><p>List all the robots in the fleet</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.fleetrobot.FleetRobot.name_to_id">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name_to_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">robot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dal.scopes.fleetrobot.FleetRobot.name_to_id" title="Permalink to this definition"></a></dt>
+<dd><p>Get the robot id by its name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>robot_name</strong> – Robot name.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Robot id.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1194,47 +1208,6 @@ Proprietary and confidential</p>
 - Tiago Paulino (<a class="reference external" href="mailto:tiago&#37;&#52;&#48;mov&#46;ai">tiago<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p>
 <p>Module that implements Robot namespace</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="dal.scopes.robot.AlertData">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.scopes.robot.</span></span><span class="sig-name descname"><span class="pre">AlertData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.robot.AlertData" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="dal.scopes.robot.AlertData.action">
-<span class="sig-name descname"><span class="pre">action</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('',)</span></em><a class="headerlink" href="#dal.scopes.robot.AlertData.action" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="dal.scopes.robot.AlertData.activation_date">
-<span class="sig-name descname"><span class="pre">activation_date</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('',)</span></em><a class="headerlink" href="#dal.scopes.robot.AlertData.activation_date" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="dal.scopes.robot.AlertData.deactivation_date">
-<span class="sig-name descname"><span class="pre">deactivation_date</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('',)</span></em><a class="headerlink" href="#dal.scopes.robot.AlertData.deactivation_date" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="dal.scopes.robot.AlertData.deactivation_type">
-<span class="sig-name descname"><span class="pre">deactivation_type</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#dal.scopes.robot.AlertData.deactivation_type" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="dal.scopes.robot.AlertData.info">
-<span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('',)</span></em><a class="headerlink" href="#dal.scopes.robot.AlertData.info" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="dal.scopes.robot.AlertData.label">
-<span class="sig-name descname"><span class="pre">label</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('',)</span></em><a class="headerlink" href="#dal.scopes.robot.AlertData.label" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="dal.scopes.robot.AlertData.title">
-<span class="sig-name descname"><span class="pre">title</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('',)</span></em><a class="headerlink" href="#dal.scopes.robot.AlertData.title" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="dal.scopes.robot.Robot">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.scopes.robot.</span></span><span class="sig-name descname"><span class="pre">Robot</span></span><a class="headerlink" href="#dal.scopes.robot.Robot" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dal.scopes.scope.Scope" title="dal.scopes.scope.Scope"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scope</span></code></a></p>
@@ -1243,7 +1216,7 @@ Proprietary and confidential</p>
 for a deep dive on the Parameters feature.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.robot.Robot.add_active_alert">
-<span class="sig-name descname"><span class="pre">add_active_alert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alert_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.robot.Robot.add_active_alert" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_active_alert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alert_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AlertActivationData</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.robot.Robot.add_active_alert" title="Permalink to this definition"></a></dt>
 <dd><p>Add an active alert to the Robot</p>
 </dd></dl>
 
@@ -1261,7 +1234,7 @@ for a deep dive on the Parameters feature.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.robot.Robot.clear_alerts">
-<span class="sig-name descname"><span class="pre">clear_alerts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deactivation_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'requested'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.robot.Robot.clear_alerts" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">clear_alerts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deactivation_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'requested'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">AlertData</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.scopes.robot.Robot.clear_alerts" title="Permalink to this definition"></a></dt>
 <dd><p>Clear all active alerts from the Robot</p>
 </dd></dl>
 
@@ -1281,7 +1254,7 @@ When Robot groups are implemented it should merge with the group configuration</
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.robot.Robot.pop_alert">
-<span class="sig-name descname"><span class="pre">pop_alert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alert_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deactivation_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'requested'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#dal.scopes.robot.AlertData" title="dal.scopes.robot.AlertData"><span class="pre">AlertData</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#dal.scopes.robot.Robot.pop_alert" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">pop_alert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alert_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deactivation_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'requested'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AlertData</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#dal.scopes.robot.Robot.pop_alert" title="Permalink to this definition"></a></dt>
 <dd><p>Remove an active alert from the Robot</p>
 </dd></dl>
 
@@ -2252,7 +2225,7 @@ if not logs a warning.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.FleetRobot.list_all">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.FleetRobot.list_all" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.scopes.FleetRobot.list_all" title="Permalink to this definition"></a></dt>
 <dd><p>List all the robots in the fleet</p>
 </dd></dl>
 
@@ -2260,6 +2233,20 @@ if not logs a warning.</p>
 <dt class="sig sig-object py" id="dal.scopes.FleetRobot.movaidb">
 <span class="sig-name descname"><span class="pre">movaidb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="dal.movaidb.html#dal.movaidb.database.MovaiDB" title="dal.movaidb.database.MovaiDB"><span class="pre">MovaiDB</span></a></em><a class="headerlink" href="#dal.scopes.FleetRobot.movaidb" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.FleetRobot.name_to_id">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name_to_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">robot_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dal.scopes.FleetRobot.name_to_id" title="Permalink to this definition"></a></dt>
+<dd><p>Get the robot id by its name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>robot_name</strong> – Robot name.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Robot id.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.FleetRobot.ping">
@@ -3069,7 +3056,7 @@ for a deep dive on the Parameters feature.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.Robot.add_active_alert">
-<span class="sig-name descname"><span class="pre">add_active_alert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alert_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.Robot.add_active_alert" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_active_alert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alert_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AlertActivationData</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.Robot.add_active_alert" title="Permalink to this definition"></a></dt>
 <dd><p>Add an active alert to the Robot</p>
 </dd></dl>
 
@@ -3087,7 +3074,7 @@ for a deep dive on the Parameters feature.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.Robot.clear_alerts">
-<span class="sig-name descname"><span class="pre">clear_alerts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deactivation_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'requested'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.Robot.clear_alerts" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">clear_alerts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deactivation_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'requested'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">AlertData</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.scopes.Robot.clear_alerts" title="Permalink to this definition"></a></dt>
 <dd><p>Clear all active alerts from the Robot</p>
 </dd></dl>
 
@@ -3117,7 +3104,7 @@ When Robot groups are implemented it should merge with the group configuration</
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.Robot.pop_alert">
-<span class="sig-name descname"><span class="pre">pop_alert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alert_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deactivation_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'requested'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#dal.scopes.robot.AlertData" title="dal.scopes.robot.AlertData"><span class="pre">AlertData</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#dal.scopes.Robot.pop_alert" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">pop_alert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alert_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deactivation_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'requested'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AlertData</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#dal.scopes.Robot.pop_alert" title="Permalink to this definition"></a></dt>
 <dd><p>Remove an active alert from the Robot</p>
 </dd></dl>
 
