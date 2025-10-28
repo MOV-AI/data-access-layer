@@ -1,3 +1,8 @@
+# vTBD
+- [BP-1518](https://movai.atlassian.net/browse/BP-1518): Create alerts history API
+  - Use pydantic classes
+  - Add FleetRobot.name_to_id
+
 # v3.10.1
 - [BP-1519](https://movai.atlassian.net/browse/BP-1519): Edit Alert schema
 

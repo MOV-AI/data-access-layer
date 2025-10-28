@@ -11,7 +11,7 @@
    Module that implements Robot namespace
 """
 import pickle
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from movai_core_shared.common.utils import is_enterprise
 from movai_core_shared.core.message_client import MessageClient, AsyncMessageClient
@@ -287,8 +287,8 @@ class FleetRobot(Scope):
         )
         return res is not None and "response" in res and res["response"] != {}
 
-    @classmethod
-    def list_all(cls):
+    @staticmethod
+    def list_all() -> List[str]:
         """List all the robots in the fleet"""
 
         db = MovaiDB("global")
@@ -321,3 +321,20 @@ class FleetRobot(Scope):
         robot_to_remove = {"Robot": {robot_id: all_robots_data["Robot"][robot_id]}}
         deleted_count = db.delete(robot_to_remove)
         return deleted_count is not None and deleted_count > 0
+
+    @staticmethod
+    def name_to_id(robot_name: str) -> str:
+        """Get the robot id by its name.
+
+        Args:
+            robot_name: Robot name.
+
+        Returns:
+            Robot id.
+
+        """
+        db = MovaiDB("global")
+        all_robots_data = db.search_by_args("Robot")[0]
+        for robot_id, robot_data in all_robots_data["Robot"].items():
+            if robot_data["RobotName"] == robot_name:
+                return robot_id

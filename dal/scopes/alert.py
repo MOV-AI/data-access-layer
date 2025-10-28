@@ -1,8 +1,12 @@
+import json
+from datetime import datetime
+from threading import Lock
+
 from dal.scopes.scope import Scope
 from dal.scopes.robot import Robot
 from movai_core_shared.logger import Log
 from movai_core_shared.consts import DeactivationType
-from threading import Lock
+from movai_core_shared.messages.alert_data import AlertActivationData
 
 try:
     from movai_core_enterprise.message_client_handlers._alert_metrics import AlertMetricsFactory
@@ -24,26 +28,29 @@ class Alert(Scope):
         super().__init__(scope="Alert", name=alert_id, version=version, new=new, db=db)
 
     def activate(self, **kwargs):
+        # if not serializable, convert to string
+        args = json.dumps(kwargs, default=str)
         Robot().add_active_alert(
             self.alert_id,
-            info=self.Info,
-            label=self.Label,
-            action=self.Action,
-            title=self.Title,
-            info_params=kwargs,
+            AlertActivationData(args=args, activation_date=datetime.now().isoformat()),
         )
 
     def deactivate(self, deactivation_type: str = DeactivationType.REQUESTED):
         alert_metric = Robot().pop_alert(self.alert_id, deactivation_type=deactivation_type)
+
+        if not alert_metric:
+            LOGGER.debug("Alert %s not active, cannot deactivate", self.alert_id)
+            return
+
         if enterprise:
-            Alert.get_alert_metrics_handler().add("alert_events", **alert_metric)
+            Alert.get_alert_metrics_handler().add("alert_events", **alert_metric.model_dump())
 
     @classmethod
     def clear_alerts(cls, deactivation_type: str = DeactivationType.REQUESTED):
         alert_metrics = Robot().clear_alerts(deactivation_type=deactivation_type)
         if enterprise:
             for alert_metric in alert_metrics:
-                Alert.get_alert_metrics_handler().add("alert_events", **alert_metric)
+                Alert.get_alert_metrics_handler().add("alert_events", **alert_metric.model_dump())
 
     @classmethod
     def get_alert_metrics_handler(cls):

@@ -1,4 +1,7 @@
+from datetime import datetime
 import pytest
+
+from movai_core_shared.messages.alert_data import AlertActivationData
 from dal.scopes.alert import Alert
 from dal.scopes.robot import Robot
 
@@ -15,25 +18,21 @@ class TestRobotActiveAlerts:
         # Add a new active alert
         alert_id = "alert_001"
         robot.add_active_alert(
-            alert_id=alert_id,
-            label="test_label",
-            info="Test info",
-            title="Test Title",
-            action="Test action",
+            alert_id,
+            AlertActivationData(args="{}", activation_date=datetime.now().isoformat()),
         )
 
         assert "ActiveAlerts" in robot.fleet.__dict__
         assert alert_id in robot.fleet.ActiveAlerts
 
-        entry = robot.fleet.ActiveAlerts[alert_id]
-        assert entry["Label"] == "test_label"
-        assert entry["Info"] == "Test info"
-        assert entry["Title"] == "Test Title"
-        assert entry["Action"] == "Test action"
-        assert "activation_date" in entry
+        entry = AlertActivationData(**robot.fleet.ActiveAlerts[alert_id])
+        assert entry.args == "{}"
+        assert datetime.fromisoformat(entry.activation_date)
 
         # Try adding the same alert again
-        robot.add_active_alert(alert_id, info="Duplicate")
+        robot.add_active_alert(
+            alert_id, AlertActivationData(args="{}", activation_date=datetime.now().isoformat())
+        )
         # should not duplicate
         assert len(robot.fleet.ActiveAlerts) == 1
 
@@ -42,8 +41,12 @@ class TestRobotActiveAlerts:
         assert alert_id not in robot.fleet.ActiveAlerts
 
         # Add multiple alerts and clear all
-        robot.add_active_alert("a1", info="i1")
-        robot.add_active_alert("a2", info="i2")
+        robot.add_active_alert(
+            "a1", AlertActivationData(args="{}", activation_date=datetime.now().isoformat())
+        )
+        robot.add_active_alert(
+            "a2", AlertActivationData(args="{}", activation_date=datetime.now().isoformat())
+        )
         assert len(robot.fleet.ActiveAlerts) == 2
 
         robot.clear_alerts()
@@ -87,11 +90,8 @@ class TestAlerts:
 
         # Verify the contents of the active alert
         entry = robot.fleet.ActiveAlerts[alert_id]
-        assert entry["Info"] == alert.Info
-        assert entry["Label"] == alert.Label
-        assert entry["Title"] == alert.Title
-        assert entry["Action"] == alert.Action
-        assert entry["info_params"]["param1"] == "value1"
+        assert datetime.fromisoformat(entry["activation_date"])
+        assert entry["args"] == '{"param1": "value1"}'
 
         # Deactivate the alert
         alert.deactivate()
