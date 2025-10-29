@@ -50,6 +50,7 @@ class Alert(Scope):
             return False
         except Exception as e:
             LOGGER.warning("Formatting error for alert %s: %s", self.alert_id, e, exc_info=True)
+            return False
 
         return True
 

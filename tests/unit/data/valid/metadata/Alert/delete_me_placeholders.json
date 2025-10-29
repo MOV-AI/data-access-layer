@@ -3,7 +3,7 @@
         "delete_me_placeholders": {
             "Action": "Random action",
             "Info": "Random info with placeholder {placeholder}",
-            "Label": "delete_me",
+            "Label": "delete_me_placeholders",
             "User": "movai@internal",
             "Title": "Delete Me",
             "LastUpdate": {
