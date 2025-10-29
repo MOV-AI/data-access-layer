@@ -27,7 +27,29 @@ class Alert(Scope):
         self.__dict__["alert_id"] = alert_id
         super().__init__(scope="Alert", name=alert_id, version=version, new=new, db=db)
 
+    def validate_parameters(self, name: str, text: str, **kwargs) -> bool:
+        try:
+            text.format(**kwargs)
+            return True
+        except KeyError as e:
+            LOGGER.error(
+                "Failed to activate alert %s due to missing key: %s for %s text: %s",
+                self.alert_id,
+                e,
+                name,
+                text,
+            )
+            return False
+
     def activate(self, **kwargs):
+        # Verify that all necessary activation fields were provided
+        if not self.validate_parameters("Title", self.Title, **kwargs):
+            return
+        if not self.validate_parameters("Info", self.Info, **kwargs):
+            return
+        if not self.validate_parameters("Action", self.Action, **kwargs):
+            return
+
         # if not serializable, convert to string
         args = json.dumps(kwargs, default=str)
         Robot().add_active_alert(
