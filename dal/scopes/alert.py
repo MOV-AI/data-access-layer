@@ -61,7 +61,7 @@ class Alert(Scope):
         alert_metric = Robot().pop_alert(self.alert_id, deactivation_type=deactivation_type)
 
         if not alert_metric:
-            LOGGER.debug("Alert %s not active, cannot deactivate", self.alert_id)
+            LOGGER.warning("Alert %s not active, cannot deactivate", self.alert_id)
             return
 
         if enterprise:
