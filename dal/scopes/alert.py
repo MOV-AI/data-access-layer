@@ -30,7 +30,6 @@ class Alert(Scope):
     def validate_parameters(self, name: str, text: str, **kwargs) -> bool:
         try:
             text.format(**kwargs)
-            return True
         except KeyError as e:
             LOGGER.error(
                 "Failed to activate alert %s due to missing key: %s for %s text: %s",
@@ -40,6 +39,19 @@ class Alert(Scope):
                 text,
             )
             return False
+        except ValueError as e:
+            LOGGER.error(
+                "Failed to activate alert %s due to formatting error: %s for %s text: %s",
+                self.alert_id,
+                e,
+                name,
+                text,
+            )
+            return False
+        except Exception as e:
+            LOGGER.warning("Formatting error for alert %s: %s", self.alert_id, e, exc_info=True)
+
+        return True
 
     def activate(self, **kwargs):
         # Verify that all necessary activation fields were provided
