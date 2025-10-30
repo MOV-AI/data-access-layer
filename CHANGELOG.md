@@ -1,3 +1,6 @@
+# vTBD
+- [BP-1531](https://movai.atlassian.net/browse/BP-1531): Failing to update alerts templates
+
 # v3.12.0
 - [BP-1530](https://movai.atlassian.net/browse/BP-1530): Add validation for alert placeholder arguments
   - Add tests
