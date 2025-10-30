@@ -66,7 +66,7 @@ def import_alerts(request, metadata_folder):
         recursive=False,
         clean_old_data=True,
     )
-    data = {"Alert": ["delete_me"]}
+    data = {"Alert": ["delete_me", "delete_me_placeholders"]}
     tool.run(data)
 
 
@@ -98,6 +98,76 @@ class TestAlerts:
         # Check that the alert is removed from ActiveAlerts
         assert alert_id not in robot.fleet.ActiveAlerts
 
+    def test_alert_deactivation_nonexistent(self, global_db, caplog):
+        """Test that deactivating a non-existent alert is handled gracefully."""
+
+        robot = Robot()
+
+        if hasattr(robot.fleet, "ActiveAlerts"):
+            robot.fleet.ActiveAlerts.clear()
+
+        alert_id = "delete_me"
+        alert = Alert(alert_id=alert_id)
+
+        # Deactivate the alert which was never activated
+        alert.deactivate()
+
+        # Check the logs for the expected warning message
+        assert f"Alert {alert_id} not active, cannot deactivate" in caplog.text
+
+        # Ensure ActiveAlerts is still empty
+        assert robot.fleet.ActiveAlerts == {}
+
+    def test_alert_activation_with_placeholders(self, global_db):
+        """Test that activating an alert with placeholders works properly."""
+
+        robot = Robot()
+
+        if hasattr(robot.fleet, "ActiveAlerts"):
+            robot.fleet.ActiveAlerts.clear()
+
+        alert_id = "delete_me_placeholders"
+        alert = Alert(alert_id=alert_id)
+
+        # Activate the alert with required parameters
+        alert.activate(placeholder="filled_value")
+
+        # Check that the alert is in ActiveAlerts
+        assert alert_id in robot.fleet.ActiveAlerts
+
+        # Verify the contents of the active alert
+        entry = robot.fleet.ActiveAlerts[alert_id]
+        assert datetime.fromisoformat(entry["activation_date"])
+        assert entry["args"] == '{"placeholder": "filled_value"}'
+
+        # Deactivate the alert
+        alert.deactivate()
+        # Check that the alert is removed from ActiveAlerts
+        assert alert_id not in robot.fleet.ActiveAlerts
+
+    def test_alert_activation_with_missing_parameters(self, global_db, caplog):
+        """Test that activating an alert with missing parameters is handled properly."""
+
+        robot = Robot()
+
+        if hasattr(robot.fleet, "ActiveAlerts"):
+            robot.fleet.ActiveAlerts.clear()
+
+        alert_id = "delete_me_placeholders"
+        alert = Alert(alert_id=alert_id)
+
+        # Activate the alert without required parameters
+        alert.activate()  # No parameters provided
+
+        # Check the logs for the expected error message
+        assert (
+            f"[alerts:True|user_log:True] Failed to activate alert {alert_id} due to missing key: 'placeholder' for Info text: Random info with placeholder {{placeholder}}"
+            in caplog.text
+        )
+
+        # Check that the alert is in ActiveAlerts
+        assert alert_id in robot.fleet.ActiveAlerts
+
     def test_alert_clear_all(self, global_db):
         """Test that clearing all alerts works properly."""
 
@@ -108,13 +178,13 @@ class TestAlerts:
 
         # Add multiple alerts
         alert1 = Alert(alert_id="delete_me")
-        alert2 = Alert(alert_id="delete_me_2", new=True)
+        alert2 = Alert(alert_id="delete_me_placeholders")
 
         alert1.activate()
-        alert2.activate()
+        alert2.activate(placeholder="value")
 
         assert "delete_me" in robot.fleet.ActiveAlerts
-        assert "delete_me_2" in robot.fleet.ActiveAlerts
+        assert "delete_me_placeholders" in robot.fleet.ActiveAlerts
 
         # Clear all alerts
         Alert.clear_alerts()

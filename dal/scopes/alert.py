@@ -15,7 +15,7 @@ try:
 except ImportError:
     enterprise = False
 
-LOGGER = Log.get_logger("dal.mov.ai")
+LOGGER = Log.get_user_logger("dal.mov.ai", alerts=True)
 
 
 class Alert(Scope):
@@ -27,7 +27,34 @@ class Alert(Scope):
         self.__dict__["alert_id"] = alert_id
         super().__init__(scope="Alert", name=alert_id, version=version, new=new, db=db)
 
+    def validate_parameters(self, name: str, text: str, **kwargs):
+        try:
+            text.format(**kwargs)
+        except KeyError as e:
+            LOGGER.error(
+                "Failed to activate alert %s due to missing key: %s for %s text: %s",
+                self.alert_id,
+                e,
+                name,
+                text,
+            )
+        except ValueError as e:
+            LOGGER.error(
+                "Failed to activate alert %s due to formatting error: %s for %s text: %s",
+                self.alert_id,
+                e,
+                name,
+                text,
+            )
+        except Exception as e:
+            LOGGER.error("Formatting error for alert %s: %s", self.alert_id, e, exc_info=True)
+
     def activate(self, **kwargs):
+        # Verify that all necessary activation fields were provided
+        self.validate_parameters("Title", self.Title, **kwargs)
+        self.validate_parameters("Info", self.Info, **kwargs)
+        self.validate_parameters("Action", self.Action, **kwargs)
+
         # if not serializable, convert to string
         args = json.dumps(kwargs, default=str)
         Robot().add_active_alert(
@@ -39,7 +66,7 @@ class Alert(Scope):
         alert_metric = Robot().pop_alert(self.alert_id, deactivation_type=deactivation_type)
 
         if not alert_metric:
-            LOGGER.debug("Alert %s not active, cannot deactivate", self.alert_id)
+            LOGGER.warning("Alert %s not active, cannot deactivate", self.alert_id)
             return
 
         if enterprise:

@@ -1,3 +1,7 @@
+# vTBD
+- [BP-1530](https://movai.atlassian.net/browse/BP-1530): Add validation for alert placeholder arguments
+  - Add tests
+
 # v3.11.0
 - [BP-1518](https://movai.atlassian.net/browse/BP-1518): Create alerts history API
   - Use pydantic classes

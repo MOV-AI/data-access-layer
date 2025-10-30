@@ -1,0 +1,15 @@
+{
+    "Alert": {
+        "delete_me_placeholders": {
+            "Action": "Random action",
+            "Info": "Random info with placeholder {placeholder}",
+            "Label": "delete_me_placeholders",
+            "User": "movai@internal",
+            "Title": "Delete Me",
+            "LastUpdate": {
+                "date": "31/03/2025 at 07:48:07",
+                "user": "movai@internal"
+            }
+        }
+    }
+}
