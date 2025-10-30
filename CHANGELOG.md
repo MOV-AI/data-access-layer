@@ -1,4 +1,4 @@
-# vTBD
+# v3.12.0
 - [BP-1530](https://movai.atlassian.net/browse/BP-1530): Add validation for alert placeholder arguments
   - Add tests
 
