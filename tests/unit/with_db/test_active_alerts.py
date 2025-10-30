@@ -80,7 +80,7 @@ class TestAlerts:
             robot.fleet.ActiveAlerts.clear()
 
         alert_id = "delete_me"
-        alert = Alert(alert_id=alert_id)
+        alert = Alert(alert_id)
 
         # Activate the alert
         alert.activate(param1="value1")
@@ -107,7 +107,7 @@ class TestAlerts:
             robot.fleet.ActiveAlerts.clear()
 
         alert_id = "delete_me"
-        alert = Alert(alert_id=alert_id)
+        alert = Alert(alert_id)
 
         # Deactivate the alert which was never activated
         alert.deactivate()
@@ -127,7 +127,7 @@ class TestAlerts:
             robot.fleet.ActiveAlerts.clear()
 
         alert_id = "delete_me_placeholders"
-        alert = Alert(alert_id=alert_id)
+        alert = Alert(alert_id)
 
         # Activate the alert with required parameters
         alert.activate(placeholder="filled_value")
@@ -154,7 +154,7 @@ class TestAlerts:
             robot.fleet.ActiveAlerts.clear()
 
         alert_id = "delete_me_placeholders"
-        alert = Alert(alert_id=alert_id)
+        alert = Alert(alert_id)
 
         # Activate the alert without required parameters
         alert.activate()  # No parameters provided
@@ -177,8 +177,8 @@ class TestAlerts:
             robot.fleet.ActiveAlerts.clear()
 
         # Add multiple alerts
-        alert1 = Alert(alert_id="delete_me")
-        alert2 = Alert(alert_id="delete_me_placeholders")
+        alert1 = Alert("delete_me")
+        alert2 = Alert("delete_me_placeholders")
 
         alert1.activate()
         alert2.activate(placeholder="value")
@@ -202,8 +202,8 @@ class TestAlerts:
 
         # Create two Alert instances with the same alert_id
         alert_id = "delete_me"
-        alert = Alert(alert_id=alert_id)
-        duplicate_alert = Alert(alert_id=alert_id)
+        alert = Alert(alert_id)
+        duplicate_alert = Alert(alert_id)
 
         # Activate both alerts
         alert.activate()

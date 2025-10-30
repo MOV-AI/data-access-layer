@@ -23,9 +23,9 @@ class Alert(Scope):
     alert_metrics = None
     _lock = Lock()
 
-    def __init__(self, alert_id: str = "", version="latest", new=False, db="global"):
-        self.__dict__["alert_id"] = alert_id
-        super().__init__(scope="Alert", name=alert_id, version=version, new=new, db=db)
+    def __init__(self, name, version="latest", new=False, db="global"):
+        self.__dict__["alert_id"] = name
+        super().__init__(scope="Alert", name=name, version=version, new=new, db=db)
 
     def validate_parameters(self, name: str, text: str, **kwargs):
         try:
