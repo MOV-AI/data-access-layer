@@ -161,12 +161,12 @@ class TestAlerts:
 
         # Check the logs for the expected error message
         assert (
-            f"Failed to activate alert {alert_id} due to missing key: 'placeholder' for Info text: Random info with placeholder {{placeholder}}"
+            f"[alerts:True|user_log:True] Failed to activate alert {alert_id} due to missing key: 'placeholder' for Info text: Random info with placeholder {{placeholder}}"
             in caplog.text
         )
 
-        # Check that the alert is not in ActiveAlerts due to validation failure
-        assert alert_id not in robot.fleet.ActiveAlerts
+        # Check that the alert is in ActiveAlerts
+        assert alert_id in robot.fleet.ActiveAlerts
 
     def test_alert_clear_all(self, global_db):
         """Test that clearing all alerts works properly."""

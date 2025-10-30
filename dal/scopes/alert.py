@@ -15,7 +15,7 @@ try:
 except ImportError:
     enterprise = False
 
-LOGGER = Log.get_logger("dal.mov.ai")
+LOGGER = Log.get_user_logger("dal.mov.ai", alerts=True)
 
 
 class Alert(Scope):
@@ -27,7 +27,7 @@ class Alert(Scope):
         self.__dict__["alert_id"] = alert_id
         super().__init__(scope="Alert", name=alert_id, version=version, new=new, db=db)
 
-    def validate_parameters(self, name: str, text: str, **kwargs) -> bool:
+    def validate_parameters(self, name: str, text: str, **kwargs):
         try:
             text.format(**kwargs)
         except KeyError as e:
@@ -38,7 +38,6 @@ class Alert(Scope):
                 name,
                 text,
             )
-            return False
         except ValueError as e:
             LOGGER.error(
                 "Failed to activate alert %s due to formatting error: %s for %s text: %s",
@@ -47,21 +46,14 @@ class Alert(Scope):
                 name,
                 text,
             )
-            return False
         except Exception as e:
-            LOGGER.warning("Formatting error for alert %s: %s", self.alert_id, e, exc_info=True)
-            return False
-
-        return True
+            LOGGER.error("Formatting error for alert %s: %s", self.alert_id, e, exc_info=True)
 
     def activate(self, **kwargs):
         # Verify that all necessary activation fields were provided
-        if not self.validate_parameters("Title", self.Title, **kwargs):
-            return
-        if not self.validate_parameters("Info", self.Info, **kwargs):
-            return
-        if not self.validate_parameters("Action", self.Action, **kwargs):
-            return
+        self.validate_parameters("Title", self.Title, **kwargs)
+        self.validate_parameters("Info", self.Info, **kwargs)
+        self.validate_parameters("Action", self.Action, **kwargs)
 
         # if not serializable, convert to string
         args = json.dumps(kwargs, default=str)
