@@ -1,4 +1,4 @@
-# vTBD
+# v3.12.1
 - [BP-1531](https://movai.atlassian.net/browse/BP-1531): Failing to update alerts templates
 
 # v3.12.0
