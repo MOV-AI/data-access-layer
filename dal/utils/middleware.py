@@ -225,6 +225,12 @@ async def remove_flow_exposed_port_links(request, handler):
 @web.middleware
 async def redirect_not_found(request, handler):
     response = await handler(request)
+
+    if not isinstance(response, web.Response):
+        return web.Response(
+            status=500, text="Internal Server Error", headers={"Server": "Movai-server"}
+        )
+
     if response.status != 404:
         return response
     message = response.message
