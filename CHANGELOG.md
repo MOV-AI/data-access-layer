@@ -1,3 +1,6 @@
+# vTBD
+- [BP-1535](https://movai.atlassian.net/browse/BP-1535): Check if message is of correct type before accessing attributes.
+
 # v3.12.1
 - [BP-1531](https://movai.atlassian.net/browse/BP-1531): Failing to update alerts templates
 
