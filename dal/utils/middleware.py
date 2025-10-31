@@ -227,6 +227,7 @@ async def redirect_not_found(request, handler):
     response = await handler(request)
 
     if not isinstance(response, web.Response):
+        LOGGER.warning("Response is not web.Response instance, but of type: %s", type(response))
         return web.Response(
             status=500, text="Internal Server Error", headers={"Server": "Movai-server"}
         )
