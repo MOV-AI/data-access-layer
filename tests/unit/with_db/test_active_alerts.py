@@ -253,7 +253,7 @@ class TestAlerts:
         assert Alert.is_active(dummy_alert_id)
 
     def test_get_active_alerts_classmethod(self, global_db):
-        """Test that the Alert.get_active_alerts classmethod works properly."""
+        """Test that the Alert.get_active classmethod works properly."""
 
         robot = Robot()
 
