@@ -34,10 +34,12 @@ class TestRobotActiveAlerts:
             alert_id, AlertActivationData(args="{}", activation_date=datetime.now().isoformat())
         )
         # should not duplicate
+        assert alert_id in robot.get_active_alerts()
         assert len(robot.fleet.ActiveAlerts) == 1
 
         # Remove the alert
         robot.pop_alert(alert_id)
+        assert alert_id not in robot.get_active_alerts()
         assert alert_id not in robot.fleet.ActiveAlerts
 
         # Add multiple alerts and clear all
@@ -47,9 +49,11 @@ class TestRobotActiveAlerts:
         robot.add_active_alert(
             "a2", AlertActivationData(args="{}", activation_date=datetime.now().isoformat())
         )
+        assert set(robot.get_active_alerts()) == {"a1", "a2"}
         assert len(robot.fleet.ActiveAlerts) == 2
 
         robot.clear_alerts()
+        assert not robot.get_active_alerts()
         assert robot.fleet.ActiveAlerts == {}
 
 
@@ -217,3 +221,92 @@ class TestAlerts:
         # Deactivating the alert using the duplicate instance should remove it
         duplicate_alert.deactivate()
         assert alert_id not in robot.fleet.ActiveAlerts
+
+    def test_alert_is_active_property(self, global_db):
+        """Test that the Alert active property works properly."""
+
+        robot = Robot()
+
+        if hasattr(robot.fleet, "ActiveAlerts"):
+            robot.fleet.ActiveAlerts.clear()
+
+        alert_id = "delete_me"
+        alert = Alert(alert_id)
+
+        # Ensure other alerts do not interfere
+        dummy_alert_id = "delete_me_placeholders"
+        dummy_alert = Alert(dummy_alert_id)
+        dummy_alert.activate(placeholder="value")
+
+        # Initially, the alert should not be active
+        assert not alert.active
+
+        alert.activate()
+
+        assert alert.active
+
+        alert.deactivate()
+
+        assert not alert.active
+
+    def test_alert_is_active_classmethod(self, global_db):
+        """Test that the Alert.is_active classmethod works properly."""
+
+        robot = Robot()
+
+        if hasattr(robot.fleet, "ActiveAlerts"):
+            robot.fleet.ActiveAlerts.clear()
+
+        alert_id = "delete_me"
+        alert = Alert(alert_id)
+
+        # Ensure other alerts do not interfere
+        dummy_alert_id = "delete_me_placeholders"
+        dummy_alert = Alert(dummy_alert_id)
+        dummy_alert.activate(placeholder="value")
+
+        # Initially, the alert should not be active
+        assert not Alert.is_active(alert_id)
+        assert Alert.is_active(dummy_alert_id)
+
+        alert.activate()
+
+        assert Alert.is_active(alert_id)
+        assert Alert.is_active(dummy_alert_id)
+
+        alert.deactivate()
+
+        assert not Alert.is_active(alert_id)
+        assert Alert.is_active(dummy_alert_id)
+
+    def test_get_active_alerts_classmethod(self, global_db):
+        """Test that the Alert.get_active_alerts classmethod works properly."""
+
+        robot = Robot()
+
+        if hasattr(robot.fleet, "ActiveAlerts"):
+            robot.fleet.ActiveAlerts.clear()
+
+        alert1_id = "delete_me"
+        alert2_id = "delete_me_placeholders"
+        alert1 = Alert(alert1_id)
+        alert2 = Alert(alert2_id)
+
+        # Initially, there should be no active alerts
+        assert not Alert.get_active()
+
+        alert1.activate()
+
+        assert Alert.get_active() == [alert1_id]
+
+        alert2.activate(placeholder="value")
+
+        assert set(Alert.get_active()) == {alert1_id, alert2_id}
+
+        alert1.deactivate()
+
+        assert Alert.get_active() == [alert2_id]
+
+        alert2.deactivate()
+
+        assert not Alert.get_active()

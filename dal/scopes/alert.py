@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 from threading import Lock
+from typing import List
 
 from dal.scopes.scope import Scope
 from dal.scopes.robot import Robot
@@ -49,6 +50,10 @@ class Alert(Scope):
         except Exception as e:
             LOGGER.error("Formatting error for alert %s: %s", self.alert_id, e, exc_info=True)
 
+    @property
+    def active(self) -> bool:
+        return Alert.is_active(self.alert_id)
+
     def activate(self, **kwargs):
         # Verify that all necessary activation fields were provided
         self.validate_parameters("Title", self.Title, **kwargs)
@@ -78,6 +83,14 @@ class Alert(Scope):
         if enterprise:
             for alert_metric in alert_metrics:
                 Alert.get_alert_metrics_handler().add("alert_events", **alert_metric.model_dump())
+
+    @classmethod
+    def get_active(cls) -> List[str]:
+        return Robot().get_active_alerts()
+
+    @classmethod
+    def is_active(cls, alert_id: str) -> bool:
+        return alert_id in Robot().get_active_alerts()
 
     @classmethod
     def get_alert_metrics_handler(cls):
