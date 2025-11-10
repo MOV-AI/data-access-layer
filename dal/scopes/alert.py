@@ -50,10 +50,6 @@ class Alert(Scope):
         except Exception as e:
             LOGGER.error("Formatting error for alert %s: %s", self.alert_id, e, exc_info=True)
 
-    @property
-    def active(self) -> bool:
-        return Alert.is_active(self.alert_id)
-
     def activate(self, **kwargs):
         # Verify that all necessary activation fields were provided
         self.validate_parameters("Title", self.Title, **kwargs)
@@ -86,10 +82,21 @@ class Alert(Scope):
 
     @classmethod
     def get_active(cls) -> List[str]:
+        """
+        Return a list of active alert IDs.
+
+        :return: List of active alert IDs.
+        """
         return Robot().get_active_alerts()
 
     @classmethod
     def is_active(cls, alert_id: str) -> bool:
+        """
+        Check if a specific alert is active.
+
+        :param alert_id: The ID of the alert to check.
+        :return: True if the alert is active, False otherwise.
+        """
         return alert_id in Robot().get_active_alerts()
 
     @classmethod

@@ -222,33 +222,6 @@ class TestAlerts:
         duplicate_alert.deactivate()
         assert alert_id not in robot.fleet.ActiveAlerts
 
-    def test_alert_is_active_property(self, global_db):
-        """Test that the Alert active property works properly."""
-
-        robot = Robot()
-
-        if hasattr(robot.fleet, "ActiveAlerts"):
-            robot.fleet.ActiveAlerts.clear()
-
-        alert_id = "delete_me"
-        alert = Alert(alert_id)
-
-        # Ensure other alerts do not interfere
-        dummy_alert_id = "delete_me_placeholders"
-        dummy_alert = Alert(dummy_alert_id)
-        dummy_alert.activate(placeholder="value")
-
-        # Initially, the alert should not be active
-        assert not alert.active
-
-        alert.activate()
-
-        assert alert.active
-
-        alert.deactivate()
-
-        assert not alert.active
-
     def test_alert_is_active_classmethod(self, global_db):
         """Test that the Alert.is_active classmethod works properly."""
 

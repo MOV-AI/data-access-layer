@@ -163,7 +163,11 @@ class Robot(Scope):
             return alert_metrics
 
     def get_active_alerts(self) -> List[str]:
-        """Get a list of active alert IDs for the Robot"""
+        """
+        Get a list of active alert IDs for the Robot
+
+        :return: List of active alert IDs.
+        """
         if "ActiveAlerts" in self.fleet.__dict__:
             return list(self.fleet.ActiveAlerts.keys())
         return []
