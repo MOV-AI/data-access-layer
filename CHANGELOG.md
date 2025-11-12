@@ -2,7 +2,7 @@
 - [BP-1115](https://movai.atlassian.net/browse/BP-1115): Losen aiohttp dep due to fixes in aiohttp==3.8.4
   - From [aiohttp==3.8.4](https://docs.aiohttp.org/en/latest/changes.html#id278):
     - Fixed ConnectionResetError not being raised after client disconnection in SSL environments.
-      - This has impact client side, where the handler would remain running
+      - This has impact server side, where the handler would remain running
 
 # v3.12.1
 - [BP-1531](https://movai.atlassian.net/browse/BP-1531): Failing to update alerts templates
