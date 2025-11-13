@@ -1,4 +1,4 @@
-# vTBD
+# v3.13.0
 - [BP-1539](https://movai.atlassian.net/browse/BP-1539): API for alert status and to get list of active alerts
 
 # v3.12.2
