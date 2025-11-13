@@ -1,3 +1,6 @@
+# vTBD
+- [BP-1539](https://movai.atlassian.net/browse/BP-1539): API for alert status and to get list of active alerts
+
 # v3.12.2
 - [BP-1115](https://movai.atlassian.net/browse/BP-1115): Losen aiohttp dep due to fixes in aiohttp==3.8.4
   - From [aiohttp==3.8.4](https://docs.aiohttp.org/en/latest/changes.html#id278):

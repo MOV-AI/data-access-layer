@@ -162,6 +162,16 @@ class Robot(Scope):
             self.fleet.ActiveAlerts.clear()
             return alert_metrics
 
+    def _get_active_alerts(self) -> List[str]:
+        """Get a list of active alert IDs for the Robot
+
+        Returns:
+            List[str]: List of active alert IDs.
+        """
+        if "ActiveAlerts" in self.fleet.__dict__:
+            return list(self.fleet.ActiveAlerts.keys())
+        return []
+
     def send_cmd(self, command, *, flow=None, node=None, port=None, data=None) -> None:
         """Send an action command to the Robot
 

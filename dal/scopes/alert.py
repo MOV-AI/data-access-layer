@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 from threading import Lock
+from typing import List
 
 from dal.scopes.scope import Scope
 from dal.scopes.robot import Robot
@@ -28,6 +29,14 @@ class Alert(Scope):
         super().__init__(scope="Alert", name=name, version=version, new=new, db=db)
 
     def validate_parameters(self, name: str, text: str, **kwargs):
+        """Validate that all required placeholders in the text are provided in kwargs.
+
+        Args:
+            name (str): The name of the field being validated (e.g., "Title").
+            text (str): The text containing placeholders to validate.
+            **kwargs: Parameters to fill the placeholders in the text.
+
+        """
         try:
             text.format(**kwargs)
         except KeyError as e:
@@ -50,6 +59,12 @@ class Alert(Scope):
             LOGGER.error("Formatting error for alert %s: %s", self.alert_id, e, exc_info=True)
 
     def activate(self, **kwargs):
+        """Activate the alert, adding it to the active alerts list if validation passes.
+
+        Args:
+            **kwargs: Parameters to fill placeholders in Title, Info, and Action fields.
+
+        """
         # Verify that all necessary activation fields were provided
         self.validate_parameters("Title", self.Title, **kwargs)
         self.validate_parameters("Info", self.Info, **kwargs)
@@ -63,6 +78,12 @@ class Alert(Scope):
         )
 
     def deactivate(self, deactivation_type: str = DeactivationType.REQUESTED):
+        """Deactivate the alert, removing it from the active alerts list.
+
+        Args:
+            deactivation_type (str, optional): The type of deactivation. Defaults to DeactivationType.REQUESTED.
+
+        """
         alert_metric = Robot().pop_alert(self.alert_id, deactivation_type=deactivation_type)
 
         if not alert_metric:
@@ -74,10 +95,37 @@ class Alert(Scope):
 
     @classmethod
     def clear_alerts(cls, deactivation_type: str = DeactivationType.REQUESTED):
+        """Clear all active alerts.
+
+        Args:
+            deactivation_type (str, optional): The type of deactivation. Defaults to DeactivationType.REQUESTED.
+
+        """
         alert_metrics = Robot().clear_alerts(deactivation_type=deactivation_type)
         if enterprise:
             for alert_metric in alert_metrics:
                 Alert.get_alert_metrics_handler().add("alert_events", **alert_metric.model_dump())
+
+    @classmethod
+    def get_active(cls) -> List[str]:
+        """Get a list of active alert IDs.
+
+        Returns:
+            List[str]: List of active alert IDs.
+        """
+        return Robot()._get_active_alerts()
+
+    @classmethod
+    def is_active(cls, alert_id: str) -> bool:
+        """Check if a specific alert is active.
+
+        Args:
+            alert_id (str): The ID of the alert to check.
+
+        Returns:
+            bool: True if the alert is active, False otherwise.
+        """
+        return alert_id in Robot()._get_active_alerts()
 
     @classmethod
     def get_alert_metrics_handler(cls):
