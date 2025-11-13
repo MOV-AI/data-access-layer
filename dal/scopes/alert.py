@@ -29,8 +29,7 @@ class Alert(Scope):
         super().__init__(scope="Alert", name=name, version=version, new=new, db=db)
 
     def validate_parameters(self, name: str, text: str, **kwargs):
-        """
-        Validate that all required placeholders in the text are provided in kwargs.
+        """Validate that all required placeholders in the text are provided in kwargs.
 
         Args:
             name (str): The name of the field being validated (e.g., "Title").
@@ -60,8 +59,7 @@ class Alert(Scope):
             LOGGER.error("Formatting error for alert %s: %s", self.alert_id, e, exc_info=True)
 
     def activate(self, **kwargs):
-        """
-        Activate the alert, adding it to the active alerts list if validation passes.
+        """Activate the alert, adding it to the active alerts list if validation passes.
 
         Args:
             **kwargs: Parameters to fill placeholders in Title, Info, and Action fields.
@@ -80,8 +78,7 @@ class Alert(Scope):
         )
 
     def deactivate(self, deactivation_type: str = DeactivationType.REQUESTED):
-        """
-        Deactivate the alert, removing it from the active alerts list.
+        """Deactivate the alert, removing it from the active alerts list.
 
         Args:
             deactivation_type (str, optional): The type of deactivation. Defaults to DeactivationType.REQUESTED.
@@ -98,8 +95,7 @@ class Alert(Scope):
 
     @classmethod
     def clear_alerts(cls, deactivation_type: str = DeactivationType.REQUESTED):
-        """
-        Clear all active alerts.
+        """Clear all active alerts.
 
         Args:
             deactivation_type (str, optional): The type of deactivation. Defaults to DeactivationType.REQUESTED.
@@ -112,8 +108,7 @@ class Alert(Scope):
 
     @classmethod
     def get_active(cls) -> List[str]:
-        """
-        Get a list of active alert IDs.
+        """Get a list of active alert IDs.
 
         Returns:
             List[str]: List of active alert IDs.
@@ -122,8 +117,7 @@ class Alert(Scope):
 
     @classmethod
     def is_active(cls, alert_id: str) -> bool:
-        """
-        Check if a specific alert is active.
+        """Check if a specific alert is active.
 
         Args:
             alert_id (str): The ID of the alert to check.
