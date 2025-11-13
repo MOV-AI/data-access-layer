@@ -166,7 +166,8 @@ class Robot(Scope):
         """
         Get a list of active alert IDs for the Robot
 
-        :return: List of active alert IDs.
+        Returns:
+            List[str]: List of active alert IDs.
         """
         if "ActiveAlerts" in self.fleet.__dict__:
             return list(self.fleet.ActiveAlerts.keys())
