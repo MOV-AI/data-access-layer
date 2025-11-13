@@ -163,8 +163,7 @@ class Robot(Scope):
             return alert_metrics
 
     def _get_active_alerts(self) -> List[str]:
-        """
-        Get a list of active alert IDs for the Robot
+        """Get a list of active alert IDs for the Robot
 
         Returns:
             List[str]: List of active alert IDs.
