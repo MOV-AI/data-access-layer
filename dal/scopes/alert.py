@@ -37,8 +37,6 @@ class Alert(Scope):
             text (str): The text containing placeholders to validate.
             **kwargs: Parameters to fill the placeholders in the text.
 
-        Returns:
-            None
         """
         try:
             text.format(**kwargs)
@@ -68,8 +66,6 @@ class Alert(Scope):
         Args:
             **kwargs: Parameters to fill placeholders in Title, Info, and Action fields.
 
-        Returns:
-            None
         """
         # Verify that all necessary activation fields were provided
         self.validate_parameters("Title", self.Title, **kwargs)
@@ -90,8 +86,6 @@ class Alert(Scope):
         Args:
             deactivation_type (str, optional): The type of deactivation. Defaults to DeactivationType.REQUESTED.
 
-        Returns:
-            None
         """
         alert_metric = Robot().pop_alert(self.alert_id, deactivation_type=deactivation_type)
 
@@ -110,8 +104,6 @@ class Alert(Scope):
         Args:
             deactivation_type (str, optional): The type of deactivation. Defaults to DeactivationType.REQUESTED.
 
-        Returns:
-            None
         """
         alert_metrics = Robot().clear_alerts(deactivation_type=deactivation_type)
         if enterprise:
