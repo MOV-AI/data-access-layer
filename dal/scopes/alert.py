@@ -118,7 +118,7 @@ class Alert(Scope):
         Returns:
             List[str]: List of active alert IDs.
         """
-        return Robot().get_active_alerts()
+        return Robot()._get_active_alerts()
 
     @classmethod
     def is_active(cls, alert_id: str) -> bool:
@@ -131,7 +131,7 @@ class Alert(Scope):
         Returns:
             bool: True if the alert is active, False otherwise.
         """
-        return alert_id in Robot().get_active_alerts()
+        return alert_id in Robot()._get_active_alerts()
 
     @classmethod
     def get_alert_metrics_handler(cls):

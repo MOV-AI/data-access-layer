@@ -34,12 +34,12 @@ class TestRobotActiveAlerts:
             alert_id, AlertActivationData(args="{}", activation_date=datetime.now().isoformat())
         )
         # should not duplicate
-        assert alert_id in robot.get_active_alerts()
+        assert alert_id in robot._get_active_alerts()
         assert len(robot.fleet.ActiveAlerts) == 1
 
         # Remove the alert
         robot.pop_alert(alert_id)
-        assert alert_id not in robot.get_active_alerts()
+        assert alert_id not in robot._get_active_alerts()
         assert alert_id not in robot.fleet.ActiveAlerts
 
         # Add multiple alerts and clear all
@@ -49,11 +49,11 @@ class TestRobotActiveAlerts:
         robot.add_active_alert(
             "a2", AlertActivationData(args="{}", activation_date=datetime.now().isoformat())
         )
-        assert set(robot.get_active_alerts()) == {"a1", "a2"}
+        assert set(robot._get_active_alerts()) == {"a1", "a2"}
         assert len(robot.fleet.ActiveAlerts) == 2
 
         robot.clear_alerts()
-        assert not robot.get_active_alerts()
+        assert not robot._get_active_alerts()
         assert robot.fleet.ActiveAlerts == {}
 
 

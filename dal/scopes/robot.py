@@ -162,7 +162,7 @@ class Robot(Scope):
             self.fleet.ActiveAlerts.clear()
             return alert_metrics
 
-    def get_active_alerts(self) -> List[str]:
+    def _get_active_alerts(self) -> List[str]:
         """
         Get a list of active alert IDs for the Robot
 
