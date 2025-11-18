@@ -13,6 +13,7 @@ from typing import List, Optional
 import asyncio
 import uuid
 import pickle
+from enum import Enum
 
 from movai_core_shared.core.message_client import MessageClient, AsyncMessageClient
 from movai_core_shared.exceptions import DoesNotExist
@@ -36,6 +37,11 @@ from datetime import datetime
 from .configuration import Configuration
 
 LOGGER = Log.get_logger("dal.mov.ai")
+
+
+class Role(Enum):
+    MANAGER = "manager"
+    MEMBER = "member"
 
 
 class Robot(Scope):
@@ -108,6 +114,11 @@ class Robot(Scope):
         """Set the Model of the Robot"""
         self.RobotModel = model
         self.fleet.RobotModel = model
+
+    def set_role(self, role: Role):
+        """Set the Role of the Robot"""
+        self.Role = role.value
+        self.fleet.Role = role.value
 
     def add_active_alert(
         self,
