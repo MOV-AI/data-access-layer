@@ -13,7 +13,6 @@ from typing import List, Optional
 import asyncio
 import uuid
 import pickle
-from enum import Enum
 
 from movai_core_shared.core.message_client import MessageClient, AsyncMessageClient
 from movai_core_shared.exceptions import DoesNotExist
@@ -32,16 +31,11 @@ from movai_core_shared.messages.alert_data import (
 
 from dal.scopes.scope import Scope
 from dal.movaidb import MovaiDB
-from dal.scopes.fleetrobot import FleetRobot
+from dal.scopes.fleetrobot import FleetRobot, Role
 from datetime import datetime
 from .configuration import Configuration
 
 LOGGER = Log.get_logger("dal.mov.ai")
-
-
-class Role(Enum):
-    MANAGER = "manager"
-    MEMBER = "member"
 
 
 class Robot(Scope):
@@ -88,6 +82,8 @@ class Robot(Scope):
             self.fleet.RobotType = ""
             self.RobotModel = ""
             self.fleet.RobotModel = ""
+            self.Role = ""
+            self.fleet.Role = ""
         # default : ipc:///opt/mov.ai/comm/SpawnerServer-{DEVICE_NAME}-{FLEET_NAME}.sock"
         server = SPAWNER_BIND_ADDR
         self.__dict__["spawner_client"] = MessageClient(server_addr=server, robot_id=self.name)
