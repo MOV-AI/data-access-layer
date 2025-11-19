@@ -12,15 +12,18 @@ class TestFleetRobot:
 
         robot = Robot()
 
+        assert FleetRobot(robot.name).is_manager() is False
         assert not FleetRobot.get_members()
         assert FleetRobot.get_manager() is None
 
         robot.set_role(Role.MANAGER)
 
+        assert FleetRobot(robot.name).is_manager() is True
         assert not FleetRobot.get_members()
         assert FleetRobot.get_manager() == robot.name
 
         robot.set_role(Role.MEMBER)
 
+        assert FleetRobot(robot.name).is_manager() is False
         assert FleetRobot.get_members() == [robot.name]
         assert FleetRobot.get_manager() is None
