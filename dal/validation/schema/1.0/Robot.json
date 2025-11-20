@@ -7,6 +7,7 @@
       "IP": "ip_add",
       "RobotType": "str",
       "RobotModel": "str",
+      "Role": "str",
       "Info": "str",
       "Actions": "list",
       "Notifications": "list",
