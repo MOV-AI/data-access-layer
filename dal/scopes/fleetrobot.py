@@ -206,49 +206,6 @@ class FleetRobot(Scope):
             command_data = pickle.dumps(command_data)
             self.Actions.append(command_data)
 
-    def get_active_alerts(self) -> dict:
-        """Gets a dictionary of the active alerts on this specific robot.
-
-        Returns:
-            dict: A dictionary inedexed by alert name which contains alert information.
-        """
-        robot_active_alerts = dict(self.Alerts)
-        return robot_active_alerts
-
-    def add_alert(self, alert: dict) -> None:
-        """Adds a new entry to to the Alert dictionary of the robot on the redis-master.
-
-        Args:
-            alert (dict): The alert dictionary with the keys: info, action and callback.
-        """
-        alert.pop("status")
-        alert_name = alert.get("name")
-        FleetRobot.check_alert_dictionary(alert)
-        self.Alerts[alert_name] = alert
-
-    def remove_alert(self, alert: str) -> None:
-        """Removes an entry from the Alert dictionary of the robot on redis-master.
-
-        Args:
-            alert (str): The name of the alert to be removed.
-        """
-        active_alerts = self.get_active_alerts()
-        if alert in active_alerts:
-            # active_alerts.pop(alert)
-            self.Alerts.pop(alert)
-
-    @staticmethod
-    def check_alert_dictionary(alert: dict) -> None:
-        """Checks if the alert dictionary contains all the required fileds.
-        if not logs a warning.
-
-        Args:
-            alert (dict): The alert dict.
-        """
-        for field in ("info", "action", "callback"):
-            if field not in alert:
-                logger.warning(f"The field: {field} is missing from alert dictionary")
-
     @staticmethod
     def get_robot_key_by_ip(ip_address: str, key_name: str) -> Optional[bytes]:
         """Finds a key of a robot by the ip address.
