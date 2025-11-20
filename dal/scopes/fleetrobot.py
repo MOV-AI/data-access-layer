@@ -37,6 +37,8 @@ END_TIME_VAR = "endTime"
 
 
 class Role(Enum):
+    """Robot Role Enum."""
+
     MANAGER = "manager"
     MEMBER = "member"
 
@@ -356,11 +358,16 @@ class FleetRobot(Scope):
 
     @classmethod
     def get_members(cls) -> List[str]:
-        """Returns a list with the members ids."""
+        """Get a list with the members ids.
+
+        Returns:
+            List[str]: List of member robot ids.
+
+        """
         db = MovaiDB("global")
-        members = []
         robots = db.search_by_args("Robot")[0]
-        print(robots)
+
+        members = []
 
         if "Robot" not in robots:
             return members
@@ -368,11 +375,17 @@ class FleetRobot(Scope):
         for robot_id in robots["Robot"]:
             if FleetRobot(robot_id).Role == Role.MEMBER.value:
                 members.append(robot_id)
+
         return members
 
     @classmethod
     def get_manager(cls) -> Optional[str]:
-        """Returns the manager id."""
+        """Get the manager id.
+
+        Returns:
+            Optional[str]: The manager robot id or None if not found.
+
+        """
         db = MovaiDB("global")
         robots = db.search_by_args("Robot")[0]
 
