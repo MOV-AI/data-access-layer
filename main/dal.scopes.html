@@ -425,6 +425,34 @@ if not logs a warning.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.fleetrobot.FleetRobot.get_manager">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_manager</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#dal.scopes.fleetrobot.FleetRobot.get_manager" title="Permalink to this definition"></a></dt>
+<dd><p>Get the manager id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The manager robot id or None if not found.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.fleetrobot.FleetRobot.get_members">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_members</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.scopes.fleetrobot.FleetRobot.get_members" title="Permalink to this definition"></a></dt>
+<dd><p>Get a list with the members ids.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of member robot ids.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#dal.scopes.structures.List" title="dal.scopes.structures.List">List</a>[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.fleetrobot.FleetRobot.get_robot_key_by_ip">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_robot_key_by_ip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ip_address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#dal.scopes.fleetrobot.FleetRobot.get_robot_key_by_ip" title="Permalink to this definition"></a></dt>
 <dd><p>Finds a key of a robot by the ip address.</p>
@@ -440,6 +468,20 @@ if not logs a warning.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bytes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.fleetrobot.FleetRobot.is_manager">
+<span class="sig-name descname"><span class="pre">is_manager</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.scopes.fleetrobot.FleetRobot.is_manager" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the Robot is a manager</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the Robot is a manager, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -509,6 +551,23 @@ if not, an exception will be raised if the robot is running</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dal.scopes.fleetrobot.FleetRobot.spawner_client">
 <span class="sig-name descname"><span class="pre">spawner_client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MessageClient</span></em><a class="headerlink" href="#dal.scopes.fleetrobot.FleetRobot.spawner_client" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.scopes.fleetrobot.Role">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.scopes.fleetrobot.</span></span><span class="sig-name descname"><span class="pre">Role</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.fleetrobot.Role" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Robot Role Enum.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.scopes.fleetrobot.Role.MANAGER">
+<span class="sig-name descname"><span class="pre">MANAGER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'manager'</span></em><a class="headerlink" href="#dal.scopes.fleetrobot.Role.MANAGER" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.scopes.fleetrobot.Role.MEMBER">
+<span class="sig-name descname"><span class="pre">MEMBER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'member'</span></em><a class="headerlink" href="#dal.scopes.fleetrobot.Role.MEMBER" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1356,6 +1415,12 @@ When Robot groups are implemented it should merge with the group configuration</
 <dt class="sig sig-object py" id="dal.scopes.robot.Robot.set_param">
 <span class="sig-name descname"><span class="pre">set_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.robot.Robot.set_param" title="Permalink to this definition"></a></dt>
 <dd><p>Sets or updates a parameter of the robots</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.robot.Robot.set_role">
+<span class="sig-name descname"><span class="pre">set_role</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">role</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dal.scopes.fleetrobot.Role" title="dal.scopes.fleetrobot.Role"><span class="pre">Role</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.robot.Robot.set_role" title="Permalink to this definition"></a></dt>
+<dd><p>Set the Role of the Robot</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2332,6 +2397,34 @@ if not logs a warning.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.FleetRobot.get_manager">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_manager</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#dal.scopes.FleetRobot.get_manager" title="Permalink to this definition"></a></dt>
+<dd><p>Get the manager id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The manager robot id or None if not found.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.FleetRobot.get_members">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_members</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.scopes.FleetRobot.get_members" title="Permalink to this definition"></a></dt>
+<dd><p>Get a list with the members ids.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of member robot ids.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#dal.scopes.structures.List" title="dal.scopes.structures.List">List</a>[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.FleetRobot.get_robot_key_by_ip">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_robot_key_by_ip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ip_address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#dal.scopes.FleetRobot.get_robot_key_by_ip" title="Permalink to this definition"></a></dt>
 <dd><p>Finds a key of a robot by the ip address.</p>
@@ -2347,6 +2440,20 @@ if not logs a warning.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bytes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.FleetRobot.is_manager">
+<span class="sig-name descname"><span class="pre">is_manager</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.scopes.FleetRobot.is_manager" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the Robot is a manager</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the Robot is a manager, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3270,6 +3377,12 @@ When Robot groups are implemented it should merge with the group configuration</
 <dt class="sig sig-object py" id="dal.scopes.Robot.set_param">
 <span class="sig-name descname"><span class="pre">set_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.Robot.set_param" title="Permalink to this definition"></a></dt>
 <dd><p>Sets or updates a parameter of the robots</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.Robot.set_role">
+<span class="sig-name descname"><span class="pre">set_role</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">role</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dal.scopes.fleetrobot.Role" title="dal.scopes.fleetrobot.Role"><span class="pre">Role</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.Robot.set_role" title="Permalink to this definition"></a></dt>
+<dd><p>Set the Role of the Robot</p>
 </dd></dl>
 
 <dl class="py method">

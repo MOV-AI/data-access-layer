@@ -1870,7 +1870,10 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.fleetrobot.FleetRobot.async_spawner_client"><code class="docutils literal notranslate"><span class="pre">FleetRobot.async_spawner_client</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.fleetrobot.FleetRobot.check_alert_dictionary"><code class="docutils literal notranslate"><span class="pre">FleetRobot.check_alert_dictionary()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.fleetrobot.FleetRobot.get_active_alerts"><code class="docutils literal notranslate"><span class="pre">FleetRobot.get_active_alerts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.fleetrobot.FleetRobot.get_manager"><code class="docutils literal notranslate"><span class="pre">FleetRobot.get_manager()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.fleetrobot.FleetRobot.get_members"><code class="docutils literal notranslate"><span class="pre">FleetRobot.get_members()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.fleetrobot.FleetRobot.get_robot_key_by_ip"><code class="docutils literal notranslate"><span class="pre">FleetRobot.get_robot_key_by_ip()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.fleetrobot.FleetRobot.is_manager"><code class="docutils literal notranslate"><span class="pre">FleetRobot.is_manager()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.fleetrobot.FleetRobot.list_all"><code class="docutils literal notranslate"><span class="pre">FleetRobot.list_all()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.fleetrobot.FleetRobot.name_to_id"><code class="docutils literal notranslate"><span class="pre">FleetRobot.name_to_id()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.fleetrobot.FleetRobot.ping"><code class="docutils literal notranslate"><span class="pre">FleetRobot.ping()</span></code></a></li>
@@ -1879,6 +1882,11 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.fleetrobot.FleetRobot.send_cmd"><code class="docutils literal notranslate"><span class="pre">FleetRobot.send_cmd()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.fleetrobot.FleetRobot.set_robot_started"><code class="docutils literal notranslate"><span class="pre">FleetRobot.set_robot_started()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.fleetrobot.FleetRobot.spawner_client"><code class="docutils literal notranslate"><span class="pre">FleetRobot.spawner_client</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.fleetrobot.Role"><code class="docutils literal notranslate"><span class="pre">Role</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.fleetrobot.Role.MANAGER"><code class="docutils literal notranslate"><span class="pre">Role.MANAGER</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.fleetrobot.Role.MEMBER"><code class="docutils literal notranslate"><span class="pre">Role.MEMBER</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -2022,6 +2030,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.robot.Robot.set_model"><code class="docutils literal notranslate"><span class="pre">Robot.set_model()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.robot.Robot.set_name"><code class="docutils literal notranslate"><span class="pre">Robot.set_name()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.robot.Robot.set_param"><code class="docutils literal notranslate"><span class="pre">Robot.set_param()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.robot.Robot.set_role"><code class="docutils literal notranslate"><span class="pre">Robot.set_role()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.robot.Robot.set_type"><code class="docutils literal notranslate"><span class="pre">Robot.set_type()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.robot.Robot.spawner_client"><code class="docutils literal notranslate"><span class="pre">Robot.spawner_client</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.robot.Robot.update_status"><code class="docutils literal notranslate"><span class="pre">Robot.update_status()</span></code></a></li>
@@ -2220,7 +2229,10 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.FleetRobot.check_alert_dictionary"><code class="docutils literal notranslate"><span class="pre">FleetRobot.check_alert_dictionary()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.FleetRobot.db"><code class="docutils literal notranslate"><span class="pre">FleetRobot.db</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.FleetRobot.get_active_alerts"><code class="docutils literal notranslate"><span class="pre">FleetRobot.get_active_alerts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.FleetRobot.get_manager"><code class="docutils literal notranslate"><span class="pre">FleetRobot.get_manager()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.FleetRobot.get_members"><code class="docutils literal notranslate"><span class="pre">FleetRobot.get_members()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.FleetRobot.get_robot_key_by_ip"><code class="docutils literal notranslate"><span class="pre">FleetRobot.get_robot_key_by_ip()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.FleetRobot.is_manager"><code class="docutils literal notranslate"><span class="pre">FleetRobot.is_manager()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.FleetRobot.list_all"><code class="docutils literal notranslate"><span class="pre">FleetRobot.list_all()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.FleetRobot.movaidb"><code class="docutils literal notranslate"><span class="pre">FleetRobot.movaidb</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.FleetRobot.name_to_id"><code class="docutils literal notranslate"><span class="pre">FleetRobot.name_to_id()</span></code></a></li>
@@ -2365,6 +2377,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Robot.set_model"><code class="docutils literal notranslate"><span class="pre">Robot.set_model()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Robot.set_name"><code class="docutils literal notranslate"><span class="pre">Robot.set_name()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Robot.set_param"><code class="docutils literal notranslate"><span class="pre">Robot.set_param()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Robot.set_role"><code class="docutils literal notranslate"><span class="pre">Robot.set_role()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Robot.set_type"><code class="docutils literal notranslate"><span class="pre">Robot.set_type()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Robot.spawner_client"><code class="docutils literal notranslate"><span class="pre">Robot.spawner_client</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Robot.update_status"><code class="docutils literal notranslate"><span class="pre">Robot.update_status()</span></code></a></li>
