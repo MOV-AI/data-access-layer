@@ -90,6 +90,7 @@ def delete_all_robots(global_db):
 
     yield
 
-    # TODO this is not deleting from redis-master, only redis-local
+    Robot().remove()
+
     for robot_id in Robot.get_all():
         FleetRobot.remove_entry(robot_id, True)
