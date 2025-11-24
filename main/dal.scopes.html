@@ -376,17 +376,6 @@ Proprietary and confidential</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="dal.scopes.fleetrobot.FleetRobot.add_alert">
-<span class="sig-name descname"><span class="pre">add_alert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alert</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.scopes.fleetrobot.FleetRobot.add_alert" title="Permalink to this definition"></a></dt>
-<dd><p>Adds a new entry to to the Alert dictionary of the robot on the redis-master.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>alert</strong> (<em>dict</em>) – The alert dictionary with the keys: info, action and callback.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.fleetrobot.FleetRobot.async_send_cmd">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_send_cmd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.scopes.fleetrobot.FleetRobot.async_send_cmd" title="Permalink to this definition"></a></dt>
 <dd><p>Send an action command to the Robot.</p>
@@ -397,32 +386,6 @@ Proprietary and confidential</p>
 <dt class="sig sig-object py" id="dal.scopes.fleetrobot.FleetRobot.async_spawner_client">
 <span class="sig-name descname"><span class="pre">async_spawner_client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AsyncMessageClient</span></em><a class="headerlink" href="#dal.scopes.fleetrobot.FleetRobot.async_spawner_client" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.scopes.fleetrobot.FleetRobot.check_alert_dictionary">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_alert_dictionary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alert</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.scopes.fleetrobot.FleetRobot.check_alert_dictionary" title="Permalink to this definition"></a></dt>
-<dd><p>Checks if the alert dictionary contains all the required fileds.
-if not logs a warning.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>alert</strong> (<em>dict</em>) – The alert dict.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.scopes.fleetrobot.FleetRobot.get_active_alerts">
-<span class="sig-name descname"><span class="pre">get_active_alerts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#dal.scopes.fleetrobot.FleetRobot.get_active_alerts" title="Permalink to this definition"></a></dt>
-<dd><p>Gets a dictionary of the active alerts on this specific robot.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A dictionary inedexed by alert name which contains alert information.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.fleetrobot.FleetRobot.get_manager">
@@ -510,17 +473,6 @@ if not logs a warning.</p>
 <dt class="sig sig-object py" id="dal.scopes.fleetrobot.FleetRobot.ping">
 <span class="sig-name descname"><span class="pre">ping</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.scopes.fleetrobot.FleetRobot.ping" title="Permalink to this definition"></a></dt>
 <dd><p>Ping the robot</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.scopes.fleetrobot.FleetRobot.remove_alert">
-<span class="sig-name descname"><span class="pre">remove_alert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alert</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.scopes.fleetrobot.FleetRobot.remove_alert" title="Permalink to this definition"></a></dt>
-<dd><p>Removes an entry from the Alert dictionary of the robot on redis-master.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>alert</strong> (<em>str</em>) – The name of the alert to be removed.</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -2343,17 +2295,6 @@ Proprietary and confidential</p>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="dal.scopes.FleetRobot.add_alert">
-<span class="sig-name descname"><span class="pre">add_alert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alert</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.scopes.FleetRobot.add_alert" title="Permalink to this definition"></a></dt>
-<dd><p>Adds a new entry to to the Alert dictionary of the robot on the redis-master.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>alert</strong> (<em>dict</em>) – The alert dictionary with the keys: info, action and callback.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.FleetRobot.async_send_cmd">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">async_send_cmd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.scopes.FleetRobot.async_send_cmd" title="Permalink to this definition"></a></dt>
 <dd><p>Send an action command to the Robot.</p>
@@ -2365,36 +2306,10 @@ Proprietary and confidential</p>
 <span class="sig-name descname"><span class="pre">async_spawner_client</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AsyncMessageClient</span></em><a class="headerlink" href="#dal.scopes.FleetRobot.async_spawner_client" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.scopes.FleetRobot.check_alert_dictionary">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_alert_dictionary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alert</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.scopes.FleetRobot.check_alert_dictionary" title="Permalink to this definition"></a></dt>
-<dd><p>Checks if the alert dictionary contains all the required fileds.
-if not logs a warning.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>alert</strong> (<em>dict</em>) – The alert dict.</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dal.scopes.FleetRobot.db">
 <span class="sig-name descname"><span class="pre">db</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dal.scopes.FleetRobot.db" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.scopes.FleetRobot.get_active_alerts">
-<span class="sig-name descname"><span class="pre">get_active_alerts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#dal.scopes.FleetRobot.get_active_alerts" title="Permalink to this definition"></a></dt>
-<dd><p>Gets a dictionary of the active alerts on this specific robot.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A dictionary inedexed by alert name which contains alert information.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.FleetRobot.get_manager">
@@ -2487,17 +2402,6 @@ if not logs a warning.</p>
 <dt class="sig sig-object py" id="dal.scopes.FleetRobot.ping">
 <span class="sig-name descname"><span class="pre">ping</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.scopes.FleetRobot.ping" title="Permalink to this definition"></a></dt>
 <dd><p>Ping the robot</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.scopes.FleetRobot.remove_alert">
-<span class="sig-name descname"><span class="pre">remove_alert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alert</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.scopes.FleetRobot.remove_alert" title="Permalink to this definition"></a></dt>
-<dd><p>Removes an entry from the Alert dictionary of the robot on redis-master.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>alert</strong> (<em>str</em>) – The name of the alert to be removed.</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
