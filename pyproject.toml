@@ -34,7 +34,7 @@ dependencies = [
     "py3rosmsgs==1.18.2",
     "cachetools==5.3.1",
     "astunparse==1.6.3; python_version < '3.9'",
-    "movai-core-shared>=3.7.0.1"
+    "movai-core-shared>=3.8.0.1"
 ]
 
 [project.urls]
