@@ -32,8 +32,6 @@ class ResourceType(Enum):
     Applications = "Applications"
     Callback = "Callback"
     Configuration = "Configuration"
-    EmailsAlertsConfig = "EmailsAlertsConfig"
-    EmailsAlertsRecipients = "EmailsAlertsRecipients"
     Flow = "Flow"
     Form = "Form"
     GraphicScene = "GraphicScene"
@@ -80,8 +78,6 @@ class ACLManager:
         "Callback": _EXECUTE_PERMISSIONS,
         "User": ["read"],
         "InternalUser": _USER_PERMISSIONS,
-        "EmailsAlertsConfig": [READ_PERMISSION, UPDATE_PERMISSION],
-        "EmailsAlertsRecipients": [READ_PERMISSION, UPDATE_PERMISSION],
     }
 
     def __init__(self, user):
@@ -208,8 +204,6 @@ class NewACLManager(ACLManager):
                 "RemoteUser",
                 "AclObject",
                 "LdapConfig",
-                "EmailsAlertsConfig",
-                "EmailsAlertsRecipients",
             ]
         )
         return resources
