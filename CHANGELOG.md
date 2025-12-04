@@ -1,3 +1,7 @@
+# vTBD
+- [BP-1548](https://movai.atlassian.net/browse/BP-1548): Await check_permissions
+  - InternalUser has permission to update itself.
+
 # v3.15.0
 - [BP-1545](https://movai.atlassian.net/browse/BP-1545): Remove old Alerts implementation
 
