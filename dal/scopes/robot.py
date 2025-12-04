@@ -31,7 +31,7 @@ from movai_core_shared.messages.alert_data import (
 
 from dal.scopes.scope import Scope
 from dal.movaidb import MovaiDB
-from dal.scopes.fleetrobot import FleetRobot
+from dal.scopes.fleetrobot import FleetRobot, Role
 from datetime import datetime
 from .configuration import Configuration
 
@@ -82,6 +82,8 @@ class Robot(Scope):
             self.fleet.RobotType = ""
             self.RobotModel = ""
             self.fleet.RobotModel = ""
+            self.Role = ""
+            self.fleet.Role = ""
         # default : ipc:///opt/mov.ai/comm/SpawnerServer-{DEVICE_NAME}-{FLEET_NAME}.sock"
         server = SPAWNER_BIND_ADDR
         self.__dict__["spawner_client"] = MessageClient(server_addr=server, robot_id=self.name)
@@ -108,6 +110,11 @@ class Robot(Scope):
         """Set the Model of the Robot"""
         self.RobotModel = model
         self.fleet.RobotModel = model
+
+    def set_role(self, role: Role):
+        """Set the Role of the Robot"""
+        self.Role = role.value
+        self.fleet.Role = role.value
 
     def add_active_alert(
         self,

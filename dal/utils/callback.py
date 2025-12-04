@@ -39,7 +39,6 @@ from dal.scopes.statemachine import StateMachine
 from dal.scopes.alert import Alert
 
 try:
-    from movai_core_enterprise.message_client_handlers.alerts import Alerts
     from movai_core_enterprise.models.annotation import Annotation
     from movai_core_enterprise.models.graphicasset import GraphicAsset
     from movai_core_enterprise.models.graphicscene import GraphicScene
@@ -131,7 +130,6 @@ class UserFunctions:
                 self.globals.update(
                     {
                         "Alert": Alert,
-                        "Alerts": Alerts,
                         "Annotation": Annotation,
                         "GraphicAsset": GraphicAsset,
                         "GraphicScene": GraphicScene,

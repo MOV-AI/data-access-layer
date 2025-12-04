@@ -81,3 +81,16 @@ def metadata_folder_invalid_data():
 @pytest.fixture(scope="session")
 def manifest_file_invalid_data():
     return DATA_FOLDER / "invalid" / "manifest.txt"
+
+
+@pytest.fixture
+def delete_all_robots(global_db):
+    """Deletes all robots after test."""
+    from dal.scopes.robot import Robot, FleetRobot
+
+    yield
+
+    Robot().remove()
+
+    for robot_id in Robot.get_all():
+        FleetRobot.remove_entry(robot_id, True)

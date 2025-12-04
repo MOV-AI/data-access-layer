@@ -1,3 +1,9 @@
+# v3.15.0
+- [BP-1545](https://movai.atlassian.net/browse/BP-1545): Remove old Alerts implementation
+
+# v3.14.0
+- [BP-1460](https://movai.atlassian.net/browse/BP-1460): API to expose fleet information
+
 # v3.13.0
 - [BP-1539](https://movai.atlassian.net/browse/BP-1539): API for alert status and to get list of active alerts
 

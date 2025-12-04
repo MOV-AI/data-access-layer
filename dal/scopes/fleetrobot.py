@@ -12,6 +12,7 @@
 """
 import pickle
 from typing import Dict, List, Optional
+from enum import Enum
 
 from movai_core_shared.common.utils import is_enterprise
 from movai_core_shared.core.message_client import MessageClient, AsyncMessageClient
@@ -33,6 +34,13 @@ logger = Log.get_logger("FleetRobot")
 ROBOT_STARTED_PARAM = "started"
 START_TIME_VAR = "startTime"
 END_TIME_VAR = "endTime"
+
+
+class Role(Enum):
+    """Robot Role Enum."""
+
+    MANAGER = "manager"
+    MEMBER = "member"
 
 
 class FleetRobot(Scope):
@@ -198,49 +206,6 @@ class FleetRobot(Scope):
             command_data = pickle.dumps(command_data)
             self.Actions.append(command_data)
 
-    def get_active_alerts(self) -> dict:
-        """Gets a dictionary of the active alerts on this specific robot.
-
-        Returns:
-            dict: A dictionary inedexed by alert name which contains alert information.
-        """
-        robot_active_alerts = dict(self.Alerts)
-        return robot_active_alerts
-
-    def add_alert(self, alert: dict) -> None:
-        """Adds a new entry to to the Alert dictionary of the robot on the redis-master.
-
-        Args:
-            alert (dict): The alert dictionary with the keys: info, action and callback.
-        """
-        alert.pop("status")
-        alert_name = alert.get("name")
-        FleetRobot.check_alert_dictionary(alert)
-        self.Alerts[alert_name] = alert
-
-    def remove_alert(self, alert: str) -> None:
-        """Removes an entry from the Alert dictionary of the robot on redis-master.
-
-        Args:
-            alert (str): The name of the alert to be removed.
-        """
-        active_alerts = self.get_active_alerts()
-        if alert in active_alerts:
-            # active_alerts.pop(alert)
-            self.Alerts.pop(alert)
-
-    @staticmethod
-    def check_alert_dictionary(alert: dict) -> None:
-        """Checks if the alert dictionary contains all the required fileds.
-        if not logs a warning.
-
-        Args:
-            alert (dict): The alert dict.
-        """
-        for field in ("info", "action", "callback"):
-            if field not in alert:
-                logger.warning(f"The field: {field} is missing from alert dictionary")
-
     @staticmethod
     def get_robot_key_by_ip(ip_address: str, key_name: str) -> Optional[bytes]:
         """Finds a key of a robot by the ip address.
@@ -338,3 +303,53 @@ class FleetRobot(Scope):
         for robot_id, robot_data in all_robots_data["Robot"].items():
             if robot_data["RobotName"] == robot_name:
                 return robot_id
+
+    def is_manager(self) -> bool:
+        """Check if the Robot is a manager
+
+        Returns:
+            bool: True if the Robot is a manager, False otherwise.
+
+        """
+        return self.Role == Role.MANAGER.value
+
+    @classmethod
+    def get_members(cls) -> List[str]:
+        """Get a list with the members ids.
+
+        Returns:
+            List[str]: List of member robot ids.
+
+        """
+        db = MovaiDB("global")
+        robots = db.search_by_args("Robot")[0]
+
+        members = []
+
+        if "Robot" not in robots:
+            return members
+
+        for robot_id in robots["Robot"]:
+            if FleetRobot(robot_id).Role == Role.MEMBER.value:
+                members.append(robot_id)
+
+        return members
+
+    @classmethod
+    def get_manager(cls) -> Optional[str]:
+        """Get the manager id.
+
+        Returns:
+            Optional[str]: The manager robot id or None if not found.
+
+        """
+        db = MovaiDB("global")
+        robots = db.search_by_args("Robot")[0]
+
+        if "Robot" not in robots:
+            return None
+
+        for robot_id in robots["Robot"]:
+            if FleetRobot(robot_id).Role == Role.MANAGER.value:
+                return robot_id
+        return None

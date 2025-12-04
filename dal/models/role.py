@@ -56,8 +56,6 @@ class Role(Model):
         ],
         "Callback": _DEFAULT_RESOUCE_PERM,
         "Configuration": [READ_PERMISSION],
-        "EmailsAlertsConfig": [READ_PERMISSION, UPDATE_PERMISSION],
-        "EmailsAlertsRecipients": [READ_PERMISSION],
         "Flow": _DEFAULT_RESOUCE_PERM,
         "GraphicScene": _DEFAULT_RESOUCE_PERM,
         "InternalUser": [READ_PERMISSION],
