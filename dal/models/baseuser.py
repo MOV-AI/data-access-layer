@@ -614,7 +614,7 @@ class BaseUser(Model):
             and object_name == f"{self.account_name}@{self.domain_name}"
             and permission_name != "delete"
         ):
-            LOGGER.warning(
+            LOGGER.info(
                 "User %s accessing own InternalUser resource: %s: allowing %s permission.",
                 self.account_name,
                 object_name,
