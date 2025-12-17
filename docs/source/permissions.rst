@@ -25,10 +25,10 @@ The available permissions are:
 .. note::
     Not all permissions are available for all resources.
 
-For specific resource permissions, see :ref:`here<dal.models.baseuser.BaseUser.has_permission>`.
+    For specific resource permissions, see :ref:`here<dal.models.baseuser.BaseUser.has_permission>`.
 
-In the case of InternalUser, the permission check is done in :ref:`here<dal.models.internaluser.InternalUser.has_permission>`.
-    This allows for specific overrides for InternalUser permissions when it comes to the InternalUser accessing its own data.
+    In the case of InternalUser, the permission check is done in :ref:`here<dal.models.internaluser.InternalUser.has_permission>`.
+        This allows for specific overrides for InternalUser permissions when it comes to the InternalUser accessing its own data.
 
 Resources
 ---------

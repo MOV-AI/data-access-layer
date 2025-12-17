@@ -586,6 +586,7 @@ class BaseUser(Model):
         self,
         resource_name: str,
         permission_name: str,
+        _: str = "",  # For API consistency with other has_permission methods
         skip_superuser: bool = False,
     ) -> bool:
         """Check user permission to a specific resource.
