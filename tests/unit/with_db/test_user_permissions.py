@@ -160,7 +160,6 @@ class TestUserPermissions:
         Test that InternalUser with DEPLOYER_ROLE has correct permissions on resources:
             1. Create InternalUser with DEPLOYER_ROLE
             2. Verify that the user has correct permissions on all resources
-            3. For Applications resource, verify that the user has only specific application permissions
         """
 
         base_user = user_factory("deployer_user", roles=[DEPLOYER_ROLE])
@@ -220,7 +219,6 @@ class TestUserPermissions:
         Test that InternalUser with OPERATOR_ROLE has correct permissions on resources:
             1. Create InternalUser with OPERATOR_ROLE
             2. Verify that the user has correct permissions on all resources
-            3. For Applications resource, verify that the user has only specific application permissions
         """
 
         base_user = create_internal_user.create(
@@ -312,7 +310,8 @@ class TestUserPermissions:
             2. Verify that the user has permissions for OPERATOR_ROLE
             3. Verify that the user has permissions for DEPLOYER_ROLE
 
-        Only assert for permissions that are granted by the roles to avoid false negatives caused by other role.
+        Only assert for permissions that are granted by the roles
+        to avoid false negatives caused by other role.
         """
 
         base_user = create_internal_user.create(
@@ -329,18 +328,16 @@ class TestUserPermissions:
                     ), f"Multi-role user should have {permission} permission on {resource} from DEPLOYER role"
 
             # Test execute permission for resources that support it
-            if resource in EXECUTE_RESOURCES:
-                if EXECUTE_PERMISSION in permissions:
-                    assert (
-                        base_user.has_permission(resource, EXECUTE_PERMISSION) is True
-                    ), f"Multi-role user should have {EXECUTE_PERMISSION} permission on {resource} from DEPLOYER role"
+            if resource in EXECUTE_RESOURCES and EXECUTE_PERMISSION in permissions:
+                assert (
+                    base_user.has_permission(resource, EXECUTE_PERMISSION) is True
+                ), f"Multi-role user should have {EXECUTE_PERMISSION} permission on {resource} from DEPLOYER role"
 
             # Test reset permission for resources that support it
-            if resource in RESET_RESOURCES:
-                if RESET_PERMISSION in permissions:
-                    assert (
-                        base_user.has_permission(resource, RESET_PERMISSION) is True
-                    ), f"Multi-role user should have {RESET_PERMISSION} permission on {resource} from DEPLOYER role"
+            if resource in RESET_RESOURCES and RESET_PERMISSION in permissions:
+                assert (
+                    base_user.has_permission(resource, RESET_PERMISSION) is True
+                ), f"Multi-role user should have {RESET_PERMISSION} permission on {resource} from DEPLOYER role"
 
         # Check OPERATOR permissions
         for resource, permissions in models_role.OPERATOR_RESOURCES.items():
@@ -351,18 +348,16 @@ class TestUserPermissions:
                     ), f"Multi-role user should have {permission} permission on {resource} from OPERATOR role"
 
             # Test execute permission for resources that support it
-            if resource in EXECUTE_RESOURCES:
-                if EXECUTE_PERMISSION in permissions:
-                    assert (
-                        base_user.has_permission(resource, EXECUTE_PERMISSION) is True
-                    ), f"Multi-role user should have {EXECUTE_PERMISSION} permission on {resource} from OPERATOR role"
+            if resource in EXECUTE_RESOURCES and EXECUTE_PERMISSION in permissions:
+                assert (
+                    base_user.has_permission(resource, EXECUTE_PERMISSION) is True
+                ), f"Multi-role user should have {EXECUTE_PERMISSION} permission on {resource} from OPERATOR role"
 
             # Test reset permission for resources that support it
-            if resource in RESET_RESOURCES:
-                if RESET_PERMISSION in permissions:
-                    assert (
-                        base_user.has_permission(resource, RESET_PERMISSION) is True
-                    ), f"Multi-role user should have {RESET_PERMISSION} permission on {resource} from OPERATOR role"
+            if resource in RESET_RESOURCES and RESET_PERMISSION in permissions:
+                assert (
+                    base_user.has_permission(resource, RESET_PERMISSION) is True
+                ), f"Multi-role user should have {RESET_PERMISSION} permission on {resource} from OPERATOR role"
 
     def test_no_roles_permissions(self, create_internal_user, create_defaults, global_db):
         """
