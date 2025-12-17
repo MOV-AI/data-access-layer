@@ -75,7 +75,7 @@ def create_applications(global_db):
             app.Type = "web"
             app.write()
             created_apps.append(app_name)
-        except Exception as e:
+        except Exception:
             # Application might already exist or creation failed
             pass
 
@@ -87,6 +87,7 @@ def create_applications(global_db):
             app = Application(app_name)
             app.remove()
         except Exception:
+            # Application might have been already removed
             pass
 
 
@@ -110,8 +111,33 @@ def create_internal_user(global_db):
     return InternalUser
 
 
+@pytest.fixture()
+def user_factory(create_internal_user):
+    """Factory fixture that creates users and tracks them for cleanup"""
+    created_users = []
+
+    def _create_user(account_name, password="StrongPassw0rd!", roles=[]):
+        """Create a user and track it for cleanup"""
+
+        user = create_internal_user.create(
+            account_name=account_name, password=password, roles=roles
+        )
+        created_users.append(user)
+        return user
+
+    yield _create_user
+
+    # Cleanup all created users
+    for user in created_users:
+        try:
+            user.remove()
+        except Exception:
+            # User might have been already removed
+            pass
+
+
 class TestUserPermissions:
-    """ "
+    """
     Test User Permissions for different roles and resources
 
     Existing Roles:
@@ -129,9 +155,7 @@ class TestUserPermissions:
 
     """
 
-    def test_deployer_role_permissions(
-        self, models_role, create_internal_user, create_defaults, global_db
-    ):
+    def test_deployer_role_permissions(self, models_role, user_factory, create_defaults, global_db):
         """
         Test that InternalUser with DEPLOYER_ROLE has correct permissions on resources:
             1. Create InternalUser with DEPLOYER_ROLE
@@ -139,9 +163,7 @@ class TestUserPermissions:
             3. For Applications resource, verify that the user has only specific application permissions
         """
 
-        base_user = create_internal_user.create(
-            account_name="deployer_user", password="StrongPassw0rd!", roles=[DEPLOYER_ROLE]
-        )
+        base_user = user_factory("deployer_user", roles=[DEPLOYER_ROLE])
         for resource, permissions in models_role.DEPLOYER_RESOURCES.items():
             if resource == "Applications":
                 # Deployer role has only specific application permissions
