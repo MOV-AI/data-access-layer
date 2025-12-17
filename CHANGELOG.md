@@ -4,6 +4,7 @@
 
 # v3.16.0
 - [BP-1471](https://movai.atlassian.net/browse/BP-1471): Create API to remove robot (Migrate old remove robot API)
+  - Change FleetRobot.remove_entry vague exceptions to more specific ones
 
 # v3.15.0
 - [BP-1545](https://movai.atlassian.net/browse/BP-1545): Remove old Alerts implementation
