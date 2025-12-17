@@ -11,7 +11,6 @@ from __future__ import annotations
 from typing import Dict, List, Set, cast
 from datetime import datetime
 
-from movai_core_shared import Log
 from movai_core_shared.common.utils import create_principal_name
 from movai_core_shared.exceptions import (
     InvalidStructure,
@@ -29,8 +28,6 @@ from dal.models.acl import NewACLManager
 from dal.models.acl import ResourceType, ApplicationsType
 from dal.scopes.application import Application
 from dal.scopes.translation import DEFAULT_LANGUAGE
-
-LOGGER = Log.get_logger("dal.models.baseuser")
 
 
 class BaseUser(Model):
@@ -589,7 +586,6 @@ class BaseUser(Model):
         self,
         resource_name: str,
         permission_name: str,
-        object_name: str = "",
         skip_superuser: bool = False,
     ) -> bool:
         """Check user permission to a specific resource.
@@ -606,20 +602,6 @@ class BaseUser(Model):
             bool: True if the user has permission, False otherwise.
         """
         if not skip_superuser and self.super_user:
-            return True
-
-        # Allow users to access their own InternalUser resource
-        if (
-            resource_name == "InternalUser"
-            and object_name == f"{self.account_name}@{self.domain_name}"
-            and permission_name != "delete"
-        ):
-            LOGGER.info(
-                "User %s accessing own InternalUser resource: %s: allowing %s permission.",
-                self.account_name,
-                object_name,
-                permission_name,
-            )
             return True
 
         try:
