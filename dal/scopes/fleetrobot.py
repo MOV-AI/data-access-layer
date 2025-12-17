@@ -22,6 +22,7 @@ from movai_core_shared.envvars import (
     SPAWNER_BIND_ADDR,
     MESSAGE_SERVER_PORT,
 )
+from movai_core_shared.exceptions import RobotRunning
 from movai_core_shared.logger import Log
 
 
@@ -276,7 +277,7 @@ class FleetRobot(Scope):
         if robot.is_manager():
             raise ValueError("Cannot remove the manager robot")
         if not force and robot.ping():
-            raise Exception(
+            raise RobotRunning(
                 f"Robot {robot_id} is running. Use force=True if you stil want to remove it"
             )
 
