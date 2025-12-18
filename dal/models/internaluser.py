@@ -18,6 +18,7 @@ from dal.models.model import Model
 from dal.models.baseuser import BaseUser
 from dal.models.user import User
 from dal.scopes.translation import DEFAULT_LANGUAGE
+from dal.scopes.callback import Callback
 
 LOGGER = Log.get_logger("dal.models.internaluser")
 
@@ -287,7 +288,7 @@ class InternalUser(BaseUser):
 
         # Check callback execute permission
         if resource_name == ResourceType.Callback.value and permission_name == EXECUTE_PERMISSION:
-            return self._has_permission_callback_execute(callback_name=object_name)
+            return Callback.user_can_execute(self, callback_name=object_name)
 
         # Allow users to access their own InternalUser resource
         if (
