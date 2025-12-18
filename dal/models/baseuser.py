@@ -586,7 +586,7 @@ class BaseUser(Model):
         self,
         resource_name: str,
         permission_name: str,
-        _: str = "",  # For API consistency with other has_permission methods
+        object_name: str = "",
         skip_superuser: bool = False,
     ) -> bool:
         """Check user permission to a specific resource.
@@ -605,6 +605,10 @@ class BaseUser(Model):
         if not skip_superuser and self.super_user:
             return True
 
+        # Check callback execute permission
+        if resource_name == ResourceType.Callback.value and permission_name == EXECUTE_PERMISSION:
+            return self._has_permission_callback_execute(callback_name=object_name)
+
         try:
             self.set_acl()
             for role_name in self.roles:
@@ -615,7 +619,7 @@ class BaseUser(Model):
             self.log.debug(e)
             return False
 
-    def has_permission_callback_execute(self, callback_name: str) -> bool:
+    def _has_permission_callback_execute(self, callback_name: str) -> bool:
         """Check if user has permission to execute a callback.
 
         TODO Added because frontend apps execute callbacks, remove after migration to endpoints

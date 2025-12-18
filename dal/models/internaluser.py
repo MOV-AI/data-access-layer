@@ -13,6 +13,7 @@ from movai_core_shared.exceptions import PasswordError, PasswordComplexityError
 from movai_core_shared import Log
 from movai_core_shared.consts import DELETE_PERMISSION, EXECUTE_PERMISSION
 
+from dal.models.acl import ResourceType
 from dal.models.model import Model
 from dal.models.baseuser import BaseUser
 from dal.models.user import User
@@ -283,6 +284,10 @@ class InternalUser(BaseUser):
         """
         if not skip_superuser and self.super_user:
             return True
+
+        # Check callback execute permission
+        if resource_name == ResourceType.Callback.value and permission_name == EXECUTE_PERMISSION:
+            return self._has_permission_callback_execute(callback_name=object_name)
 
         # Allow users to access their own InternalUser resource
         if (
