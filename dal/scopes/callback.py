@@ -17,6 +17,8 @@ import pydoc
 import importlib
 from dal.movaidb import MovaiDB
 from dal.scopes.scope import Scope
+from dal.scopes.application import Application
+from dal.models.acl import ResourceType, ApplicationsType
 
 
 class Callback(Scope):
@@ -43,18 +45,6 @@ class Callback(Scope):
             TODO Remove after migration to endpoints - this exists because
             frontend apps execute callbacks directly.
         """
-        from movai_core_shared.consts import EXECUTE_PERMISSION
-        from dal.models.acl import ResourceType, ApplicationsType
-        from dal.scopes.application import Application
-
-        # Check general Callback execute permission via ACL directly
-        try:
-            user.set_acl()
-            for role_name in user.roles:
-                if user._acl.check(role_name, ResourceType.Callback.value, EXECUTE_PERMISSION):
-                    return True
-        except Exception as e:
-            user.log.debug(e)
 
         # Allow running callbacks from allowed applications
         for app_name in [app.value for app in ApplicationsType]:

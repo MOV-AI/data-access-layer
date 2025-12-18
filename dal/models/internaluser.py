@@ -286,10 +286,6 @@ class InternalUser(BaseUser):
         if not skip_superuser and self.super_user:
             return True
 
-        # Check callback execute permission
-        if resource_name == ResourceType.Callback.value and permission_name == EXECUTE_PERMISSION:
-            return Callback.user_can_execute(self, callback_name=object_name)
-
         # Allow users to access their own InternalUser resource
         if (
             resource_name == "InternalUser"
@@ -309,6 +305,14 @@ class InternalUser(BaseUser):
             for role_name in self.roles:
                 if self._acl.check(role_name, resource_name, permission_name):
                     return True
+
+            # Check callback execute permission
+            if (
+                resource_name == ResourceType.Callback.value
+                and permission_name == EXECUTE_PERMISSION
+            ):
+                return Callback.user_can_execute(self, callback_name=object_name)
+
             return False
         except Exception as e:
             self.log.debug(e)
