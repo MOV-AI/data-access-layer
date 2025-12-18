@@ -625,8 +625,14 @@ class BaseUser(Model):
         TODO Added because frontend apps execute callbacks, remove after migration to endpoints
 
         """
-        if self.has_permission(ResourceType.Callback.value, EXECUTE_PERMISSION):
-            return True
+        # Check general Callback execute permission via ACL directly to avoid recursion
+        try:
+            self.set_acl()
+            for role_name in self.roles:
+                if self._acl.check(role_name, ResourceType.Callback.value, EXECUTE_PERMISSION):
+                    return True
+        except Exception as e:
+            self.log.debug(e)
 
         # allow to run callbacks from allowed applications
         for app_name in [app.value for app in ApplicationsType]:
