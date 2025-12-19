@@ -25,6 +25,11 @@ The available permissions are:
 .. note::
     Not all permissions are available for all resources.
 
+    For specific resource permissions, see :ref:`BaseUser.has_permission<dal.models.baseuser module>`.
+
+    In the case of InternalUser, the permission check is done in :ref:`InternalUser.user_can_edit_internaluser<dal.models.internaluser module>`.
+    This allows for specific overrides for InternalUser permissions when it comes to the InternalUser accessing its own data.
+
 Resources
 ---------
 
