@@ -1,3 +1,6 @@
+# vTBD
+- [BP-1420](https://movai.atlassian.net/browse/BP-1420): Skip removal of Package:maps and Package:point_clouds on import
+
 # v3.16.0
 - [BP-1471](https://movai.atlassian.net/browse/BP-1471): Create API to remove robot (Migrate old remove robot API)
   - Change FleetRobot.remove_entry vague exceptions to more specific ones
