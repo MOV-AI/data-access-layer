@@ -802,7 +802,6 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.baseuser.BaseUser.get_user_by_principal_name"><code class="docutils literal notranslate"><span class="pre">BaseUser.get_user_by_principal_name()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.baseuser.BaseUser.has_any_user_with_role"><code class="docutils literal notranslate"><span class="pre">BaseUser.has_any_user_with_role()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.baseuser.BaseUser.has_permission"><code class="docutils literal notranslate"><span class="pre">BaseUser.has_permission()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.baseuser.BaseUser.has_permission_callback_execute"><code class="docutils literal notranslate"><span class="pre">BaseUser.has_permission_callback_execute()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.baseuser.BaseUser.has_scope_permission"><code class="docutils literal notranslate"><span class="pre">BaseUser.has_scope_permission()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.baseuser.BaseUser.is_exist"><code class="docutils literal notranslate"><span class="pre">BaseUser.is_exist()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.baseuser.BaseUser.language"><code class="docutils literal notranslate"><span class="pre">BaseUser.language</span></code></a></li>
@@ -820,6 +819,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.baseuser.BaseUser.super_user"><code class="docutils literal notranslate"><span class="pre">BaseUser.super_user</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.baseuser.BaseUser.update"><code class="docutils literal notranslate"><span class="pre">BaseUser.update()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.baseuser.BaseUser.update_keys"><code class="docutils literal notranslate"><span class="pre">BaseUser.update_keys</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.baseuser.BaseUser.user_can_edit_internaluser"><code class="docutils literal notranslate"><span class="pre">BaseUser.user_can_edit_internaluser()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.baseuser.BaseUser.user_type"><code class="docutils literal notranslate"><span class="pre">BaseUser.user_type</span></code></a></li>
 </ul>
 </li>
@@ -936,6 +936,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.internaluser.InternalUser.remove"><code class="docutils literal notranslate"><span class="pre">InternalUser.remove()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.internaluser.InternalUser.reset_password"><code class="docutils literal notranslate"><span class="pre">InternalUser.reset_password()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.internaluser.InternalUser.secure"><code class="docutils literal notranslate"><span class="pre">InternalUser.secure</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.internaluser.InternalUser.user_can_edit_internaluser"><code class="docutils literal notranslate"><span class="pre">InternalUser.user_can_edit_internaluser()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.internaluser.InternalUser.verify_password"><code class="docutils literal notranslate"><span class="pre">InternalUser.verify_password()</span></code></a></li>
 </ul>
 </li>
@@ -1288,7 +1289,6 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.BaseUser.get_user_by_principal_name"><code class="docutils literal notranslate"><span class="pre">BaseUser.get_user_by_principal_name()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.BaseUser.has_any_user_with_role"><code class="docutils literal notranslate"><span class="pre">BaseUser.has_any_user_with_role()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.BaseUser.has_permission"><code class="docutils literal notranslate"><span class="pre">BaseUser.has_permission()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.BaseUser.has_permission_callback_execute"><code class="docutils literal notranslate"><span class="pre">BaseUser.has_permission_callback_execute()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.BaseUser.has_scope_permission"><code class="docutils literal notranslate"><span class="pre">BaseUser.has_scope_permission()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.BaseUser.is_exist"><code class="docutils literal notranslate"><span class="pre">BaseUser.is_exist()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.BaseUser.language"><code class="docutils literal notranslate"><span class="pre">BaseUser.language</span></code></a></li>
@@ -1306,6 +1306,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.BaseUser.super_user"><code class="docutils literal notranslate"><span class="pre">BaseUser.super_user</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.BaseUser.update"><code class="docutils literal notranslate"><span class="pre">BaseUser.update()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.BaseUser.update_keys"><code class="docutils literal notranslate"><span class="pre">BaseUser.update_keys</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.BaseUser.user_can_edit_internaluser"><code class="docutils literal notranslate"><span class="pre">BaseUser.user_can_edit_internaluser()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.BaseUser.user_type"><code class="docutils literal notranslate"><span class="pre">BaseUser.user_type</span></code></a></li>
 </ul>
 </li>
@@ -1385,6 +1386,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.InternalUser.remove"><code class="docutils literal notranslate"><span class="pre">InternalUser.remove()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.InternalUser.reset_password"><code class="docutils literal notranslate"><span class="pre">InternalUser.reset_password()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.InternalUser.secure"><code class="docutils literal notranslate"><span class="pre">InternalUser.secure</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.InternalUser.user_can_edit_internaluser"><code class="docutils literal notranslate"><span class="pre">InternalUser.user_can_edit_internaluser()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.models.html#dal.models.InternalUser.verify_password"><code class="docutils literal notranslate"><span class="pre">InternalUser.verify_password()</span></code></a></li>
 </ul>
 </li>
@@ -1846,6 +1848,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.callback.Callback.remove"><code class="docutils literal notranslate"><span class="pre">Callback.remove()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.callback.Callback.scope"><code class="docutils literal notranslate"><span class="pre">Callback.scope</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.callback.Callback.template_depends"><code class="docutils literal notranslate"><span class="pre">Callback.template_depends()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.callback.Callback.user_can_execute"><code class="docutils literal notranslate"><span class="pre">Callback.user_can_execute()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -2202,6 +2205,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Callback.remove"><code class="docutils literal notranslate"><span class="pre">Callback.remove()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Callback.scope"><code class="docutils literal notranslate"><span class="pre">Callback.scope</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Callback.template_depends"><code class="docutils literal notranslate"><span class="pre">Callback.template_depends()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Callback.user_can_execute"><code class="docutils literal notranslate"><span class="pre">Callback.user_can_execute()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.Config"><code class="docutils literal notranslate"><span class="pre">Config</span></code></a></li>

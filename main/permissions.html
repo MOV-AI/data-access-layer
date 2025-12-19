@@ -115,6 +115,9 @@
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Not all permissions are available for all resources.</p>
+<p>For specific resource permissions, see <a class="reference internal" href="dal.models.html#module-dal.models.baseuser"><span class="std std-ref">BaseUser.has_permission</span></a>.</p>
+<p>In the case of InternalUser, the permission check is done in <a class="reference internal" href="dal.models.html#module-dal.models.internaluser"><span class="std std-ref">InternalUser.user_can_edit_internaluser</span></a>.
+This allows for specific overrides for InternalUser permissions when it comes to the InternalUser accessing its own data.</p>
 </div>
 </section>
 <section id="resources">

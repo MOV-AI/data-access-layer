@@ -1005,7 +1005,7 @@ role_name (str): the name of the role being searched.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.models.baseuser.BaseUser.has_permission">
-<span class="sig-name descname"><span class="pre">has_permission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permission_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_superuser</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.models.baseuser.BaseUser.has_permission" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">has_permission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permission_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_superuser</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.models.baseuser.BaseUser.has_permission" title="Permalink to this definition"></a></dt>
 <dd><p>Check user permission to a specific resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1025,13 +1025,6 @@ attribute or not. Defaults to False.</p></li>
 <dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.models.baseuser.BaseUser.has_permission_callback_execute">
-<span class="sig-name descname"><span class="pre">has_permission_callback_execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.models.baseuser.BaseUser.has_permission_callback_execute" title="Permalink to this definition"></a></dt>
-<dd><p>Check if user has permission to execute a callback.</p>
-<p>TODO Added because frontend apps execute callbacks, remove after migration to endpoints</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1255,6 +1248,13 @@ needs an update.</p>
 <dt class="sig sig-object py" id="dal.models.baseuser.BaseUser.update_keys">
 <span class="sig-name descname"><span class="pre">update_keys</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'CommonName',</span> <span class="pre">'Email',</span> <span class="pre">'Language',</span> <span class="pre">'ReadOnly',</span> <span class="pre">'Roles',</span> <span class="pre">'SendReport',</span> <span class="pre">'SuperUser'}</span></em><a class="headerlink" href="#dal.models.baseuser.BaseUser.update_keys" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.models.baseuser.BaseUser.user_can_edit_internaluser">
+<span class="sig-name descname"><span class="pre">user_can_edit_internaluser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.models.baseuser.BaseUser.user_can_edit_internaluser" title="Permalink to this definition"></a></dt>
+<dd><p>Checks if the user can edit the given object.</p>
+<p>False by default, can be overridden in subclasses.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="dal.models.baseuser.BaseUser.user_type">
@@ -1880,6 +1880,24 @@ PasswordComplexityError - if new password does not comply complexity</p>
 <dt class="sig sig-object py" id="dal.models.internaluser.InternalUser.secure">
 <span class="sig-name descname"><span class="pre">secure</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;movai_core_shared.core.securepassword.SecurePassword</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#dal.models.internaluser.InternalUser.secure" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.models.internaluser.InternalUser.user_can_edit_internaluser">
+<span class="sig-name descname"><span class="pre">user_can_edit_internaluser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.models.internaluser.InternalUser.user_can_edit_internaluser" title="Permalink to this definition"></a></dt>
+<dd><p>Checks if the user can edit the given object.</p>
+<p>Users can edit their own InternalUser object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>object_name</strong> (<em>str</em>) – The name of the object to check.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the user can edit the object, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.models.internaluser.InternalUser.verify_password">
@@ -4390,7 +4408,7 @@ role_name (str): the name of the role being searched.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.models.BaseUser.has_permission">
-<span class="sig-name descname"><span class="pre">has_permission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permission_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_superuser</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.models.BaseUser.has_permission" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">has_permission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resource_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permission_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_superuser</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.models.BaseUser.has_permission" title="Permalink to this definition"></a></dt>
 <dd><p>Check user permission to a specific resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -4410,13 +4428,6 @@ attribute or not. Defaults to False.</p></li>
 <dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.models.BaseUser.has_permission_callback_execute">
-<span class="sig-name descname"><span class="pre">has_permission_callback_execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.models.BaseUser.has_permission_callback_execute" title="Permalink to this definition"></a></dt>
-<dd><p>Check if user has permission to execute a callback.</p>
-<p>TODO Added because frontend apps execute callbacks, remove after migration to endpoints</p>
 </dd></dl>
 
 <dl class="py method">
@@ -4640,6 +4651,13 @@ needs an update.</p>
 <dt class="sig sig-object py" id="dal.models.BaseUser.update_keys">
 <span class="sig-name descname"><span class="pre">update_keys</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'CommonName',</span> <span class="pre">'Email',</span> <span class="pre">'Language',</span> <span class="pre">'ReadOnly',</span> <span class="pre">'Roles',</span> <span class="pre">'SendReport',</span> <span class="pre">'SuperUser'}</span></em><a class="headerlink" href="#dal.models.BaseUser.update_keys" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.models.BaseUser.user_can_edit_internaluser">
+<span class="sig-name descname"><span class="pre">user_can_edit_internaluser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.models.BaseUser.user_can_edit_internaluser" title="Permalink to this definition"></a></dt>
+<dd><p>Checks if the user can edit the given object.</p>
+<p>False by default, can be overridden in subclasses.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="dal.models.BaseUser.user_type">
@@ -5150,6 +5168,24 @@ PasswordComplexityError - if new password does not comply complexity</p>
 <dt class="sig sig-object py" id="dal.models.InternalUser.secure">
 <span class="sig-name descname"><span class="pre">secure</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;movai_core_shared.core.securepassword.SecurePassword</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#dal.models.InternalUser.secure" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.models.InternalUser.user_can_edit_internaluser">
+<span class="sig-name descname"><span class="pre">user_can_edit_internaluser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.models.InternalUser.user_can_edit_internaluser" title="Permalink to this definition"></a></dt>
+<dd><p>Checks if the user can edit the given object.</p>
+<p>Users can edit their own InternalUser object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>object_name</strong> (<em>str</em>) – The name of the object to check.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the user can edit the object, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.models.InternalUser.verify_password">
