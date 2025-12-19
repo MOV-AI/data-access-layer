@@ -1,3 +1,9 @@
+# vTBD
+- [BP-1548](https://movai.atlassian.net/browse/BP-1548): Await check_permissions
+  - InternalUser has permission to CREATE, READ, UPDATE, and RESET itself (but not DELETE or EXECUTE)
+  -  Move extra callback execution permission check to Callback Scope
+  - Add user permission tests.
+
 # v3.16.0
 - [BP-1471](https://movai.atlassian.net/browse/BP-1471): Create API to remove robot (Migrate old remove robot API)
   - Change FleetRobot.remove_entry vague exceptions to more specific ones

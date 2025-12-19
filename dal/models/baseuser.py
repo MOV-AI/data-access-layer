@@ -20,13 +20,13 @@ from movai_core_shared.exceptions import (
 )
 from movai_core_shared.consts import (
     EXECUTE_PERMISSION,
+    UPDATE_PERMISSION,
 )
 
 from dal.models.scopestree import ScopesTree, scopes
 from dal.models.model import Model
 from dal.models.acl import NewACLManager
-from dal.models.acl import ResourceType, ApplicationsType
-from dal.scopes.application import Application
+from dal.models.acl import ResourceType
 from dal.scopes.translation import DEFAULT_LANGUAGE
 
 
@@ -583,7 +583,11 @@ class BaseUser(Model):
         return True
 
     def has_permission(
-        self, resource_name: str, permission_name: str, skip_superuser: bool = False
+        self,
+        resource_name: str,
+        permission_name: str,
+        object_name: str = "",
+        skip_superuser: bool = False,
     ) -> bool:
         """Check user permission to a specific resource.
 
@@ -606,25 +610,33 @@ class BaseUser(Model):
             for role_name in self.roles:
                 if self._acl.check(role_name, resource_name, permission_name):
                     return True
-            return False
+
+            # Allow users to access their own InternalUser resource
+            if (
+                resource_name == ResourceType.InternalUser.value
+                and permission_name == UPDATE_PERMISSION
+            ):
+                return self.user_can_edit_internaluser(object_name)
+
+            # Check callback execute permission
+            if (
+                resource_name == ResourceType.Callback.value
+                and permission_name == EXECUTE_PERMISSION
+            ):
+                # Import here to avoid circular import
+                from dal.scopes.callback import Callback
+
+                return Callback.user_can_execute(user=self, callback_name=object_name)
+
         except Exception as e:
             self.log.debug(e)
-            return False
 
-    def has_permission_callback_execute(self, callback_name: str) -> bool:
-        """Check if user has permission to execute a callback.
+        return False
 
-        TODO Added because frontend apps execute callbacks, remove after migration to endpoints
-
+    def user_can_edit_internaluser(self, _: str) -> bool:
         """
-        if self.has_permission(ResourceType.Callback.value, EXECUTE_PERMISSION):
-            return True
+        Checks if the user can edit the given object.
 
-        # allow to run callbacks from allowed applications
-        for app_name in [app.value for app in ApplicationsType]:
-            if self.has_permission(ResourceType.Applications.value, app_name):
-                ca = Application(name=app_name)
-                if ca.Callbacks and callback_name in ca.Callbacks:
-                    return True
-
+        False by default, can be overridden in subclasses.
+        """
         return False
