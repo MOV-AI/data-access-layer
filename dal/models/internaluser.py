@@ -10,17 +10,11 @@ from movai_core_shared.core.securepassword import SecurePassword
 from movai_core_shared.envvars import DEFAULT_ROLE_NAME
 from movai_core_shared.consts import INTERNAL_DOMAIN
 from movai_core_shared.exceptions import PasswordError, PasswordComplexityError
-from movai_core_shared import Log
-from movai_core_shared.consts import DELETE_PERMISSION, EXECUTE_PERMISSION
 
-from dal.models.acl import ResourceType
 from dal.models.model import Model
 from dal.models.baseuser import BaseUser
 from dal.models.user import User
 from dal.scopes.translation import DEFAULT_LANGUAGE
-from dal.scopes.callback import Callback
-
-LOGGER = Log.get_logger("dal.models.internaluser")
 
 
 class InternalUser(BaseUser):
@@ -261,62 +255,21 @@ class InternalUser(BaseUser):
         self._validate_password_has_changed(current_password, new_password)
         self.reset_password(new_password, confirm_password)
 
-    def has_permission(
-        self,
-        resource_name: str,
-        permission_name: str,
-        object_name: str = "",
-        skip_superuser: bool = False,
-    ) -> bool:
-        """Check user permission to a specific resource.
+    def user_can_edit_internaluser(self, object_name: str) -> bool:
+        """Checks if the user can edit the given object.
+
+        Users can edit their own InternalUser object.
 
         Args:
-            resource_name (str): The name of the resource (capitalize as class
-                name e.g: Flow, RemoteUser...)
-            permission_name (str): the name of the permission (example: read,
-                update)
-            object_name (str, optional): the name of the object to check
-                permission against. Defaults to "".
-            skip_superuser (bool, optional): whether to ignore the superuser
-                attribute or not. Defaults to False.
+            object_name (str): The name of the object to check.
 
         Returns:
-            bool: True if the user has permission, False otherwise.
+            bool: True if the user can edit the object, False otherwise.
+
         """
-        if not skip_superuser and self.super_user:
+        if object_name == f"{self.account_name}@{self.domain_name}":
             return True
-
-        # Allow users to access their own InternalUser resource
-        if (
-            resource_name == "InternalUser"
-            and object_name == f"{self.account_name}@{self.domain_name}"
-            and permission_name not in (DELETE_PERMISSION, EXECUTE_PERMISSION)
-        ):
-            LOGGER.info(
-                "User %s accessing own InternalUser resource: %s: allowing %s permission.",
-                self.account_name,
-                object_name,
-                permission_name,
-            )
-            return True
-
-        try:
-            self.set_acl()
-            for role_name in self.roles:
-                if self._acl.check(role_name, resource_name, permission_name):
-                    return True
-
-            # Check callback execute permission
-            if (
-                resource_name == ResourceType.Callback.value
-                and permission_name == EXECUTE_PERMISSION
-            ):
-                return Callback.user_can_execute(self, callback_name=object_name)
-
-            return False
-        except Exception as e:
-            self.log.debug(e)
-            return False
+        return False
 
 
 Model.register_model_class("InternalUser", InternalUser)

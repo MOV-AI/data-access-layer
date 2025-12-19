@@ -439,8 +439,8 @@ class TestUserPermissions:
         )
         # InternalUser should have all permissions on itself
         for permission in USER_PERMISSIONS:
-            if permission == DELETE_PERMISSION:
-                # InternalUser should not have delete permission on itself
+            if permission != UPDATE_PERMISSION:
+                # InternalUser should only have special UPDATE permission on itself
                 assert (
                     internal_user.has_permission(
                         "InternalUser", permission, "self_permission_user@internal"

@@ -20,6 +20,7 @@ from movai_core_shared.exceptions import (
 )
 from movai_core_shared.consts import (
     EXECUTE_PERMISSION,
+    UPDATE_PERMISSION,
 )
 
 from dal.models.scopestree import ScopesTree, scopes
@@ -27,7 +28,6 @@ from dal.models.model import Model
 from dal.models.acl import NewACLManager
 from dal.models.acl import ResourceType
 from dal.scopes.translation import DEFAULT_LANGUAGE
-from dal.scopes.callback import Callback
 
 
 class BaseUser(Model):
@@ -611,14 +611,32 @@ class BaseUser(Model):
                 if self._acl.check(role_name, resource_name, permission_name):
                     return True
 
+            # Allow users to access their own InternalUser resource
+            if (
+                resource_name == ResourceType.InternalUser.value
+                and permission_name == UPDATE_PERMISSION
+            ):
+                return self.user_can_edit_internaluser(object_name)
+
             # Check callback execute permission
             if (
                 resource_name == ResourceType.Callback.value
                 and permission_name == EXECUTE_PERMISSION
             ):
+                # Import here to avoid circular import
+                from dal.scopes.callback import Callback
+
                 return Callback.user_can_execute(user=self, callback_name=object_name)
 
-            return False
         except Exception as e:
             self.log.debug(e)
-            return False
+
+        return False
+
+    def user_can_edit_internaluser(self, _: str) -> bool:
+        """
+        Checks if the user can edit the given object.
+
+        False by default, can be overridden in subclasses.
+        """
+        return False
