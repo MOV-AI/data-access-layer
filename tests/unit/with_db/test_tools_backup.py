@@ -148,3 +148,41 @@ class TestToolsBackup:
             "Failed to import Translation:delete_me - Invalid data for scope Translation"
             in captured.out
         )
+
+    def test_import_package(self, global_db, metadata_folder, metadata2_folder):
+        """Test import from package file."""
+        from dal.tools.backup import Importer
+        from dal.scopes.package import Package
+
+        importer1 = Importer(
+            metadata_folder,
+            force=True,
+            dry=False,
+            debug=False,
+            recursive=False,
+            clean_old_data=True,
+        )
+
+        importer2 = Importer(
+            metadata2_folder,
+            force=True,
+            dry=False,
+            debug=False,
+            recursive=False,
+            clean_old_data=True,
+        )
+
+        # import delete_me
+        data = {"Package": ["maps"]}
+        importer1.run(data)
+        maps = Package("maps")
+        assert set(maps.File.keys()) == {"delete_me.png", "delete_me.yaml"}
+
+        # import delete_me2
+        importer2.run(data)
+        assert set(maps.File.keys()) == {
+            "delete_me.png",
+            "delete_me.yaml",
+            "delete_me2.png",
+            "delete_me2.yaml",
+        }
