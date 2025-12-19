@@ -17,7 +17,7 @@ from os import getenv, path
 from re import split
 from typing import Any, Dict, Generator, List, Optional, Protocol, Tuple, Union
 
-import aioredis
+from redis import asyncio as aioredis
 import dal
 import redis
 from deepdiff import DeepDiff
@@ -183,21 +183,21 @@ class AioRedisClient(metaclass=Singleton):
                     _conn = getattr(self, conn_name, None)
                     if not _conn or _conn.closed:
                         try:
-                            address = (conn_config["host"], conn_config["port"])
                             if conn_config.get("mode") == "SUB":
-                                _conn = await aioredis.create_pool(
-                                    address,
-                                    minsize=1,
-                                    maxsize=100,
-                                    pool_cls=aioredis.ConnectionsPool,
+                                _conn = aioredis.ConnectionPool(
+                                    max_connections=3,
+                                    host=conn_config["host"],
+                                    port=conn_config["port"],
+                                    socket_timeout=1,
+                                    socket_connect_timeout=1,
                                 )
                             else:
-                                _conn = await aioredis.create_redis_pool(
-                                    address,
-                                    minsize=2,
-                                    maxsize=100,
-                                    timeout=1,
-                                    pool_cls=aioredis.ConnectionsPool,
+                                _conn = aioredis.ConnectionPool(
+                                    max_connections=3,
+                                    host=conn_config["host"],
+                                    port=conn_config["port"],
+                                    socket_timeout=1,
+                                    socket_connect_timeout=1,
                                 )
 
                         except Exception as e:

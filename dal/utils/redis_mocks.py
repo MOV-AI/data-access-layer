@@ -7,7 +7,7 @@ from typing import Any, Callable, Dict, List, Optional, Type
 from unittest.mock import _patch, _get_target
 
 import redis
-import aioredis
+from redis import asyncio as aioredis
 
 
 # Set to True if you want to record real interactions with Redis
