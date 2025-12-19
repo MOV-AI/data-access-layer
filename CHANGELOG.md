@@ -1,4 +1,4 @@
-# vTBD
+# v3.16.1
 - [BP-1548](https://movai.atlassian.net/browse/BP-1548): Await check_permissions
   - InternalUser has permission to CREATE, READ, UPDATE, and RESET itself (but not DELETE or EXECUTE)
   -  Move extra callback execution permission check to Callback Scope
