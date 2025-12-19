@@ -150,7 +150,7 @@ class TestToolsBackup:
         )
 
     def test_import_package(self, global_db, metadata_folder, metadata2_folder):
-        """Test import from package file."""
+        """Test that consecutive imports merge package contents correctly."""
         from dal.tools.backup import Importer
         from dal.scopes.package import Package
 
