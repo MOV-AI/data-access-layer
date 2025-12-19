@@ -173,6 +173,10 @@ class Backup:
 class Importer(Backup):
     """Imports project data to the database."""
 
+    # we always skip deleting Package contents
+    # because its the only scope that does not reference exact files
+    SKIP_SCOPE_DELETE = ["Package"]
+
     def __init__(
         self,
         project,
@@ -342,7 +346,14 @@ class Importer(Backup):
         return self._get_files(scope, names, build, get_match)
 
     def _import_data(self, scope, name, data):  # pylint: disable=method-hidden
-        """Imports data to the database."""
+        """Imports data to the database.
+
+        Args:
+            scope (str): Scope of the data.
+            name (str): Name of the data.
+            data (dict): Data to import.
+
+        """
         try:
             ScopeClass = Factory.get_class(scope)
             ScopeClass.validate_format(scope, data[scope][name])
@@ -357,7 +368,7 @@ class Importer(Backup):
             return
 
         # remove unwanted keys
-        if self._delete:
+        if self._delete and scope not in self.SKIP_SCOPE_DELETE:
             try:
                 del data[scope][name]["_schema_version"]
             except KeyError:
@@ -372,6 +383,7 @@ class Importer(Backup):
                 self._db.delete_by_args(scope, Name=obj.name)
             except Exception:
                 pass
+
         try:
             self._db.set(data)
             self.set_imported(scope, name)
