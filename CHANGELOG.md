@@ -1,4 +1,4 @@
-# vTBD
+# v3.16.2
 - [BP-1420](https://movai.atlassian.net/browse/BP-1420): Skip removal of Package:maps and Package:point_clouds on import
 
 # v3.16.1
