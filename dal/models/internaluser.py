@@ -255,5 +255,21 @@ class InternalUser(BaseUser):
         self._validate_password_has_changed(current_password, new_password)
         self.reset_password(new_password, confirm_password)
 
+    def user_can_edit_internaluser(self, object_name: str) -> bool:
+        """Checks if the user can edit the given object.
+
+        Users can edit their own InternalUser object.
+
+        Args:
+            object_name (str): The name of the object to check.
+
+        Returns:
+            bool: True if the user can edit the object, False otherwise.
+
+        """
+        if object_name == f"{self.account_name}@{self.domain_name}":
+            return True
+        return False
+
 
 Model.register_model_class("InternalUser", InternalUser)

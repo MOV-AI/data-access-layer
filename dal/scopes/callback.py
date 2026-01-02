@@ -17,6 +17,8 @@ import pydoc
 import importlib
 from dal.movaidb import MovaiDB
 from dal.scopes.scope import Scope
+from dal.scopes.application import Application
+from dal.models.acl import ResourceType, ApplicationsType
 
 
 class Callback(Scope):
@@ -27,6 +29,34 @@ class Callback(Scope):
 
     def __init__(self, name, version="latest", new=False, db="global"):
         super().__init__(scope="Callback", name=name, version=version, new=new, db=db)
+
+    @staticmethod
+    def user_can_execute(user, callback_name: str = "") -> bool:
+        """Check if user has permission to execute a callback.
+
+        Args:
+            user (BaseUser): The user object to check permissions for.
+            callback_name (str): Optional specific callback name to check
+
+        Returns:
+            bool: True if user can execute the callback, False otherwise
+
+        Note:
+            TODO Remove after migration to endpoints - this exists because
+            frontend apps execute callbacks directly.
+        """
+
+        # Allow running callbacks from allowed applications
+        for app_name in [app.value for app in ApplicationsType]:
+            if user.has_permission(ResourceType.Applications.value, app_name):
+                try:
+                    ca = Application(name=app_name)
+                    if ca.Callbacks and callback_name in ca.Callbacks:
+                        return True
+                except Exception:
+                    continue
+
+        return False
 
     def is_valid(self):
         # what is in db is valid to run
