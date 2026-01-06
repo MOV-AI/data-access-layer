@@ -337,6 +337,90 @@ class Node(Scope):
 
         return node_inst_ref_keys
 
+    def node_inst_depends_recursive(self) -> list:
+        """Search Flows for NodeInstances, including indirect usages through subflows.
+
+        Returns:
+            list: List of dicts with structure:
+                  - Direct usage: {"flow": str, "NodeInst": str, "direct": True}
+                  - Indirect usage: {"flow": str, "direct": False, "path": List[str]}
+                  where path shows the chain from the top-level flow to the flow containing this node
+        """
+        # Check if Node has instances on existing Flows
+        flows = self.movaidb.get({"Flow": {"*": {"NodeInst": "*"}}})
+
+        if not flows or flows.get("Flow") is None or len(flows.get("Flow")) == 0:
+            return []
+
+        # Find direct usages with NodeInst names
+        direct_flows = {}  # {flow_name: node_inst_name}
+
+        for flow_name, node_insts in flows.get("Flow").items():
+            for node_inst_name, params in node_insts.get("NodeInst").items():
+                if params.get("Template") == self.name:
+                    if flow_name not in direct_flows:
+                        direct_flows[flow_name] = node_inst_name
+                    break
+
+        result = []
+
+        # Add direct usages with NodeInst names (without path - it's redundant for direct usages)
+        for flow_name, node_inst_name in direct_flows.items():
+            result.append({"flow": flow_name, "NodeInst": node_inst_name, "direct": True})
+
+        # Find indirect usages by checking which flows use our direct flows as subflows
+        all_flows = self.movaidb.get({"Flow": {"*": {"Container": "*"}}})
+        if all_flows and all_flows.get("Flow"):
+            # Track which (flow, path) combinations we've already added to avoid duplicates
+            visited_paths = set()
+
+            def find_parents(flow_name: str, node_inst_name: str, current_path: list):
+                for parent_flow, containers in all_flows.get("Flow", {}).items():
+                    for parent_container, params in containers.get("Container", {}).items():
+                        if params.get("ContainerFlow") == flow_name:
+                            new_path = [
+                                {"flow": parent_flow, "Container": parent_container}
+                            ] + current_path
+                            path_key = (
+                                parent_flow,
+                                parent_container,
+                                tuple((p["flow"], p["Container"]) for p in new_path),
+                            )
+
+                            # Only add if we haven't seen this exact path before
+                            if path_key not in visited_paths:
+                                visited_paths.add(path_key)
+
+                                # Add as indirect usage (even if it's also a direct usage)
+                                # A flow can contain a node directly AND contain it indirectly via a subflow
+                                result.append(
+                                    {
+                                        "flow": parent_flow,
+                                        "NodeInst": node_inst_name,
+                                        "direct": False,
+                                        "path": new_path,
+                                    }
+                                )
+
+                                # Continue recursing to find higher-level parents
+                                find_parents(parent_flow, node_inst_name, new_path)
+                            break
+
+            for flow_name, node_inst_name in direct_flows.items():
+                find_parents(
+                    flow_name,
+                    node_inst_name,
+                    [{"flow": flow_name, "Container": node_inst_name}],
+                )
+
+        for i in range(len(result)):
+            if "path" in result[i]:
+                container = result[i]["path"][-1].pop("Container", None)
+                if container:
+                    result[i]["path"][-1]["NodeInst"] = container
+
+        return result
+
     def port_inst_depends(self, port_name: str) -> list:
         """Loop through NodeInst's Links and return list with matching links dict_keys"""
 

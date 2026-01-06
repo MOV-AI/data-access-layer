@@ -905,6 +905,98 @@ class Flow(Scope):
         except AttributeError as error:
             LOGGER.error(error)
 
+    def subflow_inst_depends(self) -> list:
+        """Search Flows for Container instances that use this flow as a subflow.
+
+        Returns:
+            list: List of dicts with flow and container instance information
+                  [{"flow": str, "Container": str}, ...]
+        """
+        # Check if this Flow is used as a Container in other Flows
+        flows = self.movaidb.get({"Flow": {"*": {"Container": "*"}}})
+        parent_flows = []
+
+        if not flows or flows.get("Flow") is None or len(flows.get("Flow")) == 0:
+            return parent_flows
+
+        for flow_name, containers in flows.get("Flow").items():
+            for container_name, params in containers.get("Container", {}).items():
+                if params.get("ContainerFlow") == self.name:
+                    parent_flows.append({"flow": flow_name, "Container": container_name})
+
+        return parent_flows
+
+    def subflow_inst_depends_recursive(self) -> list:
+        """Search Flows for Container instances that use this flow as a subflow, including indirect usages.
+
+        Returns:
+            list: List of dicts with structure:
+                  - Direct usage: {"flow": str, "Container": str, "direct": True}
+                  - Indirect usage: {"flow": str, "direct": False, "path": List[str]}
+                  where path shows the chain from the top-level flow to this flow
+        """
+        # Check if this Flow is used as a Container in other Flows
+        flows = self.movaidb.get({"Flow": {"*": {"Container": "*"}}})
+
+        if not flows or flows.get("Flow") is None or len(flows.get("Flow")) == 0:
+            return []
+
+        # Find direct usages with container names
+        direct_flows = {}  # {flow_name: container_name}
+        for flow_name, containers in flows.get("Flow").items():
+            for container_name, params in containers.get("Container", {}).items():
+                if params.get("ContainerFlow") == self.name:
+                    direct_flows[flow_name] = container_name
+                    break  # No need to check other containers in this flow
+
+        # Recursive search: find all flows that use the direct flows, etc.
+        result = []
+
+        # Add direct usages with container names (without path - it's redundant for direct usages)
+        for flow_name, container_name in direct_flows.items():
+            result.append({"flow": flow_name, "Container": container_name, "direct": True})
+
+        # Track which (flow, path) combinations we've already added to avoid duplicates
+        visited_paths = set()
+
+        # Find indirect usages
+        def find_parents(flow_name: str, current_path: list):
+            for parent_flow, containers in flows.get("Flow", {}).items():
+                for parent_container, params in containers.get("Container", {}).items():
+                    if params.get("ContainerFlow") == flow_name:
+                        new_path = [
+                            {"flow": parent_flow, "Container": parent_container}
+                        ] + current_path
+                        path_key = (
+                            parent_flow,
+                            parent_container,
+                            tuple((p["flow"], p["Container"]) for p in new_path),
+                        )
+
+                        # Only add if we haven't seen this exact path before
+                        if path_key not in visited_paths:
+                            visited_paths.add(path_key)
+
+                            # Add as indirect usage (even if it's also a direct usage)
+                            # A flow can be used directly as Container AND indirectly via another Container
+                            result.append(
+                                {
+                                    "flow": parent_flow,
+                                    "direct": False,
+                                    "Container": parent_container,
+                                    "path": new_path,
+                                }
+                            )
+
+                            # Continue recursing to find higher-level parents
+                            find_parents(parent_flow, new_path)
+                        break
+
+        for flow_name, container_name in direct_flows.items():
+            find_parents(flow_name, [{"flow": flow_name, "Container": container_name}])
+
+        return result
+
     # NOT PORTED
     def delete(self, key: str, name: str):
         """Delete object dependencies"""
