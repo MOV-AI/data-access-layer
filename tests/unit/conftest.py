@@ -69,6 +69,11 @@ def metadata_folder():
 
 
 @pytest.fixture(scope="session")
+def metadata2_folder():
+    return DATA_FOLDER / "valid" / "metadata2"
+
+
+@pytest.fixture(scope="session")
 def manifest_file():
     return DATA_FOLDER / "valid" / "manifest.txt"
 

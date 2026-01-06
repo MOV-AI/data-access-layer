@@ -1,6 +1,9 @@
 # vTBD
 - [BP-1552](https://movai.atlassian.net/browse/BP-1552) Search for node and subflow usage in robot
 
+# v3.16.2
+- [BP-1420](https://movai.atlassian.net/browse/BP-1420): Skip removal of Package:maps and Package:point_clouds on import
+
 # v3.16.1
 - [BP-1548](https://movai.atlassian.net/browse/BP-1548): Await check_permissions
   - InternalUser has permission to CREATE, READ, UPDATE, and RESET itself (but not DELETE or EXECUTE)
