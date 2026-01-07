@@ -416,9 +416,15 @@ class Node(Scope):
 
         for i in range(len(result)):
             if "path" in result[i]:
-                container = result[i]["path"][-1].pop("Container", None)
+                # Work on a copy of the path to avoid mutating shared dictionaries
+                original_path = result[i]["path"]
+                if not original_path:
+                    continue
+                new_path = [elem.copy() for elem in original_path]
+                container = new_path[-1].pop("Container", None)
                 if container:
-                    result[i]["path"][-1]["NodeInst"] = container
+                    new_path[-1]["NodeInst"] = container
+                result[i]["path"] = new_path
 
         return result
 
