@@ -44,26 +44,27 @@ class TestNodeUsageInfo:
                 node = Node(node_name)
                 node.remove(force=True)
             except Exception:
-                pass
+                print(f"Failed to remove node {node_name} during cleanup.")
 
         for flow_name in ["flow_1", "flow_2", "flow_3", "flow_4"]:
             try:
                 flow = Flow(flow_name)
                 flow.remove(force=True)
             except Exception:
-                pass
+                print(f"Failed to remove flow {flow_name} during cleanup.")
 
     def test_node_get_usage_info_direct(self, global_db):
         """
         Test Node.get_usage_info() classmethod for direct usage.
 
         Test scenario (based on metadata):
-        - NodeSub1 is used in flow_1 (as 'nodesub1'), flow_2 (as 'sub'), flow_3 (as 'sub'), flow_4 (as 'sub')
+        - NodeSub1 is used in flow_1 (as 'nodesub1'), flow_2 (as 'sub'), flow_3 (as 'sub1' and 'sub2'), flow_4 (as 'sub')
         """
         from dal.scopes.node import Node
 
         # Test using classmethod directly
         result = Node.get_usage_info("NodeSub1", recursive=False)
+        print(result)
 
         assert result["node"] == "NodeSub1"
         assert "usage" in result
@@ -71,7 +72,7 @@ class TestNodeUsageInfo:
         assert isinstance(result["usage"], list)
 
         # NodeSub1 should be used in 4 flows directly
-        assert len(result["usage"]) == 4
+        assert len(result["usage"]) == 5
 
         # Check all flows are present
         flow_names = {item["flow"] for item in result["usage"]}
@@ -81,11 +82,13 @@ class TestNodeUsageInfo:
         assert all(item["direct"] for item in result["usage"])
 
         # Verify specific NodeInst names
-        usage_map = {item["flow"]: item["NodeInst"] for item in result["usage"]}
-        assert usage_map["flow_1"] == "nodesub1"
-        assert usage_map["flow_2"] == "sub"
-        assert usage_map["flow_3"] == "sub"
-        assert usage_map["flow_4"] == "sub"
+        usage_map = {item["flow"]: [] for item in result["usage"]}
+        for item in result["usage"]:
+            usage_map[item["flow"]].append(item["NodeInst"])
+        assert usage_map["flow_1"] == ["nodesub1"]
+        assert usage_map["flow_2"] == ["sub"]
+        assert usage_map["flow_3"] == ["sub1", "sub2"]
+        assert usage_map["flow_4"] == ["sub"]
 
     def test_node_get_usage_info_single_usage(self, global_db):
         """Test Node.get_usage_info() for a node used in only one flow."""
@@ -139,7 +142,7 @@ class TestNodeUsageInfo:
         indirect_usages = [item for item in result["usage"] if not item.get("direct", True)]
 
         # Direct usages: flow_1, flow_2, flow_3, flow_4
-        assert len(direct_usages) == 4
+        assert len(direct_usages) == 5
         direct_flows = {item["flow"] for item in direct_usages}
         assert direct_flows == {"flow_1", "flow_2", "flow_3", "flow_4"}
 
@@ -164,7 +167,7 @@ class TestNodeUsageInfo:
         assert result3["node"] == "NodePub1"
 
         # Each should have independent results
-        assert len(result1["usage"]) == 4
+        assert len(result1["usage"]) == 5
         assert len(result2["usage"]) == 1
         assert len(result3["usage"]) == 4
 
@@ -211,14 +214,14 @@ class TestFlowUsageInfo:
                 node = Node(node_name)
                 node.remove(force=True)
             except Exception:
-                pass
+                print(f"Failed to remove node {node_name} during cleanup.")
 
         for flow_name in ["flow_1", "flow_2", "flow_3", "flow_4"]:
             try:
                 flow = Flow(flow_name)
                 flow.remove(force=True)
             except Exception:
-                pass
+                print(f"Failed to remove flow {flow_name} during cleanup.")
 
     def test_flow_get_usage_info_as_subflow_direct(self, global_db):
         """
@@ -237,13 +240,11 @@ class TestFlowUsageInfo:
         assert "error" not in result
         assert isinstance(result["usage"], list)
 
-        # flow_1 is used directly in flow_3
-        assert len(result["usage"]) == 1
+        # flow_1 is used directly in flow_3 twice
+        assert len(result["usage"]) == 2
 
-        usage = result["usage"][0]
-        assert usage["flow"] == "flow_3"
-        assert usage["Container"] == "subflow1"
-        assert usage["direct"] is True
+        assert {"flow": "flow_3", "Container": "subflow1", "direct": True} in result["usage"]
+        assert {"flow": "flow_3", "Container": "subflow2", "direct": True} in result["usage"]
 
     def test_flow_get_usage_info_not_used_as_subflow(self, global_db):
         """Test Flow.get_usage_info() for a flow that is not used as a subflow."""
@@ -292,10 +293,10 @@ class TestFlowUsageInfo:
         direct_usages = [item for item in result["usage"] if item.get("direct", True)]
         indirect_usages = [item for item in result["usage"] if not item.get("direct", True)]
 
-        # Direct usage: flow_3
-        assert len(direct_usages) == 1
-        assert direct_usages[0]["flow"] == "flow_3"
-        assert direct_usages[0]["Container"] == "subflow1"
+        # Direct usage: flow_3 (twice as subflow1 and subflow2)
+        assert len(direct_usages) == 2
+        assert {"flow": "flow_3", "Container": "subflow1", "direct": True} in direct_usages
+        assert {"flow": "flow_3", "Container": "subflow2", "direct": True} in direct_usages
 
         # Indirect usages should exist (flow_4 via flow_3)
         assert len(indirect_usages) >= 1
@@ -336,6 +337,6 @@ class TestFlowUsageInfo:
         assert result3["flow"] == "flow_3"
 
         # Each should have independent results
-        assert len(result1["usage"]) == 1
+        assert len(result1["usage"]) == 2
         assert len(result2["usage"]) == 0
         assert len(result3["usage"]) == 1

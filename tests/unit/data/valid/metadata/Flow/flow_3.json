@@ -20,7 +20,11 @@
                 "NodeLabel": "NodePub1",
                 "Template": "NodePub1"
             },
-            "sub": {
+            "sub1": {
+                "NodeLabel": "NodeSub1",
+                "Template": "NodeSub1"
+            },
+            "sub2": {
                 "NodeLabel": "NodeSub1",
                 "Template": "NodeSub1"
             }
@@ -28,6 +32,10 @@
         "Container": {
             "subflow1": {
                 "ContainerLabel": "Subflow1",
+                "ContainerFlow": "flow_1"
+            },
+            "subflow2": {
+                "ContainerLabel": "Subflow2",
                 "ContainerFlow": "flow_1"
             }
         }

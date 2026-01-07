@@ -67,13 +67,13 @@ Search for where a specific node template is used across all flows:
 
 ```bash
 # Search for direct usage only
-mobdata "usage-search --type Node" --name <node-name>
+mobdata usage-search --type Node --name <node-name>
 ```
 
 By default, usage-search does not include recursive (indirect) usage. Use `--recursive` or `-r` flag to search recursively.
 
 ```bash
-mobdata "usage-search --type Node" --name <node-name> --recursive
+mobdata usage-search --type Node --name <node-name> --recursive
 ```
 
 Search for Flow Usage
@@ -83,10 +83,10 @@ Search for where a specific flow is used as a subflow in other flows:
 
 ```bash
 # Search for direct usage only
-mobdata "usage-search --type Flow" --name <flow-name>
+mobdata usage-search --type Flow --name <flow-name>
 
 # Search including indirect usage (nested subflows)
-mobdata "usage-search --type Flow" --name <flow-name> --recursive
+mobdata usage-search --type Flow --name <flow-name> --recursive
 ```
 
 Examples
@@ -95,7 +95,7 @@ Examples
 - Example 1: Find all flows using a node
 
 ```bash
-mobdata "usage-search --type Node" --name create_log --recursive
+mobdata usage-search --type Node --name create_log --recursive
 ```
 
 Output:
@@ -140,26 +140,82 @@ Searching for flow 'pick' (recursive=True)
 
 Full JSON result:
 {
-  "flow": "UtilityFlow",
+  "flow": "pick",
   "usage": [
     {
-      "flow": "MainFlow",
-      "Container": "utilities",
+      "flow": "drop",
+      "Container": "pick",
       "direct": true
     },
     {
-      "flow": "TopLevelFlow",
+      "flow": "movai_lab_loop",
+      "Container": "pick",
+      "direct": true
+    },
+    {
+      "flow": "movai_lab_loop_fleet_sim",
+      "Container": "pick",
+      "direct": true
+    },
+    {
+      "flow": "movai_lab_loop_sim",
+      "Container": "pick",
+      "direct": true
+    },
+    {
+      "flow": "movai_lab_loop",
       "direct": false,
-      "path": ["TopLevelFlow", "MainFlow"]
+      "Container": "drop",
+      "path": [
+        {
+          "flow": "movai_lab_loop",
+          "Container": "drop"
+        },
+        {
+          "flow": "drop",
+          "Container": "pick"
+        }
+      ]
+    },
+    {
+      "flow": "movai_lab_loop_fleet_sim",
+      "direct": false,
+      "Container": "drop",
+      "path": [
+        {
+          "flow": "movai_lab_loop_fleet_sim",
+          "Container": "drop"
+        },
+        {
+          "flow": "drop",
+          "Container": "pick"
+        }
+      ]
+    },
+    {
+      "flow": "movai_lab_loop_sim",
+      "direct": false,
+      "Container": "drop",
+      "path": [
+        {
+          "flow": "movai_lab_loop_sim",
+          "Container": "drop"
+        },
+        {
+          "flow": "drop",
+          "Container": "pick"
+        }
+      ]
     }
   ]
 }
+
 ```
 
 - Example 3: Node not found
 
 ```bash
-mobdata "usage-search --type Node" --name NonExistentNode
+mobdata usage-search --type Node --name NonExistentNode
 ```
 
 Output:

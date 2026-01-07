@@ -984,19 +984,18 @@ class Flow(Scope):
         if not flows or flows.get("Flow") is None or len(flows.get("Flow")) == 0:
             return []
 
-        # Find direct usages with container names
-        direct_flows = {}  # {flow_name: container_name}
+        # Find direct usages with container names - store ALL instances
+        direct_flows = []  # [(flow_name, container_name), ...]
         for flow_name, containers in flows.get("Flow").items():
             for container_name, params in containers.get("Container", {}).items():
                 if params.get("ContainerFlow") == self.name:
-                    direct_flows[flow_name] = container_name
-                    break  # No need to check other containers in this flow
+                    direct_flows.append((flow_name, container_name))
 
         # Recursive search: find all flows that use the direct flows, etc.
         result = []
 
         # Add direct usages with container names (without path - it's redundant for direct usages)
-        for flow_name, container_name in direct_flows.items():
+        for flow_name, container_name in direct_flows:
             result.append({"flow": flow_name, "Container": container_name, "direct": True})
 
         # Track which (flow, path) combinations we've already added to avoid duplicates
@@ -1035,7 +1034,7 @@ class Flow(Scope):
                             find_parents(parent_flow, new_path)
                         break
 
-        for flow_name, container_name in direct_flows.items():
+        for flow_name, container_name in direct_flows:
             find_parents(flow_name, [{"flow": flow_name, "Container": container_name}])
 
         return result

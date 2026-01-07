@@ -46,14 +46,14 @@ class TestMobdataSearchCommands:
                 node = Node(node_name)
                 node.remove(force=True)
             except Exception:
-                pass
+                print(f"Failed to remove node {node_name} during cleanup.")
 
         for flow_name in ["flow_1", "flow_2", "flow_3", "flow_4"]:
             try:
                 flow = Flow(flow_name)
                 flow.remove(force=True)
             except Exception:
-                pass
+                print(f"Failed to remove flow {flow_name} during cleanup.")
 
     def _run_mobdata_search(self, obj_type, obj_name, recursive=False):
         """Helper to run mobdata search command programmatically using main()."""
@@ -80,10 +80,11 @@ class TestMobdataSearchCommands:
 
         # Check output
         captured = capsys.readouterr()
-        assert "'NodeSub1' is used in 4 flow(s)" in captured.out
+        assert "'NodeSub1' is used in 5 flow(s)" in captured.out
         assert "[direct] flow: flow_1, nodeinst: nodesub1" in captured.out.lower()
         assert "[direct] flow: flow_2, nodeinst: sub" in captured.out.lower()
-        assert "[direct] flow: flow_3, nodeinst: sub" in captured.out.lower()
+        assert "[direct] flow: flow_3, nodeinst: sub1" in captured.out.lower()
+        assert "[direct] flow: flow_3, nodeinst: sub2" in captured.out.lower()
         assert "[direct] flow: flow_4, nodeinst: sub" in captured.out.lower()
 
     def test_search_node_command_single_usage(self, global_db, capsys):
@@ -116,8 +117,9 @@ class TestMobdataSearchCommands:
         assert return_code == 0
 
         captured = capsys.readouterr()
-        assert "'flow_1' is used in 1 flow(s)" in captured.out
+        assert "'flow_1' is used in 2 flow(s)" in captured.out
         assert "[direct] flow: flow_3, container: subflow1" in captured.out.lower()
+        assert "[direct] flow: flow_3, container: subflow2" in captured.out.lower()
 
     def test_search_flow_command_not_used_as_subflow(self, global_db, capsys):
         """Test mobdata search command for a flow that is not used as a subflow."""
@@ -148,20 +150,31 @@ class TestMobdataSearchCommands:
 
         captured = capsys.readouterr()
         assert "NodeSub1" in captured.out
-        assert "'nodesub1' is used in 7 flow(s)" in captured.out.lower()
+        assert "'nodesub1' is used in 9 flow(s)" in captured.out.lower()
         # Should have both direct and indirect usages in output
         assert "[direct] flow: flow_1, nodeinst: nodesub1" in captured.out.lower()
         assert "[direct] flow: flow_2, nodeinst: sub" in captured.out.lower()
-        assert "[direct] flow: flow_3, nodeinst: sub" in captured.out.lower()
+        assert "[direct] flow: flow_3, nodeinst: sub1" in captured.out.lower()
+        assert "[direct] flow: flow_3, nodeinst: sub2" in captured.out.lower()
         assert "[direct] flow: flow_4, nodeinst: sub" in captured.out.lower()
         assert "[indirect] flow: flow_3, nodeinst: nodesub1" in captured.out.lower()
         assert (
             "path: {'flow': 'flow_3', 'container': 'subflow1'} -> {'flow': 'flow_1', 'nodeinst': 'nodesub1'}"
             in captured.out.lower()
         )
-        assert "[indirect] flow: flow_4, nodeinst: sub" in captured.out.lower()
+        assert "[indirect] flow: flow_4, nodeinst: nodesub1" in captured.out.lower()
         assert (
             "path: {'flow': 'flow_4', 'container': 'subflow3'} -> {'flow': 'flow_3', 'container': 'subflow1'} -> {'flow': 'flow_1', 'nodeinst': 'nodesub1'}"
+            in captured.out.lower()
+        )
+        assert "[indirect] flow: flow_4, nodeinst: sub1" in captured.out.lower()
+        assert (
+            "path: {'flow': 'flow_4', 'container': 'subflow3'} -> {'flow': 'flow_3', 'nodeinst': 'sub1'}"
+            in captured.out.lower()
+        )
+        assert "[indirect] flow: flow_4, nodeinst: sub2" in captured.out.lower()
+        assert (
+            "path: {'flow': 'flow_4', 'container': 'subflow3'} -> {'flow': 'flow_3', 'nodeinst': 'sub2'}"
             in captured.out.lower()
         )
 
@@ -173,12 +186,17 @@ class TestMobdataSearchCommands:
         assert return_code == 0
 
         captured = capsys.readouterr()
-        assert "'flow_1' is used in 2 flow(s)" in captured.out.lower()
-        # Should show direct usage in flow_3
+        assert "'flow_1' is used in 4 flow(s)" in captured.out.lower()
+        # Should show direct usage in flow_3 as subflow1 and subflow2
         assert "[direct] flow: flow_3, container: subflow1" in captured.out.lower()
-        # Should also show indirect usage in flow_4
+        assert "[direct] flow: flow_3, container: subflow2" in captured.out.lower()
+        # Should also show indirect usage in flow_4 via flow_3
         assert "[indirect] flow: flow_4, container: subflow3" in captured.out.lower()
         assert (
             "path: {'flow': 'flow_4', 'container': 'subflow3'} -> {'flow': 'flow_3', 'container': 'subflow1'}"
+            in captured.out.lower()
+        )
+        assert (
+            "path: {'flow': 'flow_4', 'container': 'subflow3'} -> {'flow': 'flow_3', 'container': 'subflow2'}"
             in captured.out.lower()
         )

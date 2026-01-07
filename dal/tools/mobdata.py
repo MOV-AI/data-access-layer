@@ -1,7 +1,6 @@
 """Tool to import, export and remove data."""
 
 import argparse
-import sys
 
 from dal.tools.usage_search import Searcher
 from .backup import backup as backup_main
@@ -97,14 +96,9 @@ def main() -> int:
     # Handle usage-search actions
     if args.action == "usage-search":
         if not args.type or args.type not in ["Node", "Flow"]:
-            print(
-                "Error: --type must be 'Node' or 'Flow' for usage-search operations",
-                file=sys.stderr,
-            )
             parser.error("usage-search action requires --type argument ('Node' or 'Flow')")
             return 1
         if not args.name:
-            print("Error: --name is required for usage-search operations", file=sys.stderr)
             parser.error(f"{args.action} requires --name argument")
             return 1
 

@@ -353,20 +353,18 @@ class Node(Scope):
         if not flows or flows.get("Flow") is None or len(flows.get("Flow")) == 0:
             return []
 
-        # Find direct usages with NodeInst names
-        direct_flows = {}  # {flow_name: node_inst_name}
+        # Find direct usages with NodeInst names - store ALL instances
+        direct_flows = []  # [(flow_name, node_inst_name), ...]
 
         for flow_name, node_insts in flows.get("Flow").items():
             for node_inst_name, params in node_insts.get("NodeInst").items():
                 if params.get("Template") == self.name:
-                    if flow_name not in direct_flows:
-                        direct_flows[flow_name] = node_inst_name
-                    break
+                    direct_flows.append((flow_name, node_inst_name))
 
         result = []
 
         # Add direct usages with NodeInst names (without path - it's redundant for direct usages)
-        for flow_name, node_inst_name in direct_flows.items():
+        for flow_name, node_inst_name in direct_flows:
             result.append({"flow": flow_name, "NodeInst": node_inst_name, "direct": True})
 
         # Find indirect usages by checking which flows use our direct flows as subflows
@@ -382,11 +380,14 @@ class Node(Scope):
                             new_path = [
                                 {"flow": parent_flow, "Container": parent_container}
                             ] + current_path
-                            path_key = (
-                                parent_flow,
-                                parent_container,
-                                tuple((p["flow"], p["Container"]) for p in new_path),
+
+                            # Build path key properly handling mixed Container/NodeInst keys
+                            # The path is a chain where each element has either "Container" or "NodeInst"
+                            path_tuple = tuple(
+                                (p["flow"], p.get("Container") or p.get("NodeInst"))
+                                for p in new_path
                             )
+                            path_key = (parent_flow, parent_container, path_tuple)
 
                             # Only add if we haven't seen this exact path before
                             if path_key not in visited_paths:
@@ -407,24 +408,12 @@ class Node(Scope):
                                 find_parents(parent_flow, node_inst_name, new_path)
                             break
 
-            for flow_name, node_inst_name in direct_flows.items():
+            for flow_name, node_inst_name in direct_flows:
                 find_parents(
                     flow_name,
                     node_inst_name,
-                    [{"flow": flow_name, "Container": node_inst_name}],
+                    [{"flow": flow_name, "NodeInst": node_inst_name}],
                 )
-
-        for i in range(len(result)):
-            if "path" in result[i]:
-                # Work on a copy of the path to avoid mutating shared dictionaries
-                original_path = result[i]["path"]
-                if not original_path:
-                    continue
-                new_path = [elem.copy() for elem in original_path]
-                container = new_path[-1].pop("Container", None)
-                if container:
-                    new_path[-1]["NodeInst"] = container
-                result[i]["path"] = new_path
 
         return result
 
