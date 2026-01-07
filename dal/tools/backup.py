@@ -1690,7 +1690,11 @@ class Searcher:
                 node_obj = Node(node_name)
                 _ = node_obj.Label
             except (DoesNotExist, KeyError, AttributeError):
-                return {"node": node_name, "error": f"Node '{node_name}' does not exist"}
+                return {
+                    "node": node_name,
+                    "usage": [],
+                    "error": f"Node '{node_name}' does not exist",
+                }
 
             # Get usage information
             if recursive:
@@ -1701,9 +1705,8 @@ class Searcher:
 
                 usage = []
                 for item in usage_with_inst:
-                    print(item)
                     flow_name = list(item["Flow"].keys())[0]
-                    node_inst = item["Flow"][flow_name]["NodeInst"]
+                    node_inst = list(item["Flow"][flow_name]["NodeInst"].keys())[0]
                     usage.append({"flow": flow_name, "NodeInst": node_inst, "direct": True})
 
             return {"node": node_name, "usage": usage}
@@ -1738,7 +1741,11 @@ class Searcher:
                 flow_obj = Flow(flow_name)
                 _ = flow_obj.Label
             except (DoesNotExist, KeyError, AttributeError):
-                return {"flow": flow_name, "error": f"Flow '{flow_name}' does not exist"}
+                return {
+                    "flow": flow_name,
+                    "usage": [],
+                    "error": f"Flow '{flow_name}' does not exist",
+                }
 
             # Get usage information
             if recursive:

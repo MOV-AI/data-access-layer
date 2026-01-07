@@ -1,0 +1,21 @@
+{
+    "Node": {
+        "NodeSub1": {
+            "Info": "First subscriber",
+            "Label": "NodeSub1",
+            "LastUpdate": "04/06/2020 at 07:10:28",
+            "PortsInst": {
+                "subport": {
+                    "Message": "Float32",
+                    "In": {
+                        "in": {"Callback": "place_holder", "Message": "std_msgs/Float32"}
+                    },
+                    "Package": "std_msgs",
+                    "Template": "ROS1/Subscriber"
+                }
+            },
+            "Type": "ROS1/Node",
+            "Remappable": "True"
+        }
+    }
+}
