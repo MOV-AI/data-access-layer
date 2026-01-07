@@ -1679,40 +1679,11 @@ class Searcher:
                 }
         """
         from dal.scopes.node import Node
-        from movai_core_shared.exceptions import DoesNotExist
 
         if self.debug:
             print(f"Searching for node '{node_name}' (recursive={recursive})")
 
-        try:
-            # Check if node exists
-            try:
-                node_obj = Node(node_name)
-                _ = node_obj.Label
-            except (DoesNotExist, KeyError, AttributeError):
-                return {
-                    "node": node_name,
-                    "usage": [],
-                    "error": f"Node '{node_name}' does not exist",
-                }
-
-            # Get usage information
-            if recursive:
-                usage = node_obj.node_inst_depends_recursive()
-            else:
-                # Convert to detailed flow list
-                usage_with_inst = node_obj.node_inst_depends()
-
-                usage = []
-                for item in usage_with_inst:
-                    flow_name = list(item["Flow"].keys())[0]
-                    node_inst = list(item["Flow"][flow_name]["NodeInst"].keys())[0]
-                    usage.append({"flow": flow_name, "NodeInst": node_inst, "direct": True})
-
-            return {"node": node_name, "usage": usage}
-
-        except Exception as e:
-            return {"node": node_name, "usage": [], "error": str(e)}
+        return Node.get_usage_info(node_name, recursive=recursive)
 
     def search_flow(self, flow_name: str, recursive: bool = False) -> dict:
         """Search for flow usage as a subflow across other flows.
@@ -1730,37 +1701,11 @@ class Searcher:
                 }
         """
         from dal.scopes.flow import Flow
-        from movai_core_shared.exceptions import DoesNotExist
 
         if self.debug:
             print(f"Searching for flow '{flow_name}' (recursive={recursive})")
 
-        try:
-            # Check if flow exists
-            try:
-                flow_obj = Flow(flow_name)
-                _ = flow_obj.Label
-            except (DoesNotExist, KeyError, AttributeError):
-                return {
-                    "flow": flow_name,
-                    "usage": [],
-                    "error": f"Flow '{flow_name}' does not exist",
-                }
-
-            # Get usage information
-            if recursive:
-                usage = flow_obj.subflow_inst_depends_recursive()
-            else:
-                usage_with_container = flow_obj.subflow_inst_depends()
-                usage = [
-                    {"flow": item["flow"], "Container": item["Container"], "direct": True}
-                    for item in usage_with_container
-                ]
-
-            return {"flow": flow_name, "usage": usage}
-
-        except Exception as e:
-            return {"flow": flow_name, "usage": [], "error": str(e)}
+        return Flow.get_usage_info(flow_name, recursive=recursive)
 
     def print_results(self, result: dict, search_type: str):
         """Print search results in a readable format.

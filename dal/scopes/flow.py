@@ -905,6 +905,49 @@ class Flow(Scope):
         except AttributeError as error:
             LOGGER.error(error)
 
+    @classmethod
+    def get_usage_info(cls, flow_name: str, recursive: bool = False) -> dict:
+        """Get formatted usage information for a flow.
+
+        Args:
+            flow_name (str): Name of the flow to search for
+            recursive (bool): If True, include indirect usage through nested subflows
+
+        Returns:
+            dict: Usage information with structure:
+                {
+                    "flow": str,
+                    "usage": List[dict],
+                    "error": str (optional)
+                }
+        """
+        try:
+            # Verify flow exists by reading a property
+            flow_obj = cls(flow_name)
+            _ = flow_obj.Label
+        except (DoesNotExist, KeyError, AttributeError):
+            return {
+                "flow": flow_name,
+                "usage": [],
+                "error": f"Flow '{flow_name}' does not exist",
+            }
+
+        try:
+            # Get usage information
+            if recursive:
+                usage = flow_obj.subflow_inst_depends_recursive()
+            else:
+                usage_with_container = flow_obj.subflow_inst_depends()
+                usage = [
+                    {"flow": item["flow"], "Container": item["Container"], "direct": True}
+                    for item in usage_with_container
+                ]
+
+            return {"flow": flow_name, "usage": usage}
+
+        except Exception as e:
+            return {"flow": flow_name, "usage": [], "error": str(e)}
+
     def subflow_inst_depends(self) -> list:
         """Search Flows for Container instances that use this flow as a subflow.
 
