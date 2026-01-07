@@ -385,7 +385,7 @@ class Node(Scope):
                             path_key = (
                                 parent_flow,
                                 parent_container,
-                                tuple((p["flow"], p["Container"]) for p in new_path),
+                                tuple((p["flow"], p.get("Container") or p.get("NodeInst")) for p in new_path),
                             )
 
                             # Only add if we haven't seen this exact path before
@@ -411,20 +411,8 @@ class Node(Scope):
                 find_parents(
                     flow_name,
                     node_inst_name,
-                    [{"flow": flow_name, "Container": node_inst_name}],
+                    [{"flow": flow_name, "NodeInst": node_inst_name}],
                 )
-
-        for i in range(len(result)):
-            if "path" in result[i]:
-                # Work on a copy of the path to avoid mutating shared dictionaries
-                original_path = result[i]["path"]
-                if not original_path:
-                    continue
-                new_path = [elem.copy() for elem in original_path]
-                container = new_path[-1].pop("Container", None)
-                if container:
-                    new_path[-1]["NodeInst"] = container
-                result[i]["path"] = new_path
 
         return result
 
