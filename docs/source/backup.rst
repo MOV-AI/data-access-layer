@@ -67,13 +67,13 @@ Search for where a specific node template is used across all flows:
 
 ```bash
 # Search for direct usage only
-mobdata "search --type Node" --name <node-name>
+mobdata "usage-search --type Node" --name <node-name>
 ```
 
-By default, search does not include recursive (indirect) usage. Use `--recursive` or `-r` flag to search recursively.
+By default, usage-search does not include recursive (indirect) usage. Use `--recursive` or `-r` flag to search recursively.
 
 ```bash
-mobdata "search --type Node" --name <node-name> --recursive
+mobdata "usage-search --type Node" --name <node-name> --recursive
 ```
 
 Search for Flow Usage
@@ -83,10 +83,10 @@ Search for where a specific flow is used as a subflow in other flows:
 
 ```bash
 # Search for direct usage only
-mobdata "search --type Flow" --name <flow-name>
+mobdata "usage-search --type Flow" --name <flow-name>
 
 # Search including indirect usage (nested subflows)
-mobdata "search --type Flow" --name <flow-name> --recursive
+mobdata "usage-search --type Flow" --name <flow-name> --recursive
 ```
 
 Examples
@@ -95,7 +95,7 @@ Examples
 - Example 1: Find all flows using a node
 
 ```bash
-mobdata "search --type Node" --name create_log --recursive
+mobdata "usage-search --type Node" --name create_log --recursive
 ```
 
 Output:
@@ -117,7 +117,7 @@ Node 'create_log' is used in 6 flow(s):
 - Example 2: Search for subflow usage with debug output
 
 ```bash
-mobdata search --type Flow --name pick --recursive --verbose
+mobdata usage-search --type Flow --name pick --recursive --verbose
 ```
 
 Output:
@@ -159,7 +159,7 @@ Full JSON result:
 - Example 3: Node not found
 
 ```bash
-mobdata "search --type Node" --name NonExistentNode
+mobdata "usage-search --type Node" --name NonExistentNode
 ```
 
 Output:
