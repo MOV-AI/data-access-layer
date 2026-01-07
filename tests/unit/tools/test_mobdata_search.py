@@ -1,6 +1,7 @@
 """Tests for mobdata search commands."""
 import pytest
-import argparse
+import sys
+from unittest.mock import patch
 
 
 class TestMobdataSearchCommands:
@@ -55,26 +56,18 @@ class TestMobdataSearchCommands:
                 pass
 
     def _run_mobdata_search(self, obj_type, obj_name, recursive=False):
-        """Helper to run mobdata search command programmatically."""
-        from dal.tools.backup import backup
+        """Helper to run mobdata search command programmatically using main()."""
+        from dal.tools.mobdata import main
 
-        # Create args namespace similar to argparse output
-        args = argparse.Namespace(
-            action="search",
-            type=obj_type,
-            name=obj_name,
-            recursive=recursive,
-            project=None,
-            manifest=None,
-            force=False,
-            debug=False,
-            dry=False,
-            individual=False,
-            clean_old_data=False,
-        )
+        # Build command line arguments
+        cmd_args = ["mobdata", "usage-search", "--type", obj_type, "--name", obj_name]
+        if recursive:
+            cmd_args.append("--recursive")
 
-        # Call backup function directly with the args
-        return_code = backup(args)
+        # Mock sys.argv to simulate command-line invocation
+        with patch.object(sys, "argv", cmd_args):
+            return_code = main()
+
         return return_code
 
     def test_search_node_command_direct_usage(self, global_db, capsys):

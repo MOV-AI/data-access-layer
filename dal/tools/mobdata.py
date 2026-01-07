@@ -1,7 +1,9 @@
 """Tool to import, export and remove data."""
 
 import argparse
+import sys
 
+from dal.tools.usage_search import Searcher
 from .backup import backup as backup_main
 
 
@@ -9,8 +11,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Export/Import/Remove/Search Mov.AI Data")
     parser.add_argument(
         "action",
-        choices=["import", "export", "remove", "search"],
-        help="Action to perform: import, export, remove, search (use with --type), search-node (use with --name), or search-flow (use with --name)",
+        choices=["import", "export", "remove", "usage-search"],
+        help="Action to perform: import, export, remove, usage-search",
     )
     parser.add_argument(
         "-m",
@@ -23,7 +25,7 @@ def main() -> int:
     parser.add_argument(
         "-p",
         "--project",
-        help="Folder to export to or import from (not required for search).",
+        help="Folder to export to or import from (not required for usage-search).",
         type=str,
         required=False,
         metavar="",
@@ -31,7 +33,7 @@ def main() -> int:
     parser.add_argument(
         "-t",
         "--type",
-        help="Object type. Options: Flow, Node, StateMachine, Callback, Annotation. For 'search' action, specify 'Node' or 'Flow'.",
+        help="Object type. Options: Flow, Node, StateMachine, Callback, Annotation. For 'usage-search' action, specify 'Node' or 'Flow'.",
         type=str,
         metavar="",
         default=None,
@@ -39,7 +41,7 @@ def main() -> int:
     parser.add_argument(
         "-n",
         "--name",
-        help="Object name (required for search operations)",
+        help="Object name (required for usage-search operations)",
         type=str,
         metavar="",
         default=None,
@@ -92,17 +94,37 @@ def main() -> int:
 
     args, _ = parser.parse_known_args()
 
-    # Validate arguments based on action
-    if args.action == "search":
-        # Search doesn't require project but requires name
-        if not args.type:
-            parser.error("search action requires --type argument ('Node' or 'Flow')")
+    # Handle usage-search actions
+    if args.action == "usage-search":
+        if not args.type or args.type not in ["Node", "Flow"]:
+            print(
+                "Error: --type must be 'Node' or 'Flow' for usage-search operations",
+                file=sys.stderr,
+            )
+            parser.error("usage-search action requires --type argument ('Node' or 'Flow')")
+            return 1
         if not args.name:
+            print("Error: --name is required for usage-search operations", file=sys.stderr)
             parser.error(f"{args.action} requires --name argument")
-    else:
-        # Other actions require project
-        if not args.project:
-            parser.error(f"{args.action} requires --project argument")
+            return 1
+
+        searcher = Searcher(debug=args.debug)
+        recursive = args.recursive
+
+        if args.type == "Node":
+            result = searcher.search_node_usage(args.name, recursive=recursive)
+            searcher.print_results(result, "node")
+        elif args.type == "Flow":
+            result = searcher.search_flow_usage(args.name, recursive=recursive)
+            searcher.print_results(result, "flow")
+
+        if "error" in result and "does not exist" not in result["error"]:
+            return 1
+        return 0
+
+    # non usage-search actions require project
+    if not args.project:
+        parser.error(f"{args.action} requires --project argument")
 
     ret_code = backup_main(args)
 
