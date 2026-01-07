@@ -1,6 +1,9 @@
 # vTBD
 - [BP-1552](https://movai.atlassian.net/browse/BP-1552) Search for node and subflow usage in robot
-  - Add mobdata seatch commands to search for Node and Flow usage
+  - Add mobdata search commands to search for Node and Flow usage
+
+# v3.17.0
+- [BP-1418](https://movai.atlassian.net/browse/BP-1418): Update GraphicScene PUT/POST to fullfil FE requirements
 
 # v3.16.2
 - [BP-1420](https://movai.atlassian.net/browse/BP-1420): Skip removal of Package:maps and Package:point_clouds on import
