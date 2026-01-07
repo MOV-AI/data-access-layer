@@ -59,6 +59,17 @@ class Scope(Struct):
                     f"{name} does not exist yet. If you wish to create please use 'new=True'"
                 )
 
+    def transform_before_update(self, source_data: dict):
+        """
+        Transforms data into internal format
+
+        Args:
+            source_data (dict): Data to transform.
+
+        Default: do nothing.
+        """
+        return source_data
+
     def calc_scope_update(self, old_dict: dict, new_dict: dict):
         """Calc the objects differences and returns list with dict keys to delete/set.
 
