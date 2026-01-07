@@ -1,4 +1,4 @@
-# vTBD
+# v3.17.0
 - [BP-1418](https://movai.atlassian.net/browse/BP-1418): Update GraphicScene PUT/POST to fullfil FE requirements
 
 # v3.16.2
