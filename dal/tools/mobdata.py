@@ -6,9 +6,11 @@ from .backup import backup as backup_main
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Export/Import/Remove Mov.AI Data")
+    parser = argparse.ArgumentParser(description="Export/Import/Remove/Search Mov.AI Data")
     parser.add_argument(
-        "action", choices=["import", "export", "remove"], help="Import, export or remove"
+        "action",
+        choices=["import", "export", "remove", "search"],
+        help="Action to perform: import, export, remove, search (use with --type), search-node (use with --name), or search-flow (use with --name)",
     )
     parser.add_argument(
         "-m",
@@ -21,20 +23,34 @@ def main() -> int:
     parser.add_argument(
         "-p",
         "--project",
-        help="Folder to export to or import from.",
+        help="Folder to export to or import from (not required for search).",
         type=str,
-        required=True,
+        required=False,
         metavar="",
     )
     parser.add_argument(
         "-t",
         "--type",
-        help="Object type. Options: Flow, StateMachine, Node, Callback, Annotation",
+        help="Object type. Options: Flow, Node, StateMachine, Callback, Annotation. For 'search' action, specify 'Node' or 'Flow'.",
         type=str,
         metavar="",
         default=None,
     )
-    parser.add_argument("-n", "--name", help="Object name", type=str, metavar="", default=None)
+    parser.add_argument(
+        "-n",
+        "--name",
+        help="Object name (required for search operations)",
+        type=str,
+        metavar="",
+        default=None,
+    )
+    parser.add_argument(
+        "-r",
+        "--recursive",
+        help="Search for usages recursively.",
+        dest="recursive",
+        action="store_true",
+    )
     parser.add_argument(
         "-f",
         "--force",
@@ -75,6 +91,18 @@ def main() -> int:
     parser.set_defaults(force=False, debug=False, dry=False)
 
     args, _ = parser.parse_known_args()
+
+    # Validate arguments based on action
+    if args.action == "search":
+        # Search doesn't require project but requires name
+        if not args.type:
+            parser.error("search action requires --type argument ('Node' or 'Flow')")
+        if not args.name:
+            parser.error(f"{args.action} requires --name argument")
+    else:
+        # Other actions require project
+        if not args.project:
+            parser.error(f"{args.action} requires --project argument")
 
     ret_code = backup_main(args)
 

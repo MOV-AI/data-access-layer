@@ -1652,8 +1652,182 @@ class Remover(Backup):
             self.set_removed(scope, name)
 
 
+class Searcher:
+    """Search for node and flow usage across the system."""
+
+    def __init__(self, debug: bool = False):
+        """Initialize the Searcher.
+
+        Args:
+            debug (bool): Enable debug output
+        """
+        self.debug = debug
+
+    def search_node(self, node_name: str, recursive: bool = False) -> dict:
+        """Search for node usage across flows.
+
+        Args:
+            node_name (str): Name of the node to search for
+            recursive (bool): If True, include indirect usage through subflows
+
+        Returns:
+            dict: Usage information with structure:
+                {
+                    "node": str,
+                    "usage": List[dict],
+                    "error": str (optional)
+                }
+        """
+        from dal.scopes.node import Node
+        from movai_core_shared.exceptions import DoesNotExist
+
+        if self.debug:
+            print(f"Searching for node '{node_name}' (recursive={recursive})")
+
+        try:
+            # Check if node exists
+            try:
+                node_obj = Node(node_name)
+                _ = node_obj.Label
+            except (DoesNotExist, KeyError, AttributeError):
+                return {"node": node_name, "error": f"Node '{node_name}' does not exist"}
+
+            # Get usage information
+            if recursive:
+                usage = node_obj.node_inst_depends_recursive()
+            else:
+                # Convert to detailed flow list
+                usage_with_inst = node_obj.node_inst_depends()
+
+                usage = []
+                for item in usage_with_inst:
+                    print(item)
+                    flow_name = list(item["Flow"].keys())[0]
+                    node_inst = item["Flow"][flow_name]["NodeInst"]
+                    usage.append({"flow": flow_name, "NodeInst": node_inst, "direct": True})
+
+            return {"node": node_name, "usage": usage}
+
+        except Exception as e:
+            return {"node": node_name, "usage": [], "error": str(e)}
+
+    def search_flow(self, flow_name: str, recursive: bool = False) -> dict:
+        """Search for flow usage as a subflow across other flows.
+
+        Args:
+            flow_name (str): Name of the flow to search for
+            recursive (bool): If True, include indirect usage through nested subflows
+
+        Returns:
+            dict: Usage information with structure:
+                {
+                    "flow": str,
+                    "usage": List[dict],
+                    "error": str (optional)
+                }
+        """
+        from dal.scopes.flow import Flow
+        from movai_core_shared.exceptions import DoesNotExist
+
+        if self.debug:
+            print(f"Searching for flow '{flow_name}' (recursive={recursive})")
+
+        try:
+            # Check if flow exists
+            try:
+                flow_obj = Flow(flow_name)
+                _ = flow_obj.Label
+            except (DoesNotExist, KeyError, AttributeError):
+                return {"flow": flow_name, "error": f"Flow '{flow_name}' does not exist"}
+
+            # Get usage information
+            if recursive:
+                usage = flow_obj.subflow_inst_depends_recursive()
+            else:
+                usage_with_container = flow_obj.subflow_inst_depends()
+                usage = [
+                    {"flow": item["flow"], "Container": item["Container"], "direct": True}
+                    for item in usage_with_container
+                ]
+
+            return {"flow": flow_name, "usage": usage}
+
+        except Exception as e:
+            return {"flow": flow_name, "usage": [], "error": str(e)}
+
+    def print_results(self, result: dict, search_type: str):
+        """Print search results in a readable format.
+
+        Args:
+            result (dict): Search result from search_node or search_flow
+            search_type (str): Either "node" or "flow"
+        """
+
+        if "error" in result:
+            print(f"Error: {result['error']}", file=sys.stderr)
+            return
+
+        obj_name = result.get(search_type)
+        usage = result.get("usage", [])
+
+        if not usage:
+            print(f"{search_type.capitalize()} '{obj_name}' is not used in any flows.")
+            return
+
+        print(f"\n{search_type.capitalize()} '{obj_name}' is used in {len(usage)} flow(s):")
+        print("-" * 60)
+
+        for item in usage:
+            flow = item.get("flow")
+            direct = item.get("direct", True)
+            status = "Direct" if direct else "Indirect"
+            path = item.get("path", None)
+
+            if search_type == "node":
+                node_inst = item.get("NodeInst")
+                if path:
+                    path = " -> ".join(str(p) for p in path)
+                    print(f"  [{status}] Flow: {flow}, NodeInst: {node_inst}, \n\tPath: {path}")
+                else:
+                    print(f"  [{status}] Flow: {flow}, NodeInst: {node_inst}")
+            else:  # flow
+                container = item.get("Container")
+                if path:
+                    path = " -> ".join(str(p) for p in path)
+                    print(f"  [{status}] Flow: {flow}, Container: {container}, \n\tPath: {path}")
+                else:
+                    print(f"  [{status}] Flow: {flow}, Container: {container}")
+
+        print()
+
+        if self.debug:
+            print("\nFull JSON result:")
+            print(json.dumps(result, indent=2))
+
+
 def backup(args) -> int:
     """Main function to handle the backup actions based on provided arguments."""
+    # Handle search actions
+    if args.action == "search":
+        if not args.type or args.type not in ["Node", "Flow"]:
+            print("Error: --type must be 'Node' or 'Flow' for search operations", file=sys.stderr)
+            return 1
+        if not args.name:
+            print("Error: --name is required for search operations", file=sys.stderr)
+            return 1
+
+        searcher = Searcher(debug=args.debug)
+        recursive = args.recursive
+
+        if args.type == "Node":
+            result = searcher.search_node(args.name, recursive=recursive)
+            searcher.print_results(result, "node")
+        elif args.type == "Flow":
+            result = searcher.search_flow(args.name, recursive=recursive)
+            searcher.print_results(result, "flow")
+
+        return 0 if "error" not in result else 1
+
     project = args.project
     recursive = not args.individual
 

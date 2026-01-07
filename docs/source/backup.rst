@@ -45,3 +45,124 @@ Using mobdata along with a manifest file the working directory must have the fol
             ├── <name>_fr.po
             ├── <name>.json
             └── <name>_pt.po
+
+Searching for usages
+=========================
+The `mobdata` tool supports searching for Node and Flow usage across the system.
+
+Options
+-----------------
+- `--type` / `-t`: **Required** - The type of usage to search for. Valid values are `Node` and `Flow`
+- `--name` / `-n`: **Required** - The name of the node or flow to search for
+- `--recursive` / `-r`: Search recursively for indirect usages
+- `--verbose` / `-v`: Enable debug output and show full JSON results
+
+Commands
+-----------------
+
+Search for Node Usage
+~~~~~~~~~~~~~~~~~~~~~
+
+Search for where a specific node template is used across all flows:
+
+```bash
+# Search for direct usage only
+mobdata "search --type Node" --name <node-name>
+```
+
+By default, search does not include recursive (indirect) usage. Use `--recursive` or `-r` flag to search recursively.
+
+```bash
+mobdata "search --type Node" --name <node-name> --recursive
+```
+
+Search for Flow Usage
+~~~~~~~~~~~~~~~~~~~~~
+
+Search for where a specific flow is used as a subflow in other flows:
+
+```bash
+# Search for direct usage only
+mobdata "search --type Flow" --name <flow-name>
+
+# Search including indirect usage (nested subflows)
+mobdata "search --type Flow" --name <flow-name> --recursive
+```
+
+Examples
+-----------
+
+- Example 1: Find all flows using a node
+
+```bash
+mobdata "search --type Node" --name create_log --recursive
+```
+
+Output:
+```
+Node 'create_log' is used in 6 flow(s):
+------------------------------------------------------------
+  [Direct] Flow: fake_drop, NodeInst: log_operation_success
+  [Direct] Flow: pick, NodeInst: pick_success
+  [Direct] Flow: tugbot_idle_sim, NodeInst: spawn_log
+  [Indirect] Flow: movai_lab_loop, NodeInst: pick_success,
+	Path: {'flow': 'movai_lab_loop', 'Container': 'pick'} -> {'flow': 'pick', 'NodeInst': 'pick_success'}
+  [Indirect] Flow: movai_lab_loop_fleet_sim, NodeInst: pick_success,
+	Path: {'flow': 'movai_lab_loop_fleet_sim', 'Container': 'pick'} -> {'flow': 'pick', 'NodeInst': 'pick_success'}
+  [Indirect] Flow: movai_lab_loop_sim, NodeInst: pick_success,
+	Path: {'flow': 'movai_lab_loop_sim', 'Container': 'pick'} -> {'flow': 'pick', 'NodeInst': 'pick_success'}
+
+```
+
+- Example 2: Search for subflow usage with debug output
+
+```bash
+mobdata search --type Flow --name pick --recursive --verbose
+```
+
+Output:
+```
+Searching for flow 'pick' (recursive=True)
+
+  Flow 'pick' is used in 7 flow(s):
+------------------------------------------------------------
+  [Direct] Flow: drop, Container: pick
+  [Direct] Flow: movai_lab_loop, Container: pick
+  [Direct] Flow: movai_lab_loop_fleet_sim, Container: pick
+  [Direct] Flow: movai_lab_loop_sim, Container: pick
+  [Indirect] Flow: movai_lab_loop, Container: drop,
+	Path: {'flow': 'movai_lab_loop', 'Container': 'drop'} -> {'flow': 'drop', 'Container': 'pick'}
+  [Indirect] Flow: movai_lab_loop_fleet_sim, Container: drop,
+	Path: {'flow': 'movai_lab_loop_fleet_sim', 'Container': 'drop'} -> {'flow': 'drop', 'Container': 'pick'}
+  [Indirect] Flow: movai_lab_loop_sim, Container: drop,
+	Path: {'flow': 'movai_lab_loop_sim', 'Container': 'drop'} -> {'flow': 'drop', 'Container': 'pick'}
+
+
+Full JSON result:
+{
+  "flow": "UtilityFlow",
+  "usage": [
+    {
+      "flow": "MainFlow",
+      "Container": "utilities",
+      "direct": true
+    },
+    {
+      "flow": "TopLevelFlow",
+      "direct": false,
+      "path": ["TopLevelFlow", "MainFlow"]
+    }
+  ]
+}
+```
+
+- Example 3: Node not found
+
+```bash
+mobdata "search --type Node" --name NonExistentNode
+```
+
+Output:
+```
+Error: Node 'NonExistentNode' does not exist
+```
