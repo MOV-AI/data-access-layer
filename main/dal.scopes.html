@@ -1558,6 +1558,18 @@ Proprietary and confidential</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.scope.Scope.transform_before_update">
+<span class="sig-name descname"><span class="pre">transform_before_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.scope.Scope.transform_before_update" title="Permalink to this definition"></a></dt>
+<dd><p>Transforms data into internal format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>source_data</strong> (<em>dict</em>) – Data to transform.</p>
+</dd>
+</dl>
+<p>Default: do nothing.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.scope.Scope.validate_format">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.scope.Scope.validate_format" title="Permalink to this definition"></a></dt>
 <dd><p>Check if the data is in a valid format for this scope.</p>
@@ -3525,6 +3537,18 @@ When Robot groups are implemented it should merge with the group configuration</
 <dt class="sig sig-object py" id="dal.scopes.Scope.remove_partial">
 <span class="sig-name descname"><span class="pre">remove_partial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict_key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.Scope.remove_partial" title="Permalink to this definition"></a></dt>
 <dd><p>Remove Scope key</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.Scope.transform_before_update">
+<span class="sig-name descname"><span class="pre">transform_before_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.Scope.transform_before_update" title="Permalink to this definition"></a></dt>
+<dd><p>Transforms data into internal format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>source_data</strong> (<em>dict</em>) – Data to transform.</p>
+</dd>
+</dl>
+<p>Default: do nothing.</p>
 </dd></dl>
 
 <dl class="py method">
