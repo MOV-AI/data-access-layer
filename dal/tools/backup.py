@@ -1778,7 +1778,9 @@ def backup(args) -> int:
             result = searcher.search_flow(args.name, recursive=recursive)
             searcher.print_results(result, "flow")
 
-        return 0 if "error" not in result else 1
+        if "error" in result and "does not exist" not in result["error"]:
+            return 1
+        return 0
 
     project = args.project
     recursive = not args.individual
