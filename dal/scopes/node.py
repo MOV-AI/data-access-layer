@@ -385,7 +385,10 @@ class Node(Scope):
                             path_key = (
                                 parent_flow,
                                 parent_container,
-                                tuple((p["flow"], p.get("Container") or p.get("NodeInst")) for p in new_path),
+                                tuple(
+                                    (p["flow"], p.get("Container") or p.get("NodeInst"))
+                                    for p in new_path
+                                ),
                             )
 
                             # Only add if we haven't seen this exact path before
