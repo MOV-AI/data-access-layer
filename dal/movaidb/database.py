@@ -1267,6 +1267,32 @@ class MovaiDB:
 
         return self.keys_to_dict(output)
 
+    async def get_key_values(self, _conn: aioredis.Redis, keys):
+        """Get key value
+
+        Args:
+            keys (Union[str, List[str]]): The key or list of keys to fetch values for.
+
+        Returns:
+            dict: A dictionary mapping keys to their corresponding values.
+
+        """
+        output = {}
+        key_values = []
+        if not isinstance(keys, list):
+            keys = [keys]
+        tasks = []
+        for key in keys:
+            tasks.append(self.get_key_val(_conn, key))
+        values = await asyncio.gather(*tasks)
+        for key, value in zip(keys, values):
+            if isinstance(key, bytes):
+                key_values.append((key.decode("utf-8"), value))
+            else:
+                key_values.append((key, value))
+        output = self.keys_to_dict(key_values)
+        return output
+
     async def get_key_val(self, _conn, key: str):
         """Get value by type of key.
 
@@ -1276,21 +1302,34 @@ class MovaiDB:
 
         Returns:
             value: Value of the key
+
+        Raises:
+            ValueError: If the Redis type is unexpected
         """
-        type_ = await _conn.type(key)
+        value = None
+        try:
+            type_ = await _conn.type(key)
 
-        # get redis type
-        type_ = type_.decode("utf-8")
+            # get redis type
+            type_ = type_.decode("utf-8")
 
-        # get value by redis type
-        if type_ == "string":
-            value = await _conn.get(key)
-        elif type_ == "list":
-            value = await _conn.lrange(key, 0, -1)
-        elif type_ == "hash":
-            value = await _conn.hgetall(key)
-        else:
-            raise ValueError(f"Unexpected type: {type_} for key: {key}")
+            # get value by redis type
+            if type_ == "string":
+                value = await _conn.get(key)
+            elif type_ == "list":
+                value = await _conn.lrange(key, 0, -1)
+            elif type_ == "hash":
+                value = await _conn.hgetall(key)
+            elif type_ == "none":
+                value = None
+            else:
+                raise ValueError(f"Unexpected type: {type_} for key: {key}")
+        except (
+            aioredis.PoolClosedError,
+            aioredis.ConnectionClosedError,
+            aioredis.ConnectionForcedCloseError,
+        ) as e:
+            LOGGER.error(f"Redis connection error: {e}")
 
         # return decode value
         return self.decode_value_by_type(type_, value)
@@ -1326,3 +1365,33 @@ class MovaiDB:
                 value = None
 
         return value
+
+    def get_keys_from_pattern(self, _pattern) -> List[str]:
+        """
+        Converts a pattern dictionary into a list of keys based on the specified scope.
+
+        This method takes a pattern dictionary, extracts the "Scope" key, and uses it to
+        retrieve a search dictionary from the database. It then converts the search dictionary
+        into a list of keys.
+
+        Args:
+            _pattern (PatternDict): A dictionary containing the pattern to be converted.
+                                    Must include a "Scope" key.
+
+        Returns:
+            List[str]: A list of keys derived from the pattern. Returns an empty list if an
+                        error occurs during the process.
+        """
+        try:
+            pattern = _pattern.copy()
+            scope = pattern.pop("Scope")
+            search_dict = self.get_search_dict(scope, **pattern)
+
+            keys = []
+            for elem in self.dict_to_keys(search_dict, validate=False):
+                key, _, _ = elem
+                keys.append(key)
+            return keys
+        except Exception as e:
+            LOGGER.error(e)
+            return []
