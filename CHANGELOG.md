@@ -1,6 +1,9 @@
 # vTBD
 - [BP-1555](https://movai.atlassian.net/browse/BP-1552): MovaiDB now handles auxiliary logic for patterns and keys previously in backend/wsredussub
 
+# v3.17.0
+- [BP-1418](https://movai.atlassian.net/browse/BP-1418): Update GraphicScene PUT/POST to fullfil FE requirements
+
 # v3.16.2
 - [BP-1420](https://movai.atlassian.net/browse/BP-1420): Skip removal of Package:maps and Package:point_clouds on import
 
