@@ -924,7 +924,6 @@ class Flow(Scope):
         try:
             # Verify flow exists by reading a property
             flow_obj = cls(flow_name)
-            _ = flow_obj.Label
         except (DoesNotExist, KeyError, AttributeError):
             return {
                 "flow": flow_name,
@@ -934,43 +933,17 @@ class Flow(Scope):
 
         try:
             # Get usage information
-            if recursive:
-                usage = flow_obj.subflow_inst_depends_recursive()
-            else:
-                usage_with_container = flow_obj.subflow_inst_depends()
-                usage = [
-                    {"flow": item["flow"], "Container": item["Container"], "direct": True}
-                    for item in usage_with_container
-                ]
-
+            usage = flow_obj.subflow_inst_depends(recursive=recursive)
             return {"flow": flow_name, "usage": usage}
 
         except Exception as e:
             return {"flow": flow_name, "usage": [], "error": str(e)}
 
-    def subflow_inst_depends(self) -> list:
-        """Search Flows for Container instances that use this flow as a subflow.
+    def subflow_inst_depends(self, recursive: bool = False) -> list:
+        """Search Flows for Container instances that use this flow as a subflow, optionally including indirect usages.
 
-        Returns:
-            list: List of dicts with flow and container instance information
-                  [{"flow": str, "Container": str}, ...]
-        """
-        # Check if this Flow is used as a Container in other Flows
-        flows = self.movaidb.get({"Flow": {"*": {"Container": "*"}}})
-        parent_flows = []
-
-        if not flows or flows.get("Flow") is None or len(flows.get("Flow")) == 0:
-            return parent_flows
-
-        for flow_name, containers in flows.get("Flow").items():
-            for container_name, params in containers.get("Container", {}).items():
-                if params.get("ContainerFlow") == self.name:
-                    parent_flows.append({"flow": flow_name, "Container": container_name})
-
-        return parent_flows
-
-    def subflow_inst_depends_recursive(self) -> list:
-        """Search Flows for Container instances that use this flow as a subflow, including indirect usages.
+        Args:
+            recursive (bool): If True, include indirect usages through nested subflows. If False, only direct usages.
 
         Returns:
             list: List of dicts with structure:
@@ -991,12 +964,15 @@ class Flow(Scope):
                 if params.get("ContainerFlow") == self.name:
                     direct_flows.append((flow_name, container_name))
 
-        # Recursive search: find all flows that use the direct flows, etc.
         result = []
 
         # Add direct usages with container names (without path - it's redundant for direct usages)
         for flow_name, container_name in direct_flows:
             result.append({"flow": flow_name, "Container": container_name, "direct": True})
+
+        # Early return if not recursive
+        if not recursive:
+            return result
 
         # Track which (flow, path) combinations we've already added to avoid duplicates
         visited_paths = set()

@@ -125,7 +125,14 @@ class Node(Scope):
 
     def remove(self, force=False) -> bool:
         # Check if Node has instances on existing Flows
-        node_inst_ref_keys = self.node_inst_depends()
+        direct_usages = self.node_inst_depends()
+
+        node_inst_ref_keys = []
+        for usage in direct_usages:
+            flow_name = usage["flow"]
+            node_inst_name = usage["NodeInst"]
+            dict_key = {"Flow": {flow_name: {"NodeInst": {node_inst_name: "*"}}}}
+            node_inst_ref_keys.append(dict_key)
 
         # Check if Node Ports has instances on existing Flows
         ports_inst = {}
@@ -321,25 +328,11 @@ class Node(Scope):
 
         return node_ref_keys
 
-    def node_inst_depends(self) -> list:
-        """Search Flows for NodeInstances"""
+    def node_inst_depends(self, recursive: bool = False) -> list:
+        """Search Flows for NodeInstances, optionally including indirect usages through subflows.
 
-        # Check if Node has instances on existing Flows
-        flows = self.movaidb.get({"Flow": {"*": {"NodeInst": "*"}}})
-        node_inst_ref_keys = []
-        if not flows or flows.get("Flow") is None or len(flows.get("Flow")) == 0:
-            return node_inst_ref_keys
-
-        for flow_name, node_insts in flows.get("Flow").items():
-            for node_inst_name, params in node_insts.get("NodeInst").items():
-                if params.get("Template") == self.name:
-                    dict_key = {"Flow": {flow_name: {"NodeInst": {node_inst_name: "*"}}}}
-                    node_inst_ref_keys.append(dict_key)
-
-        return node_inst_ref_keys
-
-    def node_inst_depends_recursive(self) -> list:
-        """Search Flows for NodeInstances, including indirect usages through subflows.
+        Args:
+            recursive (bool): If True, include indirect usages through subflows. If False, only direct usages.
 
         Returns:
             list: List of dicts with structure:
@@ -366,6 +359,10 @@ class Node(Scope):
         # Add direct usages with NodeInst names (without path - it's redundant for direct usages)
         for flow_name, node_inst_name in direct_flows:
             result.append({"flow": flow_name, "NodeInst": node_inst_name, "direct": True})
+
+        # Early return if not recursive
+        if not recursive:
+            return result
 
         # Find indirect usages by checking which flows use our direct flows as subflows
         all_flows = self.movaidb.get({"Flow": {"*": {"Container": "*"}}})
@@ -437,7 +434,6 @@ class Node(Scope):
         try:
             # Verify node exists by reading a property
             node_obj = cls(node_name)
-            _ = node_obj.Label
         except (DoesNotExist, KeyError, AttributeError):
             return {
                 "node": node_name,
@@ -447,17 +443,7 @@ class Node(Scope):
 
         try:
             # Get usage information
-            if recursive:
-                usage = node_obj.node_inst_depends_recursive()
-            else:
-                # Convert dict_keys format to detailed flow list
-                usage_with_inst = node_obj.node_inst_depends()
-                usage = []
-                for item in usage_with_inst:
-                    flow_name = list(item["Flow"].keys())[0]
-                    node_inst = list(item["Flow"][flow_name]["NodeInst"].keys())[0]
-                    usage.append({"flow": flow_name, "NodeInst": node_inst, "direct": True})
-
+            usage = node_obj.node_inst_depends(recursive=recursive)
             return {"node": node_name, "usage": usage}
 
         except Exception as e:
