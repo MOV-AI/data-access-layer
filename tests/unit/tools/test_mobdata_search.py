@@ -60,9 +60,9 @@ class TestMobdataSearchCommands:
         from dal.tools.mobdata import main
 
         # Build command line arguments
-        cmd_args = ["mobdata", "usage-search", "--type", obj_type, "--name", obj_name]
-        if recursive:
-            cmd_args.append("--recursive")
+        cmd_args = ["mobdata", "usage-search", obj_type.lower(), obj_name]
+        if not recursive:
+            cmd_args.append("--individual")
 
         # Mock sys.argv to simulate command-line invocation
         with patch.object(sys, "argv", cmd_args):
@@ -72,7 +72,7 @@ class TestMobdataSearchCommands:
 
     def test_search_node_command_direct_usage(self, global_db, capsys):
         """Test mobdata search command for node usage without recursion."""
-        # Run: mobdata search --type Node --name NodeSub1
+        # Run: mobdata usage-search node NodeSub1
         return_code = self._run_mobdata_search("Node", "NodeSub1", recursive=False)
 
         # Command should succeed
@@ -89,7 +89,7 @@ class TestMobdataSearchCommands:
 
     def test_search_node_command_single_usage(self, global_db, capsys):
         """Test mobdata search command for a node used in only one flow."""
-        # Run: mobdata search --type Node --name NodeSub2
+        # Run: mobdata usage-search node NodeSub2
         return_code = self._run_mobdata_search("Node", "NodeSub2", recursive=False)
 
         assert return_code == 0
@@ -100,7 +100,7 @@ class TestMobdataSearchCommands:
 
     def test_search_node_command_nonexistent(self, global_db, capsys):
         """Test mobdata search command for a node that doesn't exist."""
-        # Run: mobdata search --type Node --name NonExistentNode
+        # Run: mobdata usage-search node NonExistentNode
         return_code = self._run_mobdata_search("Node", "NonExistentNode", recursive=False)
 
         # Should still return 0 (not a fatal error)
@@ -111,7 +111,7 @@ class TestMobdataSearchCommands:
 
     def test_search_flow_command_as_subflow_direct(self, global_db, capsys):
         """Test mobdata search command for flow usage as subflow without recursion."""
-        # Run: mobdata search --type Flow --name flow_1
+        # Run: mobdata usage-search flow flow_1
         return_code = self._run_mobdata_search("Flow", "flow_1", recursive=False)
 
         assert return_code == 0
@@ -123,7 +123,7 @@ class TestMobdataSearchCommands:
 
     def test_search_flow_command_not_used_as_subflow(self, global_db, capsys):
         """Test mobdata search command for a flow that is not used as a subflow."""
-        # Run: mobdata search --type Flow --name flow_2
+        # Run: mobdata usage-search flow flow_2
         return_code = self._run_mobdata_search("Flow", "flow_2", recursive=False)
 
         assert return_code == 0
@@ -133,7 +133,7 @@ class TestMobdataSearchCommands:
 
     def test_search_flow_command_nonexistent(self, global_db, capsys):
         """Test mobdata search command for a flow that doesn't exist."""
-        # Run: mobdata search --type Flow --name NonExistentFlow
+        # Run: mobdata usage-search flow NonExistentFlow
         return_code = self._run_mobdata_search("Flow", "NonExistentFlow", recursive=False)
 
         assert return_code == 0
@@ -143,7 +143,7 @@ class TestMobdataSearchCommands:
 
     def test_search_node_command_recursive(self, global_db, capsys):
         """Test mobdata search command for node usage with recursion."""
-        # Run: mobdata search --type Node --name NodeSub1 --recursive
+        # Run: mobdata usage-search node NodeSub1
         return_code = self._run_mobdata_search("Node", "NodeSub1", recursive=True)
 
         assert return_code == 0
@@ -180,7 +180,7 @@ class TestMobdataSearchCommands:
 
     def test_search_flow_command_recursive(self, global_db, capsys):
         """Test mobdata search command for flow usage as subflow with recursion."""
-        # Run: mobdata search --type Flow --name flow_1 --recursive
+        # Run: mobdata usage-search flow flow_1
         return_code = self._run_mobdata_search("Flow", "flow_1", recursive=True)
 
         assert return_code == 0
