@@ -1,6 +1,17 @@
 import json
 import sys
 
+from movai_core_shared.exceptions import DoesNotExist
+
+from dal.scopes.flow import Flow
+from dal.scopes.node import Node
+
+
+SCOPE_MAP = {
+    "node": Node,
+    "flow": Flow,
+}
+
 
 class Searcher:
     """Search for node and flow usage across the system."""
@@ -12,50 +23,6 @@ class Searcher:
             debug (bool): Enable debug output
         """
         self.debug = debug
-
-    def search_node_usage(self, node_name: str, recursive: bool = False) -> dict:
-        """Search for node usage across flows.
-
-        Args:
-            node_name (str): Name of the node to search for
-            recursive (bool): If True, include indirect usage through subflows
-
-        Returns:
-            dict: Usage information with structure:
-                {
-                    "node": str,
-                    "usage": List[dict],
-                    "error": str (optional)
-                }
-        """
-        from dal.scopes.node import Node
-
-        if self.debug:
-            print(f"Searching for node '{node_name}' (recursive={recursive})")
-
-        return Node.get_usage_info(node_name, recursive=recursive)
-
-    def search_flow_usage(self, flow_name: str, recursive: bool = False) -> dict:
-        """Search for flow usage as a subflow across other flows.
-
-        Args:
-            flow_name (str): Name of the flow to search for
-            recursive (bool): If True, include indirect usage through nested subflows
-
-        Returns:
-            dict: Usage information with structure:
-                {
-                    "flow": str,
-                    "usage": List[dict],
-                    "error": str (optional)
-                }
-        """
-        from dal.scopes.flow import Flow
-
-        if self.debug:
-            print(f"Searching for flow '{flow_name}' (recursive={recursive})")
-
-        return Flow.get_usage_info(flow_name, recursive=recursive)
 
     def print_results(self, result: dict, search_type: str):
         """Print search results in a readable format.
@@ -105,3 +72,26 @@ class Searcher:
         if self.debug:
             print("\nFull JSON result:")
             print(json.dumps(result, indent=2))
+
+    def search_usage(self, search_type: str, name: str) -> int:
+        """Search for usage of a node or flow.
+
+        Args:
+            search_type (str): Either "node" or "flow"
+            name (str): Name of the node or flow to search for
+
+        Returns:
+            int: Exit code (0 for success, 1 for failure)
+
+        """
+        try:
+            scope = SCOPE_MAP[search_type](name)
+        except DoesNotExist:
+            print(f"{search_type.capitalize()} '{name}' does not exist.")
+            return 1
+
+        usage = scope.get_usage_info()
+
+        self.print_results(usage, search_type)
+
+        return 0

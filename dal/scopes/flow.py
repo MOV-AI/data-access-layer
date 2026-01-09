@@ -905,51 +905,15 @@ class Flow(Scope):
         except AttributeError as error:
             LOGGER.error(error)
 
-    @classmethod
-    def get_usage_info(cls, flow_name: str, recursive: bool = False) -> dict:
-        """Get formatted usage information for a flow.
-
-        Args:
-            flow_name (str): Name of the flow to search for
-            recursive (bool): If True, include indirect usage through nested subflows
-
-        Returns:
-            dict: Usage information with structure:
-                {
-                    "flow": str,
-                    "usage": List[dict],
-                    "error": str (optional)
-                }
-        """
-        try:
-            # Verify flow exists by reading a property
-            flow_obj = cls(flow_name)
-        except (DoesNotExist, KeyError, AttributeError):
-            return {
-                "flow": flow_name,
-                "usage": [],
-                "error": f"Flow '{flow_name}' does not exist",
-            }
-
-        try:
-            # Get usage information
-            usage = flow_obj.subflow_inst_depends(recursive=recursive)
-            return {"flow": flow_name, "usage": usage}
-
-        except Exception as e:
-            return {"flow": flow_name, "usage": [], "error": str(e)}
-
-    def subflow_inst_depends(self, recursive: bool = False) -> list:
+    def get_usage_info(self) -> list:
         """Search Flows for Container instances that use this flow as a subflow, optionally including indirect usages.
-
-        Args:
-            recursive (bool): If True, include indirect usages through nested subflows. If False, only direct usages.
 
         Returns:
             list: List of dicts with structure:
                   - Direct usage: {"flow": str, "Container": str, "direct": True}
                   - Indirect usage: {"flow": str, "direct": False, "path": List[str]}
                   where path shows the chain from the top-level flow to this flow
+
         """
         # Check if this Flow is used as a Container in other Flows
         flows = self.movaidb.get({"Flow": {"*": {"Container": "*"}}})
@@ -969,10 +933,6 @@ class Flow(Scope):
         # Add direct usages with container names (without path - it's redundant for direct usages)
         for flow_name, container_name in direct_flows:
             result.append({"flow": flow_name, "Container": container_name, "direct": True})
-
-        # Early return if not recursive
-        if not recursive:
-            return result
 
         # Track which (flow, path) combinations we've already added to avoid duplicates
         visited_paths = set()
