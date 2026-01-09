@@ -1,4 +1,4 @@
-# vTBD
+# v3.18.0
 - [BP-1555](https://movai.atlassian.net/browse/BP-1555): MovaiDB now handles auxiliary logic for patterns and keys previously in backend/wsredissub
 
 # v3.17.0
