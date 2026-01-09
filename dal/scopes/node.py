@@ -124,7 +124,14 @@ class Node(Scope):
 
     def remove(self, force=False) -> bool:
         # Check if Node has instances on existing Flows
-        node_inst_ref_keys = self.node_inst_depends()
+        direct_usages = self.node_inst_depends()
+
+        node_inst_ref_keys = []
+        for usage in direct_usages:
+            flow_name = usage["flow"]
+            node_inst_name = usage["NodeInst"]
+            dict_key = {"Flow": {flow_name: {"NodeInst": {node_inst_name: "*"}}}}
+            node_inst_ref_keys.append(dict_key)
 
         # Check if Node Ports has instances on existing Flows
         ports_inst = {}
@@ -320,22 +327,102 @@ class Node(Scope):
 
         return node_ref_keys
 
-    def node_inst_depends(self) -> list:
-        """Search Flows for NodeInstances"""
+    def node_inst_depends(self, recursive: bool = False) -> list:
+        """Search Flows for NodeInstances, optionally including indirect usages through subflows.
 
+        Args:
+            recursive (bool): If True, include indirect usages through subflows. If False, only direct usages.
+
+        Returns:
+            list: List of dicts with structure:
+                  - Direct usage: {"flow": str, "NodeInst": str, "direct": True}
+                  - Indirect usage: {"flow": str, "direct": False, "path": List[str]}
+                  where path shows the chain from the top-level flow to the flow containing this node
+        """
         # Check if Node has instances on existing Flows
         flows = self.movaidb.get({"Flow": {"*": {"NodeInst": "*"}}})
-        node_inst_ref_keys = []
+
         if not flows or flows.get("Flow") is None or len(flows.get("Flow")) == 0:
-            return node_inst_ref_keys
+            return []
+
+        # Find direct usages with NodeInst names - store ALL instances
+        direct_flows = []  # [(flow_name, node_inst_name), ...]
 
         for flow_name, node_insts in flows.get("Flow").items():
             for node_inst_name, params in node_insts.get("NodeInst").items():
                 if params.get("Template") == self.name:
-                    dict_key = {"Flow": {flow_name: {"NodeInst": {node_inst_name: "*"}}}}
-                    node_inst_ref_keys.append(dict_key)
+                    direct_flows.append((flow_name, node_inst_name))
 
-        return node_inst_ref_keys
+        result = []
+
+        # Add direct usages with NodeInst names (without path - it's redundant for direct usages)
+        for flow_name, node_inst_name in direct_flows:
+            result.append({"flow": flow_name, "NodeInst": node_inst_name, "direct": True})
+
+        # Early return if not recursive
+        if not recursive:
+            return result
+
+        # Find indirect usages by checking which flows use our direct flows as subflows
+        all_flows = self.movaidb.get({"Flow": {"*": {"Container": "*"}}})
+        if all_flows and all_flows.get("Flow"):
+            # Track which (flow, path) combinations we've already added to avoid duplicates
+            visited_paths = set()
+
+            def find_parents(flow_name: str, node_inst_name: str, current_path: list):
+                for parent_flow, containers in all_flows.get("Flow", {}).items():
+                    for parent_container, params in containers.get("Container", {}).items():
+                        if params.get("ContainerFlow") == flow_name:
+                            new_path = [
+                                {"flow": parent_flow, "Container": parent_container}
+                            ] + current_path
+
+                            # Build path key properly handling mixed Container/NodeInst keys
+                            # The path is a chain where each element has either "Container" or "NodeInst"
+                            path_tuple = tuple(
+                                (p["flow"], p.get("Container") or p.get("NodeInst"))
+                                for p in new_path
+                            )
+                            path_key = (parent_flow, parent_container, path_tuple)
+
+                            # Only add if we haven't seen this exact path before
+                            if path_key not in visited_paths:
+                                visited_paths.add(path_key)
+
+                                # Add as indirect usage (even if it's also a direct usage)
+                                # A flow can contain a node directly AND contain it indirectly via a subflow
+                                result.append(
+                                    {
+                                        "flow": parent_flow,
+                                        "NodeInst": node_inst_name,
+                                        "direct": False,
+                                        "path": new_path,
+                                    }
+                                )
+
+                                # Continue recursing to find higher-level parents
+                                find_parents(parent_flow, node_inst_name, new_path)
+                            break
+
+            for flow_name, node_inst_name in direct_flows:
+                find_parents(
+                    flow_name,
+                    node_inst_name,
+                    [{"flow": flow_name, "NodeInst": node_inst_name}],
+                )
+
+        return result
+
+    def get_usage_info(self) -> list:
+        """Search Flows for NodeInstances, including indirect usages through subflows.
+
+        Returns:
+            list: List of dicts with structure:
+                  - Direct usage: {"flow": str, "NodeInst": str, "direct": True}
+                  - Indirect usage: {"flow": str, "direct": False, "path": List[str]}
+                  where path shows the chain from the top-level flow to the flow containing this node
+        """
+        return self.node_inst_depends(recursive=True)
 
     def port_inst_depends(self, port_name: str) -> list:
         """Loop through NodeInst's Links and return list with matching links dict_keys"""

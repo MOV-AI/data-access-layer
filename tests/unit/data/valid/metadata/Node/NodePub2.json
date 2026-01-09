@@ -1,0 +1,19 @@
+{
+    "Node": {
+        "NodePub2": {
+            "Info": "Second publisher",
+            "Label": "NodePub2",
+            "LastUpdate": "04/06/2020 at 07:10:28",
+            "PortsInst": {
+                "pubport": {
+                    "Message": "Float32",
+                    "Out": {"out": {"Message": "std_msgs/Float32"}},
+                    "Package": "std_msgs",
+                    "Template": "ROS1/Publisher"
+                }
+            },
+            "Type": "ROS1/Node",
+            "Remappable": "True"
+        }
+    }
+}

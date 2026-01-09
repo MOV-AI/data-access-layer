@@ -1,0 +1,36 @@
+{
+"Flow": {
+    "flow_4": {
+        "Description": "Test flow with nodes and a subflow",
+        "ExposedPorts": {
+            "NodePub1": {"pub": ["pubport/out"]},
+            "NodeSub1": {"sub": ["subport/in"]},
+            "Subflow3": {"flow_3": ["subflowport/in", "subflowport/out"]}
+        },
+        "Label": "flow_4",
+        "LastUpdate": "16/12/2025 at 17:20:00",
+        "Links": {
+            "abc123-test-link-flow4": {
+                "From": "nodepub1/pubport/out",
+                "To": "nodesub1/subport/in"
+            }
+        },
+        "NodeInst": {
+            "pub": {
+                "NodeLabel": "NodePub1",
+                "Template": "NodePub1"
+            },
+            "sub": {
+                "NodeLabel": "NodeSub1",
+                "Template": "NodeSub1"
+            }
+        },
+        "Container": {
+            "subflow3": {
+                "ContainerLabel": "Subflow3",
+                "ContainerFlow": "flow_3"
+            }
+        }
+    }
+}
+}

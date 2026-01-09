@@ -1,3 +1,7 @@
+# vTBD
+- [BP-1552](https://movai.atlassian.net/browse/BP-1552) Search for node and subflow usage in robot
+  - Add mobdata search commands to search for Node and Flow usage
+
 # v3.17.0
 - [BP-1418](https://movai.atlassian.net/browse/BP-1418): Update GraphicScene PUT/POST to fullfil FE requirements
 
