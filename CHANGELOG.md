@@ -1,3 +1,6 @@
+# vTBD
+- [BP-1555](https://movai.atlassian.net/browse/BP-1555): MovaiDB now handles auxiliary logic for patterns and keys previously in backend/wsredissub
+
 # v3.17.0
 - [BP-1418](https://movai.atlassian.net/browse/BP-1418): Update GraphicScene PUT/POST to fullfil FE requirements
 
