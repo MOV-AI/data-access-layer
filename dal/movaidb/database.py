@@ -345,7 +345,6 @@ class MovaiDB:
         _api_version: str = "latest",
         *,
         loop=None,
-        redis_client=None,
         databases=None,
     ) -> None:
         # TODO this results in different classes being used
@@ -376,7 +375,6 @@ class MovaiDB:
                 self.loop = asyncio.new_event_loop()
 
         self._background_tasks = set()
-        self._redis_client = redis_client
 
     def search(self, _input: dict) -> list:
         """
@@ -1224,7 +1222,7 @@ class MovaiDB:
         Returns:
             list: List of keys matching the pattern
         """
-        _conn: aioredis.Redis = self._redis_client.db_slave
+        _conn: aioredis.Redis = self.movaidb.db_slave
         keys = await _conn.keys(pattern)
         keys.sort(key=lambda x: x.lower())
         return keys
@@ -1241,7 +1239,7 @@ class MovaiDB:
         if not keys:
             return {}
 
-        _conn: aioredis.Redis = self._redis_client.db_slave
+        _conn: aioredis.Redis = self.movaidb.db_slave
         output = []
 
         try:
@@ -1279,7 +1277,7 @@ class MovaiDB:
         """
         output = {}
         key_values = []
-        _conn: aioredis.Redis = self._redis_client.db_slave
+        _conn: aioredis.Redis = self.movaidb.db_slave
         if not isinstance(keys, list):
             keys = [keys]
         tasks = []
