@@ -9,11 +9,12 @@
    - Moawiya Mograbi (moawiya@mov.ai) - 2022
 """
 
+from collections import defaultdict
 import fnmatch
 import asyncio
 import pickle
 import warnings
-from os import getenv, path
+from os import path
 from re import split
 from typing import Any, Dict, Generator, List, Literal, Optional, Protocol, Tuple, Union
 
@@ -22,8 +23,18 @@ import dal
 import redis
 from deepdiff import DeepDiff
 from redis.client import Pipeline
-from redis.connection import Connection
 
+from dal.movaidb.redis_clients import (
+    Redis,
+    AioRedisClient,  # noqa: F401 - for backward compatibility
+    REDIS_MASTER_HOST,
+    REDIS_MASTER_PORT,
+    REDIS_SLAVE_HOST,
+    REDIS_SLAVE_PORT,
+    REDIS_LOCAL_HOST,
+    REDIS_LOCAL_PORT,
+)
+from dal.movaidb.keys_cache import RedisIndexedCache, RedisType
 from dal.classes import Singleton
 from dal.plugins.classes import Resource
 from movai_core_shared.exceptions import InvalidStructure
@@ -36,6 +47,29 @@ LOGGER = Log.get_logger("dal.mov.ai")
 
 
 dal_directory = path.dirname(dal.__file__)
+
+
+class Subscriber(Protocol):
+    def __call__(self, data: dict, deleted: bool) -> None:
+        """Expected signature for subscriber functions.
+
+        data: Info about the key that was changed. The format is
+              the same as the one returned by `search_by_args` and
+              other similar MovaiDB methods.
+        deleted: True if the key was deleted, False if it was updated.
+        """
+
+
+class SubscribeManager(metaclass=Singleton):
+    _key_map = {}
+
+    @classmethod
+    def register_sub(cls, key):
+        cls._key_map[key] = None
+
+    @classmethod
+    def unregister_sub(cls, key):
+        del cls._key_map[key]
 
 
 def longest_common_prefix(strings: List[str]) -> str:
@@ -71,15 +105,61 @@ def longest_common_prefix(strings: List[str]) -> str:
     return strings[0]
 
 
-class Subscriber(Protocol):
-    def __call__(self, data: dict, deleted: bool) -> None:
-        """Expected signature for subscriber functions.
+def extract_keys(
+    data: Dict[str, Any], schema: Dict[str, Any], path: str = ""
+) -> List[Tuple[str, Any, str]]:
+    """
+    Validates a nested dictionary against a schema and returns a list of (key_path, value, type).
 
-        data: Info about the key that was changed. The format is
-              the same as the one returned by `search_by_args` and
-              other similar MovaiDB methods.
-        deleted: True if the key was deleted, False if it was updated.
-        """
+    Args:
+        data: The input dictionary to validate.
+        schema: The schema definition.
+        path: Internal recursive key path (used during traversal).
+
+    Returns:
+        A list of (key_path, value, schema_type) tuples.
+
+    Raises:
+        ValueError: If the input does not match the schema.
+    """
+    results = []
+
+    for key, value in data.items():
+        matched = False
+        next_schema = None
+        key_path = path
+
+        for schema_key, schema_val in schema.items():
+            if schema_key.startswith("$"):
+                # Dynamic key match
+                key_path += f"{key},"
+                next_schema = schema_val
+                matched = True
+                break
+            if schema_key == key:
+                # Static key match
+                key_path += f"{key}:"
+                next_schema = schema_val
+                matched = True
+                break
+
+        if not matched:
+            raise ValueError(f"Unexpected key '{key}' at path '{path}'")
+
+        # If the next schema level is a dict, recurse
+        if isinstance(value, dict) and isinstance(next_schema, dict):
+            results.extend(extract_keys(value, next_schema, key_path))
+        else:
+            schema_type = next_schema
+
+            # Handle &name references (use the value in the key)
+            if isinstance(schema_type, str) and schema_type.startswith("&"):
+                key_path += str(value)
+                value = ""  # Store empty value for reference nodes
+
+            results.append((key_path, value, schema_type))
+
+    return results
 
 
 class SubscribeManager(metaclass=Singleton):
@@ -96,171 +176,6 @@ class SubscribeManager(metaclass=Singleton):
     @classmethod
     def is_registered(cls, key):
         return key in cls._key_map
-
-
-class AioRedisClient(metaclass=Singleton):
-    """
-    A Singleton class implementing AioRedis API.
-    """
-
-    _databases = {}
-    loop = asyncio.get_event_loop()
-
-    @classmethod
-    def _register_databases(cls):
-        if not cls._databases:
-            cls._databases = {
-                "db_slave": {
-                    "name": "db_slave",
-                    "host": MovaiDB.REDIS_SLAVE_HOST,
-                    "port": MovaiDB.REDIS_SLAVE_PORT,
-                    "mode": None,
-                    "enabled": True,
-                },
-                "db_local": {
-                    "name": "db_local",
-                    "host": MovaiDB.REDIS_LOCAL_HOST,
-                    "port": MovaiDB.REDIS_LOCAL_PORT,
-                    "mode": None,
-                    "enabled": True,
-                },
-                "slave_pubsub": {
-                    "name": "slave_pubsub",
-                    "host": MovaiDB.REDIS_SLAVE_HOST,
-                    "port": MovaiDB.REDIS_SLAVE_PORT,
-                    "mode": "SUB",
-                    "enabled": True,
-                },
-                "local_pubsub": {
-                    "name": "local_pubsub",
-                    "host": MovaiDB.REDIS_LOCAL_HOST,
-                    "port": MovaiDB.REDIS_LOCAL_PORT,
-                    "mode": "SUB",
-                    "enabled": True,
-                },
-                "db_global": {
-                    "name": "db_global",
-                    "host": MovaiDB.REDIS_MASTER_HOST,
-                    "port": MovaiDB.REDIS_MASTER_PORT,
-                    "mode": None,
-                    "enabled": False,
-                },
-            }
-
-    async def shutdown(self):
-        """shutdown connections"""
-        for conn, _ in type(self)._databases.items():
-            if getattr(self, conn) is not None:
-                getattr(self, conn).close()
-        tasks = [
-            getattr(self, db_name).wait_closed()
-            for db_name in type(self)._databases.keys()
-            if getattr(self, db_name) is not None
-        ]
-        await asyncio.gather(*tasks, return_exceptions=True)
-
-    @classmethod
-    async def get_client(cls):
-        """will return class singleton instance
-
-        Returns:
-            AioRedisClient: object of class AioRedisClient
-        """
-        cls._register_databases()
-        instance = cls()
-        await instance._init_databases()
-        return instance
-
-    async def _init_databases(self):
-        """will initialize connection pools"""
-
-        with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", category=DeprecationWarning)
-            for conn_name, conn_config in type(self)._databases.items():
-                conn_enabled = conn_config.get("enabled", False)
-                _conn = None
-                if conn_enabled:
-                    _conn = getattr(self, conn_name, None)
-                    if not _conn or _conn.closed:
-                        try:
-                            address = (conn_config["host"], conn_config["port"])
-                            if conn_config.get("mode") == "SUB":
-                                _conn = await aioredis.create_pool(
-                                    address,
-                                    minsize=1,
-                                    maxsize=100,
-                                    pool_cls=aioredis.ConnectionsPool,
-                                )
-                            else:
-                                _conn = await aioredis.create_redis_pool(
-                                    address,
-                                    minsize=2,
-                                    maxsize=100,
-                                    timeout=1,
-                                    pool_cls=aioredis.ConnectionsPool,
-                                )
-
-                        except Exception as e:
-                            LOGGER.error(e, exc_info=True)
-                            raise e
-                setattr(self, conn_name, _conn)
-
-    @classmethod
-    def enable_db(cls, db_name):
-        """will enable the given db name
-
-        Args:
-            db_name (str): database name
-        """
-        cls._register_databases()
-        cls._databases[db_name]["enabled"] = True
-
-
-class Redis(metaclass=Singleton):
-    """
-    A Singleton class implementing Redis API.
-    """
-
-    def __init__(self):
-        self.master_pool = redis.ConnectionPool(
-            connection_class=Connection,
-            host=MovaiDB.REDIS_MASTER_HOST,
-            port=MovaiDB.REDIS_MASTER_PORT,
-            db=0,
-        )
-        self.slave_pool = redis.ConnectionPool(
-            connection_class=Connection,
-            host=MovaiDB.REDIS_SLAVE_HOST,
-            port=MovaiDB.REDIS_SLAVE_PORT,
-            db=0,
-        )
-        self.local_pool = redis.ConnectionPool(
-            connection_class=Connection,
-            host=MovaiDB.REDIS_LOCAL_HOST,
-            port=MovaiDB.REDIS_LOCAL_PORT,
-            db=0,
-        )
-
-        self.thread = None
-
-    @property
-    def db_global(self) -> redis.Redis:
-        return redis.Redis(connection_pool=self.master_pool, decode_responses=False)
-
-    @property
-    def db_slave(self) -> redis.Redis:
-        return redis.Redis(connection_pool=self.slave_pool, decode_responses=False)
-
-    @property
-    def db_local(self) -> redis.Redis:
-        return redis.Redis(connection_pool=self.local_pool, decode_responses=False)
-
-    @property
-    def slave_pubsub(self) -> redis.client.PubSub:
-        return self.db_slave.pubsub()
-
-    def local_pubsub(self) -> redis.client.PubSub:
-        return self.db_local.pubsub()
 
 
 class MovaiDB:
@@ -332,12 +247,13 @@ class MovaiDB:
             """
             return type(self).__API__[self.__version]
 
-    REDIS_MASTER_HOST = getenv("REDIS_MASTER_HOST", "redis-master")
-    REDIS_MASTER_PORT = int(getenv("REDIS_MASTER_PORT", 6379))
-    REDIS_SLAVE_PORT = int(getenv("REDIS_SLAVE_PORT", REDIS_MASTER_PORT))
-    REDIS_LOCAL_HOST = getenv("REDIS_LOCAL_HOST", "redis-local")
-    REDIS_LOCAL_PORT = int(getenv("REDIS_LOCAL_PORT", 6379))
-    REDIS_SLAVE_HOST = getenv("REDIS_SLAVE_HOST", REDIS_MASTER_HOST)
+    # for backward compatibility
+    REDIS_MASTER_HOST = REDIS_MASTER_HOST
+    REDIS_MASTER_PORT = REDIS_MASTER_PORT
+    REDIS_SLAVE_PORT = REDIS_SLAVE_PORT
+    REDIS_LOCAL_HOST = REDIS_LOCAL_HOST
+    REDIS_LOCAL_PORT = REDIS_LOCAL_PORT
+    REDIS_SLAVE_HOST = REDIS_SLAVE_HOST
 
     def __init__(
         self,
@@ -360,6 +276,8 @@ class MovaiDB:
             self.db_write: redis.Redis = self.movaidb.db_local
             self.pubsub: redis.client.PubSub = self.movaidb.local_pubsub
 
+        self.indexed_cache = RedisIndexedCache(self.db_read)
+
         if _api_version == "latest":
             self.api_struct = MovaiDB.API(url=SCHEMA_FOLDER_PATH).get_api()
         else:
@@ -375,6 +293,9 @@ class MovaiDB:
                 self.loop = asyncio.new_event_loop()
 
         self._background_tasks = set()
+
+    def initialize(self) -> None:
+        self.indexed_cache.initialize_keys_cache()
 
     def search(self, _input: dict) -> list:
         """
@@ -441,6 +362,28 @@ class MovaiDB:
         keys.sort(key=str.lower)
         return keys
 
+    def get_cached_keys(self, _input: dict) -> Dict[RedisType, List[str]]:
+        """
+        Returns a list of keys from the indexed cache that match the input,
+        grouped by the type of the value.
+        This is used to avoid unnecessary SCANs.
+        """
+        output_keys = defaultdict(list)
+        for key, _, _ in self.dict_to_keys(_input):
+            if "*" in key:
+                for keyinfo in self.indexed_cache.get_keys_by_prefix(key):
+                    output_keys[keyinfo.type].append(keyinfo.key)
+            else:
+                key_type = self.db_read.type(key).decode()
+                if key_type == "none":
+                    LOGGER.warning("Key '%s' not found in Redis.", key)
+                    continue
+                output_keys[RedisType(key_type)].append(key)
+        LOGGER.debug(
+            "get_cached_keys called with input: %s, returning keys: %s", _input, output_keys
+        )
+        return output_keys
+
     def get2(self, _input: dict) -> Dict[str, Any]:
         keys = self.search_wild(_input)
         scan_values = [(keys[idx], "") for idx, _ in enumerate(keys)]
@@ -448,7 +391,17 @@ class MovaiDB:
 
     def get_value(self, _input: dict, search=True) -> Any:
         if search:  # value might be on the key so we need a search
-            keys = self.search(_input)
+            # keys = self.search(_input)
+            all_keys = self.get_cached_keys(_input)
+            keys = all_keys.pop(RedisType.STRING, [])
+            if all_keys:
+                LOGGER.warning(
+                    "get_value called with a dict that has more than one type of value. "
+                    "Returning only the string values."
+                    "%s - %s",
+                    all_keys,
+                    keys,
+                )
         else:
             keys = [self.dict_to_keys(_input)[0][0]]
 
@@ -480,25 +433,34 @@ class MovaiDB:
             dict
         """
         keys: Union[str, List[str]]
-        try:
-            keys = self.search(_input)
-        except:
-            keys = self.search_wild(_input)
+        # try:
+        #     keys = self.search(_input)
+        # except:
+        #     keys = self.search_wild(_input)
 
         kv = list()
-        for idx, value in enumerate(self.db_read.mget(keys)):
-            if value:
-                kv.append((keys[idx], self.decode_value(value)))
-            else:  # no value
-                try:  # Is it a hash?
-                    get_hash = self.db_read.hgetall(keys[idx])
-                    kv.append((keys[idx], self.sort_dict(self.decode_hash(get_hash))))
-                except:
-                    try:  # Is it a list?
-                        get_list = self.db_read.lrange(keys[idx], 0, -1)
-                        kv.append((keys[idx], self.decode_list(get_list)))
-                    except:  # is just a None...
-                        pass
+        for rtype, keys in self.get_cached_keys(_input).items():
+            if rtype == RedisType.STRING:
+                for key, value in zip(keys, self.db_read.mget(keys)):
+                    if not value:
+                        LOGGER.error("Key '%s' not found in Redis. The index cache is out of sync.")
+                        continue
+                    kv.append((key, self.decode_value(value)))
+
+            elif rtype == RedisType.HASH:
+                for key in keys:
+                    get_hash = self.db_read.hgetall(key)
+                    if not get_hash:
+                        LOGGER.error("Key '%s' not found in Redis. The index cache is out of sync.")
+                        continue
+                    kv.append((key, self.sort_dict(self.decode_hash(get_hash))))
+            elif rtype == RedisType.LIST:
+                for key in keys:
+                    get_list = self.db_read.lrange(key, 0, -1)
+                    if not get_list:
+                        LOGGER.error("Key '%s' not found in Redis. The index cache is out of sync.")
+                        continue
+                    kv.append((key, self.decode_list(get_list)))
 
         return self.keys_to_dict(kv)
 
@@ -530,10 +492,13 @@ class MovaiDB:
                     previous_key = self.search(search_dict)
                     if not previous_key:
                         db_set.set(key, value, ex=ex, px=px, nx=nx, xx=xx)
+                        self.indexed_cache.add_to_index(key, RedisType.STRING)
                     elif len(previous_key) == 1:
                         db_set.rename(previous_key[0], key)
+                        self.indexed_cache.remove_from_index(previous_key[0])
+                        self.indexed_cache.add_to_index(key, RedisType.STRING)
                     else:
-                        print("More that 1 key in Redis for the same structure value")
+                        LOGGER.warning("More that 1 key in Redis for the same structure value")
                 else:
                     if source == "hash":
                         assert isinstance(value, dict)
@@ -541,14 +506,18 @@ class MovaiDB:
                         if value:
                             db_set.delete(key)
                             db_set.hmset(key, value)
+                            self.indexed_cache.remove_from_index(key)
+                            self.indexed_cache.add_to_index(key, RedisType.HASH)
                     elif source == "list":
                         assert isinstance(value, list)
                         for lval in value:
                             if pickl:
                                 lval = pickle.dumps(lval)
                             db_set.rpush(key, lval)
+                        self.indexed_cache.add_to_index(key, RedisType.LIST)
                     else:
                         db_set.set(key, value, ex=ex, px=px, nx=nx, xx=xx)
+                        self.indexed_cache.add_to_index(key, RedisType.STRING)
             except Exception as e:
                 LOGGER.error("Something went wrong while saving this in Redis: %s", e)
 
@@ -568,6 +537,8 @@ class MovaiDB:
             return 0
 
         res = db_del.delete(*keys)
+        for key in keys:
+            self.indexed_cache.remove_from_index(key)
         # if we're using a Redis pipeline, we won't get
         # the result until it is executed
         return res if isinstance(res, int) else None
@@ -590,6 +561,8 @@ class MovaiDB:
             return 0
 
         res = db_del.delete(*keys)
+        for key in keys:
+            self.indexed_cache.remove_from_index(key)
         # if we're using a Redis pipeline, we won't get
         # the result until it is executed
         return res if isinstance(res, int) else None
@@ -624,6 +597,8 @@ class MovaiDB:
 
         for old, new in keys:
             self.db_write.rename(old, new)
+            self.indexed_cache.remove_from_index(old)
+            self.indexed_cache.add_to_index(new)
 
         return True  # need also local
 
@@ -688,7 +663,7 @@ class MovaiDB:
             try:
                 self.db_write.lpush(key, value)
             except:
-                print('Something went wrong while saving "%s" in Redis' % (key))
+                LOGGER.error('Something went wrong while saving "%s" in Redis', key)
 
     def push(self, _input: dict, pickl: bool = True):
         """Push a value to the right of a Redis list"""
@@ -699,7 +674,7 @@ class MovaiDB:
             try:
                 self.db_write.rpush(key, value)
             except:
-                print('Something went wrong while saving "%s" in Redis' % (key))
+                LOGGER.error('Something went wrong while saving "%s" in Redis', key)
 
     def rpop(self, _input: dict):
         """Pop a value from the right of a Redis list"""
@@ -739,7 +714,7 @@ class MovaiDB:
                 for hash_field in value:
                     self.db_write.hset(key, hash_field, pickle.dumps(value[hash_field]))
             except:
-                print('Something went wrong while saving "%s" in Redis' % (key))
+                LOGGER.error('Something went wrong while saving "%s" in Redis', key)
 
     def hget(self, _input: dict, hash_field: str, search=True):
         """Return the value of a key within the hash name"""
@@ -767,7 +742,13 @@ class MovaiDB:
     def get_list(self, _input: dict, search=True) -> Any:
         """Gets a full list from Redis"""
         if search:
-            keys = self.search(_input)
+            all_keys = self.get_cached_keys(_input)
+            keys = all_keys.pop(RedisType.LIST, [])
+            if all_keys:
+                LOGGER.warning(
+                    "get_value called with a dict that has more than one type of value. "
+                    "Returning only the list values."
+                )
         else:
             # just convert the dict to a key
             keys = [self.dict_to_keys(_input)[0][0]]
@@ -778,7 +759,13 @@ class MovaiDB:
     def get_hash(self, _input: dict, search=True) -> Any:
         """Gets a full hash from Redis"""
         if search:
-            keys = self.search(_input)
+            all_keys = self.get_cached_keys(_input)
+            keys = all_keys.pop(RedisType.HASH, [])
+            if all_keys:
+                LOGGER.warning(
+                    "get_value called with a dict that has more than one type of value. "
+                    "Returning only the hash values."
+                )
         else:
             # just convert the dict to a key
             keys = [self.dict_to_keys(_input)[0][0]]
@@ -815,7 +802,7 @@ class MovaiDB:
             try:
                 self.db_write.hmset(key, value)
             except:
-                print('Something went wrong while saving "%s" in Redis' % (key))
+                LOGGER.error('Something went wrong while saving "%s" in Redis', key)
             self.db_write.publish(key, str(changed_hkeys))
 
     # ===================  Pipe Commands  =================================
@@ -830,45 +817,9 @@ class MovaiDB:
         return pipe.execute()
 
     # ===================  Convert and Validate  ==========================
-    @classmethod
-    def validate(
-        cls, d: Dict[str, Any], api: Dict[str, Any], base_key: str, keys: List[Tuple[str, Any, Any]]
-    ):
-        """Validation before safe in database"""
-        for k, v in d.items():
-            key = base_key
-            is_ok = False
-            for k_api, _ in api.items():
-                if k_api[0] == "$":
-                    key += k + ","
-                    temp_api = api[k_api]
-                    is_ok = True
-                    break
-                elif k == k_api:
-                    key += k + ":"
-                    temp_api = api[k]
-                    is_ok = True
-                    break
-
-            if not is_ok:
-                error_msg = f"Structure provided does not exist: {d}"
-                LOGGER.error(error_msg)
-                raise Exception(error_msg)
-            if isinstance(v, dict) and isinstance(temp_api, dict):
-                cls.validate(v, temp_api, key, keys)
-            else:
-                value = v
-                if temp_api[0] == "&" and v is not None:
-                    key += v
-                    value = ""
-                key_val = (key, value, temp_api)
-                keys.append(key_val)
-
-    def dict_to_keys(self, _input: dict, validate=None):
+    def dict_to_keys(self, _input: dict, validate=None) -> List[Tuple[str, Any, str]]:
         # Keys is a list of tuples with (key, value, source)
-        keys: List[Tuple[str, Any, Any]] = list()  # careful with class variables...
-        self.validate(_input, self.api_struct, "", keys)
-        return keys
+        return extract_keys(_input, self.api_struct)
 
     @staticmethod
     def keys_to_dict(kv: List[Tuple[str, Any]]):
