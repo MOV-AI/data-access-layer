@@ -341,11 +341,11 @@ class MovaiDB:
 
     def __init__(
         self,
-        redis_client=None,
         db: str = "global",
         _api_version: str = "latest",
         *,
         loop=None,
+        redis_client=None,
         databases=None,
     ) -> None:
         # TODO this results in different classes being used
