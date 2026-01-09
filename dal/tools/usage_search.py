@@ -1,5 +1,4 @@
 import json
-import sys
 
 from movai_core_shared.exceptions import DoesNotExist
 
@@ -24,20 +23,13 @@ class Searcher:
         """
         self.debug = debug
 
-    def print_results(self, result: dict, search_type: str):
+    def print_results(self, obj_name: str, usage: list, search_type: str):
         """Print search results in a readable format.
 
         Args:
             result (dict): Search result from search_node or search_flow
             search_type (str): Either "node" or "flow"
         """
-
-        if "error" in result:
-            print(f"Error: {result['error']}", file=sys.stderr)
-            return
-
-        obj_name = result.get(search_type)
-        usage = result.get("usage", [])
 
         if not usage:
             print(f"{search_type.capitalize()} '{obj_name}' is not used in any flows.")
@@ -71,7 +63,7 @@ class Searcher:
 
         if self.debug:
             print("\nFull JSON result:")
-            print(json.dumps(result, indent=2))
+            print(json.dumps(usage, indent=2))
 
     def search_usage(self, search_type: str, name: str) -> int:
         """Search for usage of a node or flow.
@@ -88,10 +80,10 @@ class Searcher:
             scope = SCOPE_MAP[search_type](name)
         except DoesNotExist:
             print(f"{search_type.capitalize()} '{name}' does not exist.")
-            return 1
+            return 0
 
         usage = scope.get_usage_info()
 
-        self.print_results(usage, search_type)
+        self.print_results(name, usage, search_type)
 
         return 0

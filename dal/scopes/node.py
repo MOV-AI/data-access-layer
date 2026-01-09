@@ -24,7 +24,6 @@ from movai_core_shared.consts import (
 from dal.movaidb import MovaiDB
 from dal.scopes.scope import Scope
 from dal.helpers import Helpers
-from movai_core_shared.exceptions import DoesNotExist
 from movai_core_shared.logger import Log
 
 LOGGER = Log.get_logger(__name__)
@@ -414,40 +413,16 @@ class Node(Scope):
 
         return result
 
-    @classmethod
-    def get_usage_info(cls, node_name: str, recursive: bool = False) -> dict:
-        """Get formatted usage information for a node.
-
-        Args:
-            node_name (str): Name of the node to search for
-            recursive (bool): If True, include indirect usage through subflows
+    def get_usage_info(self) -> list:
+        """Search Flows for NodeInstances, including indirect usages through subflows.
 
         Returns:
-            dict: Usage information with structure:
-                {
-                    "node": str,
-                    "usage": List[dict],
-                    "error": str (optional)
-                }
+            list: List of dicts with structure:
+                  - Direct usage: {"flow": str, "NodeInst": str, "direct": True}
+                  - Indirect usage: {"flow": str, "direct": False, "path": List[str]}
+                  where path shows the chain from the top-level flow to the flow containing this node
         """
-
-        try:
-            # Verify node exists by reading a property
-            node_obj = cls(node_name)
-        except (DoesNotExist, KeyError, AttributeError):
-            return {
-                "node": node_name,
-                "usage": [],
-                "error": f"Node '{node_name}' does not exist",
-            }
-
-        try:
-            # Get usage information
-            usage = node_obj.node_inst_depends(recursive=recursive)
-            return {"node": node_name, "usage": usage}
-
-        except Exception as e:
-            return {"node": node_name, "usage": [], "error": str(e)}
+        return self.node_inst_depends(recursive=True)
 
     def port_inst_depends(self, port_name: str) -> list:
         """Loop through NodeInst's Links and return list with matching links dict_keys"""
