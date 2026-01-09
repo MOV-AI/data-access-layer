@@ -15,7 +15,7 @@ import pickle
 import warnings
 from os import getenv, path
 from re import split
-from typing import Any, Dict, Generator, List, Optional, Protocol, Tuple, Union
+from typing import Any, Dict, Generator, List, Literal, Optional, Protocol, Tuple, Union
 
 import aioredis
 import dal
@@ -1305,35 +1305,25 @@ class MovaiDB:
         Raises:
             ValueError: If the Redis type is unexpected
         """
-        value = None
-        try:
-            type_ = await _conn.type(key)
+        type_ = await _conn.type(key)
 
-            # get redis type
-            type_ = type_.decode("utf-8")
+        # get redis type
+        type_ = type_.decode("utf-8")
 
-            # get value by redis type
-            if type_ == "string":
-                value = await _conn.get(key)
-            elif type_ == "list":
-                value = await _conn.lrange(key, 0, -1)
-            elif type_ == "hash":
-                value = await _conn.hgetall(key)
-            elif type_ == "none":
-                value = None
-            else:
-                raise ValueError(f"Unexpected type: {type_} for key: {key}")
-        except (
-            aioredis.PoolClosedError,
-            aioredis.ConnectionClosedError,
-            aioredis.ConnectionForcedCloseError,
-        ) as e:
-            LOGGER.error(f"Redis connection error: {e}")
+        # get value by redis type
+        if type_ == "string":
+            value = await _conn.get(key)
+        elif type_ == "list":
+            value = await _conn.lrange(key, 0, -1)
+        elif type_ == "hash":
+            value = await _conn.hgetall(key)
+        else:
+            raise ValueError(f"Unexpected type: {type_} for key: {key}")
 
         # return decode value
         return self.decode_value_by_type(type_, value)
 
-    def decode_value_by_type(self, type_: str, value: Any):
+    def decode_value_by_type(self, type_: Literal["string", "list", "hash"], value: Any):
         """Decode value by Redis type.
 
         Args:
