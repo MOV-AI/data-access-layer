@@ -283,6 +283,23 @@ Proprietary and confidential</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.decode_value_by_type">
+<span class="sig-name descname"><span class="pre">decode_value_by_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'string'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'list'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'hash'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.decode_value_by_type" title="Permalink to this definition"></a></dt>
+<dd><p>Decode value by Redis type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>type</strong> (<em>str</em>) – Redis type (“string”, “list”, or “hash”)</p></li>
+<li><p><strong>value</strong> (<em>Any</em>) – Value to decode</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Decoded value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.delete">
 <span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.delete" title="Permalink to this definition"></a></dt>
 <dd><p>deletes _input
@@ -377,6 +394,88 @@ matching in the DB</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.get_key_val">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_key_val</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_conn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.get_key_val" title="Permalink to this definition"></a></dt>
+<dd><p>Get value by type of key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_conn</strong> – Redis connection (aioredis.Redis)</p></li>
+<li><p><strong>key</strong> (<em>str</em>) – Redis key</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Value of the key</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>value</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the Redis type is unexpected</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.get_key_values">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_key_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.get_key_values" title="Permalink to this definition"></a></dt>
+<dd><p>Get key value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>keys</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="dal.scopes.html#dal.scopes.structures.List" title="dal.scopes.structures.List"><em>List</em></a><em>[</em><em>str</em><em>]</em><em>]</em>) – The key or list of keys to fetch values for.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary mapping keys to their corresponding values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.get_keys">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.get_keys" title="Permalink to this definition"></a></dt>
+<dd><p>Get all redis keys matching pattern.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pattern</strong> (<em>str</em>) – Redis key pattern</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of keys matching the pattern</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.get_keys_from_pattern">
+<span class="sig-name descname"><span class="pre">get_keys_from_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_pattern</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.get_keys_from_pattern" title="Permalink to this definition"></a></dt>
+<dd><p>Converts a pattern dictionary into a list of keys based on the specified scope.</p>
+<p>This method takes a pattern dictionary, extracts the “Scope” key, and uses it to
+retrieve a search dictionary from the database. It then converts the search dictionary
+into a list of keys.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>_pattern</strong> (<em>PatternDict</em>) – A dictionary containing the pattern to be converted.
+Must include a “Scope” key.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A list of keys derived from the pattern. Returns an empty list if an</dt><dd><p>error occurs during the process.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dal.scopes.html#dal.scopes.structures.List" title="dal.scopes.structures.List">List</a>[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.get_list">
 <span class="sig-name descname"><span class="pre">get_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.get_list" title="Permalink to this definition"></a></dt>
 <dd><p>Gets a full list from Redis</p>
@@ -432,6 +531,23 @@ e.g {‘Robot’:{‘lala’:{‘Parameters’: {‘Foo’:2, ‘Bar’:3}}}}</p
 <dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.lpush">
 <span class="sig-name descname"><span class="pre">lpush</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pickl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.lpush" title="Permalink to this definition"></a></dt>
 <dd><p>Push a value to the left of a Redis list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.mget">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.mget" title="Permalink to this definition"></a></dt>
+<dd><p>Get values using redis mget.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>keys</strong> (<a class="reference internal" href="dal.scopes.html#dal.scopes.structures.List" title="dal.scopes.structures.List"><em>List</em></a><em>[</em><em>bytes</em><em>]</em>) – List of keys, e.g. [b’Configuration:app-adminboard,Label:’]</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of key-value pairs</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[str, Any]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -792,6 +908,23 @@ Proprietary and confidential</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dal.movaidb.MovaiDB.decode_value_by_type">
+<span class="sig-name descname"><span class="pre">decode_value_by_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'string'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'list'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'hash'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.MovaiDB.decode_value_by_type" title="Permalink to this definition"></a></dt>
+<dd><p>Decode value by Redis type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>type</strong> (<em>str</em>) – Redis type (“string”, “list”, or “hash”)</p></li>
+<li><p><strong>value</strong> (<em>Any</em>) – Value to decode</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Decoded value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dal.movaidb.MovaiDB.delete">
 <span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#dal.movaidb.MovaiDB.delete" title="Permalink to this definition"></a></dt>
 <dd><p>deletes _input
@@ -886,6 +1019,88 @@ matching in the DB</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dal.movaidb.MovaiDB.get_key_val">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_key_val</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_conn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.MovaiDB.get_key_val" title="Permalink to this definition"></a></dt>
+<dd><p>Get value by type of key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_conn</strong> – Redis connection (aioredis.Redis)</p></li>
+<li><p><strong>key</strong> (<em>str</em>) – Redis key</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Value of the key</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>value</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the Redis type is unexpected</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.movaidb.MovaiDB.get_key_values">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_key_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.MovaiDB.get_key_values" title="Permalink to this definition"></a></dt>
+<dd><p>Get key value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>keys</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="dal.scopes.html#dal.scopes.structures.List" title="dal.scopes.structures.List"><em>List</em></a><em>[</em><em>str</em><em>]</em><em>]</em>) – The key or list of keys to fetch values for.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary mapping keys to their corresponding values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.movaidb.MovaiDB.get_keys">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#dal.movaidb.MovaiDB.get_keys" title="Permalink to this definition"></a></dt>
+<dd><p>Get all redis keys matching pattern.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pattern</strong> (<em>str</em>) – Redis key pattern</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of keys matching the pattern</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.movaidb.MovaiDB.get_keys_from_pattern">
+<span class="sig-name descname"><span class="pre">get_keys_from_pattern</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_pattern</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.movaidb.MovaiDB.get_keys_from_pattern" title="Permalink to this definition"></a></dt>
+<dd><p>Converts a pattern dictionary into a list of keys based on the specified scope.</p>
+<p>This method takes a pattern dictionary, extracts the “Scope” key, and uses it to
+retrieve a search dictionary from the database. It then converts the search dictionary
+into a list of keys.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>_pattern</strong> (<em>PatternDict</em>) – A dictionary containing the pattern to be converted.
+Must include a “Scope” key.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A list of keys derived from the pattern. Returns an empty list if an</dt><dd><p>error occurs during the process.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dal.scopes.html#dal.scopes.structures.List" title="dal.scopes.structures.List">List</a>[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dal.movaidb.MovaiDB.get_list">
 <span class="sig-name descname"><span class="pre">get_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#dal.movaidb.MovaiDB.get_list" title="Permalink to this definition"></a></dt>
 <dd><p>Gets a full list from Redis</p>
@@ -941,6 +1156,23 @@ e.g {‘Robot’:{‘lala’:{‘Parameters’: {‘Foo’:2, ‘Bar’:3}}}}</p
 <dt class="sig sig-object py" id="dal.movaidb.MovaiDB.lpush">
 <span class="sig-name descname"><span class="pre">lpush</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pickl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.MovaiDB.lpush" title="Permalink to this definition"></a></dt>
 <dd><p>Push a value to the left of a Redis list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.movaidb.MovaiDB.mget">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.movaidb.MovaiDB.mget" title="Permalink to this definition"></a></dt>
+<dd><p>Get values using redis mget.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>keys</strong> (<a class="reference internal" href="dal.scopes.html#dal.scopes.structures.List" title="dal.scopes.structures.List"><em>List</em></a><em>[</em><em>bytes</em><em>]</em>) – List of keys, e.g. [b’Configuration:app-adminboard,Label:’]</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary of key-value pairs</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[str, Any]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
