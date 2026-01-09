@@ -341,6 +341,7 @@ class MovaiDB:
 
     def __init__(
         self,
+        redis_client=None,
         db: str = "global",
         _api_version: str = "latest",
         *,
@@ -375,6 +376,7 @@ class MovaiDB:
                 self.loop = asyncio.new_event_loop()
 
         self._background_tasks = set()
+        self._redis_client = redis_client
 
     def search(self, _input: dict) -> list:
         """
@@ -1213,26 +1215,24 @@ class MovaiDB:
 
         return scope_updates
 
-    async def get_keys(self, databases, pattern: str) -> list:
+    async def get_keys(self, pattern: str) -> list:
         """Get all redis keys matching pattern.
 
         Args:
-            databases: Redis client instance with db_slave attribute
             pattern (str): Redis key pattern
 
         Returns:
             list: List of keys matching the pattern
         """
-        _conn: aioredis.Redis = databases.db_slave
+        _conn: aioredis.Redis = self._redis_client.db_slave
         keys = await _conn.keys(pattern)
         keys.sort(key=lambda x: x.lower())
         return keys
 
-    async def mget(self, databases, keys: List[bytes]) -> Dict[str, Any]:
+    async def mget(self, keys: List[bytes]) -> Dict[str, Any]:
         """Get values using redis mget.
 
         Args:
-            databases: Redis client instance with db_slave attribute
             keys (List[bytes]): List of keys, e.g. [b'Configuration:app-adminboard,Label:']
 
         Returns:
@@ -1241,7 +1241,7 @@ class MovaiDB:
         if not keys:
             return {}
 
-        _conn: aioredis.Redis = databases.db_slave
+        _conn: aioredis.Redis = self._redis_client.db_slave
         output = []
 
         try:
@@ -1267,7 +1267,7 @@ class MovaiDB:
 
         return self.keys_to_dict(output)
 
-    async def get_key_values(self, _conn: aioredis.Redis, keys):
+    async def get_key_values(self, keys):
         """Get key value
 
         Args:
@@ -1279,6 +1279,7 @@ class MovaiDB:
         """
         output = {}
         key_values = []
+        _conn: aioredis.Redis = self._redis_client.db_slave
         if not isinstance(keys, list):
             keys = [keys]
         tasks = []
