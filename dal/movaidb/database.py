@@ -15,7 +15,7 @@ import pickle
 import warnings
 from os import getenv, path
 from re import split
-from typing import Any, Dict, Generator, List, Optional, Protocol, Tuple, Union
+from typing import Any, Dict, Generator, List, Literal, Optional, Protocol, Tuple, Union
 
 import aioredis
 import dal
@@ -1212,3 +1212,175 @@ class MovaiDB:
                 )
 
         return scope_updates
+
+    async def get_keys(self, pattern: str) -> list:
+        """Get all redis keys matching pattern.
+
+        Args:
+            pattern (str): Redis key pattern
+
+        Returns:
+            list: List of keys matching the pattern
+        """
+        _conn: aioredis.Redis = self.movaidb.db_slave
+        keys = await _conn.keys(pattern)
+        keys.sort(key=lambda x: x.lower())
+        return keys
+
+    async def mget(self, keys: List[bytes]) -> Dict[str, Any]:
+        """Get values using redis mget.
+
+        Args:
+            keys (List[bytes]): List of keys, e.g. [b'Configuration:app-adminboard,Label:']
+
+        Returns:
+            Dict[str, Any]: Dictionary of key-value pairs
+        """
+        if not keys:
+            return {}
+
+        _conn: aioredis.Redis = self.movaidb.db_slave
+        output = []
+
+        try:
+            values = await _conn.mget(*keys)
+        except Exception as e:
+            LOGGER.error(str(e))
+            return {}
+
+        for key, value in zip(keys, values):
+            try:
+                if isinstance(key, bytes):
+                    key = key.decode("utf-8")
+                if not value:
+                    # not a string
+                    value = await self.get_key_val(_conn, key)
+                else:
+                    value = self.decode_value_by_type("string", value)
+
+            except ValueError:
+                value = None
+
+            output.append((key, value))
+
+        return self.keys_to_dict(output)
+
+    async def get_key_values(self, keys):
+        """Get key value
+
+        Args:
+            keys (Union[str, List[str]]): The key or list of keys to fetch values for.
+
+        Returns:
+            dict: A dictionary mapping keys to their corresponding values.
+
+        """
+        output = {}
+        key_values = []
+        _conn: aioredis.Redis = self.movaidb.db_slave
+        if not isinstance(keys, list):
+            keys = [keys]
+        tasks = []
+        for key in keys:
+            tasks.append(self.get_key_val(_conn, key))
+        values = await asyncio.gather(*tasks)
+        for key, value in zip(keys, values):
+            if isinstance(key, bytes):
+                key_values.append((key.decode("utf-8"), value))
+            else:
+                key_values.append((key, value))
+        output = self.keys_to_dict(key_values)
+        return output
+
+    async def get_key_val(self, _conn, key: str):
+        """Get value by type of key.
+
+        Args:
+            _conn: Redis connection (aioredis.Redis)
+            key (str): Redis key
+
+        Returns:
+            value: Value of the key
+
+        Raises:
+            ValueError: If the Redis type is unexpected
+        """
+        type_ = await _conn.type(key)
+
+        # get redis type
+        type_ = type_.decode("utf-8")
+
+        # get value by redis type
+        if type_ == "string":
+            value = await _conn.get(key)
+        elif type_ == "list":
+            value = await _conn.lrange(key, 0, -1)
+        elif type_ == "hash":
+            value = await _conn.hgetall(key)
+        else:
+            raise ValueError(f"Unexpected type: {type_} for key: {key}")
+
+        # return decode value
+        return self.decode_value_by_type(type_, value)
+
+    def decode_value_by_type(self, type_: Literal["string", "list", "hash"], value: Any):
+        """Decode value by Redis type.
+
+        Args:
+            type_ (str): Redis type ("string", "list", or "hash")
+            value (Any): Value to decode
+
+        Returns:
+            Decoded value
+        """
+        import json
+        import yaml
+
+        if type_ == "string":
+            value = self.decode_value(value)
+        elif type_ == "list":
+            value = self.decode_list(value)
+        elif type_ == "hash":
+            value = self.sort_dict(self.decode_hash(value))
+        else:
+            raise ValueError(f"Unexpected type: {type_} for value: {value}")
+
+        try:  # Json cannot dump ROS Messages
+            json.dumps(value)
+        except Exception:
+            try:
+                value = yaml.load(str(value), Loader=yaml.SafeLoader)
+            except Exception:
+                value = None
+
+        return value
+
+    def get_keys_from_pattern(self, _pattern) -> List[str]:
+        """
+        Converts a pattern dictionary into a list of keys based on the specified scope.
+
+        This method takes a pattern dictionary, extracts the "Scope" key, and uses it to
+        retrieve a search dictionary from the database. It then converts the search dictionary
+        into a list of keys.
+
+        Args:
+            _pattern (PatternDict): A dictionary containing the pattern to be converted.
+                                    Must include a "Scope" key.
+
+        Returns:
+            List[str]: A list of keys derived from the pattern. Returns an empty list if an
+                        error occurs during the process.
+        """
+        try:
+            pattern = _pattern.copy()
+            scope = pattern.pop("Scope")
+            search_dict = self.get_search_dict(scope, **pattern)
+
+            keys = []
+            for elem in self.dict_to_keys(search_dict, validate=False):
+                key, _, _ = elem
+                keys.append(key)
+            return keys
+        except Exception as e:
+            LOGGER.error(e)
+            return []
