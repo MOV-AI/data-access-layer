@@ -12,7 +12,7 @@ def main() -> int:
     action_subparser = parser.add_subparsers(dest="action")
 
     for cmd in ["import", "export", "remove"]:
-        sub_parser = action_subparser.add_parser(cmd, help="TODO")
+        sub_parser = action_subparser.add_parser(cmd, help="%s Mov.AI Data" % cmd.capitalize())
         sub_parser.add_argument(
             "action",
             choices=["import", "export", "remove", "usage-search"],
