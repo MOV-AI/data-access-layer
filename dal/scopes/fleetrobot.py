@@ -304,6 +304,20 @@ class FleetRobot(Scope):
             if robot_data["RobotName"] == robot_name:
                 return robot_id
 
+    @staticmethod
+    def id_to_name(robot_id: str) -> str:
+        """Get the robot name by its id.
+        Args:
+            robot_id: Robot id.
+        Returns:
+            Robot name.
+        """
+        db = MovaiDB("global")
+        all_robots_data = db.search_by_args("Robot")[0]
+        for _robot_id, robot_data in all_robots_data["Robot"].items():
+            if _robot_id == robot_id:
+                return robot_data["RobotName"]
+
     def is_manager(self) -> bool:
         """Check if the Robot is a manager
 
