@@ -906,7 +906,8 @@ class Flow(Scope):
             LOGGER.error(error)
 
     def get_usage_info(self) -> list:
-        """Search Flows for Container instances that use this flow as a subflow, optionally including indirect usages.
+        """Search Flows for Container instances that use this flow as a subflow,
+        including indirect usages through other Containers.
 
         Returns:
             list: List of dicts with structure:
@@ -956,7 +957,8 @@ class Flow(Scope):
                             visited_paths.add(path_key)
 
                             # Add as indirect usage (even if it's also a direct usage)
-                            # A flow can be used directly as Container AND indirectly via another Container
+                            # A flow can be used directly as Container
+                            # AND indirectly via another Container
                             result.append(
                                 {
                                     "flow": parent_flow,

@@ -80,7 +80,7 @@ class Searcher:
             scope = SCOPE_MAP[search_type](name)
         except DoesNotExist:
             print(f"{search_type.capitalize()} '{name}' does not exist.")
-            return 0
+            return 1
 
         usage = scope.get_usage_info()
 

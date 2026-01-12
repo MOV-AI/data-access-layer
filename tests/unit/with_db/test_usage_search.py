@@ -18,6 +18,7 @@ def get_scope_instance(search_type, name):
     try:
         scope = SCOPE_MAP[search_type](name)
     except DoesNotExist as e:
+        print(f"{search_type.capitalize()} '{name}' does not exist.")
         raise e
     return scope
 

@@ -73,8 +73,7 @@ class TestMobdataSearchCommands:
         # Run: mobdata usage-search node NonExistentNode
         return_code = self._run_mobdata_search("Node", "NonExistentNode")
 
-        # Should still return 0 (not a fatal error)
-        assert return_code == 0
+        assert return_code == 1
 
         captured = capsys.readouterr()
         assert "Node 'NonExistentNode' does not exist." in captured.out
@@ -94,7 +93,7 @@ class TestMobdataSearchCommands:
         # Run: mobdata usage-search flow NonExistentFlow
         return_code = self._run_mobdata_search("Flow", "NonExistentFlow")
 
-        assert return_code == 0
+        assert return_code == 1
 
         captured = capsys.readouterr()
         assert "Flow 'NonExistentFlow' does not exist." in captured.out
@@ -117,23 +116,24 @@ class TestMobdataSearchCommands:
         assert "[direct] flow: flow_4, nodeinst: sub" in captured.out.lower()
         assert "[indirect] flow: flow_3, nodeinst: nodesub1" in captured.out.lower()
         assert (
-            "path: {'flow': 'flow_3', 'container': 'subflow1'} -> {'flow': 'flow_1', 'nodeinst': 'nodesub1'}"
-            in captured.out.lower()
+            "path: {'flow': 'flow_3', 'container': 'subflow1'} -> "
+            "{'flow': 'flow_1', 'nodeinst': 'nodesub1'}" in captured.out.lower()
         )
         assert "[indirect] flow: flow_4, nodeinst: nodesub1" in captured.out.lower()
         assert (
-            "path: {'flow': 'flow_4', 'container': 'subflow3'} -> {'flow': 'flow_3', 'container': 'subflow1'} -> {'flow': 'flow_1', 'nodeinst': 'nodesub1'}"
-            in captured.out.lower()
+            "path: {'flow': 'flow_4', 'container': 'subflow3'} -> "
+            "{'flow': 'flow_3', 'container': 'subflow1'} -> "
+            "{'flow': 'flow_1', 'nodeinst': 'nodesub1'}" in captured.out.lower()
         )
         assert "[indirect] flow: flow_4, nodeinst: sub1" in captured.out.lower()
         assert (
-            "path: {'flow': 'flow_4', 'container': 'subflow3'} -> {'flow': 'flow_3', 'nodeinst': 'sub1'}"
-            in captured.out.lower()
+            "path: {'flow': 'flow_4', 'container': 'subflow3'} -> "
+            "{'flow': 'flow_3', 'nodeinst': 'sub1'}" in captured.out.lower()
         )
         assert "[indirect] flow: flow_4, nodeinst: sub2" in captured.out.lower()
         assert (
-            "path: {'flow': 'flow_4', 'container': 'subflow3'} -> {'flow': 'flow_3', 'nodeinst': 'sub2'}"
-            in captured.out.lower()
+            "path: {'flow': 'flow_4', 'container': 'subflow3'} -> "
+            "{'flow': 'flow_3', 'nodeinst': 'sub2'}" in captured.out.lower()
         )
 
     def test_search_flow_command(self, global_db, capsys):
@@ -151,10 +151,10 @@ class TestMobdataSearchCommands:
         # Should also show indirect usage in flow_4 via flow_3
         assert "[indirect] flow: flow_4, container: subflow3" in captured.out.lower()
         assert (
-            "path: {'flow': 'flow_4', 'container': 'subflow3'} -> {'flow': 'flow_3', 'container': 'subflow1'}"
-            in captured.out.lower()
+            "path: {'flow': 'flow_4', 'container': 'subflow3'} -> "
+            "{'flow': 'flow_3', 'container': 'subflow1'}" in captured.out.lower()
         )
         assert (
-            "path: {'flow': 'flow_4', 'container': 'subflow3'} -> {'flow': 'flow_3', 'container': 'subflow2'}"
-            in captured.out.lower()
+            "path: {'flow': 'flow_4', 'container': 'subflow3'} -> "
+            "{'flow': 'flow_3', 'container': 'subflow2'}" in captured.out.lower()
         )

@@ -331,13 +331,14 @@ class Node(Scope):
         """Search Flows for NodeInstances, optionally including indirect usages through subflows.
 
         Args:
-            recursive (bool): If True, include indirect usages through subflows. If False, only direct usages.
+            recursive (bool): If True, include indirect usages through subflows.
+                              If False, only direct usages.
 
         Returns:
             list: List of dicts with structure:
                   - Direct usage: {"flow": str, "NodeInst": str, "direct": True}
                   - Indirect usage: {"flow": str, "direct": False, "path": List[str]}
-                  where path shows the chain from the top-level flow to the flow containing this node
+                where path shows the chain from the top-level flow to the flow containing the node
         """
         # Check if Node has instances on existing Flows
         flows = self.movaidb.get({"Flow": {"*": {"NodeInst": "*"}}})
@@ -378,7 +379,8 @@ class Node(Scope):
                             ] + current_path
 
                             # Build path key properly handling mixed Container/NodeInst keys
-                            # The path is a chain where each element has either "Container" or "NodeInst"
+                            # The path is a chain where each element has either
+                            # "Container" or "NodeInst" (final element has NodeInst)
                             path_tuple = tuple(
                                 (p["flow"], p.get("Container") or p.get("NodeInst"))
                                 for p in new_path
@@ -390,7 +392,8 @@ class Node(Scope):
                                 visited_paths.add(path_key)
 
                                 # Add as indirect usage (even if it's also a direct usage)
-                                # A flow can contain a node directly AND contain it indirectly via a subflow
+                                # A flow can contain a node directly
+                                # AND contain it indirectly via a subflow
                                 result.append(
                                     {
                                         "flow": parent_flow,
@@ -420,7 +423,7 @@ class Node(Scope):
             list: List of dicts with structure:
                   - Direct usage: {"flow": str, "NodeInst": str, "direct": True}
                   - Indirect usage: {"flow": str, "direct": False, "path": List[str]}
-                  where path shows the chain from the top-level flow to the flow containing this node
+                where path shows the chain from the top-level flow to the flow containing the node
         """
         return self.node_inst_depends(recursive=True)
 
