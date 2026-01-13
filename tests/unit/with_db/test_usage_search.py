@@ -1,6 +1,4 @@
 """Tests for Node and Flow classmethod usage search functionality."""
-import pytest
-
 from movai_core_shared.exceptions import DoesNotExist
 
 from dal.scopes.flow import Flow
@@ -26,51 +24,7 @@ def get_scope_instance(search_type, name):
 class TestNodeUsageInfo:
     """Test suite for Node.get_usage_info() classmethod."""
 
-    @pytest.fixture(autouse=True)
-    def setup_test_data(self, global_db, metadata_folder):
-        """Import test metadata before each test."""
-        from dal.tools.backup import Importer
-
-        # Import all nodes and flows for testing
-        importer = Importer(
-            metadata_folder,
-            force=True,
-            dry=False,
-            debug=False,
-            recursive=True,
-            clean_old_data=True,
-        )
-
-        # Import nodes first, then flows (flows depend on nodes)
-        objects = {
-            "Node": ["NodePub1", "NodePub2", "NodeSub1", "NodeSub2"],
-        }
-        importer.run(objects)
-
-        # Now import flows
-        objects = {
-            "Flow": ["flow_1", "flow_2", "flow_3", "flow_4"],
-        }
-        importer.run(objects)
-
-        yield
-
-        # Cleanup after test
-        for node_name in ["NodePub1", "NodePub2", "NodeSub1", "NodeSub2"]:
-            try:
-                node = Node(node_name)
-                node.remove(force=True)
-            except Exception:
-                print(f"Failed to remove node {node_name} during cleanup.")
-
-        for flow_name in ["flow_1", "flow_2", "flow_3", "flow_4"]:
-            try:
-                flow = Flow(flow_name)
-                flow.remove(force=True)
-            except Exception:
-                print(f"Failed to remove flow {flow_name} during cleanup.")
-
-    def test_node_get_usage_info(self, global_db):
+    def test_node_get_usage_info(self, setup_test_data):
         """
         Test Node.get_usage_info() with recursive search.
 
@@ -99,7 +53,7 @@ class TestNodeUsageInfo:
         indirect_with_path = [item for item in indirect_usages if "path" in item]
         assert len(indirect_with_path) >= 1
 
-    def test_node_get_usage_info_multiple_calls(self, global_db):
+    def test_node_get_usage_info_multiple_calls(self, setup_test_data):
         """Test that Node.get_usage_info() can be called multiple times without instantiation."""
 
         # Call multiple times for different nodes
@@ -120,51 +74,7 @@ class TestNodeUsageInfo:
 class TestFlowUsageInfo:
     """Test suite for Flow.get_usage_info() classmethod."""
 
-    @pytest.fixture(autouse=True)
-    def setup_test_data(self, global_db, metadata_folder):
-        """Import test metadata before each test."""
-        from dal.tools.backup import Importer
-
-        # Import all nodes and flows for testing
-        importer = Importer(
-            metadata_folder,
-            force=True,
-            dry=False,
-            debug=False,
-            recursive=True,
-            clean_old_data=True,
-        )
-
-        # Import nodes first, then flows (flows depend on nodes)
-        objects = {
-            "Node": ["NodePub1", "NodePub2", "NodeSub1", "NodeSub2"],
-        }
-        importer.run(objects)
-
-        # Now import flows
-        objects = {
-            "Flow": ["flow_1", "flow_2", "flow_3", "flow_4"],
-        }
-        importer.run(objects)
-
-        yield
-
-        # Cleanup after test
-        for node_name in ["NodePub1", "NodePub2", "NodeSub1", "NodeSub2"]:
-            try:
-                node = Node(node_name)
-                node.remove(force=True)
-            except Exception:
-                print(f"Failed to remove node {node_name} during cleanup.")
-
-        for flow_name in ["flow_1", "flow_2", "flow_3", "flow_4"]:
-            try:
-                flow = Flow(flow_name)
-                flow.remove(force=True)
-            except Exception:
-                print(f"Failed to remove flow {flow_name} during cleanup.")
-
-    def test_flow_get_usage_info_not_used_as_subflow(self, global_db):
+    def test_flow_get_usage_info_not_used_as_subflow(self, setup_test_data):
         """Test Flow.get_usage_info() for a flow that is not used as a subflow."""
 
         # Test flow_2 usage (not used as subflow anywhere)
@@ -173,7 +83,7 @@ class TestFlowUsageInfo:
 
         assert len(usage) == 0
 
-    def test_flow_get_usage_info(self, global_db):
+    def test_flow_get_usage_info(self, setup_test_data):
         """
         Test Flow.get_usage_info() with recursive search.
 
@@ -206,7 +116,7 @@ class TestFlowUsageInfo:
             assert isinstance(item["path"], list)
             assert len(item["path"]) >= 2  # At least 2 hops in the path
 
-    def test_flow_get_usage_info_nested_subflow(self, global_db):
+    def test_flow_get_usage_info_nested_subflow(self, setup_test_data):
         """Test Flow.get_usage_info() for flow_3 which is used in flow_4."""
 
         flow = get_scope_instance("flow", "flow_3")
@@ -219,7 +129,7 @@ class TestFlowUsageInfo:
         assert usage["Container"] == "subflow3"
         assert usage["direct"] is True
 
-    def test_flow_get_usage_info_multiple_calls(self, global_db):
+    def test_flow_get_usage_info_multiple_calls(self, setup_test_data):
         """Test that Flow.get_usage_info() can be called multiple times without instantiation."""
 
         # Call multiple times for different flows

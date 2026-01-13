@@ -99,3 +99,52 @@ def delete_all_robots(global_db):
 
     for robot_id in Robot.get_all():
         FleetRobot.remove_entry(robot_id, True)
+
+
+@pytest.fixture()
+def setup_test_data(global_db, metadata_folder):
+    """Import test metadata before each test."""
+    from dal.tools.backup import Importer
+
+    # Import all nodes and flows for testing
+    importer = Importer(
+        metadata_folder,
+        force=True,
+        dry=False,
+        debug=False,
+        recursive=True,
+        clean_old_data=True,
+    )
+
+    # Import nodes first, then flows (flows depend on nodes)
+    objects = {
+        "Node": ["NodePub1", "NodePub2", "NodeSub1", "NodeSub2"],
+    }
+    importer.run(objects)
+
+    # Now import flows
+    objects = {
+        "Flow": ["flow_1", "flow_2", "flow_3", "flow_4"],
+    }
+    importer.run(objects)
+
+    yield
+
+    # Cleanup after test
+    from dal.scopes.node import Node
+    from dal.scopes.flow import Flow
+
+    # Delete all test data
+    for node_name in ["NodePub1", "NodePub2", "NodeSub1", "NodeSub2"]:
+        try:
+            node = Node(node_name)
+            node.remove(force=True)
+        except Exception:
+            print(f"Failed to remove node {node_name} during cleanup.")
+
+    for flow_name in ["flow_1", "flow_2", "flow_3", "flow_4"]:
+        try:
+            flow = Flow(flow_name)
+            flow.remove(force=True)
+        except Exception:
+            print(f"Failed to remove flow {flow_name} during cleanup.")

@@ -13,6 +13,7 @@ import re
 import uuid
 from itertools import product
 from dal.helpers import flatten
+from typing import List
 from movai_core_shared.consts import (
     CONFIG_REGEX,
     LINK_REGEX,
@@ -905,7 +906,7 @@ class Flow(Scope):
         except AttributeError as error:
             LOGGER.error(error)
 
-    def get_usage_info(self) -> list:
+    def get_usage_info(self) -> List[dict]:
         """Search Flows for Container instances that use this flow as a subflow,
         including indirect usages through other Containers.
 
