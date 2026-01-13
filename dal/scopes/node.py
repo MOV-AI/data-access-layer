@@ -370,62 +370,71 @@ class Node(Scope):
             # Track which (flow, path) combinations we've already added to avoid duplicates
             visited_paths = set()
 
-            def find_parents(flow_name: str, node_inst_name: str, current_path: list):
-                for parent_flow, containers in all_flows.get("Flow", {}).items():
-                    for parent_container, params in containers.get("Container", {}).items():
-                        if params.get("ContainerFlow") == flow_name:
-                            new_path = [
-                                {"flow": parent_flow, "Container": parent_container}
-                            ] + current_path
-
-                            # Build path key properly handling mixed Container/NodeInst keys
-                            # The path is a chain where each element has either
-                            # "Container" or "NodeInst" (final element has NodeInst)
-                            path_tuple = tuple(
-                                (p["flow"], p.get("Container") or p.get("NodeInst"))
-                                for p in new_path
-                            )
-                            path_key = (parent_flow, parent_container, path_tuple)
-
-                            # Only add if we haven't seen this exact path before
-                            if path_key not in visited_paths:
-                                visited_paths.add(path_key)
-
-                                # Add as indirect usage (even if it's also a direct usage)
-                                # A flow can contain a node directly
-                                # AND contain it indirectly via a subflow
-                                result.append(
-                                    {
-                                        "flow": parent_flow,
-                                        "NodeInst": node_inst_name,
-                                        "direct": False,
-                                        "path": new_path,
-                                    }
-                                )
-
-                                # Continue recursing to find higher-level parents
-                                find_parents(parent_flow, node_inst_name, new_path)
-                            break
-
             for flow_name, node_inst_name in direct_flows:
-                find_parents(
+                self._find_parent_flows(
                     flow_name,
                     node_inst_name,
                     [{"flow": flow_name, "NodeInst": node_inst_name}],
+                    all_flows,
+                    visited_paths,
+                    result,
                 )
 
         return result
 
-    def get_usage_info(self) -> list:
-        """Search Flows for NodeInstances, including indirect usages through subflows.
+    def _find_parent_flows(
+        self,
+        flow_name: str,
+        node_inst_name: str,
+        current_path: list,
+        all_flows: dict,
+        visited_paths: set,
+        result: list,
+    ):
+        """Recursively find parent flows that contain the given flow as a subflow.
 
-        Returns:
-            list: List of dicts with structure:
-                  - Direct usage: {"flow": str, "NodeInst": str, "direct": True}
-                  - Indirect usage: {"flow": str, "direct": False, "path": List[str]}
-                where path shows the chain from the top-level flow to the flow containing the node
+        Args:
+            flow_name: The flow to search for parents of
+            node_inst_name: The node instance name to track through the hierarchy
+            current_path: The current path from top-level flow to this flow
+            all_flows: Dict of all flows with Container data
+            visited_paths: Set of already-visited paths to avoid duplicates
+            result: List to append indirect usage results to
         """
-        return self.node_inst_depends(recursive=True)
+        for parent_flow, containers in all_flows.get("Flow", {}).items():
+            for parent_container, params in containers.get("Container", {}).items():
+                if params.get("ContainerFlow") == flow_name:
+                    new_path = [{"flow": parent_flow, "Container": parent_container}] + current_path
+
+                    # Build path key properly handling mixed Container/NodeInst keys
+                    # The path is a chain where each element has either
+                    # "Container" or "NodeInst" (final element has NodeInst)
+                    path_tuple = tuple(
+                        (p["flow"], p.get("Container") or p.get("NodeInst")) for p in new_path
+                    )
+                    path_key = (parent_flow, parent_container, path_tuple)
+
+                    # Only add if we haven't seen this exact path before
+                    if path_key not in visited_paths:
+                        visited_paths.add(path_key)
+
+                        # Add as indirect usage (even if it's also a direct usage)
+                        # A flow can contain a node directly
+                        # AND contain it indirectly via a subflow
+                        result.append(
+                            {
+                                "flow": parent_flow,
+                                "NodeInst": node_inst_name,
+                                "direct": False,
+                                "path": new_path,
+                            }
+                        )
+
+                        # Continue recursing to find higher-level parents
+                        self._find_parent_flows(
+                            parent_flow, node_inst_name, new_path, all_flows, visited_paths, result
+                        )
+                    break
 
     def port_inst_depends(self, port_name: str) -> list:
         """Loop through NodeInst's Links and return list with matching links dict_keys"""

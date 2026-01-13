@@ -939,44 +939,63 @@ class Flow(Scope):
         # Track which (flow, path) combinations we've already added to avoid duplicates
         visited_paths = set()
 
-        # Find indirect usages
-        def find_parents(flow_name: str, current_path: list):
-            for parent_flow, containers in flows.get("Flow", {}).items():
-                for parent_container, params in containers.get("Container", {}).items():
-                    if params.get("ContainerFlow") == flow_name:
-                        new_path = [
-                            {"flow": parent_flow, "Container": parent_container}
-                        ] + current_path
-                        path_key = (
-                            parent_flow,
-                            parent_container,
-                            tuple((p["flow"], p["Container"]) for p in new_path),
-                        )
-
-                        # Only add if we haven't seen this exact path before
-                        if path_key not in visited_paths:
-                            visited_paths.add(path_key)
-
-                            # Add as indirect usage (even if it's also a direct usage)
-                            # A flow can be used directly as Container
-                            # AND indirectly via another Container
-                            result.append(
-                                {
-                                    "flow": parent_flow,
-                                    "direct": False,
-                                    "Container": parent_container,
-                                    "path": new_path,
-                                }
-                            )
-
-                            # Continue recursing to find higher-level parents
-                            find_parents(parent_flow, new_path)
-                        break
-
         for flow_name, container_name in direct_flows:
-            find_parents(flow_name, [{"flow": flow_name, "Container": container_name}])
+            self._find_parent_flows(
+                flow_name,
+                [{"flow": flow_name, "Container": container_name}],
+                flows,
+                visited_paths,
+                result,
+            )
 
         return result
+
+    def _find_parent_flows(
+        self,
+        flow_name: str,
+        current_path: list,
+        flows: dict,
+        visited_paths: set,
+        result: list,
+    ):
+        """Recursively find parent flows that contain the given flow as a subflow.
+
+        Args:
+            flow_name: The flow to search for parents of
+            current_path: The current path from top-level flow to this flow
+            flows: Dict of all flows with Container data
+            visited_paths: Set of already-visited paths to avoid duplicates
+            result: List to append indirect usage results to
+        """
+        for parent_flow, containers in flows.get("Flow", {}).items():
+            for parent_container, params in containers.get("Container", {}).items():
+                if params.get("ContainerFlow") == flow_name:
+                    new_path = [{"flow": parent_flow, "Container": parent_container}] + current_path
+                    path_key = (
+                        parent_flow,
+                        parent_container,
+                        tuple((p["flow"], p["Container"]) for p in new_path),
+                    )
+
+                    # Only add if we haven't seen this exact path before
+                    if path_key not in visited_paths:
+                        visited_paths.add(path_key)
+
+                        # Add as indirect usage (even if it's also a direct usage)
+                        # A flow can be used directly as Container
+                        # AND indirectly via another Container
+                        result.append(
+                            {
+                                "flow": parent_flow,
+                                "direct": False,
+                                "Container": parent_container,
+                                "path": new_path,
+                            }
+                        )
+
+                        # Continue recursing to find higher-level parents
+                        self._find_parent_flows(parent_flow, new_path, flows, visited_paths, result)
+                    break
 
     # NOT PORTED
     def delete(self, key: str, name: str):
