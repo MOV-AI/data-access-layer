@@ -124,7 +124,7 @@ class Node(Scope):
 
     def remove(self, force=False) -> bool:
         # Check if Node has instances on existing Flows
-        direct_usages = self.node_inst_depends()
+        direct_usages = self.get_usage_info(recursive=False)
 
         node_inst_ref_keys = []
         for usage in direct_usages:
@@ -327,12 +327,12 @@ class Node(Scope):
 
         return node_ref_keys
 
-    def node_inst_depends(self, recursive: bool = False) -> list:
+    def get_usage_info(self, recursive: bool = True) -> list:
         """Search Flows for NodeInstances, optionally including indirect usages through subflows.
 
         Args:
             recursive (bool): If True, include indirect usages through subflows.
-                              If False, only direct usages.
+                              If False, only direct usages. Defaults to True.
 
         Returns:
             list: List of dicts with structure:
