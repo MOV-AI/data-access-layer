@@ -53,7 +53,6 @@ This command can be used to identify where specific nodes or flows are utilized,
 
 Options
 -----------------
-- `--individual` / `-i`: Include only direct usage (exclude indirect usage through subflows)
 - `--verbose` / `-v`: Enable debug output and show full JSON results
 
 Commands
@@ -64,160 +63,141 @@ Search for Node Usage
 
 Search for where a specific node template is used across all flows:
 
-```bash
-# Search for direct usage only
-mobdata usage-search node <node-name>
-```
+.. code-block:: bash
 
-By default, usage-search includes recursive (indirect) usage. Use `--individual` or `-i` flag to search only direct usage.
-
-```bash
-mobdata usage-search node <node-name> --individual
-```
+  # Search for all usages of a node
+  mobdata usage-search node <node-name>
 
 Search for Flow Usage
 ~~~~~~~~~~~~~~~~~~~~~
 
 Search for where a specific flow is used as a subflow in other flows:
 
-```bash
-# Search for direct usage only
-mobdata usage-search flow <flow-name>
+.. code-block:: bash
 
-# Search only direct usage (exclude indirect usage through nested subflows)
-mobdata usage-search flow <flow-name> --individual
-```
+  # Search for all usages of a flow
+  mobdata usage-search flow <flow-name>
+
 
 Examples
 -----------
 
 - Example 1: Find all flows using a node
 
-```bash
-mobdata usage-search node create_log
-```
+.. code-block:: bash
 
-Output:
-```
-Node 'create_log' is used in 6 flow(s):
-------------------------------------------------------------
-  [Direct] Flow: fake_drop, NodeInst: log_operation_success
-  [Direct] Flow: pick, NodeInst: pick_success
-  [Direct] Flow: tugbot_idle_sim, NodeInst: spawn_log
-  [Indirect] Flow: movai_lab_loop, NodeInst: pick_success,
-	Path: {'flow': 'movai_lab_loop', 'Container': 'pick'} -> {'flow': 'pick', 'NodeInst': 'pick_success'}
-  [Indirect] Flow: movai_lab_loop_fleet_sim, NodeInst: pick_success,
-	Path: {'flow': 'movai_lab_loop_fleet_sim', 'Container': 'pick'} -> {'flow': 'pick', 'NodeInst': 'pick_success'}
-  [Indirect] Flow: movai_lab_loop_sim, NodeInst: pick_success,
-	Path: {'flow': 'movai_lab_loop_sim', 'Container': 'pick'} -> {'flow': 'pick', 'NodeInst': 'pick_success'}
+  mobdata usage-search node create_log
+  # Output:
+  Node 'create_log' is used in 6 flow(s):
+  ------------------------------------------------------------
+    [Direct] Flow: fake_drop, NodeInst: log_operation_success
+    [Direct] Flow: pick, NodeInst: pick_success
+    [Direct] Flow: tugbot_idle_sim, NodeInst: spawn_log
+    [Indirect] Flow: movai_lab_loop, NodeInst: pick_success,
+    Path: {'flow': 'movai_lab_loop', 'Container': 'pick'} -> {'flow': 'pick', 'NodeInst': 'pick_success'}
+    [Indirect] Flow: movai_lab_loop_fleet_sim, NodeInst: pick_success,
+    Path: {'flow': 'movai_lab_loop_fleet_sim', 'Container': 'pick'} -> {'flow': 'pick', 'NodeInst': 'pick_success'}
+    [Indirect] Flow: movai_lab_loop_sim, NodeInst: pick_success,
+    Path: {'flow': 'movai_lab_loop_sim', 'Container': 'pick'} -> {'flow': 'pick', 'NodeInst': 'pick_success'}
 
-```
 
 - Example 2: Search for subflow usage with debug output
 
-```bash
-mobdata usage-search flow pick --verbose
-```
+.. code-block:: bash
 
-Output:
-```
-Searching for flow 'pick' (recursive=True)
-
+  mobdata usage-search flow pick --verbose
+  # Output:
   Flow 'pick' is used in 7 flow(s):
-------------------------------------------------------------
-  [Direct] Flow: drop, Container: pick
-  [Direct] Flow: movai_lab_loop, Container: pick
-  [Direct] Flow: movai_lab_loop_fleet_sim, Container: pick
-  [Direct] Flow: movai_lab_loop_sim, Container: pick
-  [Indirect] Flow: movai_lab_loop, Container: drop,
-	Path: {'flow': 'movai_lab_loop', 'Container': 'drop'} -> {'flow': 'drop', 'Container': 'pick'}
-  [Indirect] Flow: movai_lab_loop_fleet_sim, Container: drop,
-	Path: {'flow': 'movai_lab_loop_fleet_sim', 'Container': 'drop'} -> {'flow': 'drop', 'Container': 'pick'}
-  [Indirect] Flow: movai_lab_loop_sim, Container: drop,
-	Path: {'flow': 'movai_lab_loop_sim', 'Container': 'drop'} -> {'flow': 'drop', 'Container': 'pick'}
+  ------------------------------------------------------------
+    [Direct] Flow: drop, Container: pick
+    [Direct] Flow: movai_lab_loop, Container: pick
+    [Direct] Flow: movai_lab_loop_fleet_sim, Container: pick
+    [Direct] Flow: movai_lab_loop_sim, Container: pick
+    [Indirect] Flow: movai_lab_loop, Container: drop,
+    Path: {'flow': 'movai_lab_loop', 'Container': 'drop'} -> {'flow': 'drop', 'Container': 'pick'}
+    [Indirect] Flow: movai_lab_loop_fleet_sim, Container: drop,
+    Path: {'flow': 'movai_lab_loop_fleet_sim', 'Container': 'drop'} -> {'flow': 'drop', 'Container': 'pick'}
+    [Indirect] Flow: movai_lab_loop_sim, Container: drop,
+    Path: {'flow': 'movai_lab_loop_sim', 'Container': 'drop'} -> {'flow': 'drop', 'Container': 'pick'}
 
 
-Full JSON result:
-{
-  "flow": "pick",
-  "usage": [
-    {
-      "flow": "drop",
-      "Container": "pick",
-      "direct": true
-    },
-    {
-      "flow": "movai_lab_loop",
-      "Container": "pick",
-      "direct": true
-    },
-    {
-      "flow": "movai_lab_loop_fleet_sim",
-      "Container": "pick",
-      "direct": true
-    },
-    {
-      "flow": "movai_lab_loop_sim",
-      "Container": "pick",
-      "direct": true
-    },
-    {
-      "flow": "movai_lab_loop",
-      "direct": false,
-      "Container": "drop",
-      "path": [
-        {
-          "flow": "movai_lab_loop",
-          "Container": "drop"
-        },
-        {
-          "flow": "drop",
-          "Container": "pick"
-        }
-      ]
-    },
-    {
-      "flow": "movai_lab_loop_fleet_sim",
-      "direct": false,
-      "Container": "drop",
-      "path": [
-        {
-          "flow": "movai_lab_loop_fleet_sim",
-          "Container": "drop"
-        },
-        {
-          "flow": "drop",
-          "Container": "pick"
-        }
-      ]
-    },
-    {
-      "flow": "movai_lab_loop_sim",
-      "direct": false,
-      "Container": "drop",
-      "path": [
-        {
-          "flow": "movai_lab_loop_sim",
-          "Container": "drop"
-        },
-        {
-          "flow": "drop",
-          "Container": "pick"
-        }
-      ]
-    }
-  ]
-}
+  Full JSON result:
+  {
+    "flow": "pick",
+    "usage": [
+      {
+        "flow": "drop",
+        "Container": "pick",
+        "direct": true
+      },
+      {
+        "flow": "movai_lab_loop",
+        "Container": "pick",
+        "direct": true
+      },
+      {
+        "flow": "movai_lab_loop_fleet_sim",
+        "Container": "pick",
+        "direct": true
+      },
+      {
+        "flow": "movai_lab_loop_sim",
+        "Container": "pick",
+        "direct": true
+      },
+      {
+        "flow": "movai_lab_loop",
+        "direct": false,
+        "Container": "drop",
+        "path": [
+          {
+            "flow": "movai_lab_loop",
+            "Container": "drop"
+          },
+          {
+            "flow": "drop",
+            "Container": "pick"
+          }
+        ]
+      },
+      {
+        "flow": "movai_lab_loop_fleet_sim",
+        "direct": false,
+        "Container": "drop",
+        "path": [
+          {
+            "flow": "movai_lab_loop_fleet_sim",
+            "Container": "drop"
+          },
+          {
+            "flow": "drop",
+            "Container": "pick"
+          }
+        ]
+      },
+      {
+        "flow": "movai_lab_loop_sim",
+        "direct": false,
+        "Container": "drop",
+        "path": [
+          {
+            "flow": "movai_lab_loop_sim",
+            "Container": "drop"
+          },
+          {
+            "flow": "drop",
+            "Container": "pick"
+          }
+        ]
+      }
+    ]
+  }
 
-```
 
 - Example 3: Error respose - Node not found
 
-```bash
-mobdata usage-search node NonExistentNode
-```
+.. code-block:: bash
 
-Output:
-```
-Error: Node 'NonExistentNode' does not exist
-```
+  mobdata usage-search node NonExistentNode
+  # Output:
+  Error: Node 'NonExistentNode' does not exist
