@@ -33,7 +33,7 @@ from dal.movaidb import MovaiDB
 from dal.scopes.scope import Scope
 from dal.scopes.ports import Ports
 from dal.scopes.node import Node
-from dal.scopes.types import FlowUsageInfo, PathElement
+from dal.utils.usage_search import FlowUsageInfo, PathElement
 from dal.models.var import Var
 from movai_core_shared.exceptions import DoesNotExist
 from .configuration import Configuration

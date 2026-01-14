@@ -1,15 +1,7 @@
 import json
 
 from movai_core_shared.exceptions import DoesNotExist
-
-from dal.scopes.flow import Flow
-from dal.scopes.node import Node
-
-
-SCOPE_MAP = {
-    "node": Node,
-    "flow": Flow,
-}
+from dal.utils.usage_search import get_cached_usage_search_scope_map
 
 
 class Searcher:
@@ -76,13 +68,19 @@ class Searcher:
             int: Exit code (0 for success, 1 for failure)
 
         """
+        scope_map = get_cached_usage_search_scope_map()
+
         try:
-            scope = SCOPE_MAP[search_type](name)
+            scope = scope_map.get(search_type, None)
+            if scope is None:
+                print(f"Invalid type parameter. Must be one of {list(scope_map.keys())}.")
+                return 1
+            object = scope(name)
         except DoesNotExist:
             print(f"{search_type.capitalize()} '{name}' does not exist.")
             return 1
 
-        usage = scope.get_usage_info()
+        usage = object.get_usage_info()
 
         self.print_results(name, usage, search_type)
 

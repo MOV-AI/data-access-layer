@@ -1,20 +1,14 @@
 """Tests for Node and Flow classmethod usage search functionality."""
 from movai_core_shared.exceptions import DoesNotExist
 
-from dal.scopes.flow import Flow
-from dal.scopes.node import Node
 
-
-SCOPE_MAP = {
-    "node": Node,
-    "flow": Flow,
-}
+from dal.utils.usage_search import get_usage_search_scope_map
 
 
 def get_scope_instance(search_type, name):
     """Helper to get scope instance based on type and name."""
     try:
-        scope = SCOPE_MAP[search_type](name)
+        scope = get_usage_search_scope_map()[search_type](name)
     except DoesNotExist as e:
         print(f"{search_type.capitalize()} '{name}' does not exist.")
         raise e

@@ -26,7 +26,13 @@ from .system import System
 from .translation import Translation
 from .user import User
 from .widget import Widget
-from .types import FlowUsageInfo, NodeUsageInfo, PathElement
+from dal.utils.usage_search import (
+    FlowUsageInfo,
+    NodeUsageInfo,
+    PathElement,
+    get_cached_usage_search_scope_map,
+    get_usage_search_scope_map,
+)
 
 __all__ = [
     "Application",
@@ -54,6 +60,8 @@ __all__ = [
     "User",
     "Widget",
     "Alert",
+    "get_usage_search_scope_map",
+    "get_cached_usage_search_scope_map",
 ]
 
 try:

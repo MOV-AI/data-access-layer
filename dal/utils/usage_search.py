@@ -3,9 +3,12 @@
    Unauthorized copying of this file, via any medium is strictly prohibited
    Proprietary and confidential
 
-   Type definitions for scope classes.
+   Usage search scope mapping utilities.
 """
-from typing import List, Optional, TypedDict
+from typing import TYPE_CHECKING, Dict, Optional, Type, List, TypedDict
+
+if TYPE_CHECKING:
+    from dal.scopes.scope import Scope
 
 
 class PathElement(TypedDict):
@@ -50,3 +53,47 @@ class FlowUsageInfo(TypedDict):
     Container: str
     direct: bool
     path: Optional[List[PathElement]]  # Only present when direct is False
+
+
+def get_usage_search_scope_map() -> Dict[str, Type["Scope"]]:
+    """Get the mapping of scope types that support usage search.
+
+    This function uses lazy imports to avoid circular dependencies.
+
+    Returns:
+        Dict[str, Type[Scope]]: Mapping of type names to scope classes
+            that implement get_usage_info() method.
+    """
+    from dal.scopes.node import Node
+    from dal.scopes.flow import Flow
+
+    return {
+        "node": Node,
+        "flow": Flow,
+    }
+
+
+class _UsageSearchScopeMapCache:
+    """Cache holder for usage search scope map using descriptor pattern."""
+
+    _cache: Optional[Dict[str, Type["Scope"]]] = None
+
+    @classmethod
+    def get(cls) -> Dict[str, Type["Scope"]]:
+        """Get cached version of usage search scope map.
+
+        Returns:
+            Dict[str, Type[Scope]]: Cached mapping of type names to scope classes.
+        """
+        if cls._cache is None:
+            cls._cache = get_usage_search_scope_map()
+        return cls._cache
+
+
+def get_cached_usage_search_scope_map() -> Dict[str, Type["Scope"]]:
+    """Get cached version of usage search scope map.
+
+    Returns:
+        Dict[str, Type[Scope]]: Cached mapping of type names to scope classes.
+    """
+    return _UsageSearchScopeMapCache.get()

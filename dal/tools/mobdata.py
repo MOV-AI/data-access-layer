@@ -2,7 +2,8 @@
 
 import argparse
 
-from dal.tools.usage_search import SCOPE_MAP, Searcher
+from dal.utils.usage_search import get_usage_search_scope_map
+from dal.tools.usage_search import Searcher
 from .backup import backup as backup_main
 
 
@@ -95,7 +96,7 @@ def main() -> int:
     )
     sub_parser.add_argument(
         "search_type",
-        choices=list(SCOPE_MAP.keys()),
+        choices=list(get_usage_search_scope_map().keys()),
         help="Scope to search for",
     )
     sub_parser.add_argument("name", help="Name of the node to search for")

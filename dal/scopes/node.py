@@ -23,7 +23,7 @@ from movai_core_shared.consts import (
 )
 from dal.movaidb import MovaiDB
 from dal.scopes.scope import Scope
-from dal.scopes.types import NodeUsageInfo, PathElement
+from dal.utils.usage_search import NodeUsageInfo, PathElement
 from dal.helpers import Helpers
 from movai_core_shared.logger import Log
 from typing import List
