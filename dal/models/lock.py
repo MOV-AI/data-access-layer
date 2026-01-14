@@ -176,8 +176,9 @@ class Lock:
             # then check the last time they were alive
             for elem in frontline:
                 elem_name = elem.decode("utf-8")
+                # zscore can return None if the alive_name was already removed. Need to remove from the queue.
                 last_alive = self.db_read.zscore(self.alive_name, elem_name)
-                if int(time.time() * 1000) - last_alive > self.alive_timeout:
+                if last_alive is None or int(time.time() * 1000) - last_alive > self.alive_timeout:
                     logger.debug(f"{elem_name} removed from queue for inactivity")
                     try:
                         self.db_write.zrem(self.queue_name, elem_name)
