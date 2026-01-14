@@ -150,16 +150,3 @@ class Scope(Struct):
         """
         if scope in SCOPES_TO_VALIDATE:
             cls.validator.validate(scope, data)
-
-    @classmethod
-    def get_usage_info(cls):
-        """Get usage information for this scope type.
-
-        This method should be implemented by scope classes that support usage search.
-        Currently implemented by Node and Flow classes.
-
-        Raises:
-            NotImplementedError: If the scope type does not support usage search.
-
-        """
-        raise NotImplementedError(f"Usage search is not implemented for scope type '{cls.scope}'")
