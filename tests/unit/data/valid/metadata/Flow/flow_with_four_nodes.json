@@ -1,14 +1,14 @@
 {
 "Flow": {
-    "flow_1": {
-        "Description": "Test two out ports to same in port",
+    "flow_with_four_nodes": {
+        "Description": "Test flow with four nodes",
         "ExposedPorts": {
             "NodePub1": {"nodepub1": ["pubport/out"]},
             "NodePub2": {"nodepub2": ["pubport/out"]},
             "NodeSub1": {"nodesub1": ["subport/in"]},
             "NodeSub2": {"nodesub2": ["subport/in"]}
         },
-        "Label": "flow_1",
+        "Label": "flow_with_four_nodes",
         "LastUpdate": "09/10/2020 at 12:24:44",
         "Links": {
             "06eed84a-1a7f-4ad1-95e1-e1e8d1c62ea3": {

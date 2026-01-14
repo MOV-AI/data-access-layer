@@ -29,9 +29,9 @@ class TestNodeUsageInfo:
         Test Node.get_usage_info() with recursive search.
 
         Test scenario:
-        - NodeSub1 is directly in flow_1, flow_2, flow_3, flow_4
-        - flow_1 is a subflow in flow_3
-        - flow_3 is a subflow in flow_4
+        - NodeSub1 is directly in flow_with_four_nodes, flow_not_used_as_subflow, flow_with_duplicated_subflow, flow_with_nodes_and_subflow
+        - flow_with_four_nodes is a subflow in flow_with_duplicated_subflow
+        - flow_with_duplicated_subflow is a subflow in flow_with_nodes_and_subflow
         - Therefore NodeSub1 should appear with both direct and indirect usages
         """
 
@@ -41,10 +41,15 @@ class TestNodeUsageInfo:
         # Should have both direct and indirect usages
         direct_usages = [item for item in usage if item.get("direct", True)]
         indirect_usages = [item for item in usage if not item.get("direct", True)]
-        # Direct usages: flow_1, flow_2, flow_3, flow_4
+        # Direct usages: flow_with_four_nodes, flow_not_used_as_subflow, flow_with_duplicated_subflow, flow_with_nodes_and_subflow
         assert len(direct_usages) == 5
         direct_flows = {item["flow"] for item in direct_usages}
-        assert direct_flows == {"flow_1", "flow_2", "flow_3", "flow_4"}
+        assert direct_flows == {
+            "flow_with_four_nodes",
+            "flow_not_used_as_subflow",
+            "flow_with_duplicated_subflow",
+            "flow_with_nodes_and_subflow",
+        }
 
         # Indirect usages should exist
         assert len(indirect_usages) >= 1
@@ -77,8 +82,8 @@ class TestFlowUsageInfo:
     def test_flow_get_usage_info_not_used_as_subflow(self, setup_test_data):
         """Test Flow.get_usage_info() for a flow that is not used as a subflow."""
 
-        # Test flow_2 usage (not used as subflow anywhere)
-        flow = get_scope_instance("flow", "flow_2")
+        # Test flow_not_used_as_subflow usage (not used as subflow anywhere)
+        flow = get_scope_instance("flow", "flow_not_used_as_subflow")
         usage = flow.get_usage_info()
 
         assert len(usage) == 0
@@ -88,26 +93,34 @@ class TestFlowUsageInfo:
         Test Flow.get_usage_info() with recursive search.
 
         Test scenario:
-        - flow_1 is directly used in flow_3
-        - flow_3 is directly used in flow_4
-        - Therefore flow_1 should appear:
-          - Directly in flow_3
-          - Indirectly in flow_4 (via flow_3)
+        - flow_with_four_nodes is directly used in flow_with_duplicated_subflow
+        - flow_with_duplicated_subflow is directly used in flow_with_nodes_and_subflow
+        - Therefore flow_with_four_nodes should appear:
+          - Directly in flow_with_duplicated_subflow
+          - Indirectly in flow_with_nodes_and_subflow (via flow_with_duplicated_subflow)
         """
 
-        flow = get_scope_instance("flow", "flow_1")
+        flow = get_scope_instance("flow", "flow_with_four_nodes")
         usage = flow.get_usage_info()
 
         # Should have both direct and indirect usages
         direct_usages = [item for item in usage if item.get("direct", True)]
         indirect_usages = [item for item in usage if not item.get("direct", True)]
 
-        # Direct usage: flow_3 (twice as subflow1 and subflow2)
+        # Direct usage: flow_with_duplicated_subflow (twice as subflow1 and subflow2)
         assert len(direct_usages) == 2
-        assert {"flow": "flow_3", "Container": "subflow1", "direct": True} in direct_usages
-        assert {"flow": "flow_3", "Container": "subflow2", "direct": True} in direct_usages
+        assert {
+            "flow": "flow_with_duplicated_subflow",
+            "Container": "subflow1",
+            "direct": True,
+        } in direct_usages
+        assert {
+            "flow": "flow_with_duplicated_subflow",
+            "Container": "subflow2",
+            "direct": True,
+        } in direct_usages
 
-        # Indirect usages should exist (flow_4 via flow_3)
+        # Indirect usages should exist (flow_with_nodes_and_subflow via flow_with_duplicated_subflow)
         assert len(indirect_usages) >= 1
 
         # Verify indirect usages have paths
@@ -117,25 +130,25 @@ class TestFlowUsageInfo:
             assert len(item["path"]) >= 2  # At least 2 hops in the path
 
     def test_flow_get_usage_info_nested_subflow(self, setup_test_data):
-        """Test Flow.get_usage_info() for flow_3 which is used in flow_4."""
+        """Test Flow.get_usage_info() for flow_with_duplicated_subflow which is used in flow_with_nodes_and_subflow."""
 
-        flow = get_scope_instance("flow", "flow_3")
+        flow = get_scope_instance("flow", "flow_with_duplicated_subflow")
         usage = flow.get_usage_info()
 
         assert len(usage) == 1
 
         usage = usage[0]
-        assert usage["flow"] == "flow_4"
-        assert usage["Container"] == "subflow3"
+        assert usage["flow"] == "flow_with_nodes_and_subflow"
+        assert usage["Container"] == "subflow"
         assert usage["direct"] is True
 
     def test_flow_get_usage_info_multiple_calls(self, setup_test_data):
         """Test that Flow.get_usage_info() can be called multiple times without instantiation."""
 
         # Call multiple times for different flows
-        flow1 = get_scope_instance("flow", "flow_1")
-        flow2 = get_scope_instance("flow", "flow_2")
-        flow3 = get_scope_instance("flow", "flow_3")
+        flow1 = get_scope_instance("flow", "flow_with_four_nodes")
+        flow2 = get_scope_instance("flow", "flow_not_used_as_subflow")
+        flow3 = get_scope_instance("flow", "flow_with_duplicated_subflow")
 
         usage1 = flow1.get_usage_info()
         usage2 = flow2.get_usage_info()

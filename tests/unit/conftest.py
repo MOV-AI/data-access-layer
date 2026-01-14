@@ -124,7 +124,12 @@ def setup_test_data(global_db, metadata_folder):
 
     # Now import flows
     objects = {
-        "Flow": ["flow_1", "flow_2", "flow_3", "flow_4"],
+        "Flow": [
+            "flow_with_four_nodes",
+            "flow_not_used_as_subflow",
+            "flow_with_duplicated_subflow",
+            "flow_with_nodes_and_subflow",
+        ],
     }
     importer.run(objects)
 
@@ -142,7 +147,12 @@ def setup_test_data(global_db, metadata_folder):
         except Exception:
             print(f"Failed to remove node {node_name} during cleanup.")
 
-    for flow_name in ["flow_1", "flow_2", "flow_3", "flow_4"]:
+    for flow_name in [
+        "flow_with_four_nodes",
+        "flow_not_used_as_subflow",
+        "flow_with_duplicated_subflow",
+        "flow_with_nodes_and_subflow",
+    ]:
         try:
             flow = Flow(flow_name)
             flow.remove(force=True)
