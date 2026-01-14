@@ -1,5 +1,8 @@
-Import, export and remove
-=========================
+Mobdata CLI Tool
+=================
+
+Import, Export and Remove Documents
+-------------------------------------
 
 To import, export or remove documents from the database, use the following commands:
 
@@ -46,20 +49,20 @@ Using mobdata along with a manifest file the working directory must have the fol
             ├── <name>.json
             └── <name>_pt.po
 
-Searching for usages
-=========================
+Searching for Usages of Nodes and Flows
+----------------------------------------
 The `mobdata` tool supports searching for Node and Flow usage across the system through the `usage-search` command.
 This command can be used to identify where specific nodes or flows are utilized, either directly or indirectly (recursively).
 
 Options
------------------
+~~~~~~~~~~~~~~~~~~~~~
 - `--verbose` / `-v`: Enable debug output and show full JSON results
 
 Commands
------------------
+~~~~~~~~~~~~~~~~~~~~~
 
 Search for Node Usage
-~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^
 
 Search for where a specific node template is used across all flows:
 
@@ -69,7 +72,7 @@ Search for where a specific node template is used across all flows:
   mobdata usage-search node <node-name>
 
 Search for Flow Usage
-~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^
 
 Search for where a specific flow is used as a subflow in other flows:
 
@@ -80,8 +83,7 @@ Search for where a specific flow is used as a subflow in other flows:
 
 
 Examples
------------
-
+^^^^^^^^^^^^^^^^^^^^
 - Example 1: Find all flows using a node
 
 .. code-block:: bash
