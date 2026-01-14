@@ -26,6 +26,7 @@ from .system import System
 from .translation import Translation
 from .user import User
 from .widget import Widget
+from .types import FlowUsageInfo, NodeUsageInfo, PathElement
 
 __all__ = [
     "Application",
@@ -34,10 +35,13 @@ __all__ = [
     "Configuration",
     "FleetRobot",
     "Flow",
+    "FlowUsageInfo",
     "Form",
     "Message",
     "Node",
+    "NodeUsageInfo",
     "Package",
+    "PathElement",
     "Ports",
     "Robot",
     "Role",

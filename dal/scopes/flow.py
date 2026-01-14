@@ -13,7 +13,7 @@ import re
 import uuid
 from itertools import product
 from dal.helpers import flatten
-from typing import List, TypedDict, Optional
+from typing import List
 from movai_core_shared.consts import (
     CONFIG_REGEX,
     LINK_REGEX,
@@ -33,30 +33,13 @@ from dal.movaidb import MovaiDB
 from dal.scopes.scope import Scope
 from dal.scopes.ports import Ports
 from dal.scopes.node import Node
+from dal.scopes.types import FlowUsageInfo, PathElement
 from dal.models.var import Var
 from movai_core_shared.exceptions import DoesNotExist
 from .configuration import Configuration
 from movai_core_shared.logger import Log
 
 LOGGER = Log.get_logger("Flow")
-
-
-class PathElement(TypedDict):
-    """Class to represent an element in the usage path."""
-
-    flow: str
-    Container: Optional[str]
-    NodeInst: Optional[str]
-
-
-class FlowUsageInfo(TypedDict):
-    """Class to represent usage information of a Flow instance."""
-
-    flow: str
-    Container: str
-    direct: bool
-    # If direct is False,
-    path: Optional[List[PathElement]]
 
 
 class Flow(Scope):

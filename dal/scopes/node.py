@@ -23,30 +23,13 @@ from movai_core_shared.consts import (
 )
 from dal.movaidb import MovaiDB
 from dal.scopes.scope import Scope
+from dal.scopes.types import NodeUsageInfo, PathElement
 from dal.helpers import Helpers
 from movai_core_shared.logger import Log
-from typing import List, Optional, TypedDict
+from typing import List
 
 
 LOGGER = Log.get_logger(__name__)
-
-
-class PathElement(TypedDict):
-    """Class to represent an element in the usage path of a Node instance."""
-
-    flow: str
-    Container: Optional[str]
-    NodeInst: Optional[str]
-
-
-class NodeUsageInfo(TypedDict):
-    """Class to represent usage information of a Node instance."""
-
-    flow: str
-    NodeInst: str
-    direct: bool
-    # If direct is False
-    path: Optional[List[PathElement]]
 
 
 class Node(Scope):
