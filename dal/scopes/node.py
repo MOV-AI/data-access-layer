@@ -25,8 +25,28 @@ from dal.movaidb import MovaiDB
 from dal.scopes.scope import Scope
 from dal.helpers import Helpers
 from movai_core_shared.logger import Log
+from typing import List, Optional, TypedDict
+
 
 LOGGER = Log.get_logger(__name__)
+
+
+class PathElement(TypedDict):
+    """Class to represent an element in the usage path of a Node instance."""
+
+    flow: str
+    Container: Optional[str]
+    NodeInst: Optional[str]
+
+
+class NodeUsageInfo(TypedDict):
+    """Class to represent usage information of a Node instance."""
+
+    flow: str
+    NodeInst: str
+    direct: bool
+    # If direct is False
+    path: Optional[List[PathElement]]
 
 
 class Node(Scope):
@@ -327,7 +347,7 @@ class Node(Scope):
 
         return node_ref_keys
 
-    def get_usage_info(self, recursive: bool = True) -> list:
+    def get_usage_info(self, recursive: bool = True) -> List[NodeUsageInfo]:
         """Search Flows for NodeInstances, optionally including indirect usages through subflows.
 
         Args:
@@ -337,7 +357,7 @@ class Node(Scope):
         Returns:
             list: List of dicts with structure:
                   - Direct usage: {"flow": str, "NodeInst": str, "direct": True}
-                  - Indirect usage: {"flow": str, "direct": False, "path": List[str]}
+                  - Indirect usage: {"flow": str, "direct": False, "path": List[PathElement]}
                 where path shows the chain from the top-level flow to the flow containing the node
         """
         # Check if Node has instances on existing Flows
@@ -358,7 +378,7 @@ class Node(Scope):
 
         # Add direct usages with NodeInst names (without path - it's redundant for direct usages)
         for flow_name, node_inst_name in direct_flows:
-            result.append({"flow": flow_name, "NodeInst": node_inst_name, "direct": True})
+            result.append(NodeUsageInfo(flow=flow_name, NodeInst=node_inst_name, direct=True))
 
         # Early return if not recursive
         if not recursive:
@@ -374,7 +394,7 @@ class Node(Scope):
                 self._find_parent_flows(
                     flow_name,
                     node_inst_name,
-                    [{"flow": flow_name, "NodeInst": node_inst_name}],
+                    [PathElement(flow=flow_name, NodeInst=node_inst_name)],
                     all_flows,
                     visited_paths,
                     result,
@@ -386,10 +406,10 @@ class Node(Scope):
         self,
         flow_name: str,
         node_inst_name: str,
-        current_path: list,
+        current_path: List[PathElement],
         all_flows: dict,
         visited_paths: set,
-        result: list,
+        result: List[NodeUsageInfo],
     ):
         """Recursively find parent flows that contain the given flow as a subflow.
 
@@ -404,7 +424,9 @@ class Node(Scope):
         for parent_flow, containers in all_flows.get("Flow", {}).items():
             for parent_container, params in containers.get("Container", {}).items():
                 if params.get("ContainerFlow") == flow_name:
-                    new_path = [{"flow": parent_flow, "Container": parent_container}] + current_path
+                    new_path: List[PathElement] = [
+                        PathElement(flow=parent_flow, Container=parent_container)
+                    ] + current_path
 
                     # Build path key properly handling mixed Container/NodeInst keys
                     # The path is a chain where each element has either
@@ -422,12 +444,12 @@ class Node(Scope):
                         # A flow can contain a node directly
                         # AND contain it indirectly via a subflow
                         result.append(
-                            {
-                                "flow": parent_flow,
-                                "NodeInst": node_inst_name,
-                                "direct": False,
-                                "path": new_path,
-                            }
+                            NodeUsageInfo(
+                                flow=parent_flow,
+                                NodeInst=node_inst_name,
+                                direct=False,
+                                path=new_path,
+                            )
                         )
 
                         # Continue recursing to find higher-level parents

@@ -13,7 +13,7 @@ import re
 import uuid
 from itertools import product
 from dal.helpers import flatten
-from typing import List
+from typing import List, TypedDict, Optional
 from movai_core_shared.consts import (
     CONFIG_REGEX,
     LINK_REGEX,
@@ -39,6 +39,24 @@ from .configuration import Configuration
 from movai_core_shared.logger import Log
 
 LOGGER = Log.get_logger("Flow")
+
+
+class PathElement(TypedDict):
+    """Class to represent an element in the usage path."""
+
+    flow: str
+    Container: Optional[str]
+    NodeInst: Optional[str]
+
+
+class FlowUsageInfo(TypedDict):
+    """Class to represent usage information of a Flow instance."""
+
+    flow: str
+    Container: str
+    direct: bool
+    # If direct is False,
+    path: Optional[List[PathElement]]
 
 
 class Flow(Scope):
@@ -906,14 +924,14 @@ class Flow(Scope):
         except AttributeError as error:
             LOGGER.error(error)
 
-    def get_usage_info(self) -> List[dict]:
+    def get_usage_info(self) -> List[FlowUsageInfo]:
         """Search Flows for Container instances that use this flow as a subflow,
         including indirect usages through other Containers.
 
         Returns:
             list: List of dicts with structure:
                   - Direct usage: {"flow": str, "Container": str, "direct": True}
-                  - Indirect usage: {"flow": str, "direct": False, "path": List[str]}
+                  - Indirect usage: {"flow": str, "direct": False, "path": List[PathElement]}
                   where path shows the chain from the top-level flow to this flow
 
         """
@@ -934,7 +952,7 @@ class Flow(Scope):
 
         # Add direct usages with container names (without path - it's redundant for direct usages)
         for flow_name, container_name in direct_flows:
-            result.append({"flow": flow_name, "Container": container_name, "direct": True})
+            result.append(FlowUsageInfo(flow=flow_name, Container=container_name, direct=True))
 
         # Track which (flow, path) combinations we've already added to avoid duplicates
         visited_paths = set()
@@ -942,7 +960,7 @@ class Flow(Scope):
         for flow_name, container_name in direct_flows:
             self._find_parent_flows(
                 flow_name,
-                [{"flow": flow_name, "Container": container_name}],
+                [PathElement(flow=flow_name, Container=container_name)],
                 flows,
                 visited_paths,
                 result,
@@ -953,10 +971,10 @@ class Flow(Scope):
     def _find_parent_flows(
         self,
         flow_name: str,
-        current_path: list,
+        current_path: List[PathElement],
         flows: dict,
         visited_paths: set,
-        result: list,
+        result: List[FlowUsageInfo],
     ):
         """Recursively find parent flows that contain the given flow as a subflow.
 
@@ -970,7 +988,9 @@ class Flow(Scope):
         for parent_flow, containers in flows.get("Flow", {}).items():
             for parent_container, params in containers.get("Container", {}).items():
                 if params.get("ContainerFlow") == flow_name:
-                    new_path = [{"flow": parent_flow, "Container": parent_container}] + current_path
+                    new_path: List[PathElement] = [
+                        PathElement(flow=parent_flow, Container=parent_container)
+                    ] + current_path
                     path_key = (
                         parent_flow,
                         parent_container,
@@ -985,12 +1005,12 @@ class Flow(Scope):
                         # A flow can be used directly as Container
                         # AND indirectly via another Container
                         result.append(
-                            {
-                                "flow": parent_flow,
-                                "direct": False,
-                                "Container": parent_container,
-                                "path": new_path,
-                            }
+                            FlowUsageInfo(
+                                flow=parent_flow,
+                                direct=False,
+                                Container=parent_container,
+                                path=new_path,
+                            )
                         )
 
                         # Continue recursing to find higher-level parents
