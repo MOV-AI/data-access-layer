@@ -1,3 +1,5 @@
+# v3.18.1
+- [BP-1586](https://movai.atlassian.net/browse/BP-1586): DockState node stops working
 # v3.18.0
 - [BP-1555](https://movai.atlassian.net/browse/BP-1555): MovaiDB now handles auxiliary logic for patterns and keys previously in backend/wsredissub
 
