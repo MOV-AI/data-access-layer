@@ -158,3 +158,165 @@ def setup_test_data(global_db, metadata_folder):
             flow.remove(force=True)
         except Exception:
             print(f"Failed to remove flow {flow_name} during cleanup.")
+
+
+@pytest.fixture()
+def circular_dependency_data(global_db):
+    """
+    Create test data for circular dependency tests.
+
+    Creates:
+    - TestNodeCircular: Used in flow_circular_a
+    - TestNodeMultiCircular: Used in flow_multi_a
+    - flow_circular_a <-> flow_circular_b (2-way circular)
+    - flow_circular_x <-> flow_circular_y (2-way circular for flow-only tests)
+    - flow_multi_a -> flow_multi_b -> flow_multi_c -> flow_multi_a (3-way circular)
+    """
+    from dal.movaidb import MovaiDB
+
+    db = MovaiDB()
+
+    # Create test nodes
+    node_data = {
+        "Node": {
+            "TestNodeCircular": {
+                "Type": "MOVAI/Node",
+                "Label": "TestNodeCircular",
+            },
+            "TestNodeMultiCircular": {
+                "Type": "MOVAI/Node",
+                "Label": "TestNodeMultiCircular",
+            },
+        }
+    }
+    db.set(node_data)
+
+    # Create 2-way circular flows (A <-> B) with node in A
+    flow_circular_a_data = {
+        "Flow": {
+            "flow_circular_a": {
+                "Label": "flow_circular_a",
+                "NodeInst": {
+                    "test_node": {"Template": "TestNodeCircular", "NodeLabel": "TestNode"}
+                },
+                "Container": {
+                    "container_to_b": {
+                        "ContainerFlow": "flow_circular_b",
+                        "ContainerLabel": "ContainerB",
+                    }
+                },
+            }
+        }
+    }
+    db.set(flow_circular_a_data)
+
+    flow_circular_b_data = {
+        "Flow": {
+            "flow_circular_b": {
+                "Label": "flow_circular_b",
+                "Container": {
+                    "container_to_a": {
+                        "ContainerFlow": "flow_circular_a",
+                        "ContainerLabel": "ContainerA",
+                    }
+                },
+            }
+        }
+    }
+    db.set(flow_circular_b_data)
+
+    # Create 2-way circular flows for flow-only tests (X <-> Y)
+    flow_circular_x_data = {
+        "Flow": {
+            "flow_circular_x": {
+                "Label": "flow_circular_x",
+                "Container": {
+                    "container_to_y": {
+                        "ContainerFlow": "flow_circular_y",
+                        "ContainerLabel": "ContainerY",
+                    }
+                },
+            }
+        }
+    }
+    db.set(flow_circular_x_data)
+
+    flow_circular_y_data = {
+        "Flow": {
+            "flow_circular_y": {
+                "Label": "flow_circular_y",
+                "Container": {
+                    "container_to_x": {
+                        "ContainerFlow": "flow_circular_x",
+                        "ContainerLabel": "ContainerX",
+                    }
+                },
+            }
+        }
+    }
+    db.set(flow_circular_y_data)
+
+    # Create 3-way circular flows (A -> B -> C -> A) with node in A
+    flow_multi_a_data = {
+        "Flow": {
+            "flow_multi_a": {
+                "Label": "flow_multi_a",
+                "NodeInst": {
+                    "test_node": {"Template": "TestNodeMultiCircular", "NodeLabel": "TestNode"}
+                },
+                "Container": {
+                    "container_to_b": {
+                        "ContainerFlow": "flow_multi_b",
+                        "ContainerLabel": "ContainerB",
+                    }
+                },
+            }
+        }
+    }
+    db.set(flow_multi_a_data)
+
+    flow_multi_b_data = {
+        "Flow": {
+            "flow_multi_b": {
+                "Label": "flow_multi_b",
+                "Container": {
+                    "container_to_c": {
+                        "ContainerFlow": "flow_multi_c",
+                        "ContainerLabel": "ContainerC",
+                    }
+                },
+            }
+        }
+    }
+    db.set(flow_multi_b_data)
+
+    flow_multi_c_data = {
+        "Flow": {
+            "flow_multi_c": {
+                "Label": "flow_multi_c",
+                "Container": {
+                    "container_to_a": {
+                        "ContainerFlow": "flow_multi_a",
+                        "ContainerLabel": "ContainerA",
+                    }
+                },
+            }
+        }
+    }
+    db.set(flow_multi_c_data)
+
+    yield
+
+    # Cleanup
+    try:
+        db.delete({"Flow": {"flow_circular_a": {}}})
+        db.delete({"Flow": {"flow_circular_b": {}}})
+        db.delete({"Flow": {"flow_circular_x": {}}})
+        db.delete({"Flow": {"flow_circular_y": {}}})
+        db.delete({"Flow": {"flow_multi_a": {}}})
+        db.delete({"Flow": {"flow_multi_b": {}}})
+        db.delete({"Flow": {"flow_multi_c": {}}})
+        db.delete({"Node": {"TestNodeCircular": {}}})
+        db.delete({"Node": {"TestNodeMultiCircular": {}}})
+    except Exception:
+        pass
