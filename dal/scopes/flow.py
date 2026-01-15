@@ -924,13 +924,23 @@ class Flow(Scope):
                     "usage": {
                         "Flow": {
                             "<parent_flow>": {
-                                "flow_instance_name": "<container>",
-                                "direct": True
+                                "direct": [
+                                    {"flow_instance_name": "<container1>"},
+                                    {"flow_instance_name": "<container2>"},
+                                    ...
+                                ],
+                                "indirect": [
+                                    {"flow_template_name": "<grandparent_flow>",
+                                     "flow_instance_name": "<container>"},
+                                    ...
+                                ]
                             },
                             "<grandparent_flow>": {
-                                "direct": False,
-                                "flow_template_name": "<parent_flow>",
-                                "flow_instance_name": "<container>"
+                                "direct": [],
+                                "indirect": [
+                                    {"flow_template_name": "<parent_flow>",
+                                     "flow_instance_name": "<container>"}
+                                ]
                             }
                         }
                     }
