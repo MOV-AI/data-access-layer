@@ -403,7 +403,6 @@ class Node(Scope):
         if all_flows and all_flows.get("Flow"):
             # Process each flow that has containers and build indirect references
             self._find_all_indirect_usages(
-                direct_usage_flows=set(direct_usages.keys()),
                 all_flows=all_flows,
                 usage_dict=usage_dict,
             )
@@ -412,7 +411,6 @@ class Node(Scope):
 
     def _find_all_indirect_usages(
         self,
-        direct_usage_flows: set,
         all_flows: dict,
         usage_dict: Dict[str, Dict[str, Any]],
     ):
@@ -423,7 +421,6 @@ class Node(Scope):
         instance (direct or indirect) in the child flow.
 
         Args:
-            direct_usage_flows: Set of flow names that directly use the node
             all_flows: Dict of all flows with Container data
             usage_dict: Dictionary to populate with indirect usages
         """

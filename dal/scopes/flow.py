@@ -977,7 +977,6 @@ class Flow(Scope):
 
         # Find all indirect usages through the flow hierarchy
         self._find_all_indirect_usages(
-            direct_usage_flows=set(direct_usages.keys()),
             all_flows=flows,
             usage_dict=usage_dict,
         )
@@ -986,7 +985,6 @@ class Flow(Scope):
 
     def _find_all_indirect_usages(
         self,
-        direct_usage_flows: set,
         all_flows: dict,
         usage_dict: Dict[str, Dict[str, Any]],
     ):
@@ -996,7 +994,6 @@ class Flow(Scope):
         find parent flows that contain it as a subflow, and add indirect references.
 
         Args:
-            direct_usage_flows: Set of flow names that directly use this flow
             all_flows: Dict of all flows with Container data
             usage_dict: Dictionary to populate with indirect usages
         """
