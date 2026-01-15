@@ -99,11 +99,11 @@ Examples
     [Direct] Flow: tugbot_idle_sim
              Node Instance: spawn_log
     [Indirect] Flow: movai_lab_loop
-             Via Child Flow: pick (instance: pick)
+             As Sub Flow: pick (instance: pick)
     [Indirect] Flow: movai_lab_loop_fleet_sim
-             Via Child Flow: pick (instance: pick)
+             As Sub Flow: pick (instance: pick)
     [Indirect] Flow: movai_lab_loop_sim
-             Via Child Flow: pick (instance: pick)
+             As Sub Flow: pick (instance: pick)
 
 
 - Example 2: Search for subflow usage with debug output
@@ -123,11 +123,11 @@ Examples
     [Direct] Flow: movai_lab_loop_sim
              Flow Instance (Container): pick
     [Indirect] Flow: movai_lab_loop
-             Via Child Flow: drop (instance: drop)
+             As Sub Flow: drop (instance: drop)
     [Indirect] Flow: movai_lab_loop_fleet_sim
-             Via Child Flow: drop (instance: drop)
+             As Sub Flow: drop (instance: drop)
     [Indirect] Flow: movai_lab_loop_sim
-             Via Child Flow: drop (instance: drop)
+             As Sub Flow: drop (instance: drop)
 
   Full JSON result:
   {

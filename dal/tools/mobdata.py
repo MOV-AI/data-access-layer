@@ -2,7 +2,7 @@
 
 import argparse
 
-from dal.utils.usage_search import get_usage_search_scope_map
+from dal.utils.usage_search.scope_map import get_usage_search_scope_map
 from dal.tools.usage_search import Searcher
 from .backup import backup as backup_main
 

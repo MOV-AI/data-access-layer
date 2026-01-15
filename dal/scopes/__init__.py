@@ -26,7 +26,7 @@ from .system import System
 from .translation import Translation
 from .user import User
 from .widget import Widget
-from dal.utils.usage_search import (
+from dal.utils import (
     UsageSearchResult,
     DirectNodeUsageItem,
     IndirectNodeUsageItem,
@@ -34,7 +34,6 @@ from dal.utils.usage_search import (
     IndirectFlowUsageItem,
     NodeFlowUsage,
     FlowFlowUsage,
-    get_cached_usage_search_scope_map,
     get_usage_search_scope_map,
 )
 
@@ -69,7 +68,6 @@ __all__ = [
     "Widget",
     "Alert",
     "get_usage_search_scope_map",
-    "get_cached_usage_search_scope_map",
 ]
 
 try:

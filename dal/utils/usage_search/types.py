@@ -5,10 +5,7 @@
 
    Usage search scope mapping utilities.
 """
-from typing import TYPE_CHECKING, Dict, Optional, Type, Any, TypedDict, List
-
-if TYPE_CHECKING:
-    from dal.scopes.scope import Scope
+from typing import Dict, Any, TypedDict, List
 
 
 class DirectNodeUsageItem(TypedDict):
@@ -78,47 +75,3 @@ class UsageSearchResult(TypedDict):
     scope: str  # "Node" or "Flow"
     name: str  # Name of the object being searched
     usage: Dict[str, Dict[str, Any]]  # Nested dict: scope_type -> parent_name -> usage_details
-
-
-def get_usage_search_scope_map() -> Dict[str, Type["Scope"]]:
-    """Get the mapping of scope types that support usage search.
-
-    This function uses lazy imports to avoid circular dependencies.
-
-    Returns:
-        Dict[str, Type[Scope]]: Mapping of type names to scope classes
-            that implement get_usage_info() method.
-    """
-    from dal.scopes.node import Node
-    from dal.scopes.flow import Flow
-
-    return {
-        "node": Node,
-        "flow": Flow,
-    }
-
-
-class _UsageSearchScopeMapCache:
-    """Cache holder for usage search scope map using descriptor pattern."""
-
-    _cache: Optional[Dict[str, Type["Scope"]]] = None
-
-    @classmethod
-    def get(cls) -> Dict[str, Type["Scope"]]:
-        """Get cached version of usage search scope map.
-
-        Returns:
-            Dict[str, Type[Scope]]: Cached mapping of type names to scope classes.
-        """
-        if cls._cache is None:
-            cls._cache = get_usage_search_scope_map()
-        return cls._cache
-
-
-def get_cached_usage_search_scope_map() -> Dict[str, Type["Scope"]]:
-    """Get cached version of usage search scope map.
-
-    Returns:
-        Dict[str, Type[Scope]]: Cached mapping of type names to scope classes.
-    """
-    return _UsageSearchScopeMapCache.get()

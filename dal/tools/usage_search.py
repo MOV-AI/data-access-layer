@@ -1,7 +1,7 @@
 import json
 
 from movai_core_shared.exceptions import DoesNotExist
-from dal.utils.usage_search import get_cached_usage_search_scope_map, UsageSearchResult
+from dal.utils import get_usage_search_scope_map, UsageSearchResult
 
 
 class Searcher:
@@ -66,9 +66,7 @@ class Searcher:
                     child_template = indirect_item.get("flow_template_name", "N/A")
                     child_instance = indirect_item.get("flow_instance_name", "N/A")
                     print(f"  [Indirect] {parent_scope}: {parent_name}")
-                    print(
-                        f"           Via Child Flow: {child_template} (instance: {child_instance})"
-                    )
+                    print(f"           As Sub Flow: {child_template} (instance: {child_instance})")
 
         print()
 
@@ -87,7 +85,7 @@ class Searcher:
             int: Exit code (0 for success, 1 for failure)
 
         """
-        scope_map = get_cached_usage_search_scope_map()
+        scope_map = get_usage_search_scope_map()
 
         try:
             scope = scope_map.get(search_type, None)

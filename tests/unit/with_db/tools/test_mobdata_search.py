@@ -81,13 +81,12 @@ class TestMobdataSearchCommands:
 
         # Check for indirect usages (3 indirect references)
         assert "[indirect] flow: flow_with_duplicated_subflow" in captured.out.lower()
-        assert "via child flow: flow_with_four_nodes (instance: subflow1)" in captured.out.lower()
-        assert "via child flow: flow_with_four_nodes (instance: subflow2)" in captured.out.lower()
+        assert "as sub flow: flow_with_four_nodes (instance: subflow1)" in captured.out.lower()
+        assert "as sub flow: flow_with_four_nodes (instance: subflow2)" in captured.out.lower()
 
         assert "[indirect] flow: flow_with_nodes_and_subflow" in captured.out.lower()
         assert (
-            "via child flow: flow_with_duplicated_subflow (instance: subflow)"
-            in captured.out.lower()
+            "as sub flow: flow_with_duplicated_subflow (instance: subflow)" in captured.out.lower()
         )
 
     def test_search_flow_command(self, global_db, setup_test_data, capsys):
@@ -110,6 +109,5 @@ class TestMobdataSearchCommands:
         # Should show indirect usage in flow_with_nodes_and_subflow via flow_with_duplicated_subflow
         assert "[indirect] flow: flow_with_nodes_and_subflow" in captured.out.lower()
         assert (
-            "via child flow: flow_with_duplicated_subflow (instance: subflow)"
-            in captured.out.lower()
+            "as sub flow: flow_with_duplicated_subflow (instance: subflow)" in captured.out.lower()
         )

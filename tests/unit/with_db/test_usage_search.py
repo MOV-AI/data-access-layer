@@ -1,7 +1,7 @@
 """Tests for Node and Flow classmethod usage search functionality."""
 from movai_core_shared.exceptions import DoesNotExist
 
-from dal.utils.usage_search import get_usage_search_scope_map, UsageSearchResult
+from dal.utils import UsageSearchResult, get_usage_search_scope_map
 
 
 def get_scope_instance(search_type, name):
