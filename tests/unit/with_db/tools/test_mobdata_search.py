@@ -37,7 +37,7 @@ class TestMobdataSearchCommands:
         assert return_code == 0
 
         captured = capsys.readouterr()
-        assert "'flow_not_used_as_subflow' is not used in any flows" in captured.out
+        assert "'flow_not_used_as_subflow' is not used anywhere" in captured.out
 
     def test_search_flow_command_nonexistent(self, global_db, setup_test_data, capsys):
         """Test mobdata search command for a flow that doesn't exist."""
@@ -57,44 +57,37 @@ class TestMobdataSearchCommands:
         assert return_code == 0
 
         captured = capsys.readouterr()
+
+        # Count: 4 direct instances + 3 indirect references = 7 total
         assert "NodeSub1" in captured.out
-        assert "'nodesub1' is used in 9 flow(s)" in captured.out.lower()
-        # Should have both direct and indirect usages in output
-        assert "[direct] flow: flow_with_four_nodes, nodeinst: nodesub1" in captured.out.lower()
-        assert "[direct] flow: flow_not_used_as_subflow, nodeinst: sub" in captured.out.lower()
-        assert "[direct] flow: flow_with_duplicated_subflow, nodeinst: sub1" in captured.out.lower()
-        assert "[direct] flow: flow_with_duplicated_subflow, nodeinst: sub2" in captured.out.lower()
-        assert "[direct] flow: flow_with_nodes_and_subflow, nodeinst: sub" in captured.out.lower()
         assert (
-            "[indirect] flow: flow_with_duplicated_subflow, nodeinst: nodesub1"
+            "'NodeSub1' is used in 8 location(s)" in captured.out.lower()
+            or "nodesub1' is used in 8" in captured.out.lower()
+        )
+
+        # Check for direct usages (4 instances across 4 flows)
+        assert "[direct] flow: flow_with_four_nodes" in captured.out.lower()
+        assert "node instance: nodesub1" in captured.out.lower()
+
+        assert "[direct] flow: flow_not_used_as_subflow" in captured.out.lower()
+        assert "node instance: sub" in captured.out.lower()
+
+        assert "[direct] flow: flow_with_duplicated_subflow" in captured.out.lower()
+        assert "node instance: sub1" in captured.out.lower()
+        assert "node instance: sub2" in captured.out.lower()
+
+        assert "[direct] flow: flow_with_nodes_and_subflow" in captured.out.lower()
+        assert "node instance: sub" in captured.out.lower()
+
+        # Check for indirect usages (3 indirect references)
+        assert "[indirect] flow: flow_with_duplicated_subflow" in captured.out.lower()
+        assert "via child flow: flow_with_four_nodes (instance: subflow1)" in captured.out.lower()
+        assert "via child flow: flow_with_four_nodes (instance: subflow2)" in captured.out.lower()
+
+        assert "[indirect] flow: flow_with_nodes_and_subflow" in captured.out.lower()
+        assert (
+            "via child flow: flow_with_duplicated_subflow (instance: subflow)"
             in captured.out.lower()
-        )
-        assert (
-            "path: {'flow': 'flow_with_duplicated_subflow', 'container': 'subflow1'} -> "
-            "{'flow': 'flow_with_four_nodes', 'nodeinst': 'nodesub1'}" in captured.out.lower()
-        )
-        assert (
-            "[indirect] flow: flow_with_nodes_and_subflow, nodeinst: nodesub1"
-            in captured.out.lower()
-        )
-        assert (
-            "path: {'flow': 'flow_with_nodes_and_subflow', 'container': 'subflow'} -> "
-            "{'flow': 'flow_with_duplicated_subflow', 'container': 'subflow1'} -> "
-            "{'flow': 'flow_with_four_nodes', 'nodeinst': 'nodesub1'}" in captured.out.lower()
-        )
-        assert (
-            "[indirect] flow: flow_with_nodes_and_subflow, nodeinst: sub1" in captured.out.lower()
-        )
-        assert (
-            "path: {'flow': 'flow_with_nodes_and_subflow', 'container': 'subflow'} -> "
-            "{'flow': 'flow_with_duplicated_subflow', 'nodeinst': 'sub1'}" in captured.out.lower()
-        )
-        assert (
-            "[indirect] flow: flow_with_nodes_and_subflow, nodeinst: sub2" in captured.out.lower()
-        )
-        assert (
-            "path: {'flow': 'flow_with_nodes_and_subflow', 'container': 'subflow'} -> "
-            "{'flow': 'flow_with_duplicated_subflow', 'nodeinst': 'sub2'}" in captured.out.lower()
         )
 
     def test_search_flow_command(self, global_db, setup_test_data, capsys):
@@ -105,28 +98,18 @@ class TestMobdataSearchCommands:
         assert return_code == 0
 
         captured = capsys.readouterr()
-        assert "'flow_with_four_nodes' is used in 4 flow(s)" in captured.out.lower()
+
+        # Count: 2 direct instances + 1 indirect reference = 3 total
+        assert "'flow_with_four_nodes' is used in 3 location(s)" in captured.out.lower()
+
         # Should show direct usage in flow_with_duplicated_subflow as subflow1 and subflow2
+        assert "[direct] flow: flow_with_duplicated_subflow" in captured.out.lower()
+        assert "flow instance (container): subflow1" in captured.out.lower()
+        assert "flow instance (container): subflow2" in captured.out.lower()
+
+        # Should show indirect usage in flow_with_nodes_and_subflow via flow_with_duplicated_subflow
+        assert "[indirect] flow: flow_with_nodes_and_subflow" in captured.out.lower()
         assert (
-            "[direct] flow: flow_with_duplicated_subflow, container: subflow1"
-            in captured.out.lower()
-        )
-        assert (
-            "[direct] flow: flow_with_duplicated_subflow, container: subflow2"
-            in captured.out.lower()
-        )
-        # Should also show indirect usage in flow_with_nodes_and_subflow via flow_with_duplicated_subflow
-        assert (
-            "[indirect] flow: flow_with_nodes_and_subflow, container: subflow"
-            in captured.out.lower()
-        )
-        assert (
-            "path: {'flow': 'flow_with_nodes_and_subflow', 'container': 'subflow'} -> "
-            "{'flow': 'flow_with_duplicated_subflow', 'container': 'subflow1'}"
-            in captured.out.lower()
-        )
-        assert (
-            "path: {'flow': 'flow_with_nodes_and_subflow', 'container': 'subflow'} -> "
-            "{'flow': 'flow_with_duplicated_subflow', 'container': 'subflow2'}"
+            "via child flow: flow_with_duplicated_subflow (instance: subflow)"
             in captured.out.lower()
         )

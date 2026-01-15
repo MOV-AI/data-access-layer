@@ -6,17 +6,25 @@
    Utility modules for DAL.
 """
 from .usage_search import (
-    FlowUsageInfo,
-    NodeUsageInfo,
-    PathElement,
+    UsageSearchResult,
+    DirectNodeUsageItem,
+    IndirectNodeUsageItem,
+    DirectFlowUsageItem,
+    IndirectFlowUsageItem,
+    NodeFlowUsage,
+    FlowFlowUsage,
     get_cached_usage_search_scope_map,
     get_usage_search_scope_map,
 )
 
 __all__ = [
-    "FlowUsageInfo",
-    "NodeUsageInfo",
-    "PathElement",
+    "UsageSearchResult",
+    "DirectNodeUsageItem",
+    "IndirectNodeUsageItem",
+    "DirectFlowUsageItem",
+    "IndirectFlowUsageItem",
+    "NodeFlowUsage",
+    "FlowFlowUsage",
     "get_cached_usage_search_scope_map",
     "get_usage_search_scope_map",
 ]

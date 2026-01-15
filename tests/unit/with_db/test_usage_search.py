@@ -1,8 +1,7 @@
 """Tests for Node and Flow classmethod usage search functionality."""
 from movai_core_shared.exceptions import DoesNotExist
 
-
-from dal.utils.usage_search import get_usage_search_scope_map
+from dal.utils.usage_search import get_usage_search_scope_map, UsageSearchResult
 
 
 def get_scope_instance(search_type, name):
@@ -23,51 +22,112 @@ class TestNodeUsageInfo:
         Test Node.get_usage_info() with recursive search.
 
         Test scenario:
-        - NodeSub1 is directly in flow_with_four_nodes, flow_not_used_as_subflow, flow_with_duplicated_subflow, flow_with_nodes_and_subflow
+        - NodeSub1 is used directly in every flow (twice in flow_with_duplicated_subflow)
         - flow_with_four_nodes is a subflow in flow_with_duplicated_subflow
         - flow_with_duplicated_subflow is a subflow in flow_with_nodes_and_subflow
         - Therefore NodeSub1 should appear with both direct and indirect usages
         """
 
         node = get_scope_instance("node", "NodeSub1")
-        usage = node.get_usage_info()
+        result: UsageSearchResult = node.get_usage_info()
 
-        # Should have both direct and indirect usages
-        direct_usages = [item for item in usage if item.get("direct", True)]
-        indirect_usages = [item for item in usage if not item.get("direct", True)]
-        # Direct usages: flow_with_four_nodes, flow_not_used_as_subflow, flow_with_duplicated_subflow, flow_with_nodes_and_subflow
-        assert len(direct_usages) == 5
-        direct_flows = {item["flow"] for item in direct_usages}
-        assert direct_flows == {
-            "flow_with_four_nodes",
-            "flow_not_used_as_subflow",
-            "flow_with_duplicated_subflow",
-            "flow_with_nodes_and_subflow",
-        }
-
-        # Indirect usages should exist
-        assert len(indirect_usages) >= 1
-
-        # Verify at least one indirect usage has a path
-        indirect_with_path = [item for item in indirect_usages if "path" in item]
-        assert len(indirect_with_path) >= 1
+        expected_result = UsageSearchResult(
+            scope="Node",
+            name="NodeSub1",
+            usage={
+                "Flow": {
+                    "flow_not_used_as_subflow": {
+                        "direct": [{"node_instance_name": "sub"}],
+                        "indirect": [],
+                    },
+                    "flow_with_duplicated_subflow": {
+                        "direct": [
+                            {"node_instance_name": "sub1"},
+                            {"node_instance_name": "sub2"},
+                        ],
+                        "indirect": [
+                            {
+                                "flow_template_name": "flow_with_four_nodes",
+                                "flow_instance_name": "subflow1",
+                            },
+                            {
+                                "flow_template_name": "flow_with_four_nodes",
+                                "flow_instance_name": "subflow2",
+                            },
+                        ],
+                    },
+                    "flow_with_four_nodes": {
+                        "direct": [{"node_instance_name": "nodesub1"}],
+                        "indirect": [],
+                    },
+                    "flow_with_nodes_and_subflow": {
+                        "direct": [{"node_instance_name": "sub"}],
+                        "indirect": [
+                            {
+                                "flow_template_name": "flow_with_duplicated_subflow",
+                                "flow_instance_name": "subflow",
+                            }
+                        ],
+                    },
+                }
+            },
+        )
+        assert result == expected_result
 
     def test_node_get_usage_info_multiple_calls(self, setup_test_data):
-        """Test that Node.get_usage_info() can be called multiple times without instantiation."""
+        """
+        Test that Node.get_usage_info() can be called multiple times without instantiation.
+
+        Test scenario:
+        - NodeSub1 is used directly in every flow and twice in flow_with_duplicated_subflow
+        - NodeSub1 is indirectly referenced via flow_with_duplicated_subflow twice
+             and once in flow_with_nodes_and_subflow
+        - NodeSub2 is used directly in flow_with_four_nodes
+        - NodeSub2 is indirectly referenced via flow_with_duplicated_subflow twice
+            and once in flow_with_nodes_and_subflow
+        - NodePub1 is directly used once in every flow
+        - NodePub1 is indirectly referenced via flow_with_duplicated_subflow twice
+            and once in flow_with_nodes_and_subflow
+
+        """
 
         # Call multiple times for different nodes
         node1 = get_scope_instance("node", "NodeSub1")
         node2 = get_scope_instance("node", "NodeSub2")
         node3 = get_scope_instance("node", "NodePub1")
 
-        usage1 = node1.get_usage_info()
-        usage2 = node2.get_usage_info()
-        usage3 = node3.get_usage_info()
+        result1 = node1.get_usage_info()
+        result2 = node2.get_usage_info()
+        result3 = node3.get_usage_info()
 
         # Each should have independent results
-        assert len(usage1) == 9
-        assert len(usage2) == 3
-        assert len(usage3) == 7
+        # Count total usages across all scopes (direct + indirect)
+        def count_usages(result):
+            return sum(
+                len(details.get("direct", [])) + len(details.get("indirect", []))
+                for items in result["usage"].values()
+                for details in items.values()
+            )
+
+        total1 = count_usages(result1)
+        total2 = count_usages(result2)
+        total3 = count_usages(result3)
+
+        # NodeSub1: 5 direct in 4 flows + 3 indirect = 8
+        # NodeSub2: 1 direct in flow_with_four_nodes + 3 indirect = 4
+        # NodePub1: 4 direct in 4 flows + 3 indirect = 7
+        assert total1 == 8
+        assert total2 == 4
+        assert total3 == 7
+
+    def test_unused_node_get_usage_info(self, setup_test_data):
+        """Test Node.get_usage_info() for a node that is not used in any flow."""
+
+        node = get_scope_instance("node", "UnusedNode")
+        result: UsageSearchResult = node.get_usage_info()
+
+        expected_result = UsageSearchResult(scope="Node", name="UnusedNode", usage={"Flow": {}})
+        assert result == expected_result
 
 
 class TestFlowUsageInfo:

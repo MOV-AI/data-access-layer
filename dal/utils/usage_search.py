@@ -5,54 +5,79 @@
 
    Usage search scope mapping utilities.
 """
-from typing import TYPE_CHECKING, Dict, Optional, Type, List, TypedDict
+from typing import TYPE_CHECKING, Dict, Optional, Type, Any, TypedDict, List
 
 if TYPE_CHECKING:
     from dal.scopes.scope import Scope
 
 
-class PathElement(TypedDict):
-    """Represents an element in the usage path of a Node or Flow instance.
+class DirectNodeUsageItem(TypedDict):
+    """Single direct usage item for a Node."""
 
-    Used to track the chain from a top-level flow down to a specific node instance,
-    showing each container/subflow traversed along the way.
+    node_instance_name: str
+
+
+class IndirectNodeUsageItem(TypedDict):
+    """Single indirect usage item for a Node - references immediate child flow."""
+
+    flow_template_name: str
+    flow_instance_name: str
+
+
+class DirectFlowUsageItem(TypedDict):
+    """Single direct usage item for a Flow."""
+
+    flow_instance_name: str
+
+
+class IndirectFlowUsageItem(TypedDict):
+    """Single indirect usage item for a Flow - references immediate child flow."""
+
+    flow_template_name: str
+    flow_instance_name: str
+
+
+class NodeFlowUsage(TypedDict, total=False):
+    """Usage details for a Node in a specific Flow.
+
+    Can have both direct and indirect usages.
     """
 
-    flow: str
-    Container: Optional[str]  # Present when traversing through a container/subflow
-    NodeInst: Optional[str]  # Present at the final element (the actual node instance)
+    direct: List[DirectNodeUsageItem]
+    indirect: List[IndirectNodeUsageItem]
 
 
-class NodeUsageInfo(TypedDict):
-    """Represents usage information of a Node instance in flows.
+class FlowFlowUsage(TypedDict, total=False):
+    """Usage details for a Flow in a specific parent Flow.
 
-    Attributes:
-        flow: Name of the flow containing the node instance
-        NodeInst: Name of the node instance
-        direct: True if the node is directly in the flow, False if indirect (via subflow)
-        path: Chain of flows/containers leading to this usage (only present when direct=False)
+    Can have both direct and indirect usages.
     """
 
-    flow: str
-    NodeInst: str
-    direct: bool
-    path: Optional[List[PathElement]]  # Only present when direct is False
+    direct: List[DirectFlowUsageItem]
+    indirect: List[IndirectFlowUsageItem]
 
 
-class FlowUsageInfo(TypedDict):
-    """Represents usage information of a Flow as a subflow in other flows.
+class UsageSearchResult(TypedDict):
+    """Result structure for usage search.
 
-    Attributes:
-        flow: Name of the parent flow that uses this flow as a subflow
-        Container: Name of the container instance
-        direct: True if directly used, False if indirect (parent is also a subflow)
-        path: Chain of flows/containers leading to this usage (only present when direct=False)
+    Format:
+    {
+        "scope": "Node" | "Flow",
+        "name": "object_name",
+        "usage": {
+            "Flow": {
+                "flow_name": {
+                    "direct": [...],
+                    "indirect": [...]
+                }
+            }
+        }
+    }
     """
 
-    flow: str
-    Container: str
-    direct: bool
-    path: Optional[List[PathElement]]  # Only present when direct is False
+    scope: str  # "Node" or "Flow"
+    name: str  # Name of the object being searched
+    usage: Dict[str, Dict[str, Any]]  # Nested dict: scope_type -> parent_name -> usage_details
 
 
 def get_usage_search_scope_map() -> Dict[str, Type["Scope"]]:

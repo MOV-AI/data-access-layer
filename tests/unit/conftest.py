@@ -118,7 +118,7 @@ def setup_test_data(global_db, metadata_folder):
 
     # Import nodes first, then flows (flows depend on nodes)
     objects = {
-        "Node": ["NodePub1", "NodePub2", "NodeSub1", "NodeSub2"],
+        "Node": ["NodePub1", "NodePub2", "NodeSub1", "NodeSub2", "UnusedNode"],
     }
     importer.run(objects)
 

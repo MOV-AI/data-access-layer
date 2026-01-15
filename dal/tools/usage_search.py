@@ -1,7 +1,7 @@
 import json
 
 from movai_core_shared.exceptions import DoesNotExist
-from dal.utils.usage_search import get_cached_usage_search_scope_map
+from dal.utils.usage_search import get_cached_usage_search_scope_map, UsageSearchResult
 
 
 class Searcher:
@@ -15,47 +15,66 @@ class Searcher:
         """
         self.debug = debug
 
-    def print_results(self, obj_name: str, usage: list, search_type: str):
+    def print_results(self, result: UsageSearchResult):
         """Print search results in a readable format.
 
         Args:
-            result (dict): Search result from search_node or search_flow
-            search_type (str): Either "node" or "flow"
+            result (UsageSearchResult): Search result from get_usage_info()
         """
+        scope_type = result["scope"]
+        obj_name = result["name"]
+        usage = result["usage"]
 
-        if not usage:
-            print(f"{search_type.capitalize()} '{obj_name}' is not used in any flows.")
+        direct_count = sum(
+            len(details.get("direct", []))
+            for parent_items in usage.values()
+            for details in parent_items.values()
+        )
+        indirect_count = sum(
+            len(details.get("indirect", []))
+            for parent_items in usage.values()
+            for details in parent_items.values()
+        )
+        # Count total usages across all scope types
+        total_count = direct_count + indirect_count
+
+        if total_count == 0:
+            print(f"{scope_type} '{obj_name}' is not used anywhere.")
             return
 
-        print(f"\n{search_type.capitalize()} '{obj_name}' is used in {len(usage)} flow(s):")
-        print("-" * 60)
+        print(f"\n{scope_type} '{obj_name}' is used in {total_count} location(s):")
+        print("-" * 80)
 
-        for item in usage:
-            flow = item.get("flow")
-            direct = item.get("direct", True)
-            status = "Direct" if direct else "Indirect"
-            path = item.get("path", None)
+        # Iterate through each scope type (e.g., "Flow")
+        for parent_scope, parent_items in usage.items():
+            for parent_name, details in parent_items.items():
+                # Handle direct usages
+                direct_items = details.get("direct", [])
+                for direct_item in direct_items:
+                    if scope_type == "Node":
+                        instance = direct_item.get("node_instance_name", "N/A")
+                        print(f"  [Direct] {parent_scope}: {parent_name}")
+                        print(f"           Node Instance: {instance}")
+                    elif scope_type == "Flow":
+                        instance = direct_item.get("flow_instance_name", "N/A")
+                        print(f"  [Direct] {parent_scope}: {parent_name}")
+                        print(f"           Flow Instance (Container): {instance}")
 
-            if search_type == "node":
-                node_inst = item.get("NodeInst")
-                if path:
-                    path = " -> ".join(str(p) for p in path)
-                    print(f"  [{status}] Flow: {flow}, NodeInst: {node_inst}, \n\tPath: {path}")
-                else:
-                    print(f"  [{status}] Flow: {flow}, NodeInst: {node_inst}")
-            else:  # flow
-                container = item.get("Container")
-                if path:
-                    path = " -> ".join(str(p) for p in path)
-                    print(f"  [{status}] Flow: {flow}, Container: {container}, \n\tPath: {path}")
-                else:
-                    print(f"  [{status}] Flow: {flow}, Container: {container}")
+                # Handle indirect usages
+                indirect_items = details.get("indirect", [])
+                for indirect_item in indirect_items:
+                    child_template = indirect_item.get("flow_template_name", "N/A")
+                    child_instance = indirect_item.get("flow_instance_name", "N/A")
+                    print(f"  [Indirect] {parent_scope}: {parent_name}")
+                    print(
+                        f"           Via Child Flow: {child_template} (instance: {child_instance})"
+                    )
 
         print()
 
         if self.debug:
             print("\nFull JSON result:")
-            print(json.dumps(usage, indent=2))
+            print(json.dumps(result, indent=2, default=str))
 
     def search_usage(self, search_type: str, name: str) -> int:
         """Search for usage of a node or flow.
@@ -75,13 +94,13 @@ class Searcher:
             if scope is None:
                 print(f"Invalid type parameter. Must be one of {list(scope_map.keys())}.")
                 return 1
-            object = scope(name)
+            obj = scope(name)
         except DoesNotExist:
             print(f"{search_type.capitalize()} '{name}' does not exist.")
             return 1
 
-        usage = object.get_usage_info()
+        result = obj.get_usage_info()
 
-        self.print_results(name, usage, search_type)
+        self.print_results(result)
 
         return 0

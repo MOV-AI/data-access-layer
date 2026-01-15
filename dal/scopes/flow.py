@@ -13,7 +13,6 @@ import re
 import uuid
 from itertools import product
 from dal.helpers import flatten
-from typing import List
 from movai_core_shared.consts import (
     CONFIG_REGEX,
     LINK_REGEX,
@@ -33,11 +32,17 @@ from dal.movaidb import MovaiDB
 from dal.scopes.scope import Scope
 from dal.scopes.ports import Ports
 from dal.scopes.node import Node
-from dal.utils.usage_search import FlowUsageInfo, PathElement
+from dal.utils.usage_search import (
+    UsageSearchResult,
+    FlowFlowUsage,
+    DirectFlowUsageItem,
+    IndirectFlowUsageItem,
+)
 from dal.models.var import Var
 from movai_core_shared.exceptions import DoesNotExist
 from .configuration import Configuration
 from movai_core_shared.logger import Log
+from typing import Dict, Any
 
 LOGGER = Log.get_logger("Flow")
 
@@ -907,98 +912,124 @@ class Flow(Scope):
         except AttributeError as error:
             LOGGER.error(error)
 
-    def get_usage_info(self) -> List[FlowUsageInfo]:
+    def get_usage_info(self) -> UsageSearchResult:
         """Search Flows for Container instances that use this flow as a subflow,
         including indirect usages through other Containers.
 
         Returns:
-            list: List of dicts with structure:
-                  - Direct usage: {"flow": str, "Container": str, "direct": True}
-                  - Indirect usage: {"flow": str, "direct": False, "path": List[PathElement]}
-                  where path shows the chain from the top-level flow to this flow
-
+            UsageSearchResult: Dictionary with structure:
+                {
+                    "scope": "Flow",
+                    "name": "<flow_name>",
+                    "usage": {
+                        "Flow": {
+                            "<parent_flow>": {
+                                "flow_instance_name": "<container>",
+                                "direct": True
+                            },
+                            "<grandparent_flow>": {
+                                "direct": False,
+                                "flow_template_name": "<parent_flow>",
+                                "flow_instance_name": "<container>"
+                            }
+                        }
+                    }
+                }
         """
         # Check if this Flow is used as a Container in other Flows
         flows = self.movaidb.get({"Flow": {"*": {"Container": "*"}}})
 
         if not flows or flows.get("Flow") is None or len(flows.get("Flow")) == 0:
-            return []
+            return UsageSearchResult(scope="Flow", name=self.name, usage={})
 
-        # Find direct usages with container names - store ALL instances
-        direct_flows = []  # [(flow_name, container_name), ...]
+        # Find direct usages - map flow_name -> list of container instances
+        direct_usages: Dict[str, list] = {}  # flow_name -> [container_name, ...]
+
         for flow_name, containers in flows.get("Flow").items():
             for container_name, params in containers.get("Container", {}).items():
                 if params.get("ContainerFlow") == self.name:
-                    direct_flows.append((flow_name, container_name))
+                    if flow_name not in direct_usages:
+                        direct_usages[flow_name] = []
+                    direct_usages[flow_name].append(container_name)
 
-        result = []
+        # Build result dictionary
+        usage_dict: Dict[str, Dict[str, Any]] = {"Flow": {}}
 
-        # Add direct usages with container names (without path - it's redundant for direct usages)
-        for flow_name, container_name in direct_flows:
-            result.append(FlowUsageInfo(flow=flow_name, Container=container_name, direct=True))
-
-        # Track which (flow, path) combinations we've already added to avoid duplicates
-        visited_paths = set()
-
-        for flow_name, container_name in direct_flows:
-            self._find_parent_flows(
-                flow_name,
-                [PathElement(flow=flow_name, Container=container_name)],
-                flows,
-                visited_paths,
-                result,
+        # Add direct usages
+        for flow_name, container_instances in direct_usages.items():
+            # Create FlowFlowUsage with all direct instances
+            usage_dict["Flow"][flow_name] = FlowFlowUsage(
+                direct=[
+                    DirectFlowUsageItem(flow_instance_name=inst) for inst in container_instances
+                ],
+                indirect=[],
             )
 
-        return result
+        # Find all indirect usages through the flow hierarchy
+        self._find_all_indirect_usages(
+            direct_usage_flows=set(direct_usages.keys()),
+            all_flows=flows,
+            usage_dict=usage_dict,
+        )
 
-    def _find_parent_flows(
+        return UsageSearchResult(scope="Flow", name=self.name, usage=usage_dict)
+
+    def _find_all_indirect_usages(
         self,
-        flow_name: str,
-        current_path: List[PathElement],
-        flows: dict,
-        visited_paths: set,
-        result: List[FlowUsageInfo],
+        direct_usage_flows: set,
+        all_flows: dict,
+        usage_dict: Dict[str, Dict[str, Any]],
     ):
-        """Recursively find parent flows that contain the given flow as a subflow.
+        """Find all indirect usages by traversing the flow hierarchy.
+
+        For each flow in usage_dict (flows that contain this flow either directly or indirectly),
+        find parent flows that contain it as a subflow, and add indirect references.
 
         Args:
-            flow_name: The flow to search for parents of
-            current_path: The current path from top-level flow to this flow
-            flows: Dict of all flows with Container data
-            visited_paths: Set of already-visited paths to avoid duplicates
-            result: List to append indirect usage results to
+            direct_usage_flows: Set of flow names that directly use this flow
+            all_flows: Dict of all flows with Container data
+            usage_dict: Dictionary to populate with indirect usages
         """
-        for parent_flow, containers in flows.get("Flow", {}).items():
-            for parent_container, params in containers.get("Container", {}).items():
-                if params.get("ContainerFlow") == flow_name:
-                    new_path: List[PathElement] = [
-                        PathElement(flow=parent_flow, Container=parent_container)
-                    ] + current_path
-                    path_key = (
-                        parent_flow,
-                        parent_container,
-                        tuple((p["flow"], p["Container"]) for p in new_path),
-                    )
+        # Keep processing until no new flows are added
+        processed_flows = set()
+        flows_to_process = list(usage_dict["Flow"].keys())
 
-                    # Only add if we haven't seen this exact path before
-                    if path_key not in visited_paths:
-                        visited_paths.add(path_key)
+        while flows_to_process:
+            child_flow_name = flows_to_process.pop(0)
 
-                        # Add as indirect usage (even if it's also a direct usage)
-                        # A flow can be used directly as Container
-                        # AND indirectly via another Container
-                        result.append(
-                            FlowUsageInfo(
-                                flow=parent_flow,
-                                direct=False,
-                                Container=parent_container,
-                                path=new_path,
-                            )
+            if child_flow_name in processed_flows:
+                continue
+
+            processed_flows.add(child_flow_name)
+
+            # Get all instances (direct and indirect) in this child flow
+            child_flow_data = usage_dict["Flow"][child_flow_name]
+            num_direct = len(child_flow_data["direct"])
+            num_indirect = len(child_flow_data["indirect"])
+            total_instances = num_direct + num_indirect
+
+            if total_instances == 0:
+                continue
+
+            # Find all parent flows that contain this child flow
+            for parent_flow, containers in all_flows.get("Flow", {}).items():
+                for container_name, params in containers.get("Container", {}).items():
+                    if params.get("ContainerFlow") == child_flow_name:
+                        # Add indirect reference for this container
+                        if parent_flow not in usage_dict["Flow"]:
+                            # New parent flow - create entry with empty direct array
+                            usage_dict["Flow"][parent_flow] = FlowFlowUsage(direct=[], indirect=[])
+                            flows_to_process.append(parent_flow)
+
+                        # Add one indirect reference for this container pointing to the child flow
+                        # Only add if not already present (avoid duplicates)
+                        indirect_ref = IndirectFlowUsageItem(
+                            flow_template_name=child_flow_name,
+                            flow_instance_name=container_name,
                         )
 
-                        # Continue recursing to find higher-level parents
-                        self._find_parent_flows(parent_flow, new_path, flows, visited_paths, result)
-                    break
+                        if indirect_ref not in usage_dict["Flow"][parent_flow]["indirect"]:
+                            usage_dict["Flow"][parent_flow]["indirect"].append(indirect_ref)
 
     # NOT PORTED
     def delete(self, key: str, name: str):
