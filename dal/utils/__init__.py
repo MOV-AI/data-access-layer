@@ -5,7 +5,7 @@
 
    Utility modules for DAL.
 """
-from .usage_search.types import (
+from .usage_search.usage_types import (
     UsageSearchResult,
     DirectNodeUsageItem,
     IndirectNodeUsageItem,

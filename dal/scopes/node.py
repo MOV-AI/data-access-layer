@@ -23,7 +23,7 @@ from movai_core_shared.consts import (
 )
 from dal.movaidb import MovaiDB
 from dal.scopes.scope import Scope
-from dal.utils.usage_search.types import (
+from dal.utils.usage_search.usage_types import (
     UsageSearchResult,
     NodeFlowUsage,
     DirectNodeUsageItem,
