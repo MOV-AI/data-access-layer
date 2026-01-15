@@ -32,7 +32,7 @@ from dal.movaidb import MovaiDB
 from dal.scopes.scope import Scope
 from dal.scopes.ports import Ports
 from dal.scopes.node import Node
-from dal.utils.usage_search.types import (
+from dal.utils.usage_search.usage_types import (
     UsageSearchResult,
     FlowFlowUsage,
     DirectFlowUsageItem,
