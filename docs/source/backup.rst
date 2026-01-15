@@ -92,15 +92,18 @@ Examples
   # Output:
   Node 'create_log' is used in 6 flow(s):
   ------------------------------------------------------------
-    [Direct] Flow: fake_drop, NodeInst: log_operation_success
-    [Direct] Flow: pick, NodeInst: pick_success
-    [Direct] Flow: tugbot_idle_sim, NodeInst: spawn_log
-    [Indirect] Flow: movai_lab_loop, NodeInst: pick_success,
-    Path: {'flow': 'movai_lab_loop', 'Container': 'pick'} -> {'flow': 'pick', 'NodeInst': 'pick_success'}
-    [Indirect] Flow: movai_lab_loop_fleet_sim, NodeInst: pick_success,
-    Path: {'flow': 'movai_lab_loop_fleet_sim', 'Container': 'pick'} -> {'flow': 'pick', 'NodeInst': 'pick_success'}
-    [Indirect] Flow: movai_lab_loop_sim, NodeInst: pick_success,
-    Path: {'flow': 'movai_lab_loop_sim', 'Container': 'pick'} -> {'flow': 'pick', 'NodeInst': 'pick_success'}
+    [Direct] Flow: fake_drop
+             Node Instance: log_operation_success
+    [Direct] Flow: pick
+             Node Instance: pick_success
+    [Direct] Flow: tugbot_idle_sim
+             Node Instance: spawn_log
+    [Indirect] Flow: movai_lab_loop
+             Via Child Flow: pick (instance: pick)
+    [Indirect] Flow: movai_lab_loop_fleet_sim
+             Via Child Flow: pick (instance: pick)
+    [Indirect] Flow: movai_lab_loop_sim
+             Via Child Flow: pick (instance: pick)
 
 
 - Example 2: Search for subflow usage with debug output
@@ -111,88 +114,76 @@ Examples
   # Output:
   Flow 'pick' is used in 7 flow(s):
   ------------------------------------------------------------
-    [Direct] Flow: drop, Container: pick
-    [Direct] Flow: movai_lab_loop, Container: pick
-    [Direct] Flow: movai_lab_loop_fleet_sim, Container: pick
-    [Direct] Flow: movai_lab_loop_sim, Container: pick
-    [Indirect] Flow: movai_lab_loop, Container: drop,
-    Path: {'flow': 'movai_lab_loop', 'Container': 'drop'} -> {'flow': 'drop', 'Container': 'pick'}
-    [Indirect] Flow: movai_lab_loop_fleet_sim, Container: drop,
-    Path: {'flow': 'movai_lab_loop_fleet_sim', 'Container': 'drop'} -> {'flow': 'drop', 'Container': 'pick'}
-    [Indirect] Flow: movai_lab_loop_sim, Container: drop,
-    Path: {'flow': 'movai_lab_loop_sim', 'Container': 'drop'} -> {'flow': 'drop', 'Container': 'pick'}
-
+    [Direct] Flow: drop
+             Flow Instance (Container): pick
+    [Direct] Flow: movai_lab_loop
+             Flow Instance (Container): pick
+    [Direct] Flow: movai_lab_loop_fleet_sim
+             Flow Instance (Container): pick
+    [Direct] Flow: movai_lab_loop_sim
+             Flow Instance (Container): pick
+    [Indirect] Flow: movai_lab_loop
+             Via Child Flow: drop (instance: drop)
+    [Indirect] Flow: movai_lab_loop_fleet_sim
+             Via Child Flow: drop (instance: drop)
+    [Indirect] Flow: movai_lab_loop_sim
+             Via Child Flow: drop (instance: drop)
 
   Full JSON result:
   {
-    "flow": "pick",
-    "usage": [
-      {
-        "flow": "drop",
-        "Container": "pick",
-        "direct": true
-      },
-      {
-        "flow": "movai_lab_loop",
-        "Container": "pick",
-        "direct": true
-      },
-      {
-        "flow": "movai_lab_loop_fleet_sim",
-        "Container": "pick",
-        "direct": true
-      },
-      {
-        "flow": "movai_lab_loop_sim",
-        "Container": "pick",
-        "direct": true
-      },
-      {
-        "flow": "movai_lab_loop",
-        "direct": false,
-        "Container": "drop",
-        "path": [
-          {
-            "flow": "movai_lab_loop",
-            "Container": "drop"
-          },
-          {
-            "flow": "drop",
-            "Container": "pick"
-          }
-        ]
-      },
-      {
-        "flow": "movai_lab_loop_fleet_sim",
-        "direct": false,
-        "Container": "drop",
-        "path": [
-          {
-            "flow": "movai_lab_loop_fleet_sim",
-            "Container": "drop"
-          },
-          {
-            "flow": "drop",
-            "Container": "pick"
-          }
-        ]
-      },
-      {
-        "flow": "movai_lab_loop_sim",
-        "direct": false,
-        "Container": "drop",
-        "path": [
-          {
-            "flow": "movai_lab_loop_sim",
-            "Container": "drop"
-          },
-          {
-            "flow": "drop",
-            "Container": "pick"
-          }
-        ]
+    "scope": "Flow",
+    "name": "pick",
+    "usage": {
+      "Flow": {
+        "drop": {
+          "direct": [
+            {
+              "flow_instance_name": "pick"
+            }
+          ],
+          "indirect": []
+        },
+        "movai_lab_loop": {
+          "direct": [
+            {
+              "flow_instance_name": "pick"
+            }
+          ],
+          "indirect": [
+            {
+              "flow_template_name": "drop",
+              "flow_instance_name": "drop"
+            }
+          ]
+        },
+        "movai_lab_loop_fleet_sim": {
+          "direct": [
+            {
+              "flow_instance_name": "pick"
+            }
+          ],
+          "indirect": [
+            {
+              "flow_template_name": "drop",
+              "flow_instance_name": "drop"
+            }
+          ]
+        },
+        "movai_lab_loop_sim": {
+          "direct": [
+            {
+              "flow_instance_name": "pick"
+            }
+          ],
+          "indirect": [
+            {
+              "flow_template_name": "drop",
+              "flow_instance_name": "drop"
+            }
+          ]
+        }
       }
-    ]
+    }
   }
 
 
