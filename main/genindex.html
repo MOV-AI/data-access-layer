@@ -49,7 +49,7 @@
 <li class="toctree-l1"><a class="reference internal" href="permissions.html">Resource permissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="robot_parameters.html">Robot Parameters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schemas.html">Schemas and validation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="backup.html">Import, export and remove</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backup.html">Mobdata CLI Tool</a></li>
 </ul>
 
         </div>
@@ -1497,8 +1497,6 @@
         <li><a href="dal.scopes.html#module-dal.scopes.translation">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     dal.scopes.user
 
@@ -1513,6 +1511,8 @@
         <li><a href="dal.scopes.html#module-dal.scopes.widget">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     dal.tools
 
@@ -1553,6 +1553,13 @@
 
       <ul>
         <li><a href="dal.tools.html#module-dal.tools.secret_key">module</a>
+</li>
+      </ul></li>
+      <li>
+    dal.tools.usage_search
+
+      <ul>
+        <li><a href="dal.tools.html#module-dal.tools.usage_search">module</a>
 </li>
       </ul></li>
       <li>
@@ -1976,6 +1983,28 @@
       </ul></li>
       <li><a href="dal.data.html#dal.data.tree.DictNode">DictNode (class in dal.data.tree)</a>
 </li>
+      <li><a href="dal.scopes.html#dal.scopes.FlowFlowUsage.direct">direct (dal.scopes.FlowFlowUsage attribute)</a>
+
+      <ul>
+        <li><a href="dal.scopes.html#dal.scopes.NodeFlowUsage.direct">(dal.scopes.NodeFlowUsage attribute)</a>
+</li>
+        <li><a href="dal.utils.html#dal.utils.FlowFlowUsage.direct">(dal.utils.FlowFlowUsage attribute)</a>
+</li>
+        <li><a href="dal.utils.html#dal.utils.NodeFlowUsage.direct">(dal.utils.NodeFlowUsage attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="dal.scopes.html#dal.scopes.DirectFlowUsageItem">DirectFlowUsageItem (class in dal.scopes)</a>
+
+      <ul>
+        <li><a href="dal.utils.html#dal.utils.DirectFlowUsageItem">(class in dal.utils)</a>
+</li>
+      </ul></li>
+      <li><a href="dal.scopes.html#dal.scopes.DirectNodeUsageItem">DirectNodeUsageItem (class in dal.scopes)</a>
+
+      <ul>
+        <li><a href="dal.utils.html#dal.utils.DirectNodeUsageItem">(class in dal.utils)</a>
+</li>
+      </ul></li>
       <li><a href="dal.models.html#dal.models.Lock.disable_heartbeat">disable_heartbeat() (dal.models.Lock class method)</a>
 
       <ul>
@@ -2348,8 +2377,6 @@
         <li><a href="dal.movaidb.html#dal.movaidb.MovaiDB.find">(dal.movaidb.MovaiDB method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.helpers.html#dal.helpers.Helpers.find_by_key">find_by_key() (dal.helpers.Helpers static method)</a>
 
       <ul>
@@ -2370,6 +2397,8 @@
         <li><a href="dal.scopes.html#dal.scopes.fleetrobot.FleetRobot">(class in dal.scopes.fleetrobot)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.models.html#dal.models.Flow">Flow (class in dal.models)</a>
 
       <ul>
@@ -2400,6 +2429,36 @@
         <li><a href="dal.models.html#dal.models.NodeInst.flow">(dal.models.NodeInst property)</a>
 </li>
         <li><a href="dal.models.html#dal.models.nodeinst.NodeInst.flow">(dal.models.nodeinst.NodeInst property)</a>
+</li>
+      </ul></li>
+      <li><a href="dal.scopes.html#dal.scopes.DirectFlowUsageItem.flow_instance_name">flow_instance_name (dal.scopes.DirectFlowUsageItem attribute)</a>
+
+      <ul>
+        <li><a href="dal.scopes.html#dal.scopes.IndirectFlowUsageItem.flow_instance_name">(dal.scopes.IndirectFlowUsageItem attribute)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.IndirectNodeUsageItem.flow_instance_name">(dal.scopes.IndirectNodeUsageItem attribute)</a>
+</li>
+        <li><a href="dal.utils.html#dal.utils.DirectFlowUsageItem.flow_instance_name">(dal.utils.DirectFlowUsageItem attribute)</a>
+</li>
+        <li><a href="dal.utils.html#dal.utils.IndirectFlowUsageItem.flow_instance_name">(dal.utils.IndirectFlowUsageItem attribute)</a>
+</li>
+        <li><a href="dal.utils.html#dal.utils.IndirectNodeUsageItem.flow_instance_name">(dal.utils.IndirectNodeUsageItem attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="dal.scopes.html#dal.scopes.IndirectFlowUsageItem.flow_template_name">flow_template_name (dal.scopes.IndirectFlowUsageItem attribute)</a>
+
+      <ul>
+        <li><a href="dal.scopes.html#dal.scopes.IndirectNodeUsageItem.flow_template_name">(dal.scopes.IndirectNodeUsageItem attribute)</a>
+</li>
+        <li><a href="dal.utils.html#dal.utils.IndirectFlowUsageItem.flow_template_name">(dal.utils.IndirectFlowUsageItem attribute)</a>
+</li>
+        <li><a href="dal.utils.html#dal.utils.IndirectNodeUsageItem.flow_template_name">(dal.utils.IndirectNodeUsageItem attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="dal.scopes.html#dal.scopes.FlowFlowUsage">FlowFlowUsage (class in dal.scopes)</a>
+
+      <ul>
+        <li><a href="dal.utils.html#dal.utils.FlowFlowUsage">(class in dal.utils)</a>
 </li>
       </ul></li>
       <li><a href="dal.models.html#dal.models.FlowLinks">FlowLinks (class in dal.models)</a>
@@ -2914,14 +2973,14 @@
         <li><a href="dal.scopes.html#dal.scopes.flow.Flow.get_node_port_template">(dal.scopes.flow.Flow method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.scopes.html#dal.scopes.Flow.get_node_ports_gen">get_node_ports_gen() (dal.scopes.Flow method)</a>
 
       <ul>
         <li><a href="dal.scopes.html#dal.scopes.flow.Flow.get_node_ports_gen">(dal.scopes.flow.Flow method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.scopes.html#dal.scopes.Flow.get_node_template_name">get_node_template_name() (dal.scopes.Flow method)</a>
 
       <ul>
@@ -3266,6 +3325,22 @@
         <li><a href="dal.classes.utils.html#dal.classes.utils.token.UserToken.get_token_obj">(dal.classes.utils.token.UserToken class method)</a>
 </li>
       </ul></li>
+      <li><a href="dal.scopes.html#dal.scopes.Flow.get_usage_info">get_usage_info() (dal.scopes.Flow method)</a>
+
+      <ul>
+        <li><a href="dal.scopes.html#dal.scopes.flow.Flow.get_usage_info">(dal.scopes.flow.Flow method)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.Node.get_usage_info">(dal.scopes.Node method)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.node.Node.get_usage_info">(dal.scopes.node.Node method)</a>
+</li>
+      </ul></li>
+      <li><a href="dal.scopes.html#dal.scopes.get_usage_search_scope_map">get_usage_search_scope_map() (in module dal.scopes)</a>
+
+      <ul>
+        <li><a href="dal.utils.html#dal.utils.get_usage_search_scope_map">(in module dal.utils)</a>
+</li>
+      </ul></li>
       <li><a href="dal.models.html#dal.models.BaseUser.get_user_by_name">get_user_by_name() (dal.models.BaseUser class method)</a>
 
       <ul>
@@ -3514,6 +3589,28 @@
 </li>
       <li><a href="dal.utils.html#dal.utils.redis_mocks.FakeAsyncConnection.in_pubsub">in_pubsub (dal.utils.redis_mocks.FakeAsyncConnection property)</a>
 </li>
+      <li><a href="dal.scopes.html#dal.scopes.FlowFlowUsage.indirect">indirect (dal.scopes.FlowFlowUsage attribute)</a>
+
+      <ul>
+        <li><a href="dal.scopes.html#dal.scopes.NodeFlowUsage.indirect">(dal.scopes.NodeFlowUsage attribute)</a>
+</li>
+        <li><a href="dal.utils.html#dal.utils.FlowFlowUsage.indirect">(dal.utils.FlowFlowUsage attribute)</a>
+</li>
+        <li><a href="dal.utils.html#dal.utils.NodeFlowUsage.indirect">(dal.utils.NodeFlowUsage attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="dal.scopes.html#dal.scopes.IndirectFlowUsageItem">IndirectFlowUsageItem (class in dal.scopes)</a>
+
+      <ul>
+        <li><a href="dal.utils.html#dal.utils.IndirectFlowUsageItem">(class in dal.utils)</a>
+</li>
+      </ul></li>
+      <li><a href="dal.scopes.html#dal.scopes.IndirectNodeUsageItem">IndirectNodeUsageItem (class in dal.scopes)</a>
+
+      <ul>
+        <li><a href="dal.utils.html#dal.utils.IndirectNodeUsageItem">(class in dal.utils)</a>
+</li>
+      </ul></li>
       <li><a href="dal.classes.utils.html#dal.classes.utils.token.Token.init_payload">init_payload() (dal.classes.utils.token.Token class method)</a>
 
       <ul>
@@ -3606,6 +3703,8 @@
         <li><a href="dal.models.html#dal.models.nodeinst.NodeInst.is_node_to_launch">(dal.models.nodeinst.NodeInst property)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.scopes.html#dal.scopes.Flow.is_node_to_launch">is_node_to_launch() (dal.scopes.Flow method)</a>
 
       <ul>
@@ -3622,8 +3721,6 @@
         <li><a href="dal.models.html#dal.models.nodeinst.NodeInst.is_nodelet">(dal.models.nodeinst.NodeInst property)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.models.html#dal.models.Ports.is_nodelet_client">is_nodelet_client() (dal.models.Ports method)</a>
 
       <ul>
@@ -4422,6 +4519,8 @@
 </li>
         <li><a href="dal.tools.html#module-dal.tools.secret_key">dal.tools.secret_key</a>
 </li>
+        <li><a href="dal.tools.html#module-dal.tools.usage_search">dal.tools.usage_search</a>
+</li>
         <li><a href="dal.utils.html#module-dal.utils">dal.utils</a>
 </li>
         <li><a href="dal.utils.html#module-dal.utils.callback">dal.utils.callback</a>
@@ -4574,8 +4673,12 @@
 </li>
         <li><a href="dal.scopes.html#dal.scopes.translation.Translation.Name">(dal.scopes.translation.Translation attribute)</a>
 </li>
-        <li><a href="dal.scopes.html#dal.scopes.User.Name">(dal.scopes.User attribute)</a>
+      </ul></li>
+      <li><a href="dal.scopes.html#dal.scopes.UsageSearchResult.name">name (dal.scopes.UsageSearchResult attribute)</a>
 </li>
+      <li><a href="dal.scopes.html#dal.scopes.User.Name">Name (dal.scopes.User attribute)</a>
+
+      <ul>
         <li><a href="dal.scopes.html#dal.scopes.user.User.Name">(dal.scopes.user.User attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.Widget.Name">(dal.scopes.Widget attribute)</a>
@@ -4583,6 +4686,8 @@
         <li><a href="dal.scopes.html#dal.scopes.widget.Widget.Name">(dal.scopes.widget.Widget attribute)</a>
 </li>
       </ul></li>
+      <li><a href="dal.utils.html#dal.utils.UsageSearchResult.name">name (dal.utils.UsageSearchResult attribute)</a>
+</li>
       <li><a href="dal.scopes.html#dal.scopes.FleetRobot.name_to_id">name_to_id() (dal.scopes.FleetRobot static method)</a>
 
       <ul>
@@ -4623,10 +4728,10 @@
         <li><a href="dal.models.html#dal.models.acl.ResourceType.Node">(dal.models.acl.ResourceType attribute)</a>
 </li>
       </ul></li>
-      <li><a href="dal.scopes.html#dal.scopes.Node.node_inst_depends">node_inst_depends() (dal.scopes.Node method)</a>
+      <li><a href="dal.scopes.html#dal.scopes.DirectNodeUsageItem.node_instance_name">node_instance_name (dal.scopes.DirectNodeUsageItem attribute)</a>
 
       <ul>
-        <li><a href="dal.scopes.html#dal.scopes.node.Node.node_inst_depends">(dal.scopes.node.Node method)</a>
+        <li><a href="dal.utils.html#dal.utils.DirectNodeUsageItem.node_instance_name">(dal.utils.DirectNodeUsageItem attribute)</a>
 </li>
       </ul></li>
       <li><a href="dal.models.html#dal.models.NodeInst.node_template">node_template (dal.models.NodeInst property)</a>
@@ -4671,6 +4776,12 @@
         <li><a href="dal.models.html#dal.models.scopestree.ScopeNode.node_type">(dal.models.scopestree.ScopeNode property)</a>
 </li>
         <li><a href="dal.models.html#dal.models.scopestree.ScopesTree.node_type">(dal.models.scopestree.ScopesTree property)</a>
+</li>
+      </ul></li>
+      <li><a href="dal.scopes.html#dal.scopes.NodeFlowUsage">NodeFlowUsage (class in dal.scopes)</a>
+
+      <ul>
+        <li><a href="dal.utils.html#dal.utils.NodeFlowUsage">(class in dal.utils)</a>
 </li>
       </ul></li>
       <li><a href="dal.models.html#dal.models.NodeInst">NodeInst (class in dal.models)</a>
@@ -5035,6 +5146,8 @@
         <li><a href="dal.models.html#dal.models.baseuser.BaseUser.principal_name">(dal.models.baseuser.BaseUser property)</a>
 </li>
       </ul></li>
+      <li><a href="dal.tools.html#dal.tools.usage_search.Searcher.print_results">print_results() (dal.tools.usage_search.Searcher method)</a>
+</li>
       <li><a href="dal.data.html#dal.data.tree.PropertyNode">PropertyNode (class in dal.data.tree)</a>
 </li>
       <li><a href="dal.movaidb.html#dal.movaidb.MovaiDB.pubsub">pubsub (dal.movaidb.MovaiDB attribute)</a>
@@ -5822,6 +5935,8 @@
 </li>
         <li><a href="dal.scopes.html#dal.scopes.translation.Translation.scope">(dal.scopes.translation.Translation attribute)</a>
 </li>
+        <li><a href="dal.scopes.html#dal.scopes.UsageSearchResult.scope">(dal.scopes.UsageSearchResult attribute)</a>
+</li>
         <li><a href="dal.scopes.html#dal.scopes.User.scope">(dal.scopes.User attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.user.User.scope">(dal.scopes.user.User attribute)</a>
@@ -5829,6 +5944,8 @@
         <li><a href="dal.scopes.html#dal.scopes.Widget.scope">(dal.scopes.Widget attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.widget.Widget.scope">(dal.scopes.widget.Widget attribute)</a>
+</li>
+        <li><a href="dal.utils.html#dal.utils.UsageSearchResult.scope">(dal.utils.UsageSearchResult attribute)</a>
 </li>
       </ul></li>
       <li><a href="dal.models.html#dal.models.scopestree.ScopeAttributeDeserializer">ScopeAttributeDeserializer (class in dal.models.scopestree)</a>
@@ -5889,12 +6006,16 @@
         <li><a href="dal.movaidb.html#dal.movaidb.MovaiDB.search_by_args">(dal.movaidb.MovaiDB method)</a>
 </li>
       </ul></li>
+      <li><a href="dal.tools.html#dal.tools.usage_search.Searcher.search_usage">search_usage() (dal.tools.usage_search.Searcher method)</a>
+</li>
       <li><a href="dal.movaidb.html#dal.movaidb.database.MovaiDB.search_wild">search_wild() (dal.movaidb.database.MovaiDB method)</a>
 
       <ul>
         <li><a href="dal.movaidb.html#dal.movaidb.MovaiDB.search_wild">(dal.movaidb.MovaiDB method)</a>
 </li>
       </ul></li>
+      <li><a href="dal.tools.html#dal.tools.usage_search.Searcher">Searcher (class in dal.tools.usage_search)</a>
+</li>
       <li><a href="dal.models.html#dal.models.LdapConfig.secondary_host">secondary_host (dal.models.LdapConfig property)</a>
 
       <ul>
@@ -6487,20 +6608,32 @@
         <li><a href="dal.models.html#dal.models.model.Model.update_time">(dal.models.model.Model method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.models.html#dal.models.LdapConfig.update_validation">update_validation() (dal.models.LdapConfig method)</a>
 
       <ul>
         <li><a href="dal.models.html#dal.models.ldapconfig.LdapConfig.update_validation">(dal.models.ldapconfig.LdapConfig method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.tools.html#dal.tools.secret_key.UpdateCommand">UpdateCommand (class in dal.tools.secret_key)</a>
 </li>
       <li><a href="dal.movaidb.html#dal.movaidb.database.MovaiDB.API.url">url (dal.movaidb.database.MovaiDB.API property)</a>
 
       <ul>
         <li><a href="dal.movaidb.html#dal.movaidb.MovaiDB.API.url">(dal.movaidb.MovaiDB.API property)</a>
+</li>
+      </ul></li>
+      <li><a href="dal.scopes.html#dal.scopes.UsageSearchResult.usage">usage (dal.scopes.UsageSearchResult attribute)</a>
+
+      <ul>
+        <li><a href="dal.utils.html#dal.utils.UsageSearchResult.usage">(dal.utils.UsageSearchResult attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="dal.scopes.html#dal.scopes.UsageSearchResult">UsageSearchResult (class in dal.scopes)</a>
+
+      <ul>
+        <li><a href="dal.utils.html#dal.utils.UsageSearchResult">(class in dal.utils)</a>
 </li>
       </ul></li>
       <li><a href="dal.models.html#dal.models.User">User (class in dal.models)</a>

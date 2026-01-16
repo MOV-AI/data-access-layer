@@ -44,6 +44,14 @@ dal.tools.secret\_key module
    :undoc-members:
    :show-inheritance:
 
+dal.tools.usage\_search module
+------------------------------
+
+.. automodule:: dal.tools.usage_search
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

@@ -75,7 +75,7 @@
 <li class="toctree-l1"><a class="reference internal" href="permissions.html">Resource permissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="robot_parameters.html">Robot Parameters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schemas.html">Schemas and validation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="backup.html">Import, export and remove</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backup.html">Mobdata CLI Tool</a></li>
 </ul>
 
         </div>
@@ -1938,6 +1938,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.flow.Flow.get_nodelet_manager"><code class="docutils literal notranslate"><span class="pre">Flow.get_nodelet_manager()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.flow.Flow.get_port"><code class="docutils literal notranslate"><span class="pre">Flow.get_port()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.flow.Flow.get_start_nodes"><code class="docutils literal notranslate"><span class="pre">Flow.get_start_nodes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.flow.Flow.get_usage_info"><code class="docutils literal notranslate"><span class="pre">Flow.get_usage_info()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.flow.Flow.is_node_dummy"><code class="docutils literal notranslate"><span class="pre">Flow.is_node_dummy()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.flow.Flow.is_node_remmapable"><code class="docutils literal notranslate"><span class="pre">Flow.is_node_remmapable()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.flow.Flow.is_node_to_launch"><code class="docutils literal notranslate"><span class="pre">Flow.is_node_to_launch()</span></code></a></li>
@@ -1978,11 +1979,11 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.node.Node.get_exposed_port_node_instance_links"><code class="docutils literal notranslate"><span class="pre">Node.get_exposed_port_node_instance_links()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.node.Node.get_params"><code class="docutils literal notranslate"><span class="pre">Node.get_params()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.node.Node.get_port_node_instance_links"><code class="docutils literal notranslate"><span class="pre">Node.get_port_node_instance_links()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.node.Node.get_usage_info"><code class="docutils literal notranslate"><span class="pre">Node.get_usage_info()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.node.Node.is_persistent"><code class="docutils literal notranslate"><span class="pre">Node.is_persistent()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.node.Node.is_port_remappable"><code class="docutils literal notranslate"><span class="pre">Node.is_port_remappable()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.node.Node.is_state"><code class="docutils literal notranslate"><span class="pre">Node.is_state()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.node.Node.is_valid"><code class="docutils literal notranslate"><span class="pre">Node.is_valid()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.node.Node.node_inst_depends"><code class="docutils literal notranslate"><span class="pre">Node.node_inst_depends()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.node.Node.port_inst_depends"><code class="docutils literal notranslate"><span class="pre">Node.port_inst_depends()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.node.Node.remove"><code class="docutils literal notranslate"><span class="pre">Node.remove()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.node.Node.rename"><code class="docutils literal notranslate"><span class="pre">Node.rename()</span></code></a></li>
@@ -2232,6 +2233,14 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Configuration.scope"><code class="docutils literal notranslate"><span class="pre">Configuration.scope</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.DirectFlowUsageItem"><code class="docutils literal notranslate"><span class="pre">DirectFlowUsageItem</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.DirectFlowUsageItem.flow_instance_name"><code class="docutils literal notranslate"><span class="pre">DirectFlowUsageItem.flow_instance_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.DirectNodeUsageItem"><code class="docutils literal notranslate"><span class="pre">DirectNodeUsageItem</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.DirectNodeUsageItem.node_instance_name"><code class="docutils literal notranslate"><span class="pre">DirectNodeUsageItem.node_instance_name</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.FleetRobot"><code class="docutils literal notranslate"><span class="pre">FleetRobot</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.FleetRobot.Name"><code class="docutils literal notranslate"><span class="pre">FleetRobot.Name</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.FleetRobot.Parameter"><code class="docutils literal notranslate"><span class="pre">FleetRobot.Parameter</span></code></a></li>
@@ -2291,6 +2300,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Flow.get_nodelet_manager"><code class="docutils literal notranslate"><span class="pre">Flow.get_nodelet_manager()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Flow.get_port"><code class="docutils literal notranslate"><span class="pre">Flow.get_port()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Flow.get_start_nodes"><code class="docutils literal notranslate"><span class="pre">Flow.get_start_nodes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Flow.get_usage_info"><code class="docutils literal notranslate"><span class="pre">Flow.get_usage_info()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Flow.is_node_dummy"><code class="docutils literal notranslate"><span class="pre">Flow.is_node_dummy()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Flow.is_node_remmapable"><code class="docutils literal notranslate"><span class="pre">Flow.is_node_remmapable()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Flow.is_node_to_launch"><code class="docutils literal notranslate"><span class="pre">Flow.is_node_to_launch()</span></code></a></li>
@@ -2301,11 +2311,26 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Flow.scope"><code class="docutils literal notranslate"><span class="pre">Flow.scope</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.FlowFlowUsage"><code class="docutils literal notranslate"><span class="pre">FlowFlowUsage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.FlowFlowUsage.direct"><code class="docutils literal notranslate"><span class="pre">FlowFlowUsage.direct</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.FlowFlowUsage.indirect"><code class="docutils literal notranslate"><span class="pre">FlowFlowUsage.indirect</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.Form"><code class="docutils literal notranslate"><span class="pre">Form</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Form.Name"><code class="docutils literal notranslate"><span class="pre">Form.Name</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Form.db"><code class="docutils literal notranslate"><span class="pre">Form.db</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Form.movaidb"><code class="docutils literal notranslate"><span class="pre">Form.movaidb</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Form.scope"><code class="docutils literal notranslate"><span class="pre">Form.scope</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.IndirectFlowUsageItem"><code class="docutils literal notranslate"><span class="pre">IndirectFlowUsageItem</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.IndirectFlowUsageItem.flow_instance_name"><code class="docutils literal notranslate"><span class="pre">IndirectFlowUsageItem.flow_instance_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.IndirectFlowUsageItem.flow_template_name"><code class="docutils literal notranslate"><span class="pre">IndirectFlowUsageItem.flow_template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.IndirectNodeUsageItem"><code class="docutils literal notranslate"><span class="pre">IndirectNodeUsageItem</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.IndirectNodeUsageItem.flow_instance_name"><code class="docutils literal notranslate"><span class="pre">IndirectNodeUsageItem.flow_instance_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.IndirectNodeUsageItem.flow_template_name"><code class="docutils literal notranslate"><span class="pre">IndirectNodeUsageItem.flow_template_name</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.Message"><code class="docutils literal notranslate"><span class="pre">Message</span></code></a><ul>
@@ -2330,18 +2355,23 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Node.get_exposed_port_node_instance_links"><code class="docutils literal notranslate"><span class="pre">Node.get_exposed_port_node_instance_links()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Node.get_params"><code class="docutils literal notranslate"><span class="pre">Node.get_params()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Node.get_port_node_instance_links"><code class="docutils literal notranslate"><span class="pre">Node.get_port_node_instance_links()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Node.get_usage_info"><code class="docutils literal notranslate"><span class="pre">Node.get_usage_info()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Node.is_persistent"><code class="docutils literal notranslate"><span class="pre">Node.is_persistent()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Node.is_port_remappable"><code class="docutils literal notranslate"><span class="pre">Node.is_port_remappable()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Node.is_state"><code class="docutils literal notranslate"><span class="pre">Node.is_state()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Node.is_valid"><code class="docutils literal notranslate"><span class="pre">Node.is_valid()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Node.movaidb"><code class="docutils literal notranslate"><span class="pre">Node.movaidb</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Node.node_inst_depends"><code class="docutils literal notranslate"><span class="pre">Node.node_inst_depends()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Node.port_inst_depends"><code class="docutils literal notranslate"><span class="pre">Node.port_inst_depends()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Node.remove"><code class="docutils literal notranslate"><span class="pre">Node.remove()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Node.rename"><code class="docutils literal notranslate"><span class="pre">Node.rename()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Node.scope"><code class="docutils literal notranslate"><span class="pre">Node.scope</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Node.set_type"><code class="docutils literal notranslate"><span class="pre">Node.set_type()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Node.template_depends"><code class="docutils literal notranslate"><span class="pre">Node.template_depends()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.NodeFlowUsage"><code class="docutils literal notranslate"><span class="pre">NodeFlowUsage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.NodeFlowUsage.direct"><code class="docutils literal notranslate"><span class="pre">NodeFlowUsage.direct</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.NodeFlowUsage.indirect"><code class="docutils literal notranslate"><span class="pre">NodeFlowUsage.indirect</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.Package"><code class="docutils literal notranslate"><span class="pre">Package</span></code></a><ul>
@@ -2467,6 +2497,12 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Translation.validator"><code class="docutils literal notranslate"><span class="pre">Translation.validator</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.UsageSearchResult"><code class="docutils literal notranslate"><span class="pre">UsageSearchResult</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.UsageSearchResult.name"><code class="docutils literal notranslate"><span class="pre">UsageSearchResult.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.UsageSearchResult.scope"><code class="docutils literal notranslate"><span class="pre">UsageSearchResult.scope</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.UsageSearchResult.usage"><code class="docutils literal notranslate"><span class="pre">UsageSearchResult.usage</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.User"><code class="docutils literal notranslate"><span class="pre">User</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.User.Name"><code class="docutils literal notranslate"><span class="pre">User.Name</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.User.create"><code class="docutils literal notranslate"><span class="pre">User.create()</span></code></a></li>
@@ -2493,6 +2529,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.Widget.scope"><code class="docutils literal notranslate"><span class="pre">Widget.scope</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.get_usage_search_scope_map"><code class="docutils literal notranslate"><span class="pre">get_usage_search_scope_map()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -2651,6 +2688,14 @@
 <li class="toctree-l3"><a class="reference internal" href="dal.tools.html#dal.tools.secret_key.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="dal.tools.html#module-dal.tools.usage_search">dal.tools.usage_search module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.tools.html#dal.tools.usage_search.Searcher"><code class="docutils literal notranslate"><span class="pre">Searcher</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.usage_search.Searcher.print_results"><code class="docutils literal notranslate"><span class="pre">Searcher.print_results()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.usage_search.Searcher.search_usage"><code class="docutils literal notranslate"><span class="pre">Searcher.search_usage()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="dal.tools.html#module-dal.tools">Module contents</a></li>
 </ul>
 </li>
@@ -2706,7 +2751,44 @@
 <li class="toctree-l3"><a class="reference internal" href="dal.utils.html#dal.utils.redis_mocks.fake_redis"><code class="docutils literal notranslate"><span class="pre">fake_redis()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="dal.utils.html#module-dal.utils">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dal.utils.html#module-dal.utils">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.utils.html#dal.utils.DirectFlowUsageItem"><code class="docutils literal notranslate"><span class="pre">DirectFlowUsageItem</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.utils.html#dal.utils.DirectFlowUsageItem.flow_instance_name"><code class="docutils literal notranslate"><span class="pre">DirectFlowUsageItem.flow_instance_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.utils.html#dal.utils.DirectNodeUsageItem"><code class="docutils literal notranslate"><span class="pre">DirectNodeUsageItem</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.utils.html#dal.utils.DirectNodeUsageItem.node_instance_name"><code class="docutils literal notranslate"><span class="pre">DirectNodeUsageItem.node_instance_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.utils.html#dal.utils.FlowFlowUsage"><code class="docutils literal notranslate"><span class="pre">FlowFlowUsage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.utils.html#dal.utils.FlowFlowUsage.direct"><code class="docutils literal notranslate"><span class="pre">FlowFlowUsage.direct</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.utils.html#dal.utils.FlowFlowUsage.indirect"><code class="docutils literal notranslate"><span class="pre">FlowFlowUsage.indirect</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.utils.html#dal.utils.IndirectFlowUsageItem"><code class="docutils literal notranslate"><span class="pre">IndirectFlowUsageItem</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.utils.html#dal.utils.IndirectFlowUsageItem.flow_instance_name"><code class="docutils literal notranslate"><span class="pre">IndirectFlowUsageItem.flow_instance_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.utils.html#dal.utils.IndirectFlowUsageItem.flow_template_name"><code class="docutils literal notranslate"><span class="pre">IndirectFlowUsageItem.flow_template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.utils.html#dal.utils.IndirectNodeUsageItem"><code class="docutils literal notranslate"><span class="pre">IndirectNodeUsageItem</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.utils.html#dal.utils.IndirectNodeUsageItem.flow_instance_name"><code class="docutils literal notranslate"><span class="pre">IndirectNodeUsageItem.flow_instance_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.utils.html#dal.utils.IndirectNodeUsageItem.flow_template_name"><code class="docutils literal notranslate"><span class="pre">IndirectNodeUsageItem.flow_template_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.utils.html#dal.utils.NodeFlowUsage"><code class="docutils literal notranslate"><span class="pre">NodeFlowUsage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.utils.html#dal.utils.NodeFlowUsage.direct"><code class="docutils literal notranslate"><span class="pre">NodeFlowUsage.direct</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.utils.html#dal.utils.NodeFlowUsage.indirect"><code class="docutils literal notranslate"><span class="pre">NodeFlowUsage.indirect</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.utils.html#dal.utils.UsageSearchResult"><code class="docutils literal notranslate"><span class="pre">UsageSearchResult</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.utils.html#dal.utils.UsageSearchResult.name"><code class="docutils literal notranslate"><span class="pre">UsageSearchResult.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.utils.html#dal.utils.UsageSearchResult.scope"><code class="docutils literal notranslate"><span class="pre">UsageSearchResult.scope</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.utils.html#dal.utils.UsageSearchResult.usage"><code class="docutils literal notranslate"><span class="pre">UsageSearchResult.usage</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.utils.html#dal.utils.get_usage_search_scope_map"><code class="docutils literal notranslate"><span class="pre">get_usage_search_scope_map()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="dal.validation.html">dal.validation package</a><ul>

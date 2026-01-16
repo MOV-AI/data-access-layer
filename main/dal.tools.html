@@ -75,7 +75,7 @@
 <li class="toctree-l1"><a class="reference internal" href="permissions.html">Resource permissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="robot_parameters.html">Robot Parameters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schemas.html">Schemas and validation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="backup.html">Import, export and remove</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backup.html">Mobdata CLI Tool</a></li>
 </ul>
 
         </div>
@@ -1016,6 +1016,47 @@ strings from logging calls with ‘ui=True’.</p>
 <dt class="sig sig-object py" id="dal.tools.secret_key.main">
 <span class="sig-prename descclassname"><span class="pre">dal.tools.secret_key.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.secret_key.main" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+</section>
+<section id="module-dal.tools.usage_search">
+<span id="dal-tools-usage-search-module"></span><h2>dal.tools.usage_search module<a class="headerlink" href="#module-dal.tools.usage_search" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.tools.usage_search.Searcher">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.tools.usage_search.</span></span><span class="sig-name descname"><span class="pre">Searcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.usage_search.Searcher" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Search for node and flow usage across the system.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.tools.usage_search.Searcher.print_results">
+<span class="sig-name descname"><span class="pre">print_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="dal.utils.html#dal.utils.UsageSearchResult" title="dal.utils.usage_search.usage_types.UsageSearchResult"><span class="pre">UsageSearchResult</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.tools.usage_search.Searcher.print_results" title="Permalink to this definition"></a></dt>
+<dd><p>Print search results in a readable format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>result</strong> (<a class="reference internal" href="dal.scopes.html#dal.scopes.UsageSearchResult" title="dal.scopes.UsageSearchResult"><em>UsageSearchResult</em></a>) – Search result from get_usage_info()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.tools.usage_search.Searcher.search_usage">
+<span class="sig-name descname"><span class="pre">search_usage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#dal.tools.usage_search.Searcher.search_usage" title="Permalink to this definition"></a></dt>
+<dd><p>Search for usage of a node or flow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>search_type</strong> (<em>str</em>) – Either “node” or “flow”</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of the node or flow to search for</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Exit code (0 for success, 1 for failure)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 </section>
 <section id="module-dal.tools">

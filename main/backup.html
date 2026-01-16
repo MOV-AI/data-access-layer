@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Import, export and remove &mdash; data-access-layer  documentation</title>
+  <title>Mobdata CLI Tool &mdash; data-access-layer  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
@@ -51,7 +51,20 @@
 <li class="toctree-l1"><a class="reference internal" href="permissions.html">Resource permissions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="robot_parameters.html">Robot Parameters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schemas.html">Schemas and validation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Import, export and remove</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Mobdata CLI Tool</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#import-export-and-remove-documents">Import, Export and Remove Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#searching-for-usages-of-nodes-and-flows">Searching for Usages of Nodes and Flows</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#options">Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#commands">Commands</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#search-for-node-usage">Search for Node Usage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search-for-flow-usage">Search for Flow Usage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -68,7 +81,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Import, export and remove</li>
+      <li class="breadcrumb-item active">Mobdata CLI Tool</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/MOV-AI/data-access-layer/blob/main/docs/source/backup.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -78,8 +91,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="import-export-and-remove">
-<h1>Import, export and remove<a class="headerlink" href="#import-export-and-remove" title="Permalink to this heading"></a></h1>
+  <section id="mobdata-cli-tool">
+<h1>Mobdata CLI Tool<a class="headerlink" href="#mobdata-cli-tool" title="Permalink to this heading"></a></h1>
+<section id="import-export-and-remove-documents">
+<h2>Import, Export and Remove Documents<a class="headerlink" href="#import-export-and-remove-documents" title="Permalink to this heading"></a></h2>
 <p>To import, export or remove documents from the database, use the following commands:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mobdata<span class="w"> </span>import<span class="w"> </span>&lt;args&gt;
 mobdata<span class="w"> </span><span class="nb">export</span><span class="w"> </span>&lt;args&gt;
@@ -119,6 +134,149 @@ mobdata<span class="w"> </span>remove<span class="w"> </span>&lt;args&gt;
 <span class="w">        </span>└──<span class="w"> </span>&lt;name&gt;_pt.po
 </pre></div>
 </div>
+</section>
+<section id="searching-for-usages-of-nodes-and-flows">
+<h2>Searching for Usages of Nodes and Flows<a class="headerlink" href="#searching-for-usages-of-nodes-and-flows" title="Permalink to this heading"></a></h2>
+<p>The <cite>mobdata</cite> tool supports searching for Node and Flow usage across the system through the <cite>usage-search</cite> command.
+This command can be used to identify where specific nodes or flows are utilized, either directly or indirectly (recursively).</p>
+<section id="options">
+<h3>Options<a class="headerlink" href="#options" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><cite>–verbose</cite> / <cite>-v</cite>: Enable debug output and show full JSON results</p></li>
+</ul>
+</section>
+<section id="commands">
+<h3>Commands<a class="headerlink" href="#commands" title="Permalink to this heading"></a></h3>
+<section id="search-for-node-usage">
+<h4>Search for Node Usage<a class="headerlink" href="#search-for-node-usage" title="Permalink to this heading"></a></h4>
+<p>Search for where a specific node template is used across all flows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Search for all usages of a node</span>
+mobdata<span class="w"> </span>usage-search<span class="w"> </span>node<span class="w"> </span>&lt;node-name&gt;
+</pre></div>
+</div>
+</section>
+<section id="search-for-flow-usage">
+<h4>Search for Flow Usage<a class="headerlink" href="#search-for-flow-usage" title="Permalink to this heading"></a></h4>
+<p>Search for where a specific flow is used as a subflow in other flows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Search for all usages of a flow</span>
+mobdata<span class="w"> </span>usage-search<span class="w"> </span>flow<span class="w"> </span>&lt;flow-name&gt;
+</pre></div>
+</div>
+</section>
+<section id="examples">
+<h4>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h4>
+<ul class="simple">
+<li><p>Example 1: Find all flows using a node</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mobdata<span class="w"> </span>usage-search<span class="w"> </span>node<span class="w"> </span>create_log
+<span class="c1"># Output:</span>
+Node<span class="w"> </span><span class="s1">&#39;create_log&#39;</span><span class="w"> </span>is<span class="w"> </span>used<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">6</span><span class="w"> </span>flow<span class="o">(</span>s<span class="o">)</span>:
+------------------------------------------------------------
+<span class="w">  </span><span class="o">[</span>Direct<span class="o">]</span><span class="w"> </span>Flow:<span class="w"> </span>fake_drop
+<span class="w">           </span>Node<span class="w"> </span>Instance:<span class="w"> </span>log_operation_success
+<span class="w">  </span><span class="o">[</span>Direct<span class="o">]</span><span class="w"> </span>Flow:<span class="w"> </span>pick
+<span class="w">           </span>Node<span class="w"> </span>Instance:<span class="w"> </span>pick_success
+<span class="w">  </span><span class="o">[</span>Direct<span class="o">]</span><span class="w"> </span>Flow:<span class="w"> </span>tugbot_idle_sim
+<span class="w">           </span>Node<span class="w"> </span>Instance:<span class="w"> </span>spawn_log
+<span class="w">  </span><span class="o">[</span>Indirect<span class="o">]</span><span class="w"> </span>Flow:<span class="w"> </span>movai_lab_loop
+<span class="w">           </span>As<span class="w"> </span>Sub<span class="w"> </span>Flow:<span class="w"> </span>pick<span class="w"> </span><span class="o">(</span>instance:<span class="w"> </span>pick<span class="o">)</span>
+<span class="w">  </span><span class="o">[</span>Indirect<span class="o">]</span><span class="w"> </span>Flow:<span class="w"> </span>movai_lab_loop_fleet_sim
+<span class="w">           </span>As<span class="w"> </span>Sub<span class="w"> </span>Flow:<span class="w"> </span>pick<span class="w"> </span><span class="o">(</span>instance:<span class="w"> </span>pick<span class="o">)</span>
+<span class="w">  </span><span class="o">[</span>Indirect<span class="o">]</span><span class="w"> </span>Flow:<span class="w"> </span>movai_lab_loop_sim
+<span class="w">           </span>As<span class="w"> </span>Sub<span class="w"> </span>Flow:<span class="w"> </span>pick<span class="w"> </span><span class="o">(</span>instance:<span class="w"> </span>pick<span class="o">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Example 2: Search for subflow usage with debug output</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mobdata<span class="w"> </span>usage-search<span class="w"> </span>flow<span class="w"> </span>pick<span class="w"> </span>--verbose
+<span class="c1"># Output:</span>
+Flow<span class="w"> </span><span class="s1">&#39;pick&#39;</span><span class="w"> </span>is<span class="w"> </span>used<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">7</span><span class="w"> </span>flow<span class="o">(</span>s<span class="o">)</span>:
+------------------------------------------------------------
+<span class="w">  </span><span class="o">[</span>Direct<span class="o">]</span><span class="w"> </span>Flow:<span class="w"> </span>drop
+<span class="w">           </span>Flow<span class="w"> </span>Instance<span class="w"> </span><span class="o">(</span>Container<span class="o">)</span>:<span class="w"> </span>pick
+<span class="w">  </span><span class="o">[</span>Direct<span class="o">]</span><span class="w"> </span>Flow:<span class="w"> </span>movai_lab_loop
+<span class="w">           </span>Flow<span class="w"> </span>Instance<span class="w"> </span><span class="o">(</span>Container<span class="o">)</span>:<span class="w"> </span>pick
+<span class="w">  </span><span class="o">[</span>Direct<span class="o">]</span><span class="w"> </span>Flow:<span class="w"> </span>movai_lab_loop_fleet_sim
+<span class="w">           </span>Flow<span class="w"> </span>Instance<span class="w"> </span><span class="o">(</span>Container<span class="o">)</span>:<span class="w"> </span>pick
+<span class="w">  </span><span class="o">[</span>Direct<span class="o">]</span><span class="w"> </span>Flow:<span class="w"> </span>movai_lab_loop_sim
+<span class="w">           </span>Flow<span class="w"> </span>Instance<span class="w"> </span><span class="o">(</span>Container<span class="o">)</span>:<span class="w"> </span>pick
+<span class="w">  </span><span class="o">[</span>Indirect<span class="o">]</span><span class="w"> </span>Flow:<span class="w"> </span>movai_lab_loop
+<span class="w">           </span>As<span class="w"> </span>Sub<span class="w"> </span>Flow:<span class="w"> </span>drop<span class="w"> </span><span class="o">(</span>instance:<span class="w"> </span>drop<span class="o">)</span>
+<span class="w">  </span><span class="o">[</span>Indirect<span class="o">]</span><span class="w"> </span>Flow:<span class="w"> </span>movai_lab_loop_fleet_sim
+<span class="w">           </span>As<span class="w"> </span>Sub<span class="w"> </span>Flow:<span class="w"> </span>drop<span class="w"> </span><span class="o">(</span>instance:<span class="w"> </span>drop<span class="o">)</span>
+<span class="w">  </span><span class="o">[</span>Indirect<span class="o">]</span><span class="w"> </span>Flow:<span class="w"> </span>movai_lab_loop_sim
+<span class="w">           </span>As<span class="w"> </span>Sub<span class="w"> </span>Flow:<span class="w"> </span>drop<span class="w"> </span><span class="o">(</span>instance:<span class="w"> </span>drop<span class="o">)</span>
+
+Full<span class="w"> </span>JSON<span class="w"> </span>result:
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;scope&quot;</span>:<span class="w"> </span><span class="s2">&quot;Flow&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;pick&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;usage&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;Flow&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">      </span><span class="s2">&quot;drop&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="s2">&quot;direct&quot;</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">          </span><span class="o">{</span>
+<span class="w">            </span><span class="s2">&quot;flow_instance_name&quot;</span>:<span class="w"> </span><span class="s2">&quot;pick&quot;</span>
+<span class="w">          </span><span class="o">}</span>
+<span class="w">        </span><span class="o">]</span>,
+<span class="w">        </span><span class="s2">&quot;indirect&quot;</span>:<span class="w"> </span><span class="o">[]</span>
+<span class="w">      </span><span class="o">}</span>,
+<span class="w">      </span><span class="s2">&quot;movai_lab_loop&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="s2">&quot;direct&quot;</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">          </span><span class="o">{</span>
+<span class="w">            </span><span class="s2">&quot;flow_instance_name&quot;</span>:<span class="w"> </span><span class="s2">&quot;pick&quot;</span>
+<span class="w">          </span><span class="o">}</span>
+<span class="w">        </span><span class="o">]</span>,
+<span class="w">        </span><span class="s2">&quot;indirect&quot;</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">          </span><span class="o">{</span>
+<span class="w">            </span><span class="s2">&quot;flow_template_name&quot;</span>:<span class="w"> </span><span class="s2">&quot;drop&quot;</span>,
+<span class="w">            </span><span class="s2">&quot;flow_instance_name&quot;</span>:<span class="w"> </span><span class="s2">&quot;drop&quot;</span>
+<span class="w">          </span><span class="o">}</span>
+<span class="w">        </span><span class="o">]</span>
+<span class="w">      </span><span class="o">}</span>,
+<span class="w">      </span><span class="s2">&quot;movai_lab_loop_fleet_sim&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="s2">&quot;direct&quot;</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">          </span><span class="o">{</span>
+<span class="w">            </span><span class="s2">&quot;flow_instance_name&quot;</span>:<span class="w"> </span><span class="s2">&quot;pick&quot;</span>
+<span class="w">          </span><span class="o">}</span>
+<span class="w">        </span><span class="o">]</span>,
+<span class="w">        </span><span class="s2">&quot;indirect&quot;</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">          </span><span class="o">{</span>
+<span class="w">            </span><span class="s2">&quot;flow_template_name&quot;</span>:<span class="w"> </span><span class="s2">&quot;drop&quot;</span>,
+<span class="w">            </span><span class="s2">&quot;flow_instance_name&quot;</span>:<span class="w"> </span><span class="s2">&quot;drop&quot;</span>
+<span class="w">          </span><span class="o">}</span>
+<span class="w">        </span><span class="o">]</span>
+<span class="w">      </span><span class="o">}</span>,
+<span class="w">      </span><span class="s2">&quot;movai_lab_loop_sim&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="s2">&quot;direct&quot;</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">          </span><span class="o">{</span>
+<span class="w">            </span><span class="s2">&quot;flow_instance_name&quot;</span>:<span class="w"> </span><span class="s2">&quot;pick&quot;</span>
+<span class="w">          </span><span class="o">}</span>
+<span class="w">        </span><span class="o">]</span>,
+<span class="w">        </span><span class="s2">&quot;indirect&quot;</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">          </span><span class="o">{</span>
+<span class="w">            </span><span class="s2">&quot;flow_template_name&quot;</span>:<span class="w"> </span><span class="s2">&quot;drop&quot;</span>,
+<span class="w">            </span><span class="s2">&quot;flow_instance_name&quot;</span>:<span class="w"> </span><span class="s2">&quot;drop&quot;</span>
+<span class="w">          </span><span class="o">}</span>
+<span class="w">        </span><span class="o">]</span>
+<span class="w">      </span><span class="o">}</span>
+<span class="w">    </span><span class="o">}</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Example 3: Error respose - Node not found</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mobdata<span class="w"> </span>usage-search<span class="w"> </span>node<span class="w"> </span>NonExistentNode
+<span class="c1"># Output:</span>
+Error:<span class="w"> </span>Node<span class="w"> </span><span class="s1">&#39;NonExistentNode&#39;</span><span class="w"> </span>does<span class="w"> </span>not<span class="w"> </span>exist
+</pre></div>
+</div>
+</section>
+</section>
+</section>
 </section>
 
 
