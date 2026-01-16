@@ -1,0 +1,47 @@
+{
+"Flow": {
+    "flow_with_four_nodes": {
+        "Description": "Test flow with four nodes",
+        "ExposedPorts": {
+            "NodePub1": {"nodepub1": ["pubport/out"]},
+            "NodePub2": {"nodepub2": ["pubport/out"]},
+            "NodeSub1": {"nodesub1": ["subport/in"]},
+            "NodeSub2": {"nodesub2": ["subport/in"]}
+        },
+        "Label": "flow_with_four_nodes",
+        "LastUpdate": "09/10/2020 at 12:24:44",
+        "Links": {
+            "06eed84a-1a7f-4ad1-95e1-e1e8d1c62ea3": {
+                "From": "nodepub1/pubport/out",
+                "To": "nodesub1/subport/in"
+            },
+            "652744ed-63cd-463d-9eba-45b6e7f7ea7d": {
+                "From": "nodepub1/pubport/out",
+                "To": "nodesub2/subport/in"
+            },
+            "070ab147-280d-496d-a652-ed223b542132": {
+                "From": "nodepub2/pubport/out",
+                "To": "nodesub1/subport/in"
+            }
+        },
+        "NodeInst": {
+            "nodepub1": {
+                "NodeLabel": "NodePub1",
+                "Template": "NodePub1"
+            },
+            "nodepub2": {
+                "NodeLabel": "NodePub2",
+                "Template": "NodePub2"
+            },
+            "nodesub1": {
+                "NodeLabel": "NodeSub1",
+                "Template": "NodeSub1"
+            },
+            "nodesub2": {
+                "NodeLabel": "NodeSub2",
+                "Template": "NodeSub2"
+            }
+        }
+    }
+}
+}

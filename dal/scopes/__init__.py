@@ -26,17 +26,33 @@ from .system import System
 from .translation import Translation
 from .user import User
 from .widget import Widget
+from dal.utils import (
+    UsageSearchResult,
+    DirectNodeUsageItem,
+    IndirectNodeUsageItem,
+    DirectFlowUsageItem,
+    IndirectFlowUsageItem,
+    NodeFlowUsage,
+    FlowFlowUsage,
+    get_usage_search_scope_map,
+)
 
 __all__ = [
     "Application",
     "Callback",
     "Config",
     "Configuration",
+    "DirectFlowUsageItem",
+    "DirectNodeUsageItem",
     "FleetRobot",
     "Flow",
+    "FlowFlowUsage",
     "Form",
+    "IndirectFlowUsageItem",
+    "IndirectNodeUsageItem",
     "Message",
     "Node",
+    "NodeFlowUsage",
     "Package",
     "Ports",
     "Robot",
@@ -47,9 +63,11 @@ __all__ = [
     "Struct",
     "System",
     "Translation",
+    "UsageSearchResult",
     "User",
     "Widget",
     "Alert",
+    "get_usage_search_scope_map",
 ]
 
 try:
