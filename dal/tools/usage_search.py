@@ -27,15 +27,13 @@ class Searcher:
         usage: UsageData = result.usage
 
         direct_count = sum(
-            len(details.direct)
-            for usage_type in dict(usage).values()
-            if usage_type is not None
+            len(details["direct"])
+            for usage_type in usage.model_dump().values()
             for details in usage_type.values()
         )
         indirect_count = sum(
-            len(details.indirect)
-            for usage_type in dict(usage).values()
-            if usage_type is not None
+            len(details["indirect"])
+            for usage_type in usage.model_dump().values()
             for details in usage_type.values()
         )
         # Count total usages across all scope types
@@ -49,27 +47,25 @@ class Searcher:
         print("-" * 80)
 
         # Iterate through each scope type (e.g., "Flow")
-        for parent_scope, parent_items in dict(usage).items():
-            if parent_items is None:
-                continue
+        for parent_scope, parent_items in usage.model_dump().items():
             for parent_name, details in parent_items.items():
                 # Handle direct usages
-                direct_items = details.direct
+                direct_items = details["direct"]
                 for direct_item in direct_items:
                     if scope_type == "Node":
-                        instance = direct_item.node_instance_name
+                        instance = direct_item["node_instance_name"]
                         print(f"  [Direct] {parent_scope}: {parent_name}")
                         print(f"           Node Instance: {instance}")
                     elif scope_type == "Flow":
-                        instance = direct_item.flow_instance_name
+                        instance = direct_item["flow_instance_name"]
                         print(f"  [Direct] {parent_scope}: {parent_name}")
                         print(f"           Flow Instance (Container): {instance}")
 
                 # Handle indirect usages
-                indirect_items = details.indirect
+                indirect_items = details["indirect"]
                 for indirect_item in indirect_items:
-                    child_template = indirect_item.flow_template_name
-                    child_instance = indirect_item.flow_instance_name
+                    child_template = indirect_item["flow_template_name"]
+                    child_instance = indirect_item["flow_instance_name"]
                     print(f"  [Indirect] {parent_scope}: {parent_name}")
                     print(f"           As Sub Flow: {child_template} (instance: {child_instance})")
 
