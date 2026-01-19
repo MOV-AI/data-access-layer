@@ -1,7 +1,17 @@
 """Tests for Node and Flow classmethod usage search functionality."""
 from movai_core_shared.exceptions import DoesNotExist
 
-from dal.utils import UsageSearchResult, get_usage_search_scope_map
+from dal.utils.usage_search.usage_types import (
+    UsageData,
+    UsageSearchResult,
+    NodeFlowUsage,
+    FlowFlowUsage,
+    DirectNodeUsageItem,
+    DirectFlowUsageItem,
+    IndirectNodeUsageItem,
+    IndirectFlowUsageItem,
+)
+from dal.utils import get_usage_search_scope_map
 
 
 def get_scope_instance(search_type, name):
@@ -34,45 +44,46 @@ class TestNodeUsageInfo:
         expected_result = UsageSearchResult(
             scope="Node",
             name="NodeSub1",
-            usage={
-                "Flow": {
-                    "flow_not_used_as_subflow": {
-                        "direct": [{"node_instance_name": "sub"}],
-                        "indirect": [],
-                    },
-                    "flow_with_duplicated_subflow": {
-                        "direct": [
-                            {"node_instance_name": "sub1"},
-                            {"node_instance_name": "sub2"},
+            usage=UsageData(
+                flow={
+                    "flow_not_used_as_subflow": NodeFlowUsage(
+                        direct=[DirectNodeUsageItem(node_instance_name="sub")],
+                        indirect=[],
+                    ),
+                    "flow_with_duplicated_subflow": NodeFlowUsage(
+                        direct=[
+                            DirectNodeUsageItem(node_instance_name="sub1"),
+                            DirectNodeUsageItem(node_instance_name="sub2"),
                         ],
-                        "indirect": [
-                            {
-                                "flow_template_name": "flow_with_four_nodes",
-                                "flow_instance_name": "subflow1",
-                            },
-                            {
-                                "flow_template_name": "flow_with_four_nodes",
-                                "flow_instance_name": "subflow2",
-                            },
+                        indirect=[
+                            IndirectNodeUsageItem(
+                                flow_template_name="flow_with_four_nodes",
+                                flow_instance_name="subflow1",
+                            ),
+                            IndirectNodeUsageItem(
+                                flow_template_name="flow_with_four_nodes",
+                                flow_instance_name="subflow2",
+                            ),
                         ],
-                    },
-                    "flow_with_four_nodes": {
-                        "direct": [{"node_instance_name": "nodesub1"}],
-                        "indirect": [],
-                    },
-                    "flow_with_nodes_and_subflow": {
-                        "direct": [{"node_instance_name": "sub"}],
-                        "indirect": [
-                            {
-                                "flow_template_name": "flow_with_duplicated_subflow",
-                                "flow_instance_name": "subflow",
-                            }
+                    ),
+                    "flow_with_four_nodes": NodeFlowUsage(
+                        direct=[DirectNodeUsageItem(node_instance_name="nodesub1")],
+                        indirect=[],
+                    ),
+                    "flow_with_nodes_and_subflow": NodeFlowUsage(
+                        direct=[DirectNodeUsageItem(node_instance_name="sub")],
+                        indirect=[
+                            IndirectNodeUsageItem(
+                                flow_template_name="flow_with_duplicated_subflow",
+                                flow_instance_name="subflow",
+                            )
                         ],
-                    },
+                    ),
                 }
-            },
+            ),
         )
-        assert result == expected_result
+        # Use model_dump() for comparison to avoid Pydantic equality issues
+        assert result.model_dump() == expected_result.model_dump()
 
     def test_node_get_usage_info_multiple_calls(self, setup_test_data):
         """
@@ -103,11 +114,14 @@ class TestNodeUsageInfo:
         # Each should have independent results
         # Count total usages across all scopes (direct + indirect)
         def count_usages(result):
-            return sum(
-                len(details.get("direct", [])) + len(details.get("indirect", []))
-                for items in result["usage"].values()
-                for details in items.values()
-            )
+            total = 0
+            if result.usage.flow:
+                for flow_usage in result.usage.flow.values():
+                    total += len(flow_usage.direct) + len(flow_usage.indirect)
+            if result.usage.node:
+                for node_usage in result.usage.node.values():
+                    total += len(node_usage.direct) + len(node_usage.indirect)
+            return total
 
         total1 = count_usages(result1)
         total2 = count_usages(result2)
@@ -126,8 +140,10 @@ class TestNodeUsageInfo:
         node = get_scope_instance("node", "UnusedNode")
         result: UsageSearchResult = node.get_usage_info()
 
-        expected_result = UsageSearchResult(scope="Node", name="UnusedNode", usage={"Flow": {}})
-        assert result == expected_result
+        expected_result = UsageSearchResult(
+            scope="Node", name="UnusedNode", usage=UsageData(flow={})
+        )
+        assert result.model_dump() == expected_result.model_dump()
 
 
 class TestFlowUsageInfo:
@@ -141,9 +157,9 @@ class TestFlowUsageInfo:
         result: UsageSearchResult = flow.get_usage_info()
 
         expected_result = UsageSearchResult(
-            scope="Flow", name="flow_not_used_as_subflow", usage={"Flow": {}}
+            scope="Flow", name="flow_not_used_as_subflow", usage=UsageData(flow={})
         )
-        assert result == expected_result
+        assert result.model_dump() == expected_result.model_dump()
 
     def test_flow_get_usage_info_nested_subflow(self, setup_test_data):
         """
@@ -161,16 +177,16 @@ class TestFlowUsageInfo:
         expected_result = UsageSearchResult(
             scope="Flow",
             name="flow_with_duplicated_subflow",
-            usage={
-                "Flow": {
-                    "flow_with_nodes_and_subflow": {
-                        "direct": [{"flow_instance_name": "subflow"}],
-                        "indirect": [],
-                    }
+            usage=UsageData(
+                flow={
+                    "flow_with_nodes_and_subflow": FlowFlowUsage(
+                        direct=[DirectFlowUsageItem(flow_instance_name="subflow")],
+                        indirect=[],
+                    )
                 }
-            },
+            ),
         )
-        assert result == expected_result
+        assert result.model_dump() == expected_result.model_dump()
 
     def test_flow_get_usage_info(self, setup_test_data):
         """
@@ -191,28 +207,28 @@ class TestFlowUsageInfo:
         expected_result = UsageSearchResult(
             scope="Flow",
             name="flow_with_four_nodes",
-            usage={
-                "Flow": {
-                    "flow_with_duplicated_subflow": {
-                        "direct": [
-                            {"flow_instance_name": "subflow1"},
-                            {"flow_instance_name": "subflow2"},
+            usage=UsageData(
+                flow={
+                    "flow_with_duplicated_subflow": FlowFlowUsage(
+                        direct=[
+                            DirectFlowUsageItem(flow_instance_name="subflow1"),
+                            DirectFlowUsageItem(flow_instance_name="subflow2"),
                         ],
-                        "indirect": [],
-                    },
-                    "flow_with_nodes_and_subflow": {
-                        "direct": [],
-                        "indirect": [
-                            {
-                                "flow_template_name": "flow_with_duplicated_subflow",
-                                "flow_instance_name": "subflow",
-                            }
+                        indirect=[],
+                    ),
+                    "flow_with_nodes_and_subflow": FlowFlowUsage(
+                        direct=[],
+                        indirect=[
+                            IndirectFlowUsageItem(
+                                flow_template_name="flow_with_duplicated_subflow",
+                                flow_instance_name="subflow",
+                            )
                         ],
-                    },
+                    ),
                 }
-            },
+            ),
         )
-        assert result == expected_result
+        assert result.model_dump() == expected_result.model_dump()
 
     def test_flow_get_usage_info_multiple_calls(self, setup_test_data):
         """
@@ -237,11 +253,14 @@ class TestFlowUsageInfo:
 
         # Count total usages (direct + indirect)
         def count_usages(result):
-            return sum(
-                len(details.get("direct", [])) + len(details.get("indirect", []))
-                for items in result["usage"].values()
-                for details in items.values()
-            )
+            total = 0
+            if result.usage.flow:
+                for flow_usage in result.usage.flow.values():
+                    total += len(flow_usage.direct) + len(flow_usage.indirect)
+            if result.usage.node:
+                for node_usage in result.usage.node.values():
+                    total += len(node_usage.direct) + len(node_usage.indirect)
+            return total
 
         total1 = count_usages(result1)
         total2 = count_usages(result2)
@@ -283,30 +302,30 @@ class TestCircularDependencyHandling:
         expected_result = UsageSearchResult(
             scope="Node",
             name="TestNodeCircular",
-            usage={
-                "Flow": {
-                    "flow_circular_a": {
-                        "direct": [{"node_instance_name": "test_node"}],
-                        "indirect": [
-                            {
-                                "flow_template_name": "flow_circular_b",
-                                "flow_instance_name": "container_to_b",
-                            }
+            usage=UsageData(
+                flow={
+                    "flow_circular_a": NodeFlowUsage(
+                        direct=[DirectNodeUsageItem(node_instance_name="test_node")],
+                        indirect=[
+                            IndirectNodeUsageItem(
+                                flow_template_name="flow_circular_b",
+                                flow_instance_name="container_to_b",
+                            )
                         ],
-                    },
-                    "flow_circular_b": {
-                        "direct": [],
-                        "indirect": [
-                            {
-                                "flow_template_name": "flow_circular_a",
-                                "flow_instance_name": "container_to_a",
-                            }
+                    ),
+                    "flow_circular_b": NodeFlowUsage(
+                        direct=[],
+                        indirect=[
+                            IndirectNodeUsageItem(
+                                flow_template_name="flow_circular_a",
+                                flow_instance_name="container_to_a",
+                            )
                         ],
-                    },
+                    ),
                 }
-            },
+            ),
         )
-        assert result == expected_result
+        assert result.model_dump() == expected_result.model_dump()
 
     def test_flow_circular_dependency_prevention(self, circular_dependency_data):
         """
@@ -332,30 +351,30 @@ class TestCircularDependencyHandling:
         expected_result_x = UsageSearchResult(
             scope="Flow",
             name="flow_circular_x",
-            usage={
-                "Flow": {
-                    "flow_circular_y": {
-                        "direct": [{"flow_instance_name": "container_to_x"}],
-                        "indirect": [
-                            {
-                                "flow_template_name": "flow_circular_x",
-                                "flow_instance_name": "container_to_x",
-                            }
+            usage=UsageData(
+                flow={
+                    "flow_circular_y": FlowFlowUsage(
+                        direct=[DirectFlowUsageItem(flow_instance_name="container_to_x")],
+                        indirect=[
+                            IndirectFlowUsageItem(
+                                flow_template_name="flow_circular_x",
+                                flow_instance_name="container_to_x",
+                            )
                         ],
-                    },
-                    "flow_circular_x": {
-                        "direct": [],
-                        "indirect": [
-                            {
-                                "flow_template_name": "flow_circular_y",
-                                "flow_instance_name": "container_to_y",
-                            }
+                    ),
+                    "flow_circular_x": FlowFlowUsage(
+                        direct=[],
+                        indirect=[
+                            IndirectFlowUsageItem(
+                                flow_template_name="flow_circular_y",
+                                flow_instance_name="container_to_y",
+                            )
                         ],
-                    },
+                    ),
                 }
-            },
+            ),
         )
-        assert result_x == expected_result_x
+        assert result_x.model_dump() == expected_result_x.model_dump()
 
         # Test flow_circular_y usage
         flow_y = Flow("flow_circular_y")
@@ -365,30 +384,30 @@ class TestCircularDependencyHandling:
         expected_result_y = UsageSearchResult(
             scope="Flow",
             name="flow_circular_y",
-            usage={
-                "Flow": {
-                    "flow_circular_x": {
-                        "direct": [{"flow_instance_name": "container_to_y"}],
-                        "indirect": [
-                            {
-                                "flow_template_name": "flow_circular_y",
-                                "flow_instance_name": "container_to_y",
-                            }
+            usage=UsageData(
+                flow={
+                    "flow_circular_x": FlowFlowUsage(
+                        direct=[DirectFlowUsageItem(flow_instance_name="container_to_y")],
+                        indirect=[
+                            IndirectFlowUsageItem(
+                                flow_template_name="flow_circular_y",
+                                flow_instance_name="container_to_y",
+                            )
                         ],
-                    },
-                    "flow_circular_y": {
-                        "direct": [],
-                        "indirect": [
-                            {
-                                "flow_template_name": "flow_circular_x",
-                                "flow_instance_name": "container_to_x",
-                            }
+                    ),
+                    "flow_circular_y": FlowFlowUsage(
+                        direct=[],
+                        indirect=[
+                            IndirectFlowUsageItem(
+                                flow_template_name="flow_circular_x",
+                                flow_instance_name="container_to_x",
+                            )
                         ],
-                    },
+                    ),
                 }
-            },
+            ),
         )
-        assert result_y == expected_result_y
+        assert result_y.model_dump() == expected_result_y.model_dump()
 
     def test_multi_level_circular_dependency(self, circular_dependency_data):
         """
@@ -414,36 +433,36 @@ class TestCircularDependencyHandling:
         expected_result = UsageSearchResult(
             scope="Node",
             name="TestNodeMultiCircular",
-            usage={
-                "Flow": {
-                    "flow_multi_a": {
-                        "direct": [{"node_instance_name": "test_node"}],
-                        "indirect": [
-                            {
-                                "flow_template_name": "flow_multi_b",
-                                "flow_instance_name": "container_to_b",
-                            }
+            usage=UsageData(
+                flow={
+                    "flow_multi_a": NodeFlowUsage(
+                        direct=[DirectNodeUsageItem(node_instance_name="test_node")],
+                        indirect=[
+                            IndirectNodeUsageItem(
+                                flow_template_name="flow_multi_b",
+                                flow_instance_name="container_to_b",
+                            )
                         ],
-                    },
-                    "flow_multi_b": {
-                        "direct": [],
-                        "indirect": [
-                            {
-                                "flow_template_name": "flow_multi_c",
-                                "flow_instance_name": "container_to_c",
-                            }
+                    ),
+                    "flow_multi_b": NodeFlowUsage(
+                        direct=[],
+                        indirect=[
+                            IndirectNodeUsageItem(
+                                flow_template_name="flow_multi_c",
+                                flow_instance_name="container_to_c",
+                            )
                         ],
-                    },
-                    "flow_multi_c": {
-                        "direct": [],
-                        "indirect": [
-                            {
-                                "flow_template_name": "flow_multi_a",
-                                "flow_instance_name": "container_to_a",
-                            }
+                    ),
+                    "flow_multi_c": NodeFlowUsage(
+                        direct=[],
+                        indirect=[
+                            IndirectNodeUsageItem(
+                                flow_template_name="flow_multi_a",
+                                flow_instance_name="container_to_a",
+                            )
                         ],
-                    },
+                    ),
                 }
-            },
+            ),
         )
-        assert result == expected_result
+        assert result.model_dump() == expected_result.model_dump()

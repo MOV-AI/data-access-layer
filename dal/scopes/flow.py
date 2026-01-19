@@ -33,6 +33,7 @@ from dal.scopes.scope import Scope
 from dal.scopes.ports import Ports
 from dal.scopes.node import Node
 from dal.utils.usage_search.usage_types import (
+    UsageData,
     UsageSearchResult,
     FlowFlowUsage,
     DirectFlowUsageItem,
@@ -42,7 +43,7 @@ from dal.models.var import Var
 from movai_core_shared.exceptions import DoesNotExist
 from .configuration import Configuration
 from movai_core_shared.logger import Log
-from typing import Dict, Any
+from typing import Dict
 
 LOGGER = Log.get_logger("Flow")
 
@@ -962,13 +963,13 @@ class Flow(Scope):
                         direct_usages[flow_name] = []
                     direct_usages[flow_name].append(container_name)
 
-        # Build result dictionary
-        usage_dict: Dict[str, Dict[str, Any]] = {"Flow": {}}
+        # Build result usage
+        usage: UsageData = UsageData(flow={})
 
         # Add direct usages
         for flow_name, container_instances in direct_usages.items():
             # Create FlowFlowUsage with all direct instances
-            usage_dict["Flow"][flow_name] = FlowFlowUsage(
+            usage.flow[flow_name] = FlowFlowUsage(
                 direct=[
                     DirectFlowUsageItem(flow_instance_name=inst) for inst in container_instances
                 ],
@@ -978,29 +979,28 @@ class Flow(Scope):
         # Find all indirect usages through the flow hierarchy
         self._find_all_indirect_usages(
             all_flows=flows,
-            usage_dict=usage_dict,
+            usage=usage,
         )
 
-        return UsageSearchResult(scope="Flow", name=self.name, usage=usage_dict)
+        return UsageSearchResult(scope="Flow", name=self.name, usage=usage)
 
     def _find_all_indirect_usages(
         self,
         all_flows: dict,
-        usage_dict: Dict[str, Dict[str, Any]],
+        usage: UsageData,
     ):
         """Find all indirect usages by traversing the flow hierarchy.
 
-        For each flow in usage_dict (flows that contain this flow either directly or indirectly),
+        For each flow in usage (flows that contain this flow either directly or indirectly),
         find parent flows that contain it as a subflow, and add indirect references.
 
         Args:
             all_flows: Dict of all flows with Container data
-            usage_dict: Dictionary to populate with indirect usages
+            usage: UsageData to populate with indirect usages
         """
         # Keep processing until no new flows are added
         processed_flows = set()
-        flows_to_process = list(usage_dict["Flow"].keys())
-
+        flows_to_process = list(usage.flow.keys())
         while flows_to_process:
             child_flow_name = flows_to_process.pop(0)
 
@@ -1010,9 +1010,9 @@ class Flow(Scope):
             processed_flows.add(child_flow_name)
 
             # Get all instances (direct and indirect) in this child flow
-            child_flow_data = usage_dict["Flow"][child_flow_name]
-            num_direct = len(child_flow_data["direct"])
-            num_indirect = len(child_flow_data["indirect"])
+            child_flow_data = usage.flow[child_flow_name]
+            num_direct = len(child_flow_data.direct)
+            num_indirect = len(child_flow_data.indirect)
             total_instances = num_direct + num_indirect
 
             if total_instances == 0:
@@ -1023,9 +1023,9 @@ class Flow(Scope):
                 for container_name, params in containers.get("Container", {}).items():
                     if params.get("ContainerFlow") == child_flow_name:
                         # Add indirect reference for this container
-                        if parent_flow not in usage_dict["Flow"]:
+                        if parent_flow not in usage.flow:
                             # New parent flow - create entry with empty direct array
-                            usage_dict["Flow"][parent_flow] = FlowFlowUsage(direct=[], indirect=[])
+                            usage.flow[parent_flow] = FlowFlowUsage(direct=[], indirect=[])
                             flows_to_process.append(parent_flow)
 
                         # Add one indirect reference for this container pointing to the child flow
@@ -1035,8 +1035,8 @@ class Flow(Scope):
                             flow_instance_name=container_name,
                         )
 
-                        if indirect_ref not in usage_dict["Flow"][parent_flow]["indirect"]:
-                            usage_dict["Flow"][parent_flow]["indirect"].append(indirect_ref)
+                        if indirect_ref not in usage.flow[parent_flow].indirect:
+                            usage.flow[parent_flow].indirect.append(indirect_ref)
 
     # NOT PORTED
     def delete(self, key: str, name: str):

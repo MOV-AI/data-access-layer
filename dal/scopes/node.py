@@ -24,6 +24,7 @@ from movai_core_shared.consts import (
 from dal.movaidb import MovaiDB
 from dal.scopes.scope import Scope
 from dal.utils.usage_search.usage_types import (
+    UsageData,
     UsageSearchResult,
     NodeFlowUsage,
     DirectNodeUsageItem,
@@ -31,7 +32,7 @@ from dal.utils.usage_search.usage_types import (
 )
 from dal.helpers import Helpers
 from movai_core_shared.logger import Log
-from typing import Dict, Any
+from typing import Dict
 
 
 LOGGER = Log.get_logger(__name__)
@@ -136,9 +137,9 @@ class Node(Scope):
 
         node_inst_ref_keys = []
         # Extract direct usages from new format
-        for flow_name, flow_usage in usage_result.get("usage", {}).get("Flow", {}).items():
-            for direct_item in flow_usage.get("direct", []):
-                node_inst_name = direct_item["node_instance_name"]
+        for flow_name, flow_usage in usage_result.usage.flow.items():
+            for direct_item in flow_usage.direct:
+                node_inst_name = direct_item.node_instance_name
                 dict_key = {"Flow": {flow_name: {"NodeInst": {node_inst_name: "*"}}}}
                 node_inst_ref_keys.append(dict_key)
 
@@ -384,19 +385,19 @@ class Node(Scope):
                     direct_usages[flow_name].append(node_inst_name)
 
         # Build result dictionary
-        usage_dict: Dict[str, Dict[str, Any]] = {"Flow": {}}
+        usage: UsageData = UsageData(flow={})
 
         # Add direct usages
         for flow_name, node_instances in direct_usages.items():
             # Create NodeFlowUsage with all direct instances
-            usage_dict["Flow"][flow_name] = NodeFlowUsage(
+            usage.flow[flow_name] = NodeFlowUsage(
                 direct=[DirectNodeUsageItem(node_instance_name=inst) for inst in node_instances],
                 indirect=[],
             )
 
         # Early return if not recursive
         if not recursive:
-            return UsageSearchResult(scope="Node", name=self.name, usage=usage_dict)
+            return UsageSearchResult(scope="Node", name=self.name, usage=usage)
 
         # Find indirect usages by checking which flows use our direct flows as subflows
         all_flows = self.movaidb.get({"Flow": {"*": {"Container": "*"}}})
@@ -404,15 +405,15 @@ class Node(Scope):
             # Process each flow that has containers and build indirect references
             self._find_all_indirect_usages(
                 all_flows=all_flows,
-                usage_dict=usage_dict,
+                usage=usage,
             )
 
-        return UsageSearchResult(scope="Node", name=self.name, usage=usage_dict)
+        return UsageSearchResult(scope="Node", name=self.name, usage=usage)
 
     def _find_all_indirect_usages(
         self,
         all_flows: dict,
-        usage_dict: Dict[str, Dict[str, Any]],
+        usage: UsageData,
     ):
         """Find all indirect usages by traversing the flow hierarchy.
 
@@ -426,7 +427,7 @@ class Node(Scope):
         """
         # Keep processing until no new flows are added
         processed_flows = set()
-        flows_to_process = list(usage_dict["Flow"].keys())
+        flows_to_process = list(usage.flow.keys())
 
         while flows_to_process:
             child_flow_name = flows_to_process.pop(0)
@@ -437,9 +438,9 @@ class Node(Scope):
             processed_flows.add(child_flow_name)
 
             # Get all instances (direct and indirect) in this child flow
-            child_flow_data = usage_dict["Flow"][child_flow_name]
-            num_direct = len(child_flow_data["direct"])
-            num_indirect = len(child_flow_data["indirect"])
+            child_flow_data = usage.flow[child_flow_name]
+            num_direct = len(child_flow_data.direct)
+            num_indirect = len(child_flow_data.indirect)
             total_instances = num_direct + num_indirect
 
             if total_instances == 0:
@@ -450,9 +451,9 @@ class Node(Scope):
                 for container_name, params in containers.get("Container", {}).items():
                     if params.get("ContainerFlow") == child_flow_name:
                         # Add indirect reference for this container
-                        if parent_flow not in usage_dict["Flow"]:
+                        if parent_flow not in usage.flow:
                             # New parent flow - create entry with empty direct array
-                            usage_dict["Flow"][parent_flow] = NodeFlowUsage(direct=[], indirect=[])
+                            usage.flow[parent_flow] = NodeFlowUsage(direct=[], indirect=[])
                             flows_to_process.append(parent_flow)
 
                         # Add one indirect reference for this container pointing to the child flow
@@ -462,8 +463,8 @@ class Node(Scope):
                             flow_instance_name=container_name,
                         )
 
-                        if indirect_ref not in usage_dict["Flow"][parent_flow]["indirect"]:
-                            usage_dict["Flow"][parent_flow]["indirect"].append(indirect_ref)
+                        if indirect_ref not in usage.flow[parent_flow].indirect:
+                            usage.flow[parent_flow].indirect.append(indirect_ref)
 
     def port_inst_depends(self, port_name: str) -> list:
         """Loop through NodeInst's Links and return list with matching links dict_keys"""

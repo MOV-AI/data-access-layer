@@ -5,56 +5,64 @@
 
    Usage search scope mapping utilities.
 """
-from typing import Dict, Any, TypedDict, List
+from pydantic import BaseModel, Field
+from typing import Dict, List, Union
 
 
-class DirectNodeUsageItem(TypedDict):
+class DirectNodeUsageItem(BaseModel):
     """Single direct usage item for a Node."""
 
     node_instance_name: str
 
 
-class IndirectNodeUsageItem(TypedDict):
+class IndirectNodeUsageItem(BaseModel):
     """Single indirect usage item for a Node - references immediate child flow."""
 
     flow_template_name: str
     flow_instance_name: str
 
 
-class DirectFlowUsageItem(TypedDict):
+class DirectFlowUsageItem(BaseModel):
     """Single direct usage item for a Flow."""
 
     flow_instance_name: str
 
 
-class IndirectFlowUsageItem(TypedDict):
+class IndirectFlowUsageItem(BaseModel):
     """Single indirect usage item for a Flow - references immediate child flow."""
 
     flow_template_name: str
     flow_instance_name: str
 
 
-class NodeFlowUsage(TypedDict, total=False):
+class NodeFlowUsage(BaseModel):
     """Usage details for a Node in a specific Flow.
 
     Can have both direct and indirect usages.
     """
 
-    direct: List[DirectNodeUsageItem]
-    indirect: List[IndirectNodeUsageItem]
+    direct: List[DirectNodeUsageItem] = Field(default_factory=list)
+    indirect: List[IndirectNodeUsageItem] = Field(default_factory=list)
 
 
-class FlowFlowUsage(TypedDict, total=False):
+class FlowFlowUsage(BaseModel):
     """Usage details for a Flow in a specific parent Flow.
 
     Can have both direct and indirect usages.
     """
 
-    direct: List[DirectFlowUsageItem]
-    indirect: List[IndirectFlowUsageItem]
+    direct: List[DirectFlowUsageItem] = Field(default_factory=list)
+    indirect: List[IndirectFlowUsageItem] = Field(default_factory=list)
 
 
-class UsageSearchResult(TypedDict):
+class UsageData(BaseModel):
+    """Usage data that can represent both Node and Flow usage."""
+
+    flow: Dict[str, Union[NodeFlowUsage, FlowFlowUsage]] = Field(default_factory=dict)
+    node: Dict[str, Union[NodeFlowUsage, FlowFlowUsage]] = Field(default_factory=dict)
+
+
+class UsageSearchResult(BaseModel):
     """Result structure for usage search.
 
     Format:
@@ -62,7 +70,7 @@ class UsageSearchResult(TypedDict):
         "scope": "Node" | "Flow",
         "name": "object_name",
         "usage": {
-            "Flow": {
+            "flow": {
                 "flow_name": {
                     "direct": [...],
                     "indirect": [...]
@@ -74,4 +82,4 @@ class UsageSearchResult(TypedDict):
 
     scope: str  # "Node" or "Flow"
     name: str  # Name of the object being searched
-    usage: Dict[str, Dict[str, Any]]  # Nested dict: scope_type -> parent_name -> usage_details
+    usage: UsageData  # Can contain both flow and node usage
