@@ -1,7 +1,8 @@
 import json
 
 from movai_core_shared.exceptions import DoesNotExist
-from dal.utils import get_usage_search_scope_map, UsageSearchResult
+from dal.utils.usage_search.usage_types import UsageSearchResult, UsageData
+from dal.utils import get_usage_search_scope_map
 
 
 class Searcher:
@@ -21,19 +22,19 @@ class Searcher:
         Args:
             result (UsageSearchResult): Search result from get_usage_info()
         """
-        scope_type = result["scope"]
-        obj_name = result["name"]
-        usage = result["usage"]
+        scope_type = result.scope
+        obj_name = result.name
+        usage: UsageData = result.usage
 
         direct_count = sum(
-            len(details.get("direct", []))
-            for parent_items in usage.values()
-            for details in parent_items.values()
+            len(details["direct"])
+            for usage_type in usage.model_dump().values()
+            for details in usage_type.values()
         )
         indirect_count = sum(
-            len(details.get("indirect", []))
-            for parent_items in usage.values()
-            for details in parent_items.values()
+            len(details["indirect"])
+            for usage_type in usage.model_dump().values()
+            for details in usage_type.values()
         )
         # Count total usages across all scope types
         total_count = direct_count + indirect_count
@@ -46,25 +47,25 @@ class Searcher:
         print("-" * 80)
 
         # Iterate through each scope type (e.g., "Flow")
-        for parent_scope, parent_items in usage.items():
+        for parent_scope, parent_items in usage.model_dump().items():
             for parent_name, details in parent_items.items():
                 # Handle direct usages
-                direct_items = details.get("direct", [])
+                direct_items = details["direct"]
                 for direct_item in direct_items:
                     if scope_type == "Node":
-                        instance = direct_item.get("node_instance_name", "N/A")
+                        instance = direct_item["node_instance_name"]
                         print(f"  [Direct] {parent_scope}: {parent_name}")
                         print(f"           Node Instance: {instance}")
                     elif scope_type == "Flow":
-                        instance = direct_item.get("flow_instance_name", "N/A")
+                        instance = direct_item["flow_instance_name"]
                         print(f"  [Direct] {parent_scope}: {parent_name}")
                         print(f"           Flow Instance (Container): {instance}")
 
                 # Handle indirect usages
-                indirect_items = details.get("indirect", [])
+                indirect_items = details["indirect"]
                 for indirect_item in indirect_items:
-                    child_template = indirect_item.get("flow_template_name", "N/A")
-                    child_instance = indirect_item.get("flow_instance_name", "N/A")
+                    child_template = indirect_item["flow_template_name"]
+                    child_instance = indirect_item["flow_instance_name"]
                     print(f"  [Indirect] {parent_scope}: {parent_name}")
                     print(f"           As Sub Flow: {child_template} (instance: {child_instance})")
 

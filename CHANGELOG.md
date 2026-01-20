@@ -1,3 +1,6 @@
+# vTBD
+- [BP-1584](https://movai.atlassian.net/browse/BP-1584): Make usage search types BaseModels
+
 # v3.20.0
 - [BP-1552](https://movai.atlassian.net/browse/BP-1552) Search for node and subflow usage in robot
   - Add mobdata search commands to search for Node and Flow usage
