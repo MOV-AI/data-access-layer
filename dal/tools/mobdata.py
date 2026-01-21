@@ -15,11 +15,6 @@ def main() -> int:
     for cmd in ["import", "export", "remove"]:
         sub_parser = action_subparser.add_parser(cmd, help="%s Mov.AI Data" % cmd.capitalize())
         sub_parser.add_argument(
-            "action",
-            choices=["import", "export", "remove", "usage-search"],
-            help="Action to perform: import, export, remove, usage-search",
-        )
-        sub_parser.add_argument(
             "-m",
             "--manifest",
             help="Manifest with declared objects to export/import/remove. ex.: Flow:Myflow",
@@ -107,7 +102,7 @@ def main() -> int:
         help="Print detailed progress information",
     )
 
-    args = parser.parse_args()
+    args, _ = parser.parse_known_args()
 
     if args.action == "usage-search":
         searcher = Searcher(debug=args.verbose)
