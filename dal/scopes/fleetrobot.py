@@ -248,7 +248,6 @@ class FleetRobot(Scope):
             )
             self.add("Parameter", param_name).Value = value
 
-    
     def ping(self) -> bool:
         """Ping the robot"""
 
