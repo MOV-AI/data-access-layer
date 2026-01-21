@@ -33,6 +33,7 @@ from .scope import Scope
 logger = Log.get_logger("FleetRobot")
 
 ROBOT_STARTED_PARAM = "started"
+ROBOT_BATTERY_PARAM = "battery"
 START_TIME_VAR = "startTime"
 END_TIME_VAR = "endTime"
 
@@ -73,6 +74,9 @@ class FleetRobot(Scope):
         self.__dict__["async_spawner_client"] = AsyncMessageClient(
             server_addr=server, robot_id=self.RobotName
         )
+        if new:
+            self.set_robot_started(False)
+            self.set_robot_battery(100.0)
 
     def send_cmd(
         self, command: str, *, flow: str = None, node: str = None, port=None, data=None
@@ -229,15 +233,22 @@ class FleetRobot(Scope):
         return None
 
     def set_robot_started(self, value: bool):
+        self.set_robot_parameter(ROBOT_STARTED_PARAM, value)
+
+    def set_robot_battery(self, value: float):
+        self.set_robot_parameter(ROBOT_BATTERY_PARAM, value)
+
+    def set_robot_parameter(self, param_name, value):
         try:
-            self.Parameter[ROBOT_STARTED_PARAM].Value = value
+            self.Parameter[param_name].Value = value
         except Exception as e:
             logger.warning(
-                f"Caught exception in setting {ROBOT_STARTED_PARAM} Parameter with value {value} of robot id {id}",
+                f"Caught exception in setting {param_name} Parameter with value {value} of robot id {id}",
                 e,
             )
-            self.add("Parameter", ROBOT_STARTED_PARAM).Value = value
+            self.add("Parameter", param_name).Value = value
 
+    
     def ping(self) -> bool:
         """Ping the robot"""
 
