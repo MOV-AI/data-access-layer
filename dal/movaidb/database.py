@@ -263,74 +263,69 @@ class Redis(metaclass=Singleton):
         return self.db_local.pubsub()
 
 
+class DBSchema(dict):
+    """Represents the database schema for each scope."""
+
+    __API__: Dict[str, Dict[str, Dict]] = {}  # First key is the Version, the second is the scope
+
+    def __init__(self, url: str = SCHEMA_FOLDER_PATH):
+        super(type(self), self).__init__()  # pylint: disable=bad-super-call
+        self.__version = "1.0"
+        self.__url = path.join(SCHEMA_FOLDER_PATH, self.__version)
+
+        if self.__version not in type(self).__API__:
+            self.load_schemas_from_files()
+
+    def load_schemas_from_files(self):
+        """Load builtins schemas."""
+        type(self).__API__[self.version] = {
+            path.splitext(schema_file)[0]: Resource.read_json(path.join(self.__url, schema_file))[
+                "schema"
+            ]
+            for schema_file in Resource.list_resources(self.__url)
+            if schema_file.endswith(".json")
+        }
+
+    @property
+    def version(self):
+        """Current version"""
+        return self.__version
+
+    @property
+    def url(self):
+        """Base uri"""
+        return self.__url
+
+    def __setitem__(self, key, value):
+        raise NotImplementedError
+
+    def __getitem__(self, key):
+        return type(self).__API__[self.__version][key]
+
+    def __iter__(self):
+        return type(self).__API__[self.__version].__iter__
+
+    def __repr__(self):
+        return type(self).__API__[self.__version].__repr__()
+
+    def __str__(self):
+        return type(self).__API__[self.__version].__str__()
+
+    def keys(self):
+        return type(self).__API__[self.__version].keys()
+
+    def values(self):
+        return type(self).__API__[self.__version].values()
+
+    def get_api(self):
+        """
+        return the current API
+        """
+        return type(self).__API__[self.__version]
+
+
 class MovaiDB:
     """Main MovaiDB"""
-
-    class API(dict):
-        """
-        # Represents the API template dict. Can be Imported or saved into Redis
-        """
-
-        __API__: Dict[
-            str, Dict[str, Dict]
-        ] = {}  # First key is the Version, the second is the scope
-
-        def __init__(self, version: str = "latest", url: str = SCHEMA_FOLDER_PATH):
-            super(type(self), self).__init__()  # pylint: disable=bad-super-call
-            # We force the version of the schemas to the deprecated version
-            version = "1.0"
-            self.__url = path.join(url, version)
-            self.__version = version
-            if version not in type(self).__API__:
-                self.load_schemas_from_files(url, version)
-
-        def load_schemas_from_files(self, url, version):
-            # load builtins schemas
-            current_path = path.join(url, version)
-            type(self).__API__[version] = {
-                path.splitext(schema_file)[0]: Resource.read_json(
-                    path.join(current_path, schema_file)
-                )["schema"]
-                for schema_file in Resource.list_resources(current_path)
-                if schema_file.endswith(".json")
-            }
-
-        @property
-        def version(self):
-            """Current version"""
-            return self.__version
-
-        @property
-        def url(self):
-            """Base uri"""
-            return self.__url
-
-        def __setitem__(self, key, value):
-            raise NotImplementedError
-
-        def __getitem__(self, key):
-            return type(self).__API__[self.__version][key]
-
-        def __iter__(self):
-            return type(self).__API__[self.__version].__iter__
-
-        def __repr__(self):
-            return type(self).__API__[self.__version].__repr__()
-
-        def __str__(self):
-            return type(self).__API__[self.__version].__str__()
-
-        def keys(self):
-            return type(self).__API__[self.__version].keys()
-
-        def values(self):
-            return type(self).__API__[self.__version].values()
-
-        def get_api(self):
-            """
-            return the current API
-            """
-            return type(self).__API__[self.__version]
 
     REDIS_MASTER_HOST = getenv("REDIS_MASTER_HOST", "redis-master")
     REDIS_MASTER_PORT = int(getenv("REDIS_MASTER_PORT", 6379))
@@ -338,6 +333,7 @@ class MovaiDB:
     REDIS_LOCAL_HOST = getenv("REDIS_LOCAL_HOST", "redis-local")
     REDIS_LOCAL_PORT = int(getenv("REDIS_LOCAL_PORT", 6379))
     REDIS_SLAVE_HOST = getenv("REDIS_SLAVE_HOST", REDIS_MASTER_HOST)
+    DB_SCHEMA = DBSchema()
 
     def __init__(
         self,
@@ -361,10 +357,10 @@ class MovaiDB:
             self.pubsub: redis.client.PubSub = self.movaidb.local_pubsub
 
         if _api_version == "latest":
-            self.api_struct = MovaiDB.API(url=SCHEMA_FOLDER_PATH).get_api()
+            self.api_struct = self.DB_SCHEMA.get_api()
         else:
             # we then need to get this from database!!!!
-            self.api_struct = MovaiDB.API(version=_api_version, url=SCHEMA_FOLDER_PATH).get_api()
+            self.api_struct = self.DB_SCHEMA.get_api()
         self.api_star = self.template_to_star(self.api_struct)
 
         self.loop = loop

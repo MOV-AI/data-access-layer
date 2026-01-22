@@ -39,7 +39,7 @@ class Scope(Struct):
         self.__dict__["name"] = name
         self.__dict__["scope"] = scope
 
-        template_struct = MovaiDB.API()[scope]
+        template_struct = MovaiDB.DB_SCHEMA[scope]
 
         # we then need to get this from database!!!!
         self.__dict__["struct"] = template_struct
