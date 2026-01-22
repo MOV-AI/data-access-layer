@@ -2,7 +2,7 @@ from os import path
 from typing import Dict
 
 from dal.plugins.classes import Resource
-from dal.validation import SCHEMA_FOLDER_PATH
+from dal.validation import REDIS_SCHEMA_FOLDER_PATH
 
 
 class DBSchema(dict):
@@ -13,7 +13,7 @@ class DBSchema(dict):
     def __init__(self):
         super(type(self), self).__init__()  # pylint: disable=bad-super-call
         self.__version = "1.0"
-        self.__url = path.join(SCHEMA_FOLDER_PATH, self.__version)
+        self.__url = path.join(REDIS_SCHEMA_FOLDER_PATH, self.__version)
 
         if self.__version not in type(self).__API__:
             self.load_schemas_from_files()

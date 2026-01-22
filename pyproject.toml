@@ -53,9 +53,9 @@ exclude = ["dal.tests*"]
 
 [tool.setuptools.package-data]
 dal = [
-    'dal/validation/schema/1.0/*.json',
-    'dal/validation/schema/2.4/*.json',
-    'dal/validation/schema/2.4/common/*.json',
+    'dal/validation/redis_schema/1.0/*.json',
+    'dal/validation/json_schema/2.4/*.json',
+    'dal/validation/json_schema/2.4/common/*.json',
 ]
 
 [tool.black]
