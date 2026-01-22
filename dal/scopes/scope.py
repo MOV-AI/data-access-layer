@@ -17,6 +17,7 @@ from dal.validation.validator import Validator
 from movai_core_shared.exceptions import DoesNotExist, AlreadyExist
 from .structures import Struct
 from dal.movaidb import MovaiDB
+from dal.movaidb.db_schema import DBSchema
 from dal.validation import JsonValidator
 
 
@@ -39,7 +40,7 @@ class Scope(Struct):
         self.__dict__["name"] = name
         self.__dict__["scope"] = scope
 
-        template_struct = MovaiDB.DB_SCHEMA[scope]
+        template_struct = DBSchema()[scope]
 
         # we then need to get this from database!!!!
         self.__dict__["struct"] = template_struct
