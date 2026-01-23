@@ -1,6 +1,8 @@
 # vTBD
 - [BP-1581](https://movai.atlassian.net/browse/BP-1581): Robot Parameter['started'] does not exist until the start button is pressed on Fleetboard
-
+# v3.20.2
+- [BP-1552](https://movai.atlassian.net/browse/BP-1552) Fix extra argument in legacy parser.
+  - Add tests for mobdata import/export/remove.
 # v3.20.1
 - [BP-1584](https://movai.atlassian.net/browse/BP-1584): Make usage search types BaseModels
 
