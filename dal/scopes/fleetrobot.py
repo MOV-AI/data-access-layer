@@ -32,8 +32,6 @@ from .scope import Scope
 
 logger = Log.get_logger("FleetRobot")
 
-ROBOT_STARTED_PARAM = "started"
-ROBOT_BATTERY_PARAM = "battery"
 START_TIME_VAR = "startTime"
 END_TIME_VAR = "endTime"
 
