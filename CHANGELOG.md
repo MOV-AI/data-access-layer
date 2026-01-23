@@ -1,4 +1,4 @@
-# CHANGELOG
+# Changelog
 ## vTBD
 - Fix with_db tests flakiness
 - Add changelog to sphinx documentation
