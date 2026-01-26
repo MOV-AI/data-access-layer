@@ -17,6 +17,7 @@ Welcome to data-access-layer's documentation!
    robot_parameters
    schemas
    backup
+   changelog
 
 .. include:: readme.rst
 

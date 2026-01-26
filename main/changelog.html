@@ -1,0 +1,563 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Changelog &mdash; data-access-layer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+
+  
+    <link rel="shortcut icon" href="_static/cropped-Mov.ai-favicon2-32x32.png"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="_static/versions.js?v=6808f9ef"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Mobdata CLI Tool" href="backup.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            data-access-layer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Data Access Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">data-access-layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="permissions.html">Resource permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="robot_parameters.html">Robot Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schemas.html">Schemas and validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backup.html">Mobdata CLI Tool</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#v3-20-3">v3.20.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-20-2">v3.20.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-20-1">v3.20.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-20-0">v3.20.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-19-1">v3.19.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-19-0">v3.19.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-18-0">v3.18.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-17-0">v3.17.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-16-2">v3.16.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-16-1">v3.16.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-16-0">v3.16.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-15-0">v3.15.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-14-0">v3.14.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-13-0">v3.13.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-12-2">v3.12.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-12-1">v3.12.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-12-0">v3.12.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-11-0">v3.11.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-10-1">v3.10.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-10-0">v3.10.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-9-1">v3.9.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-9-0">v3.9.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-8-0">v3.8.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-7-1">v3.7.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-7-0">v3.7.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-6-0">v3.6.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-5-1">v3.5.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-5-0">v3.5.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-4-1">v3.4.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-4-0">v3.4.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-3-1">v3.3.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-2-10">v3.2.10</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-3-0">v3.3.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-2-9">v3.2.9</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-2-8">v3.2.8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-2-7">v3.2.7</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-2-6">v3.2.6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-2-5">v3.2.5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-2-4">v3.2.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-2-3">v3.2.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-2-2">v3.2.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-2-1">v3.2.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-1-2">v3.1.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-1-1">v3.1.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-1-0">v3.1.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-0-5">v3.0.5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-0-4">v3.0.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-0-3">v3.0.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-0-2">v3.0.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-0-1">v3.0.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v3-0-0-same-as-v2-5-0-35">v3.0.0 (same as v2.5.0.35)</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">data-access-layer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Changelog</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/MOV-AI/data-access-layer/blob/main/docs/source/changelog.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="changelog">
+<h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this heading"></a></h1>
+<section id="v3-20-3">
+<h2>v3.20.3<a class="headerlink" href="#v3-20-3" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fix with_db tests flakiness</p></li>
+<li><p>Add changelog to sphinx documentation</p></li>
+</ul>
+</section>
+<section id="v3-20-2">
+<h2>v3.20.2<a class="headerlink" href="#v3-20-2" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1552">BP-1552</a> Fix extra argument in legacy parser.</p>
+<ul>
+<li><p>Add tests for mobdata import/export/remove.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="v3-20-1">
+<h2>v3.20.1<a class="headerlink" href="#v3-20-1" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1584">BP-1584</a>: Make usage search types BaseModels</p></li>
+</ul>
+</section>
+<section id="v3-20-0">
+<h2>v3.20.0<a class="headerlink" href="#v3-20-0" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1552">BP-1552</a> Search for node and subflow usage in robot</p>
+<ul>
+<li><p>Add mobdata search commands to search for Node and Flow usage</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="v3-19-1">
+<h2>v3.19.1<a class="headerlink" href="#v3-19-1" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1586">BP-1586</a>: DockState node stops working</p></li>
+</ul>
+</section>
+<section id="v3-19-0">
+<h2>v3.19.0<a class="headerlink" href="#v3-19-0" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">FleetRobot.id_to_name</span></code></p></li>
+</ul>
+</section>
+<section id="v3-18-0">
+<h2>v3.18.0<a class="headerlink" href="#v3-18-0" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1555">BP-1555</a>: MovaiDB now handles auxiliary logic for patterns and keys previously in backend/wsredissub</p></li>
+</ul>
+</section>
+<section id="v3-17-0">
+<h2>v3.17.0<a class="headerlink" href="#v3-17-0" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1418">BP-1418</a>: Update GraphicScene PUT/POST to fullfil FE requirements</p></li>
+</ul>
+</section>
+<section id="v3-16-2">
+<h2>v3.16.2<a class="headerlink" href="#v3-16-2" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1420">BP-1420</a>: Skip removal of Package:maps and Package:point_clouds on import</p></li>
+</ul>
+</section>
+<section id="v3-16-1">
+<h2>v3.16.1<a class="headerlink" href="#v3-16-1" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1548">BP-1548</a>: Await check_permissions</p>
+<ul>
+<li><p>InternalUser has permission to CREATE, READ, UPDATE, and RESET itself (but not DELETE or EXECUTE)</p></li>
+<li><p>Move extra callback execution permission check to Callback Scope</p></li>
+<li><p>Add user permission tests.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="v3-16-0">
+<h2>v3.16.0<a class="headerlink" href="#v3-16-0" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1471">BP-1471</a>: Create API to remove robot (Migrate old remove robot API)</p>
+<ul>
+<li><p>Change FleetRobot.remove_entry vague exceptions to more specific ones</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="v3-15-0">
+<h2>v3.15.0<a class="headerlink" href="#v3-15-0" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1545">BP-1545</a>: Remove old Alerts implementation</p></li>
+</ul>
+</section>
+<section id="v3-14-0">
+<h2>v3.14.0<a class="headerlink" href="#v3-14-0" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1460">BP-1460</a>: API to expose fleet information</p></li>
+</ul>
+</section>
+<section id="v3-13-0">
+<h2>v3.13.0<a class="headerlink" href="#v3-13-0" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1539">BP-1539</a>: API for alert status and to get list of active alerts</p></li>
+</ul>
+</section>
+<section id="v3-12-2">
+<h2>v3.12.2<a class="headerlink" href="#v3-12-2" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1115">BP-1115</a>: Losen aiohttp dep due to fixes in aiohttp==3.8.4</p>
+<ul>
+<li><p>From <a class="reference external" href="https://docs.aiohttp.org/en/latest/changes.html#id278">aiohttp==3.8.4</a>:</p>
+<ul>
+<li><p>Fixed ConnectionResetError not being raised after client disconnection in SSL environments.</p>
+<ul>
+<li><p>This has impact server side, where the handler would remain running</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="v3-12-1">
+<h2>v3.12.1<a class="headerlink" href="#v3-12-1" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1531">BP-1531</a>: Failing to update alerts templates</p></li>
+</ul>
+</section>
+<section id="v3-12-0">
+<h2>v3.12.0<a class="headerlink" href="#v3-12-0" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1530">BP-1530</a>: Add validation for alert placeholder arguments</p>
+<ul>
+<li><p>Add tests</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="v3-11-0">
+<h2>v3.11.0<a class="headerlink" href="#v3-11-0" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1518">BP-1518</a>: Create alerts history API</p>
+<ul>
+<li><p>Use pydantic classes</p></li>
+<li><p>Add FleetRobot.name_to_id</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="v3-10-1">
+<h2>v3.10.1<a class="headerlink" href="#v3-10-1" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1519">BP-1519</a>: Edit Alert schema</p></li>
+</ul>
+</section>
+<section id="v3-10-0">
+<h2>v3.10.0<a class="headerlink" href="#v3-10-0" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1521">BP-1521</a>: Logic to activate and deactivate alert</p></li>
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1520">BP-1520</a>: Deactivate alerts on start / stop flow</p></li>
+</ul>
+</section>
+<section id="v3-9-1">
+<h2>v3.9.1<a class="headerlink" href="#v3-9-1" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1488">BP-1488</a>: Translation PO file name separator is valid for metadata name</p></li>
+</ul>
+</section>
+<section id="v3-9-0">
+<h2>v3.9.0<a class="headerlink" href="#v3-9-0" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1462">BP-1462</a>: Translation implementation</p>
+<ul>
+<li><p>Add tool to collect logs to be translated</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="v3-8-0">
+<h2>v3.8.0<a class="headerlink" href="#v3-8-0" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1462">BP-1462</a>: Translation implementation</p>
+<ul>
+<li><p>Singleton - lock only on first instantiation</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">subscribe_by_args_decoded</span></code> to simplify subscription</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="v3-7-1">
+<h2>v3.7.1<a class="headerlink" href="#v3-7-1" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1470">BP-1470</a>: Move DEFAULT_LANGUAGE to central location</p></li>
+</ul>
+</section>
+<section id="v3-7-0">
+<h2>v3.7.0<a class="headerlink" href="#v3-7-0" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1456">BP-1456</a>: Add support for user language configuration</p>
+<ul>
+<li><p>Introduced <code class="docutils literal notranslate"><span class="pre">language</span></code> attribute for <code class="docutils literal notranslate"><span class="pre">BaseUser</span></code> and <code class="docutils literal notranslate"><span class="pre">InternalUser</span></code> models.</p></li>
+<li><p>Added validation for <code class="docutils literal notranslate"><span class="pre">language</span></code> using <code class="docutils literal notranslate"><span class="pre">VALID_LANGUAGES</span></code> from <code class="docutils literal notranslate"><span class="pre">movai_core_shared.consts</span></code>.</p></li>
+<li><p>Updated JSON schemas (<code class="docutils literal notranslate"><span class="pre">InternalUser.json</span></code> and <code class="docutils literal notranslate"><span class="pre">User.json</span></code>) to include the <code class="docutils literal notranslate"><span class="pre">Language</span></code> field.</p></li>
+<li><p>Added getter and setter for the <code class="docutils literal notranslate"><span class="pre">language</span></code> property in <code class="docutils literal notranslate"><span class="pre">BaseUser</span></code>.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="v3-6-0">
+<h2>v3.6.0<a class="headerlink" href="#v3-6-0" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1472">BP-1472</a>: Import / remove / remove Translation scope</p></li>
+</ul>
+</section>
+<section id="v3-5-1">
+<h2>v3.5.1<a class="headerlink" href="#v3-5-1" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1476">BP-1476</a>: tools.backup root-path (-r) parameter is not working</p></li>
+</ul>
+</section>
+<section id="v3-5-0">
+<h2>v3.5.0<a class="headerlink" href="#v3-5-0" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1463">BP-1463</a>: Create translation scope</p></li>
+</ul>
+</section>
+<section id="v3-4-1">
+<h2>v3.4.1<a class="headerlink" href="#v3-4-1" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fix mobdata usage (missing 1 required positional argument: ‘args’)</p></li>
+</ul>
+</section>
+<section id="v3-4-0">
+<h2>v3.4.0<a class="headerlink" href="#v3-4-0" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Add pylint, remove deadcode (dalapi, protocols, packagefile)</p></li>
+<li><p>Remove Git classes</p></li>
+</ul>
+</section>
+<section id="v3-3-1">
+<h2>v3.3.1<a class="headerlink" href="#v3-3-1" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Fix version number, the version still includes <a class="reference external" href="https://movai.atlassian.net/browse/BP-1441">BP-1441</a>: Operator does not have permission to get scene</p></li>
+</ul>
+</section>
+<section id="v3-2-10">
+<h2>v3.2.10<a class="headerlink" href="#v3-2-10" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Disregard version, the version number went from 3.3.0 to 3.2.10 by mistake</strong></p></li>
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1441">BP-1441</a>: Operator does not have permission to get scene</p></li>
+</ul>
+</section>
+<section id="v3-3-0">
+<h2>v3.3.0<a class="headerlink" href="#v3-3-0" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/DP-1843">DP-1843</a>: Create mobdata</p></li>
+</ul>
+</section>
+<section id="v3-2-9">
+<h2>v3.2.9<a class="headerlink" href="#v3-2-9" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1429">BP-1429</a>: Enable tests using docker compose in dal</p></li>
+</ul>
+</section>
+<section id="v3-2-8">
+<h2>v3.2.8<a class="headerlink" href="#v3-2-8" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1434">BP-1390</a>: Caching of flow’s node dependencies.</p></li>
+</ul>
+</section>
+<section id="v3-2-7">
+<h2>v3.2.7<a class="headerlink" href="#v3-2-7" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1434">BP-1434</a>: Duplicated logs on spawner</p></li>
+</ul>
+</section>
+<section id="v3-2-6">
+<h2>v3.2.6<a class="headerlink" href="#v3-2-6" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1420">BP-1420</a>: Initial cleanup on backup tool</p></li>
+</ul>
+</section>
+<section id="v3-2-5">
+<h2>v3.2.5<a class="headerlink" href="#v3-2-5" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1311">BP-1311</a>: Backend taking long to delete document / error in response</p></li>
+</ul>
+</section>
+<section id="v3-2-4">
+<h2>v3.2.4<a class="headerlink" href="#v3-2-4" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Add tests using docker compose</p></li>
+<li><p>Only get TTL if already in attributes</p></li>
+<li><p>Allow setting TTL using add(“Parameter”, …) syntax</p></li>
+</ul>
+</section>
+<section id="v3-2-3">
+<h2>v3.2.3<a class="headerlink" href="#v3-2-3" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1365">BP-1365</a>: Fix call to get_param</p></li>
+</ul>
+</section>
+<section id="v3-2-2">
+<h2>v3.2.2<a class="headerlink" href="#v3-2-2" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1328">BP-1328</a>: Improve TTL on Robot parameters</p></li>
+</ul>
+</section>
+<section id="v3-2-1">
+<h2>v3.2.1<a class="headerlink" href="#v3-2-1" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1303">BP-1303</a>: Rosparam.get_param() of a disabled parameter returns the value instead of None</p></li>
+</ul>
+</section>
+<section id="v3-1-2">
+<h2>v3.1.2<a class="headerlink" href="#v3-1-2" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1405">BP-1405</a>: Backeng logs an error if someone tries to login with a user that does not exist</p></li>
+</ul>
+</section>
+<section id="v3-1-1">
+<h2>v3.1.1<a class="headerlink" href="#v3-1-1" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1399">BP-1399</a>: Format code</p></li>
+</ul>
+</section>
+<section id="v3-1-0">
+<h2>v3.1.0<a class="headerlink" href="#v3-1-0" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1312">BP-1312</a>: Validation of ability for non-super user to run callbacks is broken</p></li>
+</ul>
+</section>
+<section id="v3-0-5">
+<h2>v3.0.5<a class="headerlink" href="#v3-0-5" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>Revert BP-1310</p></li>
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/RP-3269">RP-3269</a>: Have HFM working on the real lab (v3.0.5.3)</p>
+<ul>
+<li><p>Add robot type and robot model to robot class</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="v3-0-4">
+<h2>v3.0.4<a class="headerlink" href="#v3-0-4" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1371">BP-1371</a>: NameError: name ‘gd’ is not defined</p></li>
+</ul>
+</section>
+<section id="v3-0-3">
+<h2>v3.0.3<a class="headerlink" href="#v3-0-3" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1360">BP-1360</a>: Metrics no longer available when running cloud function</p></li>
+</ul>
+</section>
+<section id="v3-0-2">
+<h2>v3.0.2<a class="headerlink" href="#v3-0-2" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1339">BP-1339</a>: Migrate data-access-layer to <a class="reference external" href="mailto:py-workflow&#37;&#52;&#48;v2">py-workflow<span>&#64;</span>v2</a></p></li>
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1342">BP-1342</a>: Move the middleware and GD_Callback from gd-node (v3.0.2.3)</p></li>
+<li><p>Review Node set_type (v3.0.2.4)</p></li>
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1310">BP-1310</a>: Cache configurations and flow dependencies (v3.0.2.5)</p></li>
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1330">BP-1330</a>: Implement Async Callbacks (v3.0.2.6)</p></li>
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1330">BP-1330</a>: Send commands to Robot async (v3.0.2.7)</p></li>
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1310">BP-1310</a>: Enable fetching yamls directly from db instead of cached (v3.0.2.8)</p></li>
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1328">BP-1328</a>: Add TTL to robot parameters (v3.0.2.9)</p></li>
+</ul>
+</section>
+<section id="v3-0-1">
+<h2>v3.0.1<a class="headerlink" href="#v3-0-1" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1322">BP-1322</a>: Move WSRedisSub and Var_Subscriber</p></li>
+</ul>
+</section>
+<section id="v3-0-0-same-as-v2-5-0-35">
+<h2>v3.0.0 (same as v2.5.0.35)<a class="headerlink" href="#v3-0-0-same-as-v2-5-0-35" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://movai.atlassian.net/browse/BP-1319">BP-1319</a>: Move development to main branch</p></li>
+<li><p>Merge <code class="docutils literal notranslate"><span class="pre">releases/2.5.0</span></code> into <code class="docutils literal notranslate"><span class="pre">main</span></code> to bring history</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="backup.html" class="btn btn-neutral float-left" title="Mobdata CLI Tool" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Backend.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Read the Docs</span>
+        v: main
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dt>Versions</dt>
+        <dl id="docs-versions"></dl>
+        <hr />
+        <a href="https://tech.michaelaltfield.net/2020/07/18/sphinx-rtd-github-pages-1/">Continuous
+            Documentation</a> hosting provided by <a href="https://pages.github.com/">GitHub Pages</a>.
+    </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
