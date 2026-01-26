@@ -2,8 +2,6 @@ import os
 import pytest
 import sys
 import importlib
-import time
-
 
 from pathlib import Path
 
@@ -43,7 +41,6 @@ def global_db(set_redis_ip, docker_services):
     from dal.movaidb.database import MovaiDB
 
     db = MovaiDB()
-    time.sleep(2)  # wait for db to be ready
     return db
 
 
