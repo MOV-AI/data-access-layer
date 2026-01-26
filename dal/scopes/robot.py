@@ -279,6 +279,10 @@ class Robot(Scope):
         """Sets or updates a parameter of the robots"""
         self.Parameter[param].Value = value
 
+    def set_fleet_param(self, param: str, value, create_if_missing: bool = True):
+        """Sets or updates a parameter of the fleet robot"""
+        self.fleet.set_robot_parameter(param, value, create_if_missing=create_if_missing)
+
     @classmethod
     def cls_update_status(cls, name: str, status: dict, db: str = "all"):
         """Class method to update the Robot status in the database
