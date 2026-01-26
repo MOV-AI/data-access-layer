@@ -1,5 +1,5 @@
 # Changelog
-## vTBD
+## v3.20.3
 - Fix with_db tests flakiness
 - Add changelog to sphinx documentation
 
