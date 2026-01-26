@@ -1,5 +1,5 @@
 # Changelog
-# vTBD
+# v3.20.3
 - [BP-1581](https://movai.atlassian.net/browse/BP-1581): Robot Parameter['started'] does not exist until the start button is pressed on Fleetboard
 ## v3.20.3
 - Fix with_db tests flakiness
