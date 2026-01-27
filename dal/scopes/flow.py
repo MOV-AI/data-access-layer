@@ -12,6 +12,7 @@ import os
 import re
 import uuid
 from itertools import product
+
 from dal.helpers import flatten
 from movai_core_shared.consts import (
     CONFIG_REGEX,
@@ -28,7 +29,6 @@ from movai_core_shared.consts import (
     MOVAI_TRANSITIONFOR,
     MOVAI_TRANSITIONTO,
 )
-from dal.movaidb import MovaiDB
 from dal.scopes.scope import Scope
 from dal.scopes.ports import Ports
 from dal.scopes.node import Node
@@ -738,9 +738,7 @@ class Flow(Scope):
 
         node_template = self.cache_node_templates.get(template_name)
         if not node_template:
-            node_template = MovaiDB(db=self.db).get({"Node": {template_name: "**"}})["Node"][
-                template_name
-            ]
+            node_template = self.movaidb.get({"Node": {template_name: "**"}})["Node"][template_name]
             self.cache_node_templates.update({template_name: node_template})
 
         return node_template
@@ -750,9 +748,7 @@ class Flow(Scope):
         """Return ports dict from cache or from DB"""
         ports = self.cache_ports_templates.get(port_template)
         if not ports:
-            ports = MovaiDB(db=self.db).get({"Ports": {port_template: "**"}})["Ports"][
-                port_template
-            ]
+            ports = self.movaidb.get({"Ports": {port_template: "**"}})["Ports"][port_template]
             self.cache_ports_templates.update({port_template: ports})
         return ports
 
@@ -1104,8 +1100,6 @@ class Flow(Scope):
                 # link already exists -> return empty tuple
                 return ()
 
-        _db_write = MovaiDB(db=self.db).db_write
-
         # Generate new ID
         _id = str(uuid.uuid4())
         self.Links.update({_id: new_link})
@@ -1214,9 +1208,7 @@ class Flow(Scope):
 
         # get info about flows with containers
         # Container: {"ContainerFlow": <Flow name>, "ContainerLabel": <container name>}
-        flows_with_containers = flows or MovaiDB(db=self.db).get(
-            {"Flow": {"*": {"Container": "*"}}}
-        )
+        flows_with_containers = flows or self.movaidb.get({"Flow": {"*": {"Container": "*"}}})
 
         # Loop flows that have subflows
         for flow_name, flow_containers in flows_with_containers.get("Flow", {}).items():
@@ -1349,7 +1341,7 @@ class Flow(Scope):
             if options:
                 new_node.update(options)
 
-            MovaiDB(db=self.db).set(
+            self.movaidb.set(
                 {self.__class__.__name__: {self.name: {org_type: {copy_name: new_node}}}}
             )
 

@@ -11,7 +11,7 @@ Module that implements Configuration scope class
 import pickle
 import yaml
 from box import Box
-from dal.movaidb import MovaiDB
+
 from dal.helpers.cache import ThreadSafeCache
 from .scope import Scope
 
@@ -23,7 +23,6 @@ class Configuration(Scope):
 
     def __init__(self, name, version="latest", new=False, db="global"):
         super().__init__(scope="Configuration", name=name, version=version, new=new, db=db)
-        self.__dict__["_db_read"] = MovaiDB(db).db_read
         self.__dict__["_data"] = {}
         self.__dict__["_cache"] = ThreadSafeCache()
         self.__dict__["_ref"] = f"Scopes:Configuration:{name}:{version}"
@@ -35,7 +34,7 @@ class Configuration(Scope):
         Returns:
             str: the Yaml string returned from db
         """
-        yaml_str = self._db_read.get(f"Configuration:{self.name},Yaml:")
+        yaml_str = self.movaidb.db_read.get(f"Configuration:{self.name},Yaml:")
         if yaml_str is not None:
             return pickle.loads(yaml_str)
         return yaml_str

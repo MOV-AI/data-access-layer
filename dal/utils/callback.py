@@ -40,7 +40,6 @@ from dal.scopes.alert import Alert
 
 try:
     from movai_core_enterprise.models.annotation import Annotation
-    from movai_core_enterprise.models.graphicasset import GraphicAsset
     from movai_core_enterprise.models.graphicscene import GraphicScene
     from movai_core_enterprise.models.layout import Layout
     from movai_core_enterprise.scopes.task import Task
@@ -131,7 +130,6 @@ class UserFunctions:
                     {
                         "Alert": Alert,
                         "Annotation": Annotation,
-                        "GraphicAsset": GraphicAsset,
                         "GraphicScene": GraphicScene,
                         "Layout": Layout,
                         "metrics": metrics,

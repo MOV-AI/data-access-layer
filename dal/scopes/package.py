@@ -12,7 +12,7 @@
 import copy
 import hashlib
 import os
-from dal.movaidb import MovaiDB
+
 from dal.scopes.scope import Scope
 from dal.scopes.structures import Struct
 from dal.helpers import Helpers
@@ -31,7 +31,7 @@ class FileStruct(Struct):
     def __setattr__(self, name, value):
         if name in self.attrs:
             self.__dict__[name] = value
-            MovaiDB(self.db).set(Helpers.join_first({name: value}, self.prev_struct))
+            self.movaidb.set(Helpers.join_first({name: value}, self.prev_struct))
             if name in self.__dict__["setattr_callback"]:
                 self.setattr_callback[name](name, value)
         elif name in self.lists:
@@ -50,7 +50,7 @@ class FileStruct(Struct):
             checksum.update(value.encode("utf-8"))
         result = checksum.hexdigest()
         self.__dict__["Checksum"] = result
-        MovaiDB(self.db).set(Helpers.join_first({"Checksum": result}, self.prev_struct))
+        self.movaidb.set(Helpers.join_first({"Checksum": result}, self.prev_struct))
 
 
 class Package(Scope):

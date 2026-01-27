@@ -102,7 +102,6 @@ class Backup:
         "Package",
         "Ports",
         "Message",
-        "GraphicAsset",
         "Layout",
         "Robot",
         "System",

@@ -18,7 +18,7 @@ from babel.messages.pofile import PoFileError, read_po
 from dal.classes.common.singleton import Singleton
 from dal.exceptions import SchemaTypeNotKnown, SchemaVersionError
 
-from .constants import SCHEMA_FOLDER_PATH
+from .constants import JSON_SCHEMA_FOLDER_PATH
 from .schema import Schema
 
 
@@ -55,7 +55,7 @@ class JsonValidator(metaclass=Singleton):
     def _init_schemas(self):
         """Initialize schemas objects in the schema folder for all of our configuration files."""
         schema_folder = Path(
-            urllib.parse.urlparse(SCHEMA_FOLDER_PATH).path
+            urllib.parse.urlparse(JSON_SCHEMA_FOLDER_PATH).path
         )  # remove 'file://' prefix
         version_folder = schema_folder / self.VERSION
 

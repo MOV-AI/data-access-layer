@@ -4,13 +4,13 @@ from pathlib import Path
 import urllib.parse
 
 from dal.validation import Schema
-from dal.validation import SCHEMA_FOLDER_PATH
+from dal.validation import JSON_SCHEMA_FOLDER_PATH
 from dal.classes.filesystem import FileSystem
 
 
 @pytest.fixture
 def translation_validator():
-    clean_path = urllib.parse.urlparse(SCHEMA_FOLDER_PATH).path
+    clean_path = urllib.parse.urlparse(JSON_SCHEMA_FOLDER_PATH).path
     path = Path(clean_path) / "2.4" / "Translation.schema.json"
     return Schema(path)
 
@@ -29,7 +29,7 @@ def translation_invalid_data(metadata_folder_invalid_data):
 
 @pytest.fixture
 def alert_validator():
-    clean_path = urllib.parse.urlparse(SCHEMA_FOLDER_PATH).path
+    clean_path = urllib.parse.urlparse(JSON_SCHEMA_FOLDER_PATH).path
     path = Path(clean_path) / "2.4" / "Alert.schema.json"
     return Schema(path)
 

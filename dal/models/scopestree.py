@@ -691,7 +691,6 @@ class ScopeNode(DictNode, WorkspaceObject):
                 "Package",
                 "Ports",
                 "Message",
-                "GraphicAsset",
                 "Layout",
                 "LdapConfig",
                 "Robot",

@@ -12,7 +12,7 @@ from dal.plugins.classes import PluginManager, Resource
 from .tree import TreeNode, DictNode, ObjectNode, PropertyNode, CallableNode
 from .serialization import ObjectDeserializer
 from .version import VersionNode
-from dal.validation import SCHEMA_FOLDER_PATH
+from dal.validation import REDIS_SCHEMA_FOLDER_PATH
 
 
 class SchemaNode(DictNode):
@@ -142,7 +142,7 @@ class SchemasTree(CallableNode):
         except KeyError:
             pass
 
-        schema_file = path.join(SCHEMA_FOLDER_PATH, version, f"{name}.json")
+        schema_file = path.join(REDIS_SCHEMA_FOLDER_PATH, version, f"{name}.json")
 
         if not Resource.exists(schema_file):
             raise FileNotFoundError(schema_file)

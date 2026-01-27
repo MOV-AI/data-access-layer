@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 from threading import Lock
 from typing import List
+from functools import cached_property
 
 from dal.scopes.scope import Scope
 from dal.scopes.robot import Robot
@@ -27,6 +28,11 @@ class Alert(Scope):
     def __init__(self, name, version="latest", new=False, db="global"):
         self.__dict__["alert_id"] = name
         super().__init__(scope="Alert", name=name, version=version, new=new, db=db)
+
+    @cached_property
+    def _robot(self):
+        """Instantiates the robot object, caching it."""
+        return Robot()
 
     def validate_parameters(self, name: str, text: str, **kwargs):
         """Validate that all required placeholders in the text are provided in kwargs.
@@ -72,7 +78,7 @@ class Alert(Scope):
 
         # if not serializable, convert to string
         args = json.dumps(kwargs, default=str)
-        Robot().add_active_alert(
+        self._robot.add_active_alert(
             self.alert_id,
             AlertActivationData(args=args, activation_date=datetime.now().isoformat()),
         )
@@ -84,7 +90,7 @@ class Alert(Scope):
             deactivation_type (str, optional): The type of deactivation. Defaults to DeactivationType.REQUESTED.
 
         """
-        alert_metric = Robot().pop_alert(self.alert_id, deactivation_type=deactivation_type)
+        alert_metric = self._robot.pop_alert(self.alert_id, deactivation_type=deactivation_type)
 
         if not alert_metric:
             LOGGER.warning("Alert %s not active, cannot deactivate", self.alert_id)
