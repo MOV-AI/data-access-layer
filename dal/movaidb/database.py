@@ -966,12 +966,31 @@ class MovaiDB:
     @staticmethod
     def dict_to_args(_input: dict) -> dict:
         """
-        Flatten nested dict into args
+        Flatten a nested dictionary into a flat args structure.
 
         Example:
-        Input: {'Node': {'transition_flow': {'LastUpdate': {'date': '09/12/2021 at 14:37:19', 'user': 'movai'}}}}
-        Output: {'Scope': 'Node', 'name': 'transition_flow', 'LastUpdate': ['date', 'user'], 'date': '09/12/2021 at 14:37:19', 'user': 'movai'}
+        Input:
+        {
+            'Node': {
+                'transition_flow': {
+                    'LastUpdate': {
+                        'date': '09/12/2021 at 14:37:19',
+                        'user': 'movai'
+                    }
+                }
+            }
+        }
+
+        Output:
+        {
+            'Scope': 'Node',
+            'name': 'transition_flow',
+            'LastUpdate': ['date', 'user'],
+            'date': '09/12/2021 at 14:37:19',
+            'user': 'movai'
+        }
         """
+
         final_dict = {}
 
         scope, scope_value = next(iter(_input.items()))
