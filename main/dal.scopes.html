@@ -537,7 +537,31 @@ if not, an exception will be raised if the robot is running</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.fleetrobot.FleetRobot.set_robot_parameter">
 <span class="sig-name descname"><span class="pre">set_robot_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_if_missing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.fleetrobot.FleetRobot.set_robot_parameter" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Set a parameter for the robot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param_name</strong> (<em>str</em>) – The name of the parameter to set.</p></li>
+<li><p><strong>value</strong> (<em>any</em>) – The value to set for the parameter.</p></li>
+<li><p><strong>create_if_missing</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to create the parameter if it is missing. Defaults to True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.fleetrobot.FleetRobot.set_robot_started">
+<span class="sig-name descname"><span class="pre">set_robot_started</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_if_missing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.fleetrobot.FleetRobot.set_robot_started" title="Permalink to this definition"></a></dt>
+<dd><p>Set the ‘started’ parameter for the robot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>bool</em>) – The value to set for the ‘started’ parameter.</p></li>
+<li><p><strong>create_if_missing</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to create the parameter if it is missing. Defaults to True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dal.scopes.fleetrobot.FleetRobot.spawner_client">
@@ -2686,7 +2710,31 @@ if not, an exception will be raised if the robot is running</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.FleetRobot.set_robot_parameter">
 <span class="sig-name descname"><span class="pre">set_robot_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_if_missing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.FleetRobot.set_robot_parameter" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Set a parameter for the robot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param_name</strong> (<em>str</em>) – The name of the parameter to set.</p></li>
+<li><p><strong>value</strong> (<em>any</em>) – The value to set for the parameter.</p></li>
+<li><p><strong>create_if_missing</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to create the parameter if it is missing. Defaults to True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.FleetRobot.set_robot_started">
+<span class="sig-name descname"><span class="pre">set_robot_started</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_if_missing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.FleetRobot.set_robot_started" title="Permalink to this definition"></a></dt>
+<dd><p>Set the ‘started’ parameter for the robot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>bool</em>) – The value to set for the ‘started’ parameter.</p></li>
+<li><p><strong>create_if_missing</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to create the parameter if it is missing. Defaults to True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dal.scopes.FleetRobot.spawner_client">
