@@ -4,6 +4,7 @@
     "$name": {
       "Label": "str",
       "Description": "str",
+      "InstallPath": "str",
       "TemplateID": "str",
       "Field": {
         "$name": {

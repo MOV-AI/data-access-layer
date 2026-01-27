@@ -4,6 +4,7 @@
     "$name": {
       "User": "str",
       "LastUpdate": "any",
+      "InstallPath": "str",
       "Info": "str",
       "Icon": "str",
       "DashboardTitle": "str",

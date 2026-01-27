@@ -416,6 +416,7 @@ class Importer(Backup):
             except json.JSONDecodeError:
                 with open(file_path, "rb") as file:
                     data = pickle.load(file)
+            data[scope][name]["InstallPath"] = file_path
 
             self._import_data(scope, name, data)
 
@@ -445,6 +446,7 @@ class Importer(Backup):
             except:
                 # probably file not found
                 pass
+            data["Configuration"][name]["InstallPath"] = file_path
 
             self._import_data("Configuration", name, data)
 
@@ -472,6 +474,7 @@ class Importer(Backup):
             if os.path.isfile(code_path):
                 with open(code_path) as code:
                     data["Callback"][name]["Code"] = code.read()
+            data["Callback"][name]["InstallPath"] = file_path
 
             self._import_data("Callback", name, data)
 
@@ -520,6 +523,7 @@ class Importer(Backup):
                         "Checksum": checksum.hexdigest(),
                         "FileLabel": file,
                     }
+            data["Package"][name]["InstallPath"] = file_path
 
             self._import_data("Package", name, data)
 
@@ -556,6 +560,7 @@ class Importer(Backup):
             for _type in list(msg_dict.keys()):
                 if len(msg_dict[_type]) == 0:
                     del msg_dict[_type]
+            data["Message"][name]["InstallPath"] = file_path
 
             self._import_data("Message", name, data)
 
@@ -590,6 +595,7 @@ class Importer(Backup):
 
                 # imports dependencies
                 self.dependencies_ports(pkg_json["Ports"][name])
+                data["Ports"][name]["InstallPath"] = pkg_path
 
                 self._import_data("Ports", name, data)
 
@@ -608,6 +614,7 @@ class Importer(Backup):
             # dependencies
             if self.recursive:
                 self.dependencies_tasktemplate(data["TaskTemplate"][name])
+            data["TaskTemplate"][name]["InstallPath"] = file_path
 
             self._import_data("TaskTemplate", name, data)
 
@@ -644,6 +651,7 @@ class Importer(Backup):
                             self.import_flow([contained_flow])
                         except AttributeError:
                             self.import_default("Flow", [contained_flow])
+            data["Flow"][name]["InstallPath"] = file_path
 
             self._import_data("Flow", name, data)
 
@@ -663,6 +671,7 @@ class Importer(Backup):
             # dependencies
             if self.recursive:
                 self.dependencies_node(data["Node"][name])
+            data["Node"][name]["InstallPath"] = file_path
 
             self._import_data("Node", name, data)
 
@@ -685,6 +694,7 @@ class Importer(Backup):
                     self.import_shareddatatemplate([dep])
                 except AttributeError:
                     self.import_default("SharedDataTemplate", [dep])
+            data["SharedDataEntry"][name]["InstallPath"] = file_path
 
             self._import_data("SharedDataEntry", name, data)
 
@@ -711,6 +721,7 @@ class Importer(Backup):
                             self.import_callback([callback])
                         except AttributeError:
                             self.import_default("Callback", [callback])
+            data["StateMachine"][name]["InstallPath"] = file_path
 
             self._import_data("StateMachine", name, data)
 
@@ -743,6 +754,7 @@ class Importer(Backup):
                             self.import_annotation(annotations)
                         except AttributeError:
                             self.import_default("Annotation", annotations)
+            data["GraphicScene"][name]["InstallPath"] = file_path
 
             self._import_data("GraphicScene", name, data)
 
@@ -775,6 +787,7 @@ class Importer(Backup):
 
                 with open(file) as data_file:
                     data["Translation"][name]["Translations"][lang[0]] = {"po": data_file.read()}
+            data["Translation"][name]["InstallPath"] = file_path
 
             self._import_data("Translation", name, data)
 
@@ -1342,6 +1355,11 @@ class Exporter(Backup):
             pass
         try:
             del b["relations"]
+        except KeyError:
+            pass
+        # remove the path from json, path is only for internal use
+        try:
+            del b["InstallPath"]
         except KeyError:
             pass
         # remove the code from json, code should only exists in .py

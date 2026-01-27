@@ -3,6 +3,7 @@
   "schema": {
     "$name": {
       "Label": "str",
+      "InstallPath": "str",
       "Label_Template": "str",
       "Description": "str",
       "Description_Template": "str",

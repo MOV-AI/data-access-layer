@@ -5,6 +5,7 @@
       "Label": "str",
       "User": "str",
       "LastUpdate": "any",
+      "InstallPath": "str",
       "Version": "str",
       "VersionDelta": "hash",
       "Dummy": "bool",

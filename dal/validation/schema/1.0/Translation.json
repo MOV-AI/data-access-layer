@@ -4,6 +4,7 @@
     "$name": {
       "Label": "str",
       "LastUpdate": "any",
+      "InstallPath": "str",
       "Translations": {
         "$name": {
           "po": "str"
