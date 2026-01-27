@@ -37,6 +37,7 @@ END_TIME_VAR = "endTime"
 
 ROBOT_STARTED_PARAM = "started"
 
+
 class Role(Enum):
     """Robot Role Enum."""
 
