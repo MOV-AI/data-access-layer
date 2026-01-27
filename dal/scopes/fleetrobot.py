@@ -33,7 +33,6 @@ from .scope import Scope
 
 logger = Log.get_logger("FleetRobot")
 
-ROBOT_STARTED_PARAM = "started"
 START_TIME_VAR = "startTime"
 END_TIME_VAR = "endTime"
 
@@ -234,15 +233,21 @@ class FleetRobot(Scope):
                 return robot[key_name]
         return None
 
-    def set_robot_started(self, value: bool):
+    def set_robot_parameter(self, param_name, value, create_if_missing: bool = True):
         try:
-            self.Parameter[ROBOT_STARTED_PARAM].Value = value
+            if param_name in self.Parameter:
+                self.Parameter[param_name].Value = value
+            elif create_if_missing:
+                self.add("Parameter", param_name).Value = value
         except Exception as e:
             logger.warning(
-                f"Caught exception in setting {ROBOT_STARTED_PARAM} Parameter with value {value} of robot id {id}",
+                "Caught exception in setting %s Parameter with value %s of robot id %s : %s",
+                param_name,
+                value,
+                self.name,
                 e,
             )
-            self.add("Parameter", ROBOT_STARTED_PARAM).Value = value
+            self.add("Parameter", param_name).Value = value
 
     def ping(self) -> bool:
         """Ping the robot"""
