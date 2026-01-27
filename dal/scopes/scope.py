@@ -12,6 +12,7 @@ Attributes:
 
 """
 from typing import List
+from functools import cached_property
 
 from dal.validation.validator import Validator
 from movai_core_shared.exceptions import DoesNotExist, AlreadyExist
@@ -60,6 +61,11 @@ class Scope(Struct):
                     f"{name} does not exist yet. If you wish to create please use 'new=True'"
                 )
 
+    @cached_property
+    def _movai_db_global(self):
+        """Instantiates the global MovaiDB object, caching it."""
+        return MovaiDB()
+
     def transform_before_update(self, source_data: dict):
         """
         Transforms data into internal format
@@ -85,7 +91,7 @@ class Scope(Struct):
         """
         self.validate_format(self.scope, new_dict)
         structure = self.__dict__.get("struct").get("$name")
-        return MovaiDB().calc_scope_update(old_dict, new_dict, structure)
+        return self._movai_db_global.calc_scope_update(old_dict, new_dict, structure)
 
     def remove(self, force=True):
         """Removes Scope"""
@@ -94,12 +100,12 @@ class Scope(Struct):
 
     def remove_partial(self, dict_key):
         """Remove Scope key"""
-        result = MovaiDB(self.db).unsafe_delete({self.scope: {self.name: dict_key}})
+        result = self.movaidb.unsafe_delete({self.scope: {self.name: dict_key}})
         return result
 
     def get_dict(self):
         """Returns the full dictionary of the scope from db"""
-        result = MovaiDB(self.db).get({self.scope: {self.name: "**"}})
+        result = self.movaidb.get({self.scope: {self.name: "**"}})
         attrs, lists, hashs = self.get_attributes(self.struct)
         for list_name in lists:
             if list_name not in result[self.scope][self.name]:

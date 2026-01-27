@@ -21,7 +21,6 @@ from movai_core_shared.consts import (
     ROS1_NODELET,
     ROS1_PLUGIN,
 )
-from dal.movaidb import MovaiDB
 from dal.scopes.scope import Scope
 from dal.utils.usage_search.usage_types import (
     UsageData,
@@ -52,8 +51,10 @@ class Node(Scope):
         return True
 
     def set_type(self):
-        ports = MovaiDB().get({"Node": {self.name: {"PortsInst": {"*": {"Template": "*"}}}}})
-        path = MovaiDB().get_value({"Node": {self.name: {"Path": ""}}})
+        ports = self._movai_db_global.get(
+            {"Node": {self.name: {"PortsInst": {"*": {"Template": "*"}}}}}
+        )
+        path = self._movai_db_global.get_value({"Node": {self.name: {"Path": ""}}})
         templs = []
         if ports:
             for _, temp in ports["Node"][self.name]["PortsInst"].items():
@@ -74,12 +75,12 @@ class Node(Scope):
             else:
                 type_to_set = MOVAI_NODE
 
-        MovaiDB().set({"Node": {self.name: {"Type": type_to_set}}})
+        self._movai_db_global.set({"Node": {self.name: {"Type": type_to_set}}})
 
     def get_params(self, attribute="Parameter"):
         final_params = {}
         node_name = self.name
-        params = MovaiDB().get({"Node": {node_name: {attribute: {"*": {"Value": ""}}}}})
+        params = self._movai_db_global.get({"Node": {node_name: {attribute: {"*": {"Value": ""}}}}})
 
         if params:
             for param, _value in params["Node"][node_name][attribute].items():
@@ -195,7 +196,7 @@ class Node(Scope):
 
             super().rename(key, old_name, new_name)
 
-            MovaiDB().rename(old_depends, new_depends)
+            self._movai_db_global.rename(old_depends, new_depends)
 
             return True
 
@@ -209,12 +210,12 @@ class Node(Scope):
 
         full_dict_to_delete = {"Flow": {}}
 
-        full_node_list = MovaiDB().search(
+        full_node_list = self._movai_db_global.search(
             {"Flow": {"*": {"NodeInst": {"*": {"Template": self.name}}}}}
         )
 
         for node_key in full_node_list:
-            node = MovaiDB().keys_to_dict([(node_key, "")])
+            node = self._movai_db_global.keys_to_dict([(node_key, "")])
             for flow in node["Flow"]:
                 flow_name = flow
             for name in node["Flow"][flow_name]["NodeInst"]:
@@ -222,7 +223,9 @@ class Node(Scope):
 
             deleted_nodes.append((flow_name, node_inst_name))
 
-            node_dict = MovaiDB().search_by_args("Flow", Name=flow_name, NodeInst=node_inst_name)
+            node_dict = self._movai_db_global.search_by_args(
+                "Flow", Name=flow_name, NodeInst=node_inst_name
+            )
 
             try:
                 full_dict_to_delete["Flow"][flow_name]["NodeInst"].update(
@@ -231,18 +234,22 @@ class Node(Scope):
             except:  # First Node Inst for this flow
                 full_dict_to_delete["Flow"].update(node_dict[0]["Flow"])
 
-            links_from = MovaiDB().search(
+            links_from = self._movai_db_global.search(
                 {"Flow": {flow_name: {"Link": {"*": {"From": "*" + node_inst_name + "*"}}}}}
             )
-            links_to = MovaiDB().search(
+            links_to = self._movai_db_global.search(
                 {"Flow": {flow_name: {"Link": {"*": {"To": "*" + node_inst_name + "*"}}}}}
             )
 
             for link in links_from + links_to:
-                for link_id in MovaiDB().keys_to_dict([(link, "")])["Flow"][flow_name]["Link"]:
+                for link_id in self._movai_db_global.keys_to_dict([(link, "")])["Flow"][flow_name][
+                    "Link"
+                ]:
                     deleted_links.append((flow_name, link_id))
 
-                    links_dict = MovaiDB().search_by_args("Flow", Name=flow_name, Link=link_id)
+                    links_dict = self._movai_db_global.search_by_args(
+                        "Flow", Name=flow_name, Link=link_id
+                    )
                     try:
                         full_dict_to_delete["Flow"][flow_name]["Link"].update(
                             links_dict[0]["Flow"][flow_name]["Link"]
@@ -253,7 +260,7 @@ class Node(Scope):
                         )
 
         if force:
-            MovaiDB().delete(full_dict_to_delete)
+            self._movai_db_global.delete(full_dict_to_delete)
             return "True"
 
         if not deleted_nodes and not deleted_links:
@@ -273,16 +280,12 @@ class Node(Scope):
                 dependencies[elem[0]].append({"NodeInst": elem[1]})
 
         for elem in list(set(deleted_links)):
-            from_ = (
-                MovaiDB()
-                .search({"Flow": {elem[0]: {"Link": {elem[1]: {"From": "*"}}}}})[0]
-                .rsplit(":", 1)[1]
-            )
-            to_ = (
-                MovaiDB()
-                .search({"Flow": {elem[0]: {"Link": {elem[1]: {"To": "*"}}}}})[0]
-                .rsplit(":", 1)[1]
-            )
+            from_ = self._movai_db_global.search(
+                {"Flow": {elem[0]: {"Link": {elem[1]: {"From": "*"}}}}}
+            )[0].rsplit(":", 1)[1]
+            to_ = self._movai_db_global.search(
+                {"Flow": {elem[0]: {"Link": {elem[1]: {"To": "*"}}}}}
+            )[0].rsplit(":", 1)[1]
             try:
                 dependencies[elem[0]].append({"from": from_, "to": to_})
             except:

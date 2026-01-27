@@ -15,6 +15,7 @@ import inspect
 import pkgutil
 import pydoc
 import importlib
+
 from dal.movaidb import MovaiDB
 from dal.scopes.scope import Scope
 from dal.scopes.application import Application
@@ -444,12 +445,12 @@ class Callback(Scope):
     def template_depends(self, force=False):
         # this will give a list of tuples (node_name, node_inst_name, iport_name)
         replaced_cbs = []
-        full_node_list = MovaiDB().search(
+        full_node_list = self._movai_db_global.search(
             {"Node": {"*": {"PortsInst": {"*": {"In": {"*": {"Callback": self.name}}}}}}}
         )
 
         for node_key in full_node_list:
-            node = MovaiDB().keys_to_dict([(node_key, "")])
+            node = self._movai_db_global.keys_to_dict([(node_key, "")])
             for flow in node["Node"]:
                 node_name = flow
             for name in node["Node"][node_name]["PortsInst"]:
@@ -461,7 +462,7 @@ class Callback(Scope):
                 node["Node"][node_name]["PortsInst"][node_inst_name]["In"][iport_name][
                     "Callback"
                 ] = "null_callback"
-                MovaiDB().set(node)
+                self._movai_db_global.set(node)
                 return "True"
 
             replaced_cbs.append((node_name, node_inst_name, iport_name))
