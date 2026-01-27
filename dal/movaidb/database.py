@@ -263,7 +263,7 @@ class Redis(metaclass=Singleton):
         return self.db_local.pubsub()
 
 
-class  MovaiDB:
+class MovaiDB:
     """Main MovaiDB"""
 
     class API(dict):
