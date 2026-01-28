@@ -4,6 +4,7 @@
     "$name": {
       "Label": "str",
       "Description": "str",
+      "InstallPath": "str",
       "Field": {
         "$name": {
           "Type": "str",

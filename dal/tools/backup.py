@@ -199,7 +199,7 @@ class Importer(Backup):
 
         if self.dry_run:
             # override import_data to not import data
-            self._import_data = lambda scope, name, _: self.set_imported(scope, name)
+            self._import_data = lambda scope, name, _, __: self.set_imported(scope, name)
             # remove project root dir from it, plus an extra '/' (+1)
             self.dry_print = lambda *paths: [
                 print(path[len(self.project_path) + 1 :]) for path in paths
@@ -345,15 +345,18 @@ class Importer(Backup):
             return self._list_files(scope, extract, list_match)
         return self._get_files(scope, names, build, get_match)
 
-    def _import_data(self, scope, name, data):  # pylint: disable=method-hidden
+    def _import_data(self, scope, name, data, path):  # pylint: disable=method-hidden
         """Imports data to the database.
 
         Args:
             scope (str): Scope of the data.
             name (str): Name of the data.
             data (dict): Data to import.
+            path (str): Path of origin of the data.
 
         """
+        data[scope][name]["InstallPath"] = path
+
         try:
             ScopeClass = Factory.get_class(scope)
             ScopeClass.validate_format(scope, data[scope][name])
@@ -417,7 +420,7 @@ class Importer(Backup):
                 with open(file_path, "rb") as file:
                     data = pickle.load(file)
 
-            self._import_data(scope, name, data)
+            self._import_data(scope, name, data, file_path)
 
     def import_configuration(self, names=None):
         files = self.get_files("Configuration", names)
@@ -446,7 +449,7 @@ class Importer(Backup):
                 # probably file not found
                 pass
 
-            self._import_data("Configuration", name, data)
+            self._import_data("Configuration", name, data, file_path)
 
     def import_callback(self, names=None):
         """Imports Callback, similar to import_default but also updates Callback's Code."""
@@ -473,7 +476,7 @@ class Importer(Backup):
                 with open(code_path) as code:
                     data["Callback"][name]["Code"] = code.read()
 
-            self._import_data("Callback", name, data)
+            self._import_data("Callback", name, data, file_path)
 
     def import_package(self, names=None):
         """Import Package, recursively look for files of the package"""
@@ -521,7 +524,7 @@ class Importer(Backup):
                         "FileLabel": file,
                     }
 
-            self._import_data("Package", name, data)
+            self._import_data("Package", name, data, file_path)
 
     def import_message(self, names=None):
         files = self.get_files("Message", names)
@@ -557,7 +560,7 @@ class Importer(Backup):
                 if len(msg_dict[_type]) == 0:
                     del msg_dict[_type]
 
-            self._import_data("Message", name, data)
+            self._import_data("Message", name, data, file_path)
 
     def import_ports(self, names=None):
         def to_import(ports):
@@ -591,7 +594,7 @@ class Importer(Backup):
                 # imports dependencies
                 self.dependencies_ports(pkg_json["Ports"][name])
 
-                self._import_data("Ports", name, data)
+                self._import_data("Ports", name, data, pkg_path)
 
     def import_tasktemplate(self, names=None):
         files = self.get_files("TaskTemplate", names)
@@ -609,7 +612,7 @@ class Importer(Backup):
             if self.recursive:
                 self.dependencies_tasktemplate(data["TaskTemplate"][name])
 
-            self._import_data("TaskTemplate", name, data)
+            self._import_data("TaskTemplate", name, data, file_path)
 
     def import_flow(self, names=None):
         """Imports Flow, similar to import_default but imports dependencies."""
@@ -645,7 +648,7 @@ class Importer(Backup):
                         except AttributeError:
                             self.import_default("Flow", [contained_flow])
 
-            self._import_data("Flow", name, data)
+            self._import_data("Flow", name, data, file_path)
 
     def import_node(self, names=None):
         """Imports Node, similar to import_default but imports dependencies."""
@@ -664,7 +667,7 @@ class Importer(Backup):
             if self.recursive:
                 self.dependencies_node(data["Node"][name])
 
-            self._import_data("Node", name, data)
+            self._import_data("Node", name, data, file_path)
 
     def import_shareddataentry(self, names=None):
         files = self.get_files("SharedDataEntry", names)
@@ -686,7 +689,7 @@ class Importer(Backup):
                 except AttributeError:
                     self.import_default("SharedDataTemplate", [dep])
 
-            self._import_data("SharedDataEntry", name, data)
+            self._import_data("SharedDataEntry", name, data, file_path)
 
     def import_statemachine(self, names=None):
         # all defaults
@@ -712,7 +715,7 @@ class Importer(Backup):
                         except AttributeError:
                             self.import_default("Callback", [callback])
 
-            self._import_data("StateMachine", name, data)
+            self._import_data("StateMachine", name, data, file_path)
 
     def import_graphicscene(self, names=None):
         # all defaults
@@ -744,7 +747,7 @@ class Importer(Backup):
                         except AttributeError:
                             self.import_default("Annotation", annotations)
 
-            self._import_data("GraphicScene", name, data)
+            self._import_data("GraphicScene", name, data, file_path)
 
     def import_translation(self, names=None):
         """Import translation, read all po files."""
@@ -776,7 +779,7 @@ class Importer(Backup):
                 with open(file) as data_file:
                     data["Translation"][name]["Translations"][lang[0]] = {"po": data_file.read()}
 
-            self._import_data("Translation", name, data)
+            self._import_data("Translation", name, data, file_path)
 
     def dependencies_ports(self, ports: dict):
         if "Package" in ports["Data"]:
@@ -1342,6 +1345,11 @@ class Exporter(Backup):
             pass
         try:
             del b["relations"]
+        except KeyError:
+            pass
+        # remove the path from json, path is only for internal use
+        try:
+            del b["InstallPath"]
         except KeyError:
             pass
         # remove the code from json, code should only exists in .py

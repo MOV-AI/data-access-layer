@@ -3,6 +3,7 @@
   "schema": {
     "$name": {
       "Label": "str",
+      "InstallPath": "str",
       "Info": "str",
       "Data": "hash",
       "In": {

@@ -4,6 +4,7 @@
     "$name": {
       "User": "str",
       "LastUpdate": "any",
+      "InstallPath": "str",
       "Label": "str",
       "AssetType": {
         "$name": {

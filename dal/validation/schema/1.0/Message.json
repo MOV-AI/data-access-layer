@@ -3,6 +3,7 @@
   "schema": {
     "$name": {
       "Label": "str",
+      "InstallPath": "str",
       "Msg": {
         "$name": {
           "Source": "str",

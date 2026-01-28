@@ -5,6 +5,7 @@
       "Label": "str",
       "User": "str",
       "LastUpdate": "any",
+      "InstallPath": "str",
       "Yaml": "str",
       "Type": "str"
     }
