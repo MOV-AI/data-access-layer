@@ -1,5 +1,5 @@
 # Changelog
-## vTBD
+## v3.21.0
 - [BP-1554](https://movai.atlassian.net/browse/BP-1554): Create an API to get latest changes by user based on time
 
 ## v3.20.3
