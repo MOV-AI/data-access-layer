@@ -77,7 +77,6 @@
 <li class="toctree-l1"><a class="reference internal" href="schemas.html">Schemas and validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="backup.html">Mobdata CLI Tool</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changelog.html#v3-20-3">v3.20.3</a></li>
 </ul>
 
         </div>
@@ -317,7 +316,37 @@ Proprietary and confidential</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.dict_to_args">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dict_to_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.dict_to_args" title="Permalink to this definition"></a></dt>
-<dd><p>Get a plain args dict from the nested one</p>
+<dd><p>Flatten a nested dictionary into a flat args structure.</p>
+<p>Example:
+Input:
+{</p>
+<blockquote>
+<div><dl>
+<dt>‘Node’: {</dt><dd><dl>
+<dt>‘transition_flow’: {</dt><dd><dl class="simple">
+<dt>‘LastUpdate’: {</dt><dd><p>‘date’: ‘09/12/2021 at 14:37:19’,
+‘user’: ‘movai’</p>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p>}</p>
+<p>Output:
+{</p>
+<blockquote>
+<div><p>‘Scope’: ‘Node’,
+‘name’: ‘transition_flow’,
+‘LastUpdate’: [‘date’, ‘user’],
+‘date’: ‘09/12/2021 at 14:37:19’,
+‘user’: ‘movai’</p>
+</div></blockquote>
+<p>}</p>
 </dd></dl>
 
 <dl class="py method">
@@ -473,6 +502,23 @@ Must include a “Scope” key.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="dal.scopes.html#dal.scopes.structures.List" title="dal.scopes.structures.List">List</a>[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.get_keys_sync">
+<span class="sig-name descname"><span class="pre">get_keys_sync</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.get_keys_sync" title="Permalink to this definition"></a></dt>
+<dd><p>Get all redis keys matching pattern.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pattern</strong> (<em>str</em>) – Redis key pattern</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of keys matching the pattern</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
 </dd>
 </dl>
 </dd></dl>
@@ -942,7 +988,37 @@ Proprietary and confidential</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.movaidb.MovaiDB.dict_to_args">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dict_to_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#dal.movaidb.MovaiDB.dict_to_args" title="Permalink to this definition"></a></dt>
-<dd><p>Get a plain args dict from the nested one</p>
+<dd><p>Flatten a nested dictionary into a flat args structure.</p>
+<p>Example:
+Input:
+{</p>
+<blockquote>
+<div><dl>
+<dt>‘Node’: {</dt><dd><dl>
+<dt>‘transition_flow’: {</dt><dd><dl class="simple">
+<dt>‘LastUpdate’: {</dt><dd><p>‘date’: ‘09/12/2021 at 14:37:19’,
+‘user’: ‘movai’</p>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p>}</p>
+<p>Output:
+{</p>
+<blockquote>
+<div><p>‘Scope’: ‘Node’,
+‘name’: ‘transition_flow’,
+‘LastUpdate’: [‘date’, ‘user’],
+‘date’: ‘09/12/2021 at 14:37:19’,
+‘user’: ‘movai’</p>
+</div></blockquote>
+<p>}</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1098,6 +1174,23 @@ Must include a “Scope” key.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="dal.scopes.html#dal.scopes.structures.List" title="dal.scopes.structures.List">List</a>[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.movaidb.MovaiDB.get_keys_sync">
+<span class="sig-name descname"><span class="pre">get_keys_sync</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#dal.movaidb.MovaiDB.get_keys_sync" title="Permalink to this definition"></a></dt>
+<dd><p>Get all redis keys matching pattern.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pattern</strong> (<em>str</em>) – Redis key pattern</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of keys matching the pattern</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
 </dd>
 </dl>
 </dd></dl>
