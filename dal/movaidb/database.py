@@ -997,7 +997,7 @@ class MovaiDB:
         final_dict["Scope"] = scope
 
         name, name_value = next(iter(scope_value.items()))
-        final_dict["name"] = name
+        final_dict["Name"] = name
 
         def recursive(d: dict):
             for key, value in d.items():
