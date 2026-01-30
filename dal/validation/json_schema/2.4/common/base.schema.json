@@ -30,6 +30,9 @@
                 "user",
                 "date"
             ]
+        },
+        "InstallPath": {
+            "type": "string"
         }
     },
     "required": [

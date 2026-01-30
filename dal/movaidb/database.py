@@ -899,24 +899,52 @@ class MovaiDB:
 
     @staticmethod
     def dict_to_args(_input: dict) -> dict:
-        """Get a plain args dict from the nested one"""
-        for scope in _input:
-            scope_name = scope
-            final_dict = {"Scope": scope_name}
-        for name in _input[scope_name]:
-            main_name = name
-            if main_name != "*":
-                final_dict.update({"Name": main_name})
+        """
+        Flatten a nested dictionary into a flat args structure.
 
-        def recursive(_input):
-            for key, value in _input.items():
+        Example:
+        Input:
+        {
+            'Node': {
+                'transition_flow': {
+                    'LastUpdate': {
+                        'date': '09/12/2021 at 14:37:19',
+                        'user': 'movai'
+                    }
+                }
+            }
+        }
+
+        Output:
+        {
+            'Scope': 'Node',
+            'name': 'transition_flow',
+            'LastUpdate': ['date', 'user'],
+            'date': '09/12/2021 at 14:37:19',
+            'user': 'movai'
+        }
+        """
+
+        final_dict = {}
+
+        scope, scope_value = next(iter(_input.items()))
+        final_dict["Scope"] = scope
+
+        name, name_value = next(iter(scope_value.items()))
+        final_dict["Name"] = name
+
+        def recursive(d: dict):
+            for key, value in d.items():
+                if key == "*":
+                    continue
+
                 if isinstance(value, dict):
-                    for value_name in _input[key]:
-                        if value_name != "*":
-                            final_dict.update({key: value_name})
-                        recursive(_input[key][value_name])
+                    final_dict[key] = list(value.keys())
+                    recursive(value)
+                else:
+                    final_dict[key] = value
 
-        recursive(_input[scope_name][main_name])
+        recursive(name_value)
         return final_dict
 
     def get_search_dict(self, scope: str, **kwargs) -> dict:
@@ -1146,6 +1174,36 @@ class MovaiDB:
                 )
 
         return scope_updates
+
+    def get_keys_sync(self, pattern: str) -> list:
+        """Get all redis keys matching pattern.
+
+        Args:
+            pattern (str): Redis key pattern
+
+        Returns:
+            list: List of keys matching the pattern
+        """
+        _conn = self.movaidb.db_slave
+        cursor = 0
+        keys: List[str] = []
+
+        while True:
+            cursor, batch = _conn.scan(
+                cursor=cursor,
+                match=pattern,
+                count=1000,
+            )
+            for key in batch:
+                if isinstance(key, bytes):
+                    key = key.decode("utf-8")
+                keys.append(key)
+
+            if cursor == 0:
+                break
+
+        keys.sort(key=str.lower)
+        return keys
 
     async def get_keys(self, pattern: str) -> list:
         """Get all redis keys matching pattern.

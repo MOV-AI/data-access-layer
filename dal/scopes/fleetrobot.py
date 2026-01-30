@@ -36,6 +36,8 @@ logger = Log.get_logger("FleetRobot")
 START_TIME_VAR = "startTime"
 END_TIME_VAR = "endTime"
 
+ROBOT_STARTED_PARAM = "started"
+
 
 class Role(Enum):
     """Robot Role Enum."""
@@ -233,7 +235,23 @@ class FleetRobot(Scope):
                 return robot[key_name]
         return None
 
+    def set_robot_started(self, value: bool, create_if_missing: bool = True):
+        """Set the 'started' parameter for the robot.
+
+        Args:
+            value (bool): The value to set for the 'started' parameter.
+            create_if_missing (bool, optional): Whether to create the parameter if it is missing. Defaults to True.
+        """
+        self.set_robot_parameter(ROBOT_STARTED_PARAM, value, create_if_missing=create_if_missing)
+
     def set_robot_parameter(self, param_name, value, create_if_missing: bool = True):
+        """Set a parameter for the robot.
+
+        Args:
+            param_name (str): The name of the parameter to set.
+            value (any): The value to set for the parameter.
+            create_if_missing (bool, optional): Whether to create the parameter if it is missing. Defaults to True.
+        """
         try:
             if param_name in self.Parameter:
                 self.Parameter[param_name].Value = value
