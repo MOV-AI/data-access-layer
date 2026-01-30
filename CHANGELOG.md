@@ -2,8 +2,7 @@
 ## vTBD
 - [BP-1585](https://movai.atlassian.net/browse/BP-1585): Set field value and some SharedDataEntry instantiations are taking too long
   - Split redis and json schemas
-  - Delete
-  - GraphicAsset
+  - Delete GraphicAsset
   - Move API (now DBSchema) class out of MovaiDB
   - Improve scope instantiation by caching relevant class attributes
   - Use movaidb scope attribute where possible
