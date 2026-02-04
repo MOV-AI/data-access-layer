@@ -12,6 +12,14 @@ dal.movaidb.database module
    :undoc-members:
    :show-inheritance:
 
+dal.movaidb.db\_schema module
+-----------------------------
+
+.. automodule:: dal.movaidb.db_schema
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 
