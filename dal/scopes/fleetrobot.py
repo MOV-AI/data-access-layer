@@ -13,6 +13,7 @@
 import pickle
 from typing import Dict, List, Optional
 from enum import Enum
+from functools import cached_property
 
 from movai_core_shared.common.utils import is_enterprise
 from movai_core_shared.core.message_client import MessageClient, AsyncMessageClient
@@ -70,10 +71,15 @@ class FleetRobot(Scope):
             # which will be forwarded to the spawner server of the remote robot {self.IP}
             server = f"tcp://message-server:{MESSAGE_SERVER_PORT}"
 
-        self.__dict__["spawner_client"] = MessageClient(server_addr=server, robot_id=self.RobotName)
-        self.__dict__["async_spawner_client"] = AsyncMessageClient(
-            server_addr=server, robot_id=self.RobotName
-        )
+        self.__dict__["_server"] = server
+
+    @cached_property
+    def _spawner_client(self):
+        return MessageClient(server_addr=self.__dict__["_server"], robot_id=self.RobotName)
+
+    @cached_property
+    def _async_spawner_client(self):
+        return AsyncMessageClient(server_addr=self.__dict__["_server"], robot_id=self.RobotName)
 
     def send_cmd(
         self, command: str, *, flow: str = None, node: str = None, port=None, data=None

@@ -1,11 +1,18 @@
 # Changelog
+## vTBD
+- [BP-1585](https://movai.atlassian.net/browse/BP-1585): Set field value and some SharedDataEntry instantiations are taking too long
+  - Split redis and json schemas
+  - Delete GraphicAsset
+  - Move API (now DBSchema) class out of MovaiDB
+  - Improve scope instantiation by caching relevant class attributes
+  - Use movaidb scope attribute where possible
+  - Delete 2.0 unused schemas
+
 ## v3.21.0
 - [BP-1554](https://movai.atlassian.net/browse/BP-1554): Create an API to get latest changes by user based on time
 
 ## v3.20.3
 - [BP-1581](https://movai.atlassian.net/browse/BP-1581): Robot Parameter['started'] does not exist until the start button is pressed on Fleetboard
-
-## v3.20.3
 - Fix with_db tests flakiness
 - Add changelog to sphinx documentation
 

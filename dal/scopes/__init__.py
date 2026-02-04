@@ -73,7 +73,6 @@ __all__ = [
 try:
     from movai_core_enterprise.scopes import (
         Annotation,
-        GraphicAsset,
         GraphicScene,
         Layout,
         SharedDataEntry,
@@ -85,7 +84,6 @@ try:
 
     enterprise_modules = [
         "Annotation",
-        "GraphicAsset",
         "GraphicScene",
         "Layout",
         "SharedDataEntry",

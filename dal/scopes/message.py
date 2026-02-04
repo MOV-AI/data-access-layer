@@ -343,11 +343,6 @@ class Message(Scope):
                     print('Cannot locate structure for Message or Service "%s"' % message)
                     return {}
 
-        # try:
-        #    struct = rosmsg.get_msg_text(message)
-        # except:
-        #    struct = rosmsg.get_srv_text(message)
-
         return msg_structure
 
 

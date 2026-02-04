@@ -44,7 +44,6 @@ from .widget import Widget
 try:
     from movai_core_enterprise.models import (
         Annotation,
-        GraphicAsset,
         GraphicScene,
         Layout,
         SharedDataEntry,
@@ -55,7 +54,6 @@ try:
 
     enterprise_modules = [
         "Annotation",
-        "GraphicAsset",
         "GraphicScene",
         "Layout",
         "SharedDataEntry",

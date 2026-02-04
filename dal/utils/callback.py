@@ -40,7 +40,6 @@ from dal.scopes.alert import Alert
 
 try:
     from movai_core_enterprise.models.annotation import Annotation
-    from movai_core_enterprise.models.graphicasset import GraphicAsset
     from movai_core_enterprise.models.graphicscene import GraphicScene
     from movai_core_enterprise.models.layout import Layout
     from movai_core_enterprise.scopes.task import Task
@@ -54,6 +53,25 @@ except ImportError:
 
 
 LOGGER = Log.get_logger("spawner.mov.ai")
+
+
+class LazyInstantiation:
+    """Delay instantiation of an object until first use."""
+
+    def __init__(self, cls, *args, **kwargs):
+        self._cls = cls
+        self._args = args
+        self._kwargs = kwargs
+        self._instance = None
+
+    def _get_instance(self):
+        if self._instance is None:
+            self._instance = self._cls(*self._args, **self._kwargs)
+        return self._instance
+
+    def __getattr__(self, name):
+        instance = self._get_instance()
+        return getattr(instance, name)
 
 
 class UserFunctions:
@@ -75,7 +93,6 @@ class UserFunctions:
         self.globals = {"run": self.run}
         self.cb_name = _cb_name
         self.node_name = _node_name
-        # self.globals['redis_sub'] = GD_Message('movai_msgs/redis_sub', _type='msg').get()
 
         self.load_libraries(_libraries)
         self.load_classes(_node_name, _port_name, _user)
@@ -118,7 +135,7 @@ class UserFunctions:
                     "Callback": CallbackModel,
                     "Lock": UserLock,
                     "print": self.user_print,
-                    "Scene": Callback.scene(),
+                    "Scene": LazyInstantiation(Callback.scene),
                     "NodeInst": NodeInst,
                     "Container": Container,
                     "Configuration": Configuration,
@@ -126,15 +143,13 @@ class UserFunctions:
             )
 
             if enterprise:
-                metrics = Metrics()
                 self.globals.update(
                     {
                         "Alert": Alert,
                         "Annotation": Annotation,
-                        "GraphicAsset": GraphicAsset,
                         "GraphicScene": GraphicScene,
                         "Layout": Layout,
-                        "metrics": metrics,
+                        "metrics": LazyInstantiation(Metrics),
                         "Task": Task,
                         "TaskEntry": TaskEntry,
                         "TaskTemplate": TaskTemplate,
@@ -323,9 +338,6 @@ class AsyncCallback:
         _port_name: The name of the input port
         _update: Real time update of the callback code
     """
-
-    _robot = None
-    _scene = None
 
     def __init__(
         self, _cb_name: str, _node_name: str, _port_name: str, _update: bool = False
