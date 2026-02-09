@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   redis-master:
     image: registry.hel.mov.ai/devops/redis2:v2.0.0
@@ -25,7 +23,7 @@ services:
       timeout: 2s
       retries: 3
     volumes:
-      - redis-master-test-volume:/data
+      - redis-local-test-volume:/data
     networks:
       - private
     ports:
