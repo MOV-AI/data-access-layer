@@ -1,5 +1,5 @@
 # Changelog
-## vTBD
+## v3.22.0
 - [BP-1585](https://movai.atlassian.net/browse/BP-1585): Set field value and some SharedDataEntry instantiations are taking too long
   - Split redis and json schemas
   - Delete GraphicAsset
