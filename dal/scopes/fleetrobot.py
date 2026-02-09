@@ -74,11 +74,11 @@ class FleetRobot(Scope):
         self.__dict__["_server"] = server
 
     @cached_property
-    def _spawner_client(self):
+    def spawner_client(self):
         return MessageClient(server_addr=self.__dict__["_server"], robot_id=self.RobotName)
 
     @cached_property
-    def _async_spawner_client(self):
+    def async_spawner_client(self):
         return AsyncMessageClient(server_addr=self.__dict__["_server"], robot_id=self.RobotName)
 
     def send_cmd(
