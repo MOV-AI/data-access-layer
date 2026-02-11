@@ -16,8 +16,5 @@ class TestMiddleware:
 
         request = test_utils.make_mocked_request("GET", "/test", headers={"Host": "example.com"})
 
-        def handler(request):
-            return web.Response(text="ok")
-
         with pytest.raises(web.HTTPUnauthorized):
-            asyncio.run(middleware.middleware(request, handler))
+            asyncio.run(middleware.middleware(request, None))
