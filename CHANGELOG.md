@@ -1,5 +1,5 @@
 # Changelog
-## vTBD
+## v3.22.1
 - [BP-1626](https://movai.atlassian.net/browse/BP-1626): Bleach missing for manager flow
 
 ## v3.22.0
