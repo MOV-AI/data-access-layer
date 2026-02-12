@@ -277,8 +277,54 @@ Proprietary and confidential</p>
 </dd></dl>
 
 </section>
-<section id="dal-utils-middleware-module">
-<h2>dal.utils.middleware module<a class="headerlink" href="#dal-utils-middleware-module" title="Permalink to this heading"></a></h2>
+<section id="module-dal.utils.middleware">
+<span id="dal-utils-middleware-module"></span><h2>dal.utils.middleware module<a class="headerlink" href="#module-dal.utils.middleware" title="Permalink to this heading"></a></h2>
+<p>This file contains middleware functions to be used by aiohttp servers</p>
+<dl class="simple">
+<dt>Here’s a summary of each of them:</dt><dd><ul class="simple">
+<li><p>JWTMiddleware: Used to authenticate users against the JWT token</p></li>
+<li><p>save_node_type: Used to save the node type when a node is changed</p></li>
+<li><p>remove_flow_exposed_port_links: Used to search and remove exposed ports links when a flow is deleted</p></li>
+<li><p>redirect_not_found: Used to redirect 404 errors to the frontend</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.utils.middleware.JWTMiddleware">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.utils.middleware.</span></span><span class="sig-name descname"><span class="pre">JWTMiddleware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">secret</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">safelist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.utils.middleware.JWTMiddleware" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>JWT authentication middleware</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.middleware.JWTMiddleware.add_safe">
+<span class="sig-name descname"><span class="pre">add_safe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">paths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.utils.middleware.JWTMiddleware.add_safe" title="Permalink to this definition"></a></dt>
+<dd><p>Add paths to bypass auth list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.middleware.JWTMiddleware.middleware">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">middleware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.utils.middleware.JWTMiddleware.middleware" title="Permalink to this definition"></a></dt>
+<dd><p>the actual middleware JWT authentication verify</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dal.utils.middleware.redirect_not_found">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.utils.middleware.</span></span><span class="sig-name descname"><span class="pre">redirect_not_found</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.utils.middleware.redirect_not_found" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dal.utils.middleware.remove_flow_exposed_port_links">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.utils.middleware.</span></span><span class="sig-name descname"><span class="pre">remove_flow_exposed_port_links</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.utils.middleware.remove_flow_exposed_port_links" title="Permalink to this definition"></a></dt>
+<dd><p>Search end remove ExposedPort links</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dal.utils.middleware.save_node_type">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.utils.middleware.</span></span><span class="sig-name descname"><span class="pre">save_node_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.utils.middleware.save_node_type" title="Permalink to this definition"></a></dt>
+<dd><p>Saves the node type when a node is changed</p>
+</dd></dl>
+
 </section>
 <section id="module-dal.utils.redis_mocks">
 <span id="dal-utils-redis-mocks-module"></span><h2>dal.utils.redis_mocks module<a class="headerlink" href="#module-dal.utils.redis_mocks" title="Permalink to this heading"></a></h2>
