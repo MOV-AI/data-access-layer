@@ -1,4 +1,7 @@
 # Changelog
+## vTBD
+- [BP-1626](https://movai.atlassian.net/browse/BP-1626): Bleach missing for manager flow
+
 ## v3.22.0
 - [BP-1585](https://movai.atlassian.net/browse/BP-1585): Set field value and some SharedDataEntry instantiations are taking too long
   - Split redis and json schemas
