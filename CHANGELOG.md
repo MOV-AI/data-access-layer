@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.23.0
 - [BP-1621](https://movai.atlassian.net/browse/BP-1621): Setup comms handler on detached spawner side
   - Move init_local_db from flow_initiator to dal
 
