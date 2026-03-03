@@ -28,6 +28,14 @@ dal.tools.extract\_i18n module
    :undoc-members:
    :show-inheritance:
 
+dal.tools.init\_local\_db module
+--------------------------------
+
+.. automodule:: dal.tools.init_local_db
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dal.tools.mobdata module
 ------------------------
 
