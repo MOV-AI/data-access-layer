@@ -1,4 +1,9 @@
 # Changelog
+
+## vTBD
+- [BP-1621](https://movai.atlassian.net/browse/BP-1621): Setup comms handler on detached spawner side
+  - Move init_local_db from flow_initiator to dal
+
 ## v3.22.1
 - [BP-1626](https://movai.atlassian.net/browse/BP-1626): Bleach missing for manager flow
 
