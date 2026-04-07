@@ -2,7 +2,6 @@
 
 Here's a summary of each of them:
   - JWTMiddleware: Used to authenticate users against the JWT token
-  - save_node_type: Used to save the node type when a node is changed
   - remove_flow_exposed_port_links: Used to search and remove exposed ports links when a flow is deleted
   - redirect_not_found: Used to redirect 404 errors to the frontend
 """
@@ -21,7 +20,6 @@ from movai_core_shared.exceptions import InvalidToken, TokenExpired, TokenRevoke
 from movai_core_shared.logger import Log
 
 from dal.scopes.flow import Flow
-from dal.scopes.node import Node
 from dal.models.remoteuser import RemoteUser
 from dal.models.internaluser import InternalUser
 
@@ -145,26 +143,6 @@ class JWTMiddleware:
         except Exception as e:
             LOGGER.error(e)
             raise web.HTTPForbidden(reason=e.__str__())
-
-
-@web.middleware
-async def save_node_type(request, handler):
-    """Saves the node type when a node is changed"""
-    response = await handler(request)
-
-    if request.method in ("POST", "PUT"):
-        scope = request.match_info.get("scope")
-        if scope == "Node":
-            id_ = request.match_info.get("name")
-            if id_:
-                Node(id_).set_type()
-            else:
-                data = await request.json()
-                label = data["data"].get("Label")
-                # change to Node(label=label).set_type()
-                Node(label).set_type()
-
-    return response
 
 
 @web.middleware

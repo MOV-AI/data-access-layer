@@ -11,16 +11,7 @@
 """
 
 import re
-from movai_core_shared.consts import (
-    MOVAI_NODE,
-    MOVAI_SERVER,
-    MOVAI_STATE,
-    MOVAI_TRANSITIONFOR,
-    MOVAI_TRANSITIONTO,
-    ROS1_NODE,
-    ROS1_NODELET,
-    ROS1_PLUGIN,
-)
+from movai_core_shared.consts import MOVAI_STATE
 from dal.scopes.scope import Scope
 from dal.utils.usage_search.usage_types import (
     UsageData,
@@ -49,33 +40,6 @@ class Node(Scope):
         # what is in db is valid to run
         # need to have: Info, Version, Type, 1+ PortsInst, Path if Type==ROS1
         return True
-
-    def set_type(self):
-        ports = self._movai_db_global.get(
-            {"Node": {self.name: {"PortsInst": {"*": {"Template": "*"}}}}}
-        )
-        path = self._movai_db_global.get_value({"Node": {self.name: {"Path": ""}}})
-        templs = []
-        if ports:
-            for _, temp in ports["Node"][self.name]["PortsInst"].items():
-                templs.append(temp["Template"])
-
-        if path:
-            if any("ROS1/PluginClient" in templ for templ in templs):
-                type_to_set = ROS1_PLUGIN
-            elif any("ROS1/Nodelet" in templ for templ in templs):
-                type_to_set = ROS1_NODELET
-            else:
-                type_to_set = ROS1_NODE
-        else:
-            if any("Http" in templ for templ in templs):
-                type_to_set = MOVAI_SERVER
-            elif any(templ in (MOVAI_TRANSITIONFOR, MOVAI_TRANSITIONTO) for templ in templs):
-                type_to_set = MOVAI_STATE
-            else:
-                type_to_set = MOVAI_NODE
-
-        self._movai_db_global.set({"Node": {self.name: {"Type": type_to_set}}})
 
     def get_params(self, attribute="Parameter"):
         final_params = {}
