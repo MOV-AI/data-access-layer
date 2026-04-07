@@ -1,5 +1,8 @@
 # Changelog
 
+## vTBD
+- [BP-1651](https://movai.atlassian.net/browse/BP-1651): ROS2 - Enable ROS2 Node and Launch template creation
+
 ## v3.23.0
 - [BP-1621](https://movai.atlassian.net/browse/BP-1621): Setup comms handler on detached spawner side
   - Move init_local_db from flow_initiator to dal
