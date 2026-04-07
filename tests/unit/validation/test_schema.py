@@ -46,6 +46,25 @@ def alert_invalid_data(metadata_folder_invalid_data):
     return data["Alert"]["delete_me"]
 
 
+@pytest.fixture
+def node_validator():
+    clean_path = urllib.parse.urlparse(JSON_SCHEMA_FOLDER_PATH).path
+    path = Path(clean_path) / "2.4" / "Node.schema.json"
+    return Schema(path)
+
+
+@pytest.fixture
+def node_valid_data(metadata_folder):
+    data = FileSystem.read_json(metadata_folder / "Node" / "delete_me.json")
+    return data["Node"]["delete_me"]
+
+
+@pytest.fixture
+def node_invalid_data(metadata_folder_invalid_data):
+    data = FileSystem.read_json(metadata_folder_invalid_data / "Node" / "delete_me.json")
+    return data["Node"]["delete_me"]
+
+
 class TestTranslationSchema:
     def test_validate(self, translation_validator, translation_valid_data):
         """Test that valid data passes validation."""
@@ -68,5 +87,18 @@ class TestAlertSchema:
     def test_validate_negative(self, alert_validator, alert_invalid_data):
         """Test that invalid data fails validation."""
         res = alert_validator.validate(alert_invalid_data)
+        assert res["status"] is False
+        assert "invalid_data" in res["message"]
+
+
+class TestNodeSchema:
+    def test_validate(self, node_validator, node_valid_data):
+        """Test that valid data passes validation."""
+        res = node_validator.validate(node_valid_data)
+        assert res["status"] is True, res["message"]
+
+    def test_validate_negative(self, node_validator, node_invalid_data):
+        """Test that invalid data fails validation."""
+        res = node_validator.validate(node_invalid_data)
         assert res["status"] is False
         assert "invalid_data" in res["message"]

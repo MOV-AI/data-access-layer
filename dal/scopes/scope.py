@@ -22,7 +22,7 @@ from dal.movaidb.db_schema import DBSchema
 from dal.validation import JsonValidator
 
 
-SCOPES_TO_VALIDATE: List[str] = ["Translation", "Alert"]
+SCOPES_TO_VALIDATE: List[str] = ["Translation", "Alert", "Node"]
 
 
 class Scope(Struct):
