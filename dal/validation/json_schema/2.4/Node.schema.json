@@ -61,7 +61,7 @@
             "type": "string"
         },
         "LastUpdate": {
-            "type": "object",
+            "type": ["object", "string"],
             "properties": {
                 "date": {
                     "type": "string"
@@ -167,7 +167,7 @@
             "minProperties": 1
         },
         "Remappable": {
-            "type": "boolean"
+            "type": ["boolean", "string"]
         },
         "Type": {
             "type": "string",
