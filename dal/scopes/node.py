@@ -23,6 +23,13 @@ from movai_core_shared.consts import (
     MOVAI_TRANSITIONTO,
     ROS1_PLUGINCLIENT,
     ROS1_PLUGIN,
+    ROS1_NODELET,
+    ROS1_NODELETCLIENT,
+    ROS1_NODELETSERVER,
+    MOVAI_SERVER,
+    FLASK_HTTPENDPOINT,
+    HTTP_ENDPOINT,
+    HTTP_SOCKETIO,
 )
 from dal.scopes.scope import Scope
 from dal.utils.usage_search.usage_types import (
@@ -579,6 +586,18 @@ class Node(Scope):
                 raise ValueError(f"{node_type} cannot have transition ports")
 
         if node_type != ROS1_PLUGIN:
-            # no ROS1 plugin nodes allowed
+            # no ROS1 plugin client ports allowed
             if ROS1_PLUGINCLIENT in port_templates:
                 raise ValueError(f"{node_type} nodes cannot have {ROS1_PLUGINCLIENT} ports")
+
+        if node_type != ROS1_NODELET:
+            # no ROS1 nodelet client ports allowed
+            if port_templates & {ROS1_NODELETCLIENT, ROS1_NODELETSERVER}:
+                raise ValueError(
+                    f"{node_type} nodes cannot have {ROS1_NODELETCLIENT} or {ROS1_NODELETSERVER} ports"
+                )
+
+        if node_type != MOVAI_SERVER:
+            # no MOV.AI http ports allowed
+            if port_templates & {FLASK_HTTPENDPOINT, HTTP_ENDPOINT, HTTP_SOCKETIO}:
+                raise ValueError(f"{node_type} nodes cannot have http ports")
