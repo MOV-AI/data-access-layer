@@ -21,6 +21,8 @@ from movai_core_shared.consts import (
     MOVAI_TRANSITION,
     MOVAI_TRANSITIONFOR,
     MOVAI_TRANSITIONTO,
+    ROS1_PLUGINCLIENT,
+    ROS1_PLUGIN,
 )
 from dal.scopes.scope import Scope
 from dal.utils.usage_search.usage_types import (
@@ -32,7 +34,7 @@ from dal.utils.usage_search.usage_types import (
 )
 from dal.helpers import Helpers
 from movai_core_shared.logger import Log
-from typing import Dict
+from typing import Dict, Set
 
 
 LOGGER = Log.get_logger(__name__)
@@ -552,24 +554,31 @@ class Node(Scope):
         if node_type not in NODE_TYPES:
             raise ValueError(f"{node_type} is not a valid node type")
 
+        port_templates: Set[str] = {
+            port_inst_attrs.get("Template", "")
+            for port_inst, port_inst_attrs in data.get("PortsInst", {}).items()
+        }
+
         if node_type in ROS1_NODE_TYPES:
             # no ROS2 ports allowed
-            for port_inst, port_inst_attrs in data.get("PortsInst", {}).items():
-                if port_inst_attrs.get("Template", "") in ROS2_PORT_TEMPLATES:
-                    raise ValueError(f"{node_type} nodes cannot have ROS2 ports")
+            if ROS2_PORT_TEMPLATES in port_templates:
+                raise ValueError(f"{node_type} nodes cannot have ROS2 ports")
 
         elif node_type in ROS2_NODE_TYPES:
             # no ROS1 ports allowed
-            for port_inst, port_inst_attrs in data.get("PortsInst", {}).items():
-                if port_inst_attrs.get("Template", "") in ROS1_PORT_TEMPLATES:
-                    raise ValueError(f"{node_type} nodes cannot have ROS1 ports")
+            if ROS1_PORT_TEMPLATES in port_templates:
+                raise ValueError(f"{node_type} nodes cannot have ROS1 ports")
 
         if node_type != MOVAI_STATE:
             # no transition ports allowed
-            for port_inst, port_inst_attrs in data.get("PortsInst", {}).items():
-                if port_inst_attrs.get("Template", "") in [
-                    MOVAI_TRANSITION,
-                    MOVAI_TRANSITIONFOR,
-                    MOVAI_TRANSITIONTO,
-                ]:
-                    raise ValueError(f"{node_type} cannot have transition ports")
+            if port_templates & {
+                MOVAI_TRANSITION,
+                MOVAI_TRANSITIONFOR,
+                MOVAI_TRANSITIONTO,
+            }:
+                raise ValueError(f"{node_type} cannot have transition ports")
+
+        if node_type != ROS1_PLUGIN:
+            # no ROS1 plugin nodes allowed
+            if ROS1_PLUGINCLIENT in port_templates:
+                raise ValueError(f"{node_type} nodes cannot have {ROS1_PLUGINCLIENT} ports")
