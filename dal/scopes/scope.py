@@ -147,7 +147,7 @@ class Scope(Struct):
         return names_list
 
     @classmethod
-    def validate_content(cls, data: dict):
+    def _validate_content(cls, data: dict):
         """Validate scope data.
 
         Here we validate what cannot be validated by the JSON schema and requires custom logic.
@@ -165,4 +165,4 @@ class Scope(Struct):
         """
         if scope in SCOPES_TO_VALIDATE:
             cls.validator.validate(scope, data)
-            cls.validate_content(data)
+            cls._validate_content(data)

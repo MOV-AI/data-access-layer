@@ -27,9 +27,7 @@ from movai_core_shared.consts import (
     ROS1_NODELETCLIENT,
     ROS1_NODELETSERVER,
     MOVAI_SERVER,
-    FLASK_HTTPENDPOINT,
-    HTTP_ENDPOINT,
-    HTTP_SOCKETIO,
+    AIOHTTP_PORT_TEMPLATES,
 )
 from dal.scopes.scope import Scope
 from dal.utils.usage_search.usage_types import (
@@ -543,7 +541,7 @@ class Node(Scope):
         return flow_container_link_keys
 
     @classmethod
-    def validate_content(cls, data: dict):
+    def _validate_content(cls, data: dict):
         """Node specific validations.
 
         Validations:
@@ -568,12 +566,12 @@ class Node(Scope):
 
         if node_type in ROS1_NODE_TYPES:
             # no ROS2 ports allowed
-            if ROS2_PORT_TEMPLATES in port_templates:
+            if ROS2_PORT_TEMPLATES & port_templates:
                 raise ValueError(f"{node_type} nodes cannot have ROS2 ports")
 
         elif node_type in ROS2_NODE_TYPES:
             # no ROS1 ports allowed
-            if ROS1_PORT_TEMPLATES in port_templates:
+            if ROS1_PORT_TEMPLATES & port_templates:
                 raise ValueError(f"{node_type} nodes cannot have ROS1 ports")
 
         if node_type != MOVAI_STATE:
@@ -583,11 +581,13 @@ class Node(Scope):
                 MOVAI_TRANSITIONFOR,
                 MOVAI_TRANSITIONTO,
             }:
-                raise ValueError(f"{node_type} cannot have transition ports")
+                raise ValueError(f"{node_type} nodes cannot have transition ports")
 
         if node_type != ROS1_PLUGIN:
             # no ROS1 plugin client ports allowed
-            if ROS1_PLUGINCLIENT in port_templates:
+            if {
+                ROS1_PLUGINCLIENT,
+            } & port_templates:
                 raise ValueError(f"{node_type} nodes cannot have {ROS1_PLUGINCLIENT} ports")
 
         if node_type != ROS1_NODELET:
@@ -599,5 +599,5 @@ class Node(Scope):
 
         if node_type != MOVAI_SERVER:
             # no MOV.AI http ports allowed
-            if port_templates & {FLASK_HTTPENDPOINT, HTTP_ENDPOINT, HTTP_SOCKETIO}:
+            if port_templates & AIOHTTP_PORT_TEMPLATES:
                 raise ValueError(f"{node_type} nodes cannot have http ports")
