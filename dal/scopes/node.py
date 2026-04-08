@@ -11,7 +11,17 @@
 """
 
 import re
-from movai_core_shared.consts import MOVAI_STATE
+from movai_core_shared.consts import (
+    MOVAI_STATE,
+    ROS1_NODE_TYPES,
+    ROS2_NODE_TYPES,
+    ROS1_PORT_TEMPLATES,
+    ROS2_PORT_TEMPLATES,
+    NODE_TYPES,
+    MOVAI_TRANSITION,
+    MOVAI_TRANSITIONFOR,
+    MOVAI_TRANSITIONTO,
+)
 from dal.scopes.scope import Scope
 from dal.utils.usage_search.usage_types import (
     UsageData,
@@ -522,3 +532,44 @@ class Node(Scope):
                         flow_container_link_keys.append(dict_key)
 
         return flow_container_link_keys
+
+    @classmethod
+    def validate_content(cls, data: dict):
+        """Node specific validations.
+
+        Validations:
+        - Type must be one of the defined NODE_TYPES
+        - If Type is ROS1, PortsInst cannot have ROS2 templates
+        - If Type is ROS2, PortsInst cannot have ROS1 templates
+        - If Type is not MovAI/State, PortsInst cannot have transition templates
+
+        Raises:
+            ValueError: If any of the validations fail.
+
+        """
+        node_type = data.get("Type")
+
+        if node_type not in NODE_TYPES:
+            raise ValueError(f"{node_type} is not a valid node type")
+
+        if node_type in ROS1_NODE_TYPES:
+            # no ROS2 ports allowed
+            for port_inst, port_inst_attrs in data.get("PortsInst", {}).items():
+                if port_inst_attrs.get("Template", "") in ROS2_PORT_TEMPLATES:
+                    raise ValueError(f"{node_type} nodes cannot have ROS2 ports")
+
+        elif node_type in ROS2_NODE_TYPES:
+            # no ROS1 ports allowed
+            for port_inst, port_inst_attrs in data.get("PortsInst", {}).items():
+                if port_inst_attrs.get("Template", "") in ROS1_PORT_TEMPLATES:
+                    raise ValueError(f"{node_type} nodes cannot have ROS1 ports")
+
+        if node_type != MOVAI_STATE:
+            # no transition ports allowed
+            for port_inst, port_inst_attrs in data.get("PortsInst", {}).items():
+                if port_inst_attrs.get("Template", "") in [
+                    MOVAI_TRANSITION,
+                    MOVAI_TRANSITIONFOR,
+                    MOVAI_TRANSITIONTO,
+                ]:
+                    raise ValueError(f"{node_type} cannot have transition ports")
