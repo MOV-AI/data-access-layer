@@ -304,18 +304,6 @@ class Flow(Model):
 
         return self.get_node_inst(name).get_param(key, name, _context)
 
-    def get_lifecycle_nodes(self) -> list:
-        """List of Ros2 Lifecycle Nodes"""
-        output = []
-
-        for _, node_inst in self.full.NodeInst.items():
-            # if node_inst.Type == ROS2_LIFECYCLENODE:
-            #    output.append(node_inst.ref)
-            # FIXME not being used and causing bugs
-            pass
-
-        return output
-
     def filter_by_port(self, fnport, lnport):
         return True if fnport is None else fnport == lnport
 

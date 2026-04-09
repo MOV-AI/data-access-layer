@@ -21,7 +21,8 @@ It's a python package by message-server, backend and flow-initiator services.
 |--------|-----------------|-------------|
 | 2.4.1  | releases/3.1    | 3.1.x.y     |
 | 2.4.4  | releases/3.2    | 3.2.x.y     |
-| 2.5.0  | main            | -           |
+| 2.5.1  | releases/3.23   | 3.23.x.y    |
+| 3.0.0  | main            | -           |
 
 ## Development
 

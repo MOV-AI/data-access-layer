@@ -12,14 +12,22 @@
 
 import re
 from movai_core_shared.consts import (
-    MOVAI_NODE,
-    MOVAI_SERVER,
     MOVAI_STATE,
+    ROS1_NODE_TYPES,
+    ROS2_NODE_TYPES,
+    ROS1_PORT_TEMPLATES,
+    ROS2_PORT_TEMPLATES,
+    NODE_TYPES,
+    MOVAI_TRANSITION,
     MOVAI_TRANSITIONFOR,
     MOVAI_TRANSITIONTO,
-    ROS1_NODE,
-    ROS1_NODELET,
+    ROS1_PLUGINCLIENT,
     ROS1_PLUGIN,
+    ROS1_NODELET,
+    ROS1_NODELETCLIENT,
+    ROS1_NODELETSERVER,
+    MOVAI_SERVER,
+    AIOHTTP_PORT_TEMPLATES,
 )
 from dal.scopes.scope import Scope
 from dal.utils.usage_search.usage_types import (
@@ -31,7 +39,7 @@ from dal.utils.usage_search.usage_types import (
 )
 from dal.helpers import Helpers
 from movai_core_shared.logger import Log
-from typing import Dict
+from typing import Dict, Set
 
 
 LOGGER = Log.get_logger(__name__)
@@ -49,33 +57,6 @@ class Node(Scope):
         # what is in db is valid to run
         # need to have: Info, Version, Type, 1+ PortsInst, Path if Type==ROS1
         return True
-
-    def set_type(self):
-        ports = self._movai_db_global.get(
-            {"Node": {self.name: {"PortsInst": {"*": {"Template": "*"}}}}}
-        )
-        path = self._movai_db_global.get_value({"Node": {self.name: {"Path": ""}}})
-        templs = []
-        if ports:
-            for _, temp in ports["Node"][self.name]["PortsInst"].items():
-                templs.append(temp["Template"])
-
-        if path:
-            if any("ROS1/PluginClient" in templ for templ in templs):
-                type_to_set = ROS1_PLUGIN
-            elif any("ROS1/Nodelet" in templ for templ in templs):
-                type_to_set = ROS1_NODELET
-            else:
-                type_to_set = ROS1_NODE
-        else:
-            if any("Http" in templ for templ in templs):
-                type_to_set = MOVAI_SERVER
-            elif any(templ in (MOVAI_TRANSITIONFOR, MOVAI_TRANSITIONTO) for templ in templs):
-                type_to_set = MOVAI_STATE
-            else:
-                type_to_set = MOVAI_NODE
-
-        self._movai_db_global.set({"Node": {self.name: {"Type": type_to_set}}})
 
     def get_params(self, attribute="Parameter"):
         final_params = {}
@@ -558,3 +539,65 @@ class Node(Scope):
                         flow_container_link_keys.append(dict_key)
 
         return flow_container_link_keys
+
+    @classmethod
+    def _validate_content(cls, data: dict):
+        """Node specific validations.
+
+        Validations:
+        - Type must be one of the defined NODE_TYPES
+        - If Type is ROS1, PortsInst cannot have ROS2 templates
+        - If Type is ROS2, PortsInst cannot have ROS1 templates
+        - If Type is not MovAI/State, PortsInst cannot have transition templates
+
+        Raises:
+            ValueError: If any of the validations fail.
+
+        """
+        node_type = data.get("Type")
+
+        if node_type not in NODE_TYPES:
+            raise ValueError(f"{node_type} is not a valid node type")
+
+        port_templates: Set[str] = {
+            port_inst_attrs.get("Template", "")
+            for port_inst, port_inst_attrs in data.get("PortsInst", {}).items()
+        }
+
+        if node_type in ROS1_NODE_TYPES:
+            # no ROS2 ports allowed
+            if ROS2_PORT_TEMPLATES & port_templates:
+                raise ValueError(f"{node_type} nodes cannot have ROS2 ports")
+
+        elif node_type in ROS2_NODE_TYPES:
+            # no ROS1 ports allowed
+            if ROS1_PORT_TEMPLATES & port_templates:
+                raise ValueError(f"{node_type} nodes cannot have ROS1 ports")
+
+        if node_type != MOVAI_STATE:
+            # no transition ports allowed
+            if port_templates & {
+                MOVAI_TRANSITION,
+                MOVAI_TRANSITIONFOR,
+                MOVAI_TRANSITIONTO,
+            }:
+                raise ValueError(f"{node_type} nodes cannot have transition ports")
+
+        if node_type != ROS1_PLUGIN:
+            # no ROS1 plugin client ports allowed
+            if {
+                ROS1_PLUGINCLIENT,
+            } & port_templates:
+                raise ValueError(f"{node_type} nodes cannot have {ROS1_PLUGINCLIENT} ports")
+
+        if node_type != ROS1_NODELET:
+            # no ROS1 nodelet client ports allowed
+            if port_templates & {ROS1_NODELETCLIENT, ROS1_NODELETSERVER}:
+                raise ValueError(
+                    f"{node_type} nodes cannot have {ROS1_NODELETCLIENT} or {ROS1_NODELETSERVER} ports"
+                )
+
+        if node_type != MOVAI_SERVER:
+            # no MOV.AI http ports allowed
+            if port_templates & AIOHTTP_PORT_TEMPLATES:
+                raise ValueError(f"{node_type} nodes cannot have http ports")
