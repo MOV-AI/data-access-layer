@@ -24,7 +24,6 @@ from movai_core_shared.consts import (
     ROS1_PLUGIN,
     ROS1_PLUGINCLIENT,
     ROS1_PLUGINSERVER,
-    ROS2_LIFECYCLENODE,
     TRANSITION_TYPE,
     MOVAI_TRANSITIONFOR,
     MOVAI_TRANSITIONTO,
@@ -282,18 +281,6 @@ class Flow(Scope):
             port_to = link["To"]
             if "START/START/START" in port_from.upper():
                 node_inst = port_to.split("/")[0]
-                output.append(node_inst)
-        return output
-
-    # ported -> flow
-    def get_lifecycle_nodes(self) -> list:
-        """List of Ros2 Lifecycle Nodes"""
-        if self.__dict__["cache_dict"] is None:
-            self.__dict__["cache_dict"] = self.get_dict(recursive=True)
-        all_node_inst = self.cache_dict["Flow"][self.name].get("NodeInst", {})
-        output = []
-        for node_inst in all_node_inst:
-            if self.get_node_type(node_inst) == ROS2_LIFECYCLENODE:
                 output.append(node_inst)
         return output
 
