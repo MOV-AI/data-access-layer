@@ -25,7 +25,7 @@
                 }
             },
             "Remappable": true,
-            "Type": "invalid_data",
+            "invalid_data": "invalid_data",
             "User": "",
             "Version": "",
             "VersionDelta": {}
