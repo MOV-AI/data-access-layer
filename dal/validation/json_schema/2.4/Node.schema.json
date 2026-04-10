@@ -169,8 +169,7 @@
             "type": ["boolean", "string"]
         },
         "Type": {
-            "type": "string",
-            "enum": ["ROS1/Node","ROS1/Plugin", "MovAI/Node", "MovAI/State", "MovAI/Server", "ROS2/Node", "ROS2/Launch"]
+            "type": "string"
         },
         "ContainerConf": {
             "type": "object"
