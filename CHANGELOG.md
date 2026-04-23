@@ -1,5 +1,8 @@
 # Changelog
 
+## vTBD
+- [BP-1683](https://movai.atlassian.net/browse/BP-1683): We should not be able to create a State Node with only MovAI/Init and MovAI/Exit
+
 ## v3.24.0
 - [BP-1651](https://movai.atlassian.net/browse/BP-1651): ROS2 - Enable ROS2 Node and Launch template creation
 

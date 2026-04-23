@@ -141,6 +141,25 @@ class TestNodeSchema:
         with pytest.raises(ValueError, match="ROS2/Node nodes cannot have"):
             Node.validate_format("Node", data)
 
+    def test_validate_state_no_transition_port(self):
+        """Test that a MovAI/State node without a transition port fails validation."""
+        from dal.scopes.node import Node
+
+        data = {
+            "Type": "MovAI/State",
+            "PortsInst": {
+                "pubport": {
+                    "Message": "Float32",
+                    "Out": {"out": {"Message": "std_msgs/Float32"}},
+                    "Package": "std_msgs",
+                    "Template": "ROS1/Publisher",
+                }
+            },
+        }
+
+        with pytest.raises(ValueError, match="MovAI/State nodes must have"):
+            Node.validate_format("Node", data)
+
     def test_validate_ros1_node_transition_port(self):
         """Test that a ROS1 node with a transition port fails validation."""
         from dal.scopes.node import Node
@@ -160,6 +179,25 @@ class TestNodeSchema:
         }
 
         with pytest.raises(ValueError, match="ROS1/Node nodes cannot have"):
+            Node.validate_format("Node", data)
+
+    def test_validate_ros1_plugin_no_plugin_port(self):
+        """Test that a ROS1/Plugin node without a plugin client port fails validation."""
+        from dal.scopes.node import Node
+
+        data = {
+            "Type": "ROS1/Plugin",
+            "PortsInst": {
+                "pubport": {
+                    "Message": "Float32",
+                    "Out": {"out": {"Message": "std_msgs/Float32"}},
+                    "Package": "std_msgs",
+                    "Template": "ROS1/Publisher",
+                }
+            },
+        }
+
+        with pytest.raises(ValueError, match="ROS1/Plugin nodes must have"):
             Node.validate_format("Node", data)
 
     def test_validate_ros1_node_plugin_client_port(self):
@@ -182,6 +220,25 @@ class TestNodeSchema:
         with pytest.raises(ValueError, match="ROS1/Node nodes cannot have"):
             Node.validate_format("Node", data)
 
+    def test_validate_ros1_nodelet_no_nodelet_port(self):
+        """Test that a ROS1/Nodelet node without a nodelet client or server port fails validation."""
+        from dal.scopes.node import Node
+
+        data = {
+            "Type": "ROS1/Nodelet",
+            "PortsInst": {
+                "pubport": {
+                    "Message": "Float32",
+                    "Out": {"out": {"Message": "std_msgs/Float32"}},
+                    "Package": "std_msgs",
+                    "Template": "ROS1/Publisher",
+                }
+            },
+        }
+
+        with pytest.raises(ValueError, match="ROS1/Nodelet nodes must have"):
+            Node.validate_format("Node", data)
+
     def test_validate_ros1_node_nodelet_client_port(self):
         """Test that a ROS1 node with a nodelet client port fails validation."""
         from dal.scopes.node import Node
@@ -200,6 +257,25 @@ class TestNodeSchema:
         }
 
         with pytest.raises(ValueError, match="ROS1/Node nodes cannot have"):
+            Node.validate_format("Node", data)
+
+    def test_validate_server_no_server_port(self):
+        """Test that a MovAI/Server node without an http port fails validation."""
+        from dal.scopes.node import Node
+
+        data = {
+            "Type": "MovAI/Server",
+            "PortsInst": {
+                "pubport": {
+                    "Message": "Float32",
+                    "Out": {"out": {"Message": "std_msgs/Float32"}},
+                    "Package": "std_msgs",
+                    "Template": "ROS1/Publisher",
+                }
+            },
+        }
+
+        with pytest.raises(ValueError, match="MovAI/Server nodes must have"):
             Node.validate_format("Node", data)
 
     def test_validate_ros1_node_http_port(self):
