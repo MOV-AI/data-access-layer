@@ -174,7 +174,7 @@ class AioRedisClient(metaclass=Singleton):
         return instance
 
     async def create_redis_pool_with_retry(self, address, retries=3):
-        """ Create a Redis connection pool with retry logic.
+        """Create a Redis connection pool with retry logic.
         Args:
             address (tuple): Redis server address as a tuple (host, port).
             retries (int, optional): Number of retry attempts. Defaults to 3.
@@ -198,7 +198,7 @@ class AioRedisClient(metaclass=Singleton):
                     raise
 
                 # exponential backoff + jitter
-                delay = DB_CONNECT_BASE_DELAY * (2 ** attempt)
+                delay = DB_CONNECT_BASE_DELAY * (2**attempt)
                 delay += random.uniform(0, delay * 0.5)
 
                 LOGGER.warning(
@@ -229,8 +229,7 @@ class AioRedisClient(metaclass=Singleton):
                                 )
                             else:
                                 _conn = await self.create_redis_pool_with_retry(
-                                    address, 
-                                    retries=DB_CONNECT_RETRIES
+                                    address, retries=DB_CONNECT_RETRIES
                                 )
 
                         except Exception as e:
