@@ -20,6 +20,7 @@ from typing import Any, Dict, Generator, List, Literal, Optional, Protocol, Tupl
 import aioredis
 import dal
 import redis
+import random
 from deepdiff import DeepDiff
 from redis.client import Pipeline
 from redis.connection import Connection
@@ -30,6 +31,8 @@ from movai_core_shared.logger import Log
 from .db_schema import DBSchema
 
 StrOrDictRecursive = Union[str, None, Dict[str, "StrOrDictRecursive"]]
+DB_CONNECT_RETRIES = 3
+DB_CONNECT_BASE_DELAY = 0.1
 
 LOGGER = Log.get_logger("dal.mov.ai")
 
@@ -170,6 +173,40 @@ class AioRedisClient(metaclass=Singleton):
         await instance._init_databases()
         return instance
 
+    async def create_redis_pool_with_retry(self, address, retries=3):
+        """ Create a Redis connection pool with retry logic.
+        Args:
+            address (tuple): Redis server address as a tuple (host, port).
+            retries (int, optional): Number of retry attempts. Defaults to 3.
+
+        Returns:
+            aioredis.ConnectionsPool: An instance of the Redis connection pool.
+        """
+
+        for attempt in range(retries):
+            try:
+                return await aioredis.create_redis_pool(
+                    address,
+                    minsize=2,
+                    maxsize=100,
+                    timeout=1,
+                    pool_cls=aioredis.ConnectionsPool,
+                )
+
+            except Exception as e:
+                if attempt == retries - 1:
+                    raise
+
+                # exponential backoff + jitter
+                delay = DB_CONNECT_BASE_DELAY * (2 ** attempt)
+                delay += random.uniform(0, delay * 0.5)
+
+                LOGGER.warning(
+                    f"Redis init failed (attempt {attempt+1}/{retries}), retrying in {delay:.2f}s: {e}"
+                )
+
+                await asyncio.sleep(delay)
+
     async def _init_databases(self):
         """will initialize connection pools"""
 
@@ -191,12 +228,9 @@ class AioRedisClient(metaclass=Singleton):
                                     pool_cls=aioredis.ConnectionsPool,
                                 )
                             else:
-                                _conn = await aioredis.create_redis_pool(
-                                    address,
-                                    minsize=2,
-                                    maxsize=100,
-                                    timeout=1,
-                                    pool_cls=aioredis.ConnectionsPool,
+                                _conn = await self.create_redis_pool_with_retry(
+                                    address, 
+                                    retries=DB_CONNECT_RETRIES
                                 )
 
                         except Exception as e:
