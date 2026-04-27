@@ -1,0 +1,29 @@
+dal.classes.common package
+==========================
+
+Submodules
+----------
+
+dal.classes.common.gitlink module
+---------------------------------
+
+.. automodule:: dal.classes.common.gitlink
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.classes.common.singleton module
+-----------------------------------
+
+.. automodule:: dal.classes.common.singleton
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: dal.classes.common
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,19 @@
+dal.plugins.schema package
+==========================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   dal.plugins.schema.version10
+   dal.plugins.schema.version20
+
+Module contents
+---------------
+
+.. automodule:: dal.plugins.schema
+   :members:
+   :undoc-members:
+   :show-inheritance:

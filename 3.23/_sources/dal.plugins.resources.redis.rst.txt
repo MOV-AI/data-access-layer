@@ -1,0 +1,21 @@
+dal.plugins.resources.redis package
+===================================
+
+Submodules
+----------
+
+dal.plugins.resources.redis.driver module
+-----------------------------------------
+
+.. automodule:: dal.plugins.resources.redis.driver
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: dal.plugins.resources.redis
+   :members:
+   :undoc-members:
+   :show-inheritance:

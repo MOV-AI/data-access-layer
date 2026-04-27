@@ -1,0 +1,21 @@
+dal.plugins.resources.file package
+==================================
+
+Submodules
+----------
+
+dal.plugins.resources.file.file module
+--------------------------------------
+
+.. automodule:: dal.plugins.resources.file.file
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: dal.plugins.resources.file
+   :members:
+   :undoc-members:
+   :show-inheritance:

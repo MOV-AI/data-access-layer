@@ -1,0 +1,21 @@
+dal.classes.filesystem package
+==============================
+
+Submodules
+----------
+
+dal.classes.filesystem.filesystem module
+----------------------------------------
+
+.. automodule:: dal.classes.filesystem.filesystem
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: dal.classes.filesystem
+   :members:
+   :undoc-members:
+   :show-inheritance:

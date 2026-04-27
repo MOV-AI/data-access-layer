@@ -1,0 +1,37 @@
+dal.plugins.classes package
+===========================
+
+Submodules
+----------
+
+dal.plugins.classes.persistence module
+--------------------------------------
+
+.. automodule:: dal.plugins.classes.persistence
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.plugins.classes.plugin module
+---------------------------------
+
+.. automodule:: dal.plugins.classes.plugin
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.plugins.classes.resource module
+-----------------------------------
+
+.. automodule:: dal.plugins.classes.resource
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: dal.plugins.classes
+   :members:
+   :undoc-members:
+   :show-inheritance:

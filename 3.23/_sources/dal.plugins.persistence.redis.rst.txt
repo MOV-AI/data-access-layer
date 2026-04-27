@@ -1,0 +1,21 @@
+dal.plugins.persistence.redis package
+=====================================
+
+Submodules
+----------
+
+dal.plugins.persistence.redis.redis module
+------------------------------------------
+
+.. automodule:: dal.plugins.persistence.redis.redis
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: dal.plugins.persistence.redis
+   :members:
+   :undoc-members:
+   :show-inheritance:
