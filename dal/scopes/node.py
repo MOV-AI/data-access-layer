@@ -548,7 +548,14 @@ class Node(Scope):
         - Type must be one of the defined NODE_TYPES
         - If Type is ROS1, PortsInst cannot have ROS2 templates
         - If Type is ROS2, PortsInst cannot have ROS1 templates
+        - If Type is MovAI/State, PortsInst must have at least one transition template
         - If Type is not MovAI/State, PortsInst cannot have transition templates
+        - If Type is ROS1/Plugin, PortsInst must have at least one ROS1/PluginClient template
+        - If Type is not ROS1/Plugin, PortsInst cannot have ROS1/PluginClient templates
+        - If Type is ROS1/Nodelet, PortsInst must have at least one ROS1/NodeletClient or ROS1/NodeletServer template
+        - If Type is not ROS1/Nodelet, PortsInst cannot have ROS1/NodeletClient or ROS1/NodeletServer templates
+        - If Type is MOVAI/Server, PortsInst must have at least one MOVAI http template
+        - If Type is not MOVAI/Server, PortsInst cannot have MOVAI http templates
 
         Raises:
             ValueError: If any of the validations fail.
@@ -574,30 +581,50 @@ class Node(Scope):
             if ROS1_PORT_TEMPLATES & port_templates:
                 raise ValueError(f"{node_type} nodes cannot have ROS1 ports")
 
-        if node_type != MOVAI_STATE:
+        if node_type == MOVAI_STATE:
+            # must have at least one transition port
+            if not {MOVAI_TRANSITION, MOVAI_TRANSITIONFOR, MOVAI_TRANSITIONTO} & port_templates:
+                raise ValueError(f"{node_type} nodes must have at least one transition port")
+        else:
             # no transition ports allowed
-            if port_templates & {
+            if {
                 MOVAI_TRANSITION,
                 MOVAI_TRANSITIONFOR,
                 MOVAI_TRANSITIONTO,
-            }:
+            } & port_templates:
                 raise ValueError(f"{node_type} nodes cannot have transition ports")
 
-        if node_type != ROS1_PLUGIN:
+        if node_type == ROS1_PLUGIN:
+            # must have at least one plugin client port
+            if ROS1_PLUGINCLIENT not in port_templates:
+                raise ValueError(
+                    f"{node_type} nodes must have at least one {ROS1_PLUGINCLIENT} port"
+                )
+        else:
             # no ROS1 plugin client ports allowed
             if {
                 ROS1_PLUGINCLIENT,
             } & port_templates:
                 raise ValueError(f"{node_type} nodes cannot have {ROS1_PLUGINCLIENT} ports")
 
-        if node_type != ROS1_NODELET:
+        if node_type == ROS1_NODELET:
+            # must have at least one nodelet client or server port
+            if not {ROS1_NODELETCLIENT, ROS1_NODELETSERVER} & port_templates:
+                raise ValueError(
+                    f"{node_type} nodes must have at least one {ROS1_NODELETCLIENT} or {ROS1_NODELETSERVER} port"
+                )
+        else:
             # no ROS1 nodelet client ports allowed
-            if port_templates & {ROS1_NODELETCLIENT, ROS1_NODELETSERVER}:
+            if {ROS1_NODELETCLIENT, ROS1_NODELETSERVER} & port_templates:
                 raise ValueError(
                     f"{node_type} nodes cannot have {ROS1_NODELETCLIENT} or {ROS1_NODELETSERVER} ports"
                 )
 
-        if node_type != MOVAI_SERVER:
+        if node_type == MOVAI_SERVER:
+            # must have at least one MOV.AI http port
+            if not AIOHTTP_PORT_TEMPLATES & port_templates:
+                raise ValueError(f"{node_type} nodes must have at least one http port")
+        else:
             # no MOV.AI http ports allowed
-            if port_templates & AIOHTTP_PORT_TEMPLATES:
+            if AIOHTTP_PORT_TEMPLATES & port_templates:
                 raise ValueError(f"{node_type} nodes cannot have http ports")

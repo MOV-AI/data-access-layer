@@ -58,7 +58,8 @@
             "type": "string"
         },
         "Info": {
-            "type": "string"
+            "type": ["string", "null"],
+            "$comment": "Some nodes have Info set to null: https://github.com/MOV-AI/movai_tf_utils/blob/9c6bf3839305f304fc9d95510017b115cf97fa1a/movai_robot_state_publisher/metadata/Node/robot_state_publisher.json#L4"
         },
         "LastUpdate": {
             "type": ["object", "string"],

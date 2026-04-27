@@ -22,7 +22,7 @@ class TestNode:
 
         node = Node("delete_me")
 
-        assert node.Info == ""
+        assert node.Info is None
         assert node.Label == "delete_me"
         assert node.User == ""
         assert hasattr(node, "LastUpdate")
