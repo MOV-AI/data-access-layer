@@ -1485,6 +1485,12 @@ This method reduces readings from the database compared to using Robot instance<
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.robot.Robot.get_active_scene">
+<span class="sig-name descname"><span class="pre">get_active_scene</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#dal.scopes.robot.Robot.get_active_scene" title="Permalink to this definition"></a></dt>
+<dd><p>Get the local active scene of the Robot</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.robot.Robot.get_states">
 <span class="sig-name descname"><span class="pre">get_states</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.robot.Robot.get_states" title="Permalink to this definition"></a></dt>
 <dd><p>Gets the states of the robot from its own configuration.
@@ -1507,6 +1513,12 @@ When Robot groups are implemented it should merge with the group configuration</
 <span class="sig-name descname"><span class="pre">send_cmd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.scopes.robot.Robot.send_cmd" title="Permalink to this definition"></a></dt>
 <dd><p>Send an action command to the Robot</p>
 <p>if wait_for_status is True, we assume the Robot will return a message</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.robot.Robot.set_active_scene">
+<span class="sig-name descname"><span class="pre">set_active_scene</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scene</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.robot.Robot.set_active_scene" title="Permalink to this definition"></a></dt>
+<dd><p>Set the local active scene of the Robot</p>
 </dd></dl>
 
 <dl class="py method">
@@ -3753,6 +3765,12 @@ This method reduces readings from the database compared to using Robot instance<
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.Robot.get_active_scene">
+<span class="sig-name descname"><span class="pre">get_active_scene</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#dal.scopes.Robot.get_active_scene" title="Permalink to this definition"></a></dt>
+<dd><p>Get the local active scene of the Robot</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.Robot.get_states">
 <span class="sig-name descname"><span class="pre">get_states</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.Robot.get_states" title="Permalink to this definition"></a></dt>
 <dd><p>Gets the states of the robot from its own configuration.
@@ -3780,6 +3798,12 @@ When Robot groups are implemented it should merge with the group configuration</
 <span class="sig-name descname"><span class="pre">send_cmd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.scopes.Robot.send_cmd" title="Permalink to this definition"></a></dt>
 <dd><p>Send an action command to the Robot</p>
 <p>if wait_for_status is True, we assume the Robot will return a message</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.Robot.set_active_scene">
+<span class="sig-name descname"><span class="pre">set_active_scene</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scene</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.Robot.set_active_scene" title="Permalink to this definition"></a></dt>
+<dd><p>Set the local active scene of the Robot</p>
 </dd></dl>
 
 <dl class="py method">
