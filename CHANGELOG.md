@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.23.1
 - [BP-1675](https://movai.atlassian.net/browse/BP-1621): The Robot().Status["active_scene"] is not set
 
 ## v3.23.0
