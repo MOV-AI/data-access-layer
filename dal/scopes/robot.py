@@ -91,6 +91,14 @@ class Robot(Scope):
             server_addr=server, robot_id=self.name
         )
 
+    def set_active_scene(self, scene: str):
+        """Set the local active scene of the Robot"""
+        self.ActiveScene = scene
+
+    def get_active_scene(self) -> Optional[str]:
+        """Get the local active scene of the Robot"""
+        return self.ActiveScene if hasattr(self, "ActiveScene") else "NOT_SET"
+
     def set_ip(self, ip_address: str):
         """Set the IP Adress of the Robot"""
         self.IP = ip_address

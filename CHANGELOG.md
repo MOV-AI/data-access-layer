@@ -1,4 +1,6 @@
 # Changelog
+## vTBD
+- [BP-1675](https://movai.atlassian.net/browse/BP-1621): The Robot().Status["active_scene"] is not set
 
 ## v3.24.1
 - [BP-1683](https://movai.atlassian.net/browse/BP-1683): We should not be able to create a State Node with only MovAI/Init and MovAI/Exit
