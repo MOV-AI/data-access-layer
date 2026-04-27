@@ -125,6 +125,24 @@ Proprietary and confidential</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A Singleton class implementing AioRedis API.</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="dal.movaidb.database.AioRedisClient.create_redis_pool_with_retry">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_redis_pool_with_retry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.database.AioRedisClient.create_redis_pool_with_retry" title="Permalink to this definition"></a></dt>
+<dd><p>Create a Redis connection pool with retry logic.
+:param address: Redis server address as a tuple (host, port).
+:type address: tuple
+:param retries: Number of retry attempts. Defaults to 3.
+:type retries: int, optional</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An instance of the Redis connection pool.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>aioredis.ConnectionsPool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dal.movaidb.database.AioRedisClient.enable_db">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">enable_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.database.AioRedisClient.enable_db" title="Permalink to this definition"></a></dt>
 <dd><p>will enable the given db name</p>
