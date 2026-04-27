@@ -1,5 +1,5 @@
 # Changelog
-## vTBD
+## v3.23.2
 - [BP-1684](https://movai.atlassian.net/browse/BP-1684): On system load, getting a db client might timeout. Can stop the flow!
 ## v3.23.1
 - [BP-1675](https://movai.atlassian.net/browse/BP-1621): The Robot().Status["active_scene"] is not set
