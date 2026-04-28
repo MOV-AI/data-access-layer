@@ -2,6 +2,12 @@
 ## vTBD
 - [BP-1636](https://movai.atlassian.net/browse/BP-1636): ROS2 - Init local DB
 
+## v3.24.4
+- [BP-1687](https://movai.atlassian.net/browse/BP-1687): The Robot().Status["active_flow"] is not set
+
+## v3.24.3
+- [BP-1685](https://movai.atlassian.net/browse/BP-1685): DELETE lock is giving 200 when response is success:false
+
 ## v3.24.2
 - [BP-1684](https://movai.atlassian.net/browse/BP-1684): On system load, getting a db client might timeout. Can stop the flow!
 
