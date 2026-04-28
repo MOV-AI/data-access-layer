@@ -81,6 +81,9 @@ class Message(Model):
         ports_data = Message.get_portdata()
 
         db_data = ports_data.Value
+        if db_data is None:
+            db_data = {}
+
         for package_type in new_data.keys():
             db_data[package_type] = new_data[package_type]
 
