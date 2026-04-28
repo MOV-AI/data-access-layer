@@ -241,7 +241,7 @@ class Callback:
     @classmethod
     def scene(cls) -> "GraphicScene":
         if cls._scene is None:
-            scene_name = cls.robot().Status.get("active_scene")
+            scene_name = cls.robot().get_active_scene()
             if scene_name:
                 try:
                     cls._scene = scopes.from_path(scene_name, scope="GraphicScene")
