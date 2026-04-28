@@ -1,4 +1,6 @@
 # Changelog
+## vTBD
+- [BP-1685](https://movai.atlassian.net/browse/BP-1685): DELETE lock is giving 200 when response is success:false
 ## v3.23.2
 - [BP-1684](https://movai.atlassian.net/browse/BP-1684): On system load, getting a db client might timeout. Can stop the flow!
 ## v3.23.1

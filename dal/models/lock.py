@@ -225,7 +225,7 @@ class Lock:
 
         return res
 
-    def release(self) -> bool:
+    def release(self, send_cmd: bool = True) -> bool:
         """
         Releases the already acquired lock.
 
@@ -253,7 +253,8 @@ class Lock:
             return False
 
         finally:
-            self.send_unlock_cmd()
+            if send_cmd:
+                self.send_unlock_cmd()
 
         return True
 
