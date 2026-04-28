@@ -99,6 +99,14 @@ class Robot(Scope):
         """Get the local active scene of the Robot"""
         return self.ActiveScene if hasattr(self, "ActiveScene") else "NOT_SET"
 
+    def set_active_flow(self, flow: str):
+        """Set the local active flow of the Robot"""
+        self.ActiveFlow = flow
+
+    def get_active_flow(self) -> Optional[str]:
+        """Get the local active flow of the Robot"""
+        return self.ActiveFlow if hasattr(self, "ActiveFlow") else "NOT_SET"
+
     def set_ip(self, ip_address: str):
         """Set the IP Adress of the Robot"""
         self.IP = ip_address
