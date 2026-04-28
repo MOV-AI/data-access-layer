@@ -39,7 +39,7 @@ class Message(Model):
         return True
 
     @staticmethod
-    def get_portdata(db="local") -> Dict:
+    def get_portdata(db="local") -> System:
         """
         Retrieve or initialize the PortsData object from the specified database.
 
