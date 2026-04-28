@@ -15,6 +15,7 @@
       "ActiveAlerts": "hash",
       "Status": "hash",
       "ActiveScene": "str",
+      "ActiveFlow": "str",
       "Parameter": {
         "$name": {
           "Value": "any",

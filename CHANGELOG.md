@@ -1,4 +1,6 @@
 # Changelog
+## vTBD
+- [BP-1687](https://movai.atlassian.net/browse/BP-1687): The Robot().Status["active_flow"] is not set
 ## v3.24.3
 - [BP-1685](https://movai.atlassian.net/browse/BP-1685): DELETE lock is giving 200 when response is success:false
 ## v3.24.2
