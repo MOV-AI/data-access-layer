@@ -1,4 +1,8 @@
 # Changelog
+
+## vTBD
+- [BP-1673](https://movai.atlassian.net/browse/BP-1673): List mandatory ports based on Node type
+
 ## v3.24.5
 - [BP-1636](https://movai.atlassian.net/browse/BP-1636): ROS2 - Init local DB
 
