@@ -39,9 +39,55 @@ class Message(Model):
         return True
 
     @staticmethod
-    def fetch_portdata_api(db="local") -> Dict:
-        """Retrieve data from database"""
-        return System("PortsData", db=db).Value  # scopes().System['PortsData'].Value
+    def get_portdata(db="local") -> System:
+        """
+        Retrieve or initialize the PortsData object from the specified database.
+
+        If the PortsData entry does not exist, it will be created.
+
+        Args:
+            db (str): The database identifier to connect to (default is "local").
+
+        Returns:
+            Dict: The PortsData system object.
+        """
+        try:
+            ports_data = System("PortsData", db=db)
+        except Exception as e:
+            logger.info("PortsData not found initializing...: %s", e)
+            ports_data = System("PortsData", new=True, db=db)
+        return ports_data
+
+    @staticmethod
+    def fetch_portdata_api() -> Dict:
+        """
+        Fetch the stored PortsData value for API usage.
+
+        Returns:
+            Dict: The value stored in the PortsData object.
+        """
+        return Message.get_portdata().Value
+
+    @staticmethod
+    def update_portdata(new_data: Dict):
+        """
+        Update the PortsData value with new package data.
+
+        Existing keys will be overwritten, and new keys will be added.
+
+        Args:
+            new_data (Dict): A dictionary containing package types and their data.
+        """
+        ports_data = Message.get_portdata()
+
+        db_data = ports_data.Value
+        if db_data is None:
+            db_data = {}
+
+        for package_type in new_data.keys():
+            db_data[package_type] = new_data[package_type]
+
+        ports_data.Value = db_data
 
     # was a classmethod, no references found
     @staticmethod
@@ -66,14 +112,18 @@ class Message(Model):
         if msg_type in ("msg", "all"):
             msg_packs = [
                 *(pkg for pkg, _ in rosmsg.iterate_packages(rospack, ".msg")),
-                *(pkg["ref"] for pkg in db_packs if db_scopes.Message[pkg["ref"]].Msg.count > 0),
-            ]
+                *(
+                    pkg["ref"] for pkg in db_packs if db_scopes.Message[pkg["ref"]].Msg.count > 0
+                ),  # this yields "movai_msgs"
+            ]  # This yields a list[str]
 
         if msg_type in ("srv", "all"):
             srv_packs = [
                 *(pkg for pkg, _ in rosmsg.iterate_packages(rospack, ".srv")),
-                *(pkg["ref"] for pkg in db_packs if db_scopes.Message[pkg["ref"]].Srv.count > 0),
-            ]
+                *(
+                    pkg["ref"] for pkg in db_packs if db_scopes.Message[pkg["ref"]].Srv.count > 0
+                ),  # this yields "movai_srvs"
+            ]  # This yields a list[str]
 
         if msg_type == "action":
             for pkg, direc in rosmsg.iterate_packages(rospack, ".msg"):
@@ -183,14 +233,7 @@ class Message(Model):
                 for suffix in ("Action", "ActionGoal", "ActionFeedback", "ActionResult"):
                     msgs.remove(base + suffix)
 
-        try:
-            ports_data = System("PortsData", db=db)  # db_scopes.System['PortsData']
-        except Exception:  # pylint: disable=broad-except
-            ports_data = System(
-                "PortsData", new=True, db=db
-            )  # db_scopes.create('System', 'PortsData')
-
-        ports_data.Value = value
+        Message.update_portdata(value)
 
     @staticmethod
     def fetch_portdata_messages() -> Dict:
