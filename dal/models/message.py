@@ -161,7 +161,6 @@ class Message(Model):
             except rospkg.common.ResourceNotFound:
                 # check on DB
                 try:
-                    # This is not possible in the agent, what do we do if not found? Remove?
                     msg_list = list(db_scopes.Message[package].Msg)
                 except KeyError:
                     # package not found
