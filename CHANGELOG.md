@@ -1,5 +1,5 @@
 # Changelog
-## vTBD
+## v3.24.5
 - [BP-1636](https://movai.atlassian.net/browse/BP-1636): ROS2 - Init local DB
 
 ## v3.24.4
