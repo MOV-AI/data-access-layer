@@ -2513,8 +2513,16 @@ Proprietary and confidential</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.models.message.Message.fetch_portdata_api">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch_portdata_api</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'local'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#dal.models.message.Message.fetch_portdata_api" title="Permalink to this definition"></a></dt>
-<dd><p>Retrieve data from database</p>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch_portdata_api</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#dal.models.message.Message.fetch_portdata_api" title="Permalink to this definition"></a></dt>
+<dd><p>Fetch the stored PortsData value for API usage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The value stored in the PortsData object.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -2542,6 +2550,24 @@ Proprietary and confidential</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dal.models.message.Message.get_portdata">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_portdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'local'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="dal.scopes.html#dal.scopes.system.System" title="dal.scopes.system.System"><span class="pre">System</span></a></span></span><a class="headerlink" href="#dal.models.message.Message.get_portdata" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieve or initialize the PortsData object from the specified database.</p>
+<p>If the PortsData entry does not exist, it will be created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>db</strong> (<em>str</em>) – The database identifier to connect to (default is “local”).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The PortsData system object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dal.models.message.Message.get_structure">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#dal.models.message.Message.get_structure" title="Permalink to this definition"></a></dt>
 <dd><p>Gives the full structure of a message fiven ‘package/message’ input</p>
@@ -2551,6 +2577,18 @@ Proprietary and confidential</p>
 <dt class="sig sig-object py" id="dal.models.message.Message.is_valid">
 <span class="sig-name descname"><span class="pre">is_valid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.message.Message.is_valid" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.models.message.Message.update_portdata">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_portdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.message.Message.update_portdata" title="Permalink to this definition"></a></dt>
+<dd><p>Update the PortsData value with new package data.</p>
+<p>Existing keys will be overwritten, and new keys will be added.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_data</strong> (<em>Dict</em>) – A dictionary containing package types and their data.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -5772,8 +5810,16 @@ Thread will exit when Lock is not in enabled_locks anymore</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.models.Message.fetch_portdata_api">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch_portdata_api</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'local'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#dal.models.Message.fetch_portdata_api" title="Permalink to this definition"></a></dt>
-<dd><p>Retrieve data from database</p>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch_portdata_api</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#dal.models.Message.fetch_portdata_api" title="Permalink to this definition"></a></dt>
+<dd><p>Fetch the stored PortsData value for API usage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The value stored in the PortsData object.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -5801,6 +5847,24 @@ Thread will exit when Lock is not in enabled_locks anymore</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dal.models.Message.get_portdata">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_portdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'local'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="dal.scopes.html#dal.scopes.system.System" title="dal.scopes.system.System"><span class="pre">System</span></a></span></span><a class="headerlink" href="#dal.models.Message.get_portdata" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieve or initialize the PortsData object from the specified database.</p>
+<p>If the PortsData entry does not exist, it will be created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>db</strong> (<em>str</em>) – The database identifier to connect to (default is “local”).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The PortsData system object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dal.models.Message.get_structure">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#dal.models.Message.get_structure" title="Permalink to this definition"></a></dt>
 <dd><p>Gives the full structure of a message fiven ‘package/message’ input</p>
@@ -5810,6 +5874,18 @@ Thread will exit when Lock is not in enabled_locks anymore</p>
 <dt class="sig sig-object py" id="dal.models.Message.is_valid">
 <span class="sig-name descname"><span class="pre">is_valid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.Message.is_valid" title="Permalink to this definition"></a></dt>
 <dd><p>Returns True</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.models.Message.update_portdata">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_portdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.Message.update_portdata" title="Permalink to this definition"></a></dt>
+<dd><p>Update the PortsData value with new package data.</p>
+<p>Existing keys will be overwritten, and new keys will be added.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_data</strong> (<em>Dict</em>) – A dictionary containing package types and their data.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
