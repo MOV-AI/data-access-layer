@@ -546,8 +546,8 @@ class Node(Scope):
 
         Validations:
         - Type must be one of the defined NODE_TYPES
-        - If Type is ROS1, PortsInst cannot have ROS2 templates
-        - If Type is ROS2, PortsInst cannot have ROS1 templates
+        - If Type is in ROS1 category, PortsInst cannot have ROS2 templates
+        - If Type is in ROS2 category, PortsInst cannot have ROS1 templates
         - If Type is MovAI/State, PortsInst must have at least one transition template
         - If Type is not MovAI/State, PortsInst cannot have transition templates
         - If Type is ROS1/Plugin, PortsInst must have at least one ROS1/PluginClient template
