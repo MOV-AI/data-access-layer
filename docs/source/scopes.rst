@@ -191,3 +191,66 @@ Sensible default ports for each node type (to be added autocamatically when crea
 - `MovAI/Server`: a port named `http` with `AioHttp/Http` template
 - `ROS2/Node`: no ports
 - `ROS2/Launch`: a port named `depends` with `MovAI/Depends` template
+
+Ports (I/O templates)
+---------------------
+
+Ports are complex structures based on the following concepts:
+
+- Transports: the base communication mechanism used by the protocol, e.g. ROS1, ROS2, Redis, AioHttp, MovAI
+- Protocols and primitives (direction): the specific communication pattern used by the port, e.g. Publisher, Subscriber
+  - In MovAI `Protocol` is used to identify both the protocol and the primitive
+- I/O templates: configuration of a transport and protocol + primitive, e.g. MovAI/ContextClient
+  - This is the structure that can actually be added to a node. It can be an in port, an out port, or both.
+
+Each Transport has the following I/O templates available:
+
+- ROS1:
+
+  - ActionClient
+  - ActionServer
+  - Bag
+  - NodeletClient
+  - NodeletServer
+  - ParameterServer
+  - PluginClient
+  - PluginServer
+  - Publisher
+  - ReconfigureClient
+  - ReconfigureServer
+  - ServiceClient
+  - ServiceServer
+  - Subscriber
+  - TFPublisher
+  - TFSubscriber
+  - Timer
+  - TopicHz
+
+- ROS2:
+
+  - Publisher
+  - ServiceClient
+  - ServiceServer
+  - Subscriber
+
+- MovAI:
+
+  - ContextClient
+  - ContextServer
+  - Dependency
+  - Depends
+  - Exit
+  - Init
+  - StateMachine
+  - TransitionFor (aka TransitionOut)
+  - TransitionTo (aka TransitionIn)
+
+- Redis:
+
+  - Subscriber
+  - VarSubscriber
+
+- AioHttp:
+
+  - Http
+  - Websocket
