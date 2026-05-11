@@ -132,11 +132,6 @@ class User(Scope):
         return resources_parsed_data
 
     def get_supports(self):
-        # to_return = []
-        # node = Node('server4')
-        # for (key, ports) in node.PortsInst.items():
-        #     if ports.Template == "MovAI/WidgetAio":
-        #         to_return.append(key)
         return []
 
     def create_id(self):

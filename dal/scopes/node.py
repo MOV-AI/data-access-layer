@@ -15,10 +15,9 @@ from movai_core_shared.consts import (
     MOVAI_STATE,
     ROS1_NODE_TYPES,
     ROS2_NODE_TYPES,
-    ROS1_PORT_TEMPLATES,
-    ROS2_PORT_TEMPLATES,
+    ROS1_IO_TEMPLATES,
+    ROS2_IO_TEMPLATES,
     NODE_TYPES,
-    MOVAI_TRANSITION,
     MOVAI_TRANSITIONFOR,
     MOVAI_TRANSITIONTO,
     ROS1_PLUGINCLIENT,
@@ -27,7 +26,7 @@ from movai_core_shared.consts import (
     ROS1_NODELETCLIENT,
     ROS1_NODELETSERVER,
     MOVAI_SERVER,
-    AIOHTTP_PORT_TEMPLATES,
+    AIOHTTP_IO_TEMPLATES,
 )
 from dal.scopes.scope import Scope
 from dal.utils.usage_search.usage_types import (
@@ -573,22 +572,21 @@ class Node(Scope):
 
         if node_type in ROS1_NODE_TYPES:
             # no ROS2 ports allowed
-            if ROS2_PORT_TEMPLATES & port_templates:
+            if ROS2_IO_TEMPLATES & port_templates:
                 raise ValueError(f"{node_type} nodes cannot have ROS2 ports")
 
         elif node_type in ROS2_NODE_TYPES:
             # no ROS1 ports allowed
-            if ROS1_PORT_TEMPLATES & port_templates:
+            if ROS1_IO_TEMPLATES & port_templates:
                 raise ValueError(f"{node_type} nodes cannot have ROS1 ports")
 
         if node_type == MOVAI_STATE:
             # must have at least one transition port
-            if not {MOVAI_TRANSITION, MOVAI_TRANSITIONFOR, MOVAI_TRANSITIONTO} & port_templates:
+            if not {MOVAI_TRANSITIONFOR, MOVAI_TRANSITIONTO} & port_templates:
                 raise ValueError(f"{node_type} nodes must have at least one transition port")
         else:
             # no transition ports allowed
             if {
-                MOVAI_TRANSITION,
                 MOVAI_TRANSITIONFOR,
                 MOVAI_TRANSITIONTO,
             } & port_templates:
@@ -622,9 +620,9 @@ class Node(Scope):
 
         if node_type == MOVAI_SERVER:
             # must have at least one MOV.AI http port
-            if not AIOHTTP_PORT_TEMPLATES & port_templates:
+            if not AIOHTTP_IO_TEMPLATES & port_templates:
                 raise ValueError(f"{node_type} nodes must have at least one http port")
         else:
             # no MOV.AI http ports allowed
-            if AIOHTTP_PORT_TEMPLATES & port_templates:
+            if AIOHTTP_IO_TEMPLATES & port_templates:
                 raise ValueError(f"{node_type} nodes cannot have http ports")
