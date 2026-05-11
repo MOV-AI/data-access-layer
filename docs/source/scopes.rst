@@ -50,43 +50,52 @@ Besides the JSON schema validation, Node scopes have some specific validations:
   - If Type is MOVAI/Server, PortsInst must have at least one MOVAI http template
   - If Type is not MOVAI/Server, PortsInst cannot have MOVAI http templates
 
-Allowed port templates
-~~~~~~~~~~~~~~~~~~~~~~
+Allowed I/O templates
+~~~~~~~~~~~~~~~~~~~~~
 
-The following port templates are allowed for each node type:
+The following I/O templates are allowed for each node type:
 
 - `ROS1/Nodelet`:
 
   - `MovAI/Depends`
   - `MovAI/Dependency`
-  - `ROS1/Timer`
-  - `ROS1/ReconfigureClient`
-  - `ROS1/ServiceClient`
-  - `ROS1/ActionServer`
   - `ROS1/ActionClient`
-  - `ROS1/Subscriber`
-  - `ROS1/TFPublisher`
-  - `ROS1/ServiceServer`
-  - `ROS1/Publisher`
-  - `ROS1/TFSubscriber`
+  - `ROS1/ActionServer`
+  - `ROS1/Bag`
   - `ROS1/NodeletClient`
   - `ROS1/NodeletServer`
+  - `ROS1/ParameterServer`
+  - `ROS1/PluginServer`
+  - `ROS1/Publisher`
+  - `ROS1/ReconfigureClient`
+  - `ROS1/ReconfigureServer`
+  - `ROS1/ServiceClient`
+  - `ROS1/ServiceServer`
+  - `ROS1/Subscriber`
+  - `ROS1/TFPublisher`
+  - `ROS1/TFSubscriber`
+  - `ROS1/Timer`
+  - `ROS1/TopicHz`
 
 - `ROS1/Node`:
 
   - `MovAI/Depends`
   - `MovAI/Dependency`
-  - `ROS1/Timer`
-  - `ROS1/ReconfigureClient`
-  - `ROS1/ServiceClient`
-  - `ROS1/ActionServer`
   - `ROS1/ActionClient`
+  - `ROS1/ActionServer`
+  - `ROS1/Bag`
+  - `ROS1/ParameterServer`
+  - `ROS1/PluginServer`
+  - `ROS1/Publisher`
+  - `ROS1/ReconfigureClient`
+  - `ROS1/ReconfigureServer`
+  - `ROS1/ServiceClient`
+  - `ROS1/ServiceServer`
   - `ROS1/Subscriber`
   - `ROS1/TFPublisher`
-  - `ROS1/ServiceServer`
-  - `ROS1/Publisher`
   - `ROS1/TFSubscriber`
-  - `ROS1/PluginServer`
+  - `ROS1/Timer`
+  - `ROS1/TopicHz`
 
 - `ROS1/Plugin`:
 
@@ -94,59 +103,77 @@ The following port templates are allowed for each node type:
 
 - `MovAI/Node`:
 
-  - `MovAI/Init`
-  - `MovAI/ContextClientIn`
-  - `MovAI/Depends`
+  - `MovAI/ContextClient`
+  - `MovAI/ContextServer`
   - `MovAI/Dependency`
-  - `Redis/Subscriber`
-  - `ROS1/Timer`
-  - `ROS1/ReconfigureClient`
-  - `ROS1/ServiceClient`
-  - `ROS1/ActionServer`
+  - `MovAI/Depends`
+  - `MovAI/Exit`
+  - `MovAI/Init`
   - `ROS1/ActionClient`
+  - `ROS1/Bag`
+  - `ROS1/ParameterServer`
+  - `ROS1/Publisher`
+  - `ROS1/ReconfigureClient`
+  - `ROS1/ReconfigureServer`
+  - `ROS1/ServiceClient`
+  - `ROS1/ServiceServer`
   - `ROS1/Subscriber`
   - `ROS1/TFPublisher`
-  - `ROS1/ServiceServer`
-  - `ROS1/Publisher`
   - `ROS1/TFSubscriber`
+  - `ROS1/Timer`
+  - `ROS1/TopicHz`
+  - `Redis/Subscriber`
+  - `Redis/VarSubscriber`
 
 - `MovAI/State`:
 
-  - `MovAI/Init`
-  - `MovAI/TransitionTo`
-  - `MovAI/TransitionFor`
-  - `MovAI/ContextClientIn`
-  - `MovAI/Depends`
+  - `MovAI/ContextClient`
+  - `MovAI/ContextServer`
   - `MovAI/Dependency`
-  - `Redis/Subscriber`
-  - `ROS1/Timer`
-  - `ROS1/ReconfigureClient`
-  - `ROS1/ServiceClient`
-  - `ROS1/ActionServer`
+  - `MovAI/Depends`
+  - `MovAI/Exit`
+  - `MovAI/Init`
+  - `MovAI/TransitionFor` (aka `MovAI/TransitionOut`)
+  - `MovAI/TransitionTo` (aka `MovAI/TransitionIn`)
   - `ROS1/ActionClient`
+  - `ROS1/Bag`
+  - `ROS1/ParameterServer`
+  - `ROS1/Publisher`
+  - `ROS1/ReconfigureClient`
+  - `ROS1/ReconfigureServer`
+  - `ROS1/ServiceClient`
+  - `ROS1/ServiceServer`
   - `ROS1/Subscriber`
   - `ROS1/TFPublisher`
-  - `ROS1/ServiceServer`
-  - `ROS1/Publisher`
   - `ROS1/TFSubscriber`
+  - `ROS1/Timer`
+  - `ROS1/TopicHz`
+  - `Redis/Subscriber`
+  - `Redis/VarSubscriber`
 
 - `MovAI/Server`:
 
-  - `MovAI/Init`
-  - `MovAI/ContextClientIn`
-  - `MovAI/Depends`
+  - `MovAI/ContextClient`
+  - `MovAI/ContextServer`
   - `MovAI/Dependency`
-  - `Redis/Subscriber`
-  - `ROS1/Timer`
-  - `ROS1/ReconfigureClient`
-  - `ROS1/ServiceClient`
-  - `ROS1/ActionServer`
+  - `MovAI/Depends`
+  - `MovAI/Exit`
+  - `MovAI/Init`
   - `ROS1/ActionClient`
+  - `ROS1/Bag`
+  - `ROS1/ParameterServer`
+  - `ROS1/Publisher`
+  - `ROS1/ReconfigureClient`
+  - `ROS1/ReconfigureServer`
+  - `ROS1/ServiceClient`
+  - `ROS1/ServiceServer`
   - `ROS1/Subscriber`
   - `ROS1/TFPublisher`
-  - `ROS1/ServiceServer`
-  - `ROS1/Publisher`
   - `ROS1/TFSubscriber`
+  - `ROS1/Timer`
+  - `ROS1/TopicHz`
+  - `Redis/Subscriber`
+  - `Redis/VarSubscriber`
   - `AioHttp/Http`
   - `AioHttp/Websocket`
 
@@ -154,29 +181,29 @@ The following port templates are allowed for each node type:
 
   - `MovAI/Depends`
   - `MovAI/Dependency`
-  - `ROS2/Subscriber`
   - `ROS2/Publisher`
   - `ROS2/ServiceClient`
   - `ROS2/ServiceServer`
+  - `ROS2/Subscriber`
 
 - `ROS2/Launch`:
 
   - `MovAI/Depends`
   - `MovAI/Dependency`
 
-Mandatory port templates
+Mandatory I/O templates
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-From the above rules, we can derive the following mandatory port templates for each node type:
+From the above rules, we can derive the following mandatory I/O templates for each node type:
 
 - `ROS1/Nodelet`: a port with either `ROS1/NodeletClient` or `ROS1/NodeletServer` template
-- `ROS1/Node`: no mandatory port templates
+- `ROS1/Node`: no mandatory I/O templates
 - `ROS1/Plugin`: a port with `ROS1/PluginClient` template
-- `MovAI/Node`: no mandatory port templates
+- `MovAI/Node`: no mandatory I/O templates
 - `MovAI/State`: a port with either a `MovAI/TransitionTo` or `MovAI/TransitionFor` template
 - `MovAI/Server`: a port with either a `AioHttp/Http` or `AioHttp/Websocket` template
-- `ROS2/Node`: no mandatory port templates
-- `ROS2/Launch`: no mandatory port templates
+- `ROS2/Node`: no mandatory I/O templates
+- `ROS2/Launch`: no mandatory I/O templates
 
 Sensible default ports
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -205,52 +232,51 @@ Ports are complex structures based on the following concepts:
 
 Each Transport has the following I/O templates available:
 
-- ROS1:
+- `ROS1`:
 
-  - ActionClient
-  - ActionServer
-  - Bag
-  - NodeletClient
-  - NodeletServer
-  - ParameterServer
-  - PluginClient
-  - PluginServer
-  - Publisher
-  - ReconfigureClient
-  - ReconfigureServer
-  - ServiceClient
-  - ServiceServer
-  - Subscriber
-  - TFPublisher
-  - TFSubscriber
-  - Timer
-  - TopicHz
+  - `ROS1/ActionClient`
+  - `ROS1/ActionServer`
+  - `ROS1/Bag`
+  - `ROS1/NodeletClient`
+  - `ROS1/NodeletServer`
+  - `ROS1/ParameterServer`
+  - `ROS1/PluginClient`
+  - `ROS1/PluginServer`
+  - `ROS1/Publisher`
+  - `ROS1/ReconfigureClient`
+  - `ROS1/ReconfigureServer`
+  - `ROS1/ServiceClient`
+  - `ROS1/ServiceServer`
+  - `ROS1/Subscriber`
+  - `ROS1/TFPublisher`
+  - `ROS1/TFSubscriber`
+  - `ROS1/Timer`
+  - `ROS1/TopicHz`
 
-- ROS2:
+- `ROS2`:
 
-  - Publisher
-  - ServiceClient
-  - ServiceServer
-  - Subscriber
+  - `ROS2/Publisher`
+  - `ROS2/ServiceClient`
+  - `ROS2/ServiceServer`
+  - `ROS2/Subscriber`
 
-- MovAI:
+- `MovAI`:
 
-  - ContextClient
-  - ContextServer
-  - Dependency
-  - Depends
-  - Exit
-  - Init
-  - StateMachine
-  - TransitionFor (aka TransitionOut)
-  - TransitionTo (aka TransitionIn)
+  - `MovAI/ContextClient`
+  - `MovAI/ContextServer`
+  - `MovAI/Dependency`
+  - `MovAI/Depends`
+  - `MovAI/Exit`
+  - `MovAI/Init`
+  - `MovAI/TransitionFor` (aka `MovAI/TransitionOut`)
+  - `MovAI/TransitionTo` (aka `MovAI/TransitionIn`)
 
-- Redis:
+- `Redis`:
 
-  - Subscriber
-  - VarSubscriber
+  - `Redis/Subscriber`
+  - `Redis/VarSubscriber`
 
-- AioHttp:
+- `AioHttp`:
 
-  - Http
-  - Websocket
+  - `AioHttp/Http`
+  - `AioHttp/Websocket`
