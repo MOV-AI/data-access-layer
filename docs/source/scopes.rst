@@ -107,7 +107,6 @@ The following I/O templates are allowed for each node type:
   - `MovAI/ContextServer`
   - `MovAI/Dependency`
   - `MovAI/Depends`
-  - `MovAI/Exit`
   - `MovAI/Init`
   - `ROS1/ActionClient`
   - `ROS1/Bag`
@@ -131,7 +130,6 @@ The following I/O templates are allowed for each node type:
   - `MovAI/ContextServer`
   - `MovAI/Dependency`
   - `MovAI/Depends`
-  - `MovAI/Exit`
   - `MovAI/Init`
   - `MovAI/TransitionFor` (aka `MovAI/TransitionOut`)
   - `MovAI/TransitionTo` (aka `MovAI/TransitionIn`)
@@ -157,7 +155,6 @@ The following I/O templates are allowed for each node type:
   - `MovAI/ContextServer`
   - `MovAI/Dependency`
   - `MovAI/Depends`
-  - `MovAI/Exit`
   - `MovAI/Init`
   - `ROS1/ActionClient`
   - `ROS1/Bag`
@@ -266,7 +263,6 @@ Each Transport has the following I/O templates available:
   - `MovAI/ContextServer`
   - `MovAI/Dependency`
   - `MovAI/Depends`
-  - `MovAI/Exit`
   - `MovAI/Init`
   - `MovAI/TransitionFor` (aka `MovAI/TransitionOut`)
   - `MovAI/TransitionTo` (aka `MovAI/TransitionIn`)
