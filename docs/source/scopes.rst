@@ -182,6 +182,8 @@ The following I/O templates are allowed for each node type:
   - `ROS2/ServiceClient`
   - `ROS2/ServiceServer`
   - `ROS2/Subscriber`
+  - `ROS2/ActionServer`
+  - `ROS2/ActionClient`
 
 - `ROS2/Launch`:
 
@@ -256,6 +258,8 @@ Each Transport has the following I/O templates available:
   - `ROS2/ServiceClient`
   - `ROS2/ServiceServer`
   - `ROS2/Subscriber`
+  - `ROS2/ActionServer`
+  - `ROS2/ActionClient`
 
 - `MovAI`:
 
