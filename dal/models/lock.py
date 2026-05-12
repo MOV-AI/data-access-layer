@@ -20,6 +20,7 @@ from movai_core_shared.logger import Log
 from dal.movaidb import MovaiDB
 from dal.scopes.robot import Robot
 from dal.scopes.fleetrobot import FleetRobot
+
 SCOPES = ["local", "global"]
 
 logger = Log.get_logger("Lock")
