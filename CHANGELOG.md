@@ -1,4 +1,8 @@
 # Changelog
+
+## vTBD
+- [BP-1685](https://movai.atlassian.net/browse/BP-1685): Fix spam on lock release when in standalone
+
 ## v3.24.5
 - [BP-1636](https://movai.atlassian.net/browse/BP-1636): ROS2 - Init local DB
 
