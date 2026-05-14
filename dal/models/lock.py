@@ -19,6 +19,7 @@ from movai_core_shared.logger import Log
 
 from dal.movaidb import MovaiDB
 from dal.scopes.robot import Robot
+from dal.scopes.fleetrobot import FleetRobot
 
 SCOPES = ["local", "global"]
 
@@ -253,7 +254,7 @@ class Lock:
             return False
 
         finally:
-            if send_cmd:
+            if not FleetRobot(self.robot_name).is_manager and send_cmd:
                 self.send_unlock_cmd()
 
         return True
