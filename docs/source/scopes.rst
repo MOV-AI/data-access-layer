@@ -215,7 +215,7 @@ Sensible default ports for each node type (to be added autocamatically when crea
 
 - `ROS1/Node`:
 
-  - a port named `depends` with `MovAI/Depends` template
+  - a port named `dependency` with `MovAI/Dependency` template
 
 - `ROS1/Plugin`:
 
@@ -223,7 +223,7 @@ Sensible default ports for each node type (to be added autocamatically when crea
 
 - `MovAI/Node`:
 
-  - a port named `depends` with `MovAI/Depends` template
+  - a port named `dependency` with `MovAI/Dependency` template
   - a port named `init` with `MovAI/Init` template
 
 - `MovAI/State`:
@@ -234,17 +234,17 @@ Sensible default ports for each node type (to be added autocamatically when crea
 
 - `MovAI/Server`:
 
-  - a port named `depends` with `MovAI/Depends` template
+  - a port named `dependency` with `MovAI/Dependency` template
   - a port named `init` with `MovAI/Init` template
   - a port named `http` with `AioHttp/Http` template
 
 - `ROS2/Node`:
 
-  - a port named `depends` with `MovAI/Depends` template
+  - a port named `dependency` with `MovAI/Dependency` template
 
 - `ROS2/Launch`:
 
-  - a port named `depends` with `MovAI/Depends` template
+  - a port named `dependency` with `MovAI/Dependency` template
 
 Ports (I/O templates)
 ---------------------
