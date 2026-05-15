@@ -13,10 +13,11 @@ Welcome to data-access-layer's documentation!
 
    readme
    modules
+   schemas
+   scopes
+   backup
    permissions
    robot_parameters
-   schemas
-   backup
    changelog
 
 .. include:: readme.rst

@@ -1,15 +1,13 @@
 Schemas and validation
 ======================
 
-Available schemas
------------------
+DAL contains 2 types of schemas:
 
-- `1.0`
-- `2.0`
-- `2.4`
+- redis_schema: Used to determine how scopes are stored in the key value database.
+- json_schema: Used for data validation of scopes objects.
 
-1.0 - Custom object model
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Redis schema
+------------
 
 Defines a custom object model which determines how scopes are stored in the key value database.
 Some patterns result in unexpected behaviors.
@@ -22,13 +20,9 @@ Reading fields defined with the following pattern is not possible:
         "$name": "str"
     }
 
-2.0 - Unused
-~~~~~~~~~~~~
 
-Unused schema.
-
-2.4 - Data validation
-~~~~~~~~~~~~~~~~~~~~~
+JSON schema
+-----------
 
 Jsonschemas used for full data validation of some scopes objects.
 

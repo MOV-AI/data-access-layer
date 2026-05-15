@@ -1,0 +1,475 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scopes &mdash; data-access-layer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+
+  
+    <link rel="shortcut icon" href="_static/cropped-Mov.ai-favicon2-32x32.png"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="_static/versions.js?v=6808f9ef"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Mobdata CLI Tool" href="backup.html" />
+    <link rel="prev" title="Schemas and validation" href="schemas.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            data-access-layer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Data Access Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">data-access-layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schemas.html">Schemas and validation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Scopes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#node">Node</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#specific-validations">Specific validations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#allowed-i-o-templates">Allowed I/O templates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mandatory-i-o-templates">Mandatory I/O templates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sensible-default-ports">Sensible default ports</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#ports-i-o-templates">Ports (I/O templates)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="backup.html">Mobdata CLI Tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="permissions.html">Resource permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="robot_parameters.html">Robot Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">data-access-layer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Scopes</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/MOV-AI/data-access-layer/blob/main/docs/source/scopes.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="scopes">
+<h1>Scopes<a class="headerlink" href="#scopes" title="Permalink to this heading"></a></h1>
+<p>Scopes are the main data structure used in the data access layer.
+They are used to store and retrieve data from the key value database.</p>
+<p>The following sections describe the different types of scopes and how they are used in the data access layer.</p>
+<p>The fllowing scopes exist in the data access layer:</p>
+<ul class="simple">
+<li><p>Alert</p></li>
+<li><p>Application</p></li>
+<li><p>Callback</p></li>
+<li><p>Configuration</p></li>
+<li><p>FleetRobot</p></li>
+<li><p>Flow</p></li>
+<li><p>Form</p></li>
+<li><p>Message</p></li>
+<li><p>Node</p></li>
+<li><p>Package</p></li>
+<li><p>Ports</p></li>
+<li><p>Robot</p></li>
+<li><p>Role</p></li>
+<li><p>StateMachine</p></li>
+<li><p>System</p></li>
+<li><p>Translation</p></li>
+<li><p>User</p></li>
+<li><p>Widget</p></li>
+</ul>
+<section id="node">
+<h2>Node<a class="headerlink" href="#node" title="Permalink to this heading"></a></h2>
+<section id="specific-validations">
+<h3>Specific validations<a class="headerlink" href="#specific-validations" title="Permalink to this heading"></a></h3>
+<p>Besides the JSON schema validation, Node scopes have some specific validations:</p>
+<ul class="simple">
+<li><p>The <cite>Type</cite> field must be a valid node type</p></li>
+<li><p>The <cite>PortsInst</cite> field is validated against the node <cite>Type</cite> with:</p>
+<ul>
+<li><p>Type must be one of the defined NODE_TYPES</p></li>
+<li><p>If Type is in ROS1 category, PortsInst cannot have ROS2 templates</p></li>
+<li><p>If Type is in ROS2 category, PortsInst cannot have ROS1 templates</p></li>
+<li><p>If Type is MovAI/State, PortsInst must have at least one transition template</p></li>
+<li><p>If Type is not MovAI/State, PortsInst cannot have transition templates</p></li>
+<li><p>If Type is ROS1/Plugin, PortsInst must have at least one ROS1/PluginClient template</p></li>
+<li><p>If Type is not ROS1/Plugin, PortsInst cannot have ROS1/PluginClient templates</p></li>
+<li><p>If Type is ROS1/Nodelet, PortsInst must have at least one ROS1/NodeletClient or ROS1/NodeletServer template</p></li>
+<li><p>If Type is not ROS1/Nodelet, PortsInst cannot have ROS1/NodeletClient or ROS1/NodeletServer templates</p></li>
+<li><p>If Type is MOVAI/Server, PortsInst must have at least one MOVAI http template</p></li>
+<li><p>If Type is not MOVAI/Server, PortsInst cannot have MOVAI http templates</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="allowed-i-o-templates">
+<h3>Allowed I/O templates<a class="headerlink" href="#allowed-i-o-templates" title="Permalink to this heading"></a></h3>
+<p>The following I/O templates are allowed for each node type:</p>
+<ul class="simple">
+<li><p><cite>ROS1/Nodelet</cite>:</p>
+<ul>
+<li><p><cite>MovAI/Depends</cite></p></li>
+<li><p><cite>MovAI/Dependency</cite></p></li>
+<li><p><cite>ROS1/ActionClient</cite></p></li>
+<li><p><cite>ROS1/ActionServer</cite></p></li>
+<li><p><cite>ROS1/Bag</cite></p></li>
+<li><p><cite>ROS1/NodeletClient</cite></p></li>
+<li><p><cite>ROS1/NodeletServer</cite></p></li>
+<li><p><cite>ROS1/ParameterServer</cite></p></li>
+<li><p><cite>ROS1/PluginServer</cite></p></li>
+<li><p><cite>ROS1/Publisher</cite></p></li>
+<li><p><cite>ROS1/ReconfigureClient</cite></p></li>
+<li><p><cite>ROS1/ReconfigureServer</cite></p></li>
+<li><p><cite>ROS1/ServiceClient</cite></p></li>
+<li><p><cite>ROS1/ServiceServer</cite></p></li>
+<li><p><cite>ROS1/Subscriber</cite></p></li>
+<li><p><cite>ROS1/TFPublisher</cite></p></li>
+<li><p><cite>ROS1/TFSubscriber</cite></p></li>
+<li><p><cite>ROS1/Timer</cite></p></li>
+<li><p><cite>ROS1/TopicHz</cite></p></li>
+</ul>
+</li>
+<li><p><cite>ROS1/Node</cite>:</p>
+<ul>
+<li><p><cite>MovAI/Depends</cite></p></li>
+<li><p><cite>MovAI/Dependency</cite></p></li>
+<li><p><cite>ROS1/ActionClient</cite></p></li>
+<li><p><cite>ROS1/ActionServer</cite></p></li>
+<li><p><cite>ROS1/Bag</cite></p></li>
+<li><p><cite>ROS1/ParameterServer</cite></p></li>
+<li><p><cite>ROS1/PluginServer</cite></p></li>
+<li><p><cite>ROS1/Publisher</cite></p></li>
+<li><p><cite>ROS1/ReconfigureClient</cite></p></li>
+<li><p><cite>ROS1/ReconfigureServer</cite></p></li>
+<li><p><cite>ROS1/ServiceClient</cite></p></li>
+<li><p><cite>ROS1/ServiceServer</cite></p></li>
+<li><p><cite>ROS1/Subscriber</cite></p></li>
+<li><p><cite>ROS1/TFPublisher</cite></p></li>
+<li><p><cite>ROS1/TFSubscriber</cite></p></li>
+<li><p><cite>ROS1/Timer</cite></p></li>
+<li><p><cite>ROS1/TopicHz</cite></p></li>
+</ul>
+</li>
+<li><p><cite>ROS1/Plugin</cite>:</p>
+<ul>
+<li><p><cite>ROS1/PluginClient</cite></p></li>
+</ul>
+</li>
+<li><p><cite>MovAI/Node</cite>:</p>
+<ul>
+<li><p><cite>MovAI/ContextClient</cite></p></li>
+<li><p><cite>MovAI/ContextServer</cite></p></li>
+<li><p><cite>MovAI/Dependency</cite></p></li>
+<li><p><cite>MovAI/Depends</cite></p></li>
+<li><p><cite>MovAI/Init</cite></p></li>
+<li><p><cite>ROS1/ActionClient</cite></p></li>
+<li><p><cite>ROS1/Bag</cite></p></li>
+<li><p><cite>ROS1/ParameterServer</cite></p></li>
+<li><p><cite>ROS1/Publisher</cite></p></li>
+<li><p><cite>ROS1/ReconfigureClient</cite></p></li>
+<li><p><cite>ROS1/ReconfigureServer</cite></p></li>
+<li><p><cite>ROS1/ServiceClient</cite></p></li>
+<li><p><cite>ROS1/ServiceServer</cite></p></li>
+<li><p><cite>ROS1/Subscriber</cite></p></li>
+<li><p><cite>ROS1/TFPublisher</cite></p></li>
+<li><p><cite>ROS1/TFSubscriber</cite></p></li>
+<li><p><cite>ROS1/Timer</cite></p></li>
+<li><p><cite>ROS1/TopicHz</cite></p></li>
+<li><p><cite>Redis/Subscriber</cite></p></li>
+<li><p><cite>Redis/VarSubscriber</cite></p></li>
+</ul>
+</li>
+<li><p><cite>MovAI/State</cite>:</p>
+<ul>
+<li><p><cite>MovAI/ContextClient</cite></p></li>
+<li><p><cite>MovAI/ContextServer</cite></p></li>
+<li><p><cite>MovAI/Dependency</cite></p></li>
+<li><p><cite>MovAI/Depends</cite></p></li>
+<li><p><cite>MovAI/Init</cite></p></li>
+<li><p><cite>MovAI/TransitionFor</cite> (aka <cite>MovAI/TransitionOut</cite>)</p></li>
+<li><p><cite>MovAI/TransitionTo</cite> (aka <cite>MovAI/TransitionIn</cite>)</p></li>
+<li><p><cite>ROS1/ActionClient</cite></p></li>
+<li><p><cite>ROS1/Bag</cite></p></li>
+<li><p><cite>ROS1/ParameterServer</cite></p></li>
+<li><p><cite>ROS1/Publisher</cite></p></li>
+<li><p><cite>ROS1/ReconfigureClient</cite></p></li>
+<li><p><cite>ROS1/ReconfigureServer</cite></p></li>
+<li><p><cite>ROS1/ServiceClient</cite></p></li>
+<li><p><cite>ROS1/ServiceServer</cite></p></li>
+<li><p><cite>ROS1/Subscriber</cite></p></li>
+<li><p><cite>ROS1/TFPublisher</cite></p></li>
+<li><p><cite>ROS1/TFSubscriber</cite></p></li>
+<li><p><cite>ROS1/Timer</cite></p></li>
+<li><p><cite>ROS1/TopicHz</cite></p></li>
+<li><p><cite>Redis/Subscriber</cite></p></li>
+<li><p><cite>Redis/VarSubscriber</cite></p></li>
+</ul>
+</li>
+<li><p><cite>MovAI/Server</cite>:</p>
+<ul>
+<li><p><cite>MovAI/ContextClient</cite></p></li>
+<li><p><cite>MovAI/ContextServer</cite></p></li>
+<li><p><cite>MovAI/Dependency</cite></p></li>
+<li><p><cite>MovAI/Depends</cite></p></li>
+<li><p><cite>MovAI/Init</cite></p></li>
+<li><p><cite>ROS1/ActionClient</cite></p></li>
+<li><p><cite>ROS1/Bag</cite></p></li>
+<li><p><cite>ROS1/ParameterServer</cite></p></li>
+<li><p><cite>ROS1/Publisher</cite></p></li>
+<li><p><cite>ROS1/ReconfigureClient</cite></p></li>
+<li><p><cite>ROS1/ReconfigureServer</cite></p></li>
+<li><p><cite>ROS1/ServiceClient</cite></p></li>
+<li><p><cite>ROS1/ServiceServer</cite></p></li>
+<li><p><cite>ROS1/Subscriber</cite></p></li>
+<li><p><cite>ROS1/TFPublisher</cite></p></li>
+<li><p><cite>ROS1/TFSubscriber</cite></p></li>
+<li><p><cite>ROS1/Timer</cite></p></li>
+<li><p><cite>ROS1/TopicHz</cite></p></li>
+<li><p><cite>Redis/Subscriber</cite></p></li>
+<li><p><cite>Redis/VarSubscriber</cite></p></li>
+<li><p><cite>AioHttp/Http</cite></p></li>
+<li><p><cite>AioHttp/Websocket</cite></p></li>
+</ul>
+</li>
+<li><p><cite>ROS2/Node</cite>:</p>
+<ul>
+<li><p><cite>MovAI/Depends</cite></p></li>
+<li><p><cite>MovAI/Dependency</cite></p></li>
+<li><p><cite>ROS2/Publisher</cite></p></li>
+<li><p><cite>ROS2/ServiceClient</cite></p></li>
+<li><p><cite>ROS2/ServiceServer</cite></p></li>
+<li><p><cite>ROS2/Subscriber</cite></p></li>
+<li><p><cite>ROS2/ActionServer</cite></p></li>
+<li><p><cite>ROS2/ActionClient</cite></p></li>
+</ul>
+</li>
+<li><p><cite>ROS2/Launch</cite>:</p>
+<ul>
+<li><p><cite>MovAI/Depends</cite></p></li>
+<li><p><cite>MovAI/Dependency</cite></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="mandatory-i-o-templates">
+<h3>Mandatory I/O templates<a class="headerlink" href="#mandatory-i-o-templates" title="Permalink to this heading"></a></h3>
+<p>From the above rules, we can derive the following mandatory I/O templates for each node type:</p>
+<ul class="simple">
+<li><p><cite>ROS1/Nodelet</cite>: a port with either <cite>ROS1/NodeletClient</cite> or <cite>ROS1/NodeletServer</cite> template</p></li>
+<li><p><cite>ROS1/Node</cite>: no mandatory I/O templates</p></li>
+<li><p><cite>ROS1/Plugin</cite>: a port with <cite>ROS1/PluginClient</cite> template</p></li>
+<li><p><cite>MovAI/Node</cite>: no mandatory I/O templates</p></li>
+<li><p><cite>MovAI/State</cite>: a port with either a <cite>MovAI/TransitionTo</cite> or <cite>MovAI/TransitionFor</cite> template</p></li>
+<li><p><cite>MovAI/Server</cite>: a port with either a <cite>AioHttp/Http</cite> or <cite>AioHttp/Websocket</cite> template</p></li>
+<li><p><cite>ROS2/Node</cite>: no mandatory I/O templates</p></li>
+<li><p><cite>ROS2/Launch</cite>: no mandatory I/O templates</p></li>
+</ul>
+</section>
+<section id="sensible-default-ports">
+<h3>Sensible default ports<a class="headerlink" href="#sensible-default-ports" title="Permalink to this heading"></a></h3>
+<p>Sensible default ports for each node type (to be added autocamatically when creating a node of that type):</p>
+<ul class="simple">
+<li><p><cite>ROS1/Nodelet</cite>:</p>
+<ul>
+<li><p>a port named <cite>nodelet_client</cite> with <cite>ROS1/NodeletClient</cite> template</p></li>
+</ul>
+</li>
+<li><p><cite>ROS1/Node</cite>:</p>
+<ul>
+<li><p>a port named <cite>dependency</cite> with <cite>MovAI/Dependency</cite> template</p></li>
+</ul>
+</li>
+<li><p><cite>ROS1/Plugin</cite>:</p>
+<ul>
+<li><p>a port named <cite>plugin</cite> with <cite>ROS1/PluginClient</cite> template</p></li>
+</ul>
+</li>
+<li><p><cite>MovAI/Node</cite>:</p>
+<ul>
+<li><p>a port named <cite>dependency</cite> with <cite>MovAI/Dependency</cite> template</p></li>
+<li><p>a port named <cite>init</cite> with <cite>MovAI/Init</cite> template</p></li>
+</ul>
+</li>
+<li><p><cite>MovAI/State</cite>:</p>
+<ul>
+<li><p>a port named <cite>init</cite> with <cite>MovAI/Init</cite> template</p></li>
+<li><p>a port named <cite>in</cite> with a <cite>MovAI/TransitionTo</cite> template</p></li>
+<li><p>a port named <cite>out</cite> with a <cite>MovAI/TransitionFor</cite> template</p></li>
+</ul>
+</li>
+<li><p><cite>MovAI/Server</cite>:</p>
+<ul>
+<li><p>a port named <cite>dependency</cite> with <cite>MovAI/Dependency</cite> template</p></li>
+<li><p>a port named <cite>init</cite> with <cite>MovAI/Init</cite> template</p></li>
+<li><p>a port named <cite>http</cite> with <cite>AioHttp/Http</cite> template</p></li>
+</ul>
+</li>
+<li><p><cite>ROS2/Node</cite>:</p>
+<ul>
+<li><p>a port named <cite>dependency</cite> with <cite>MovAI/Dependency</cite> template</p></li>
+</ul>
+</li>
+<li><p><cite>ROS2/Launch</cite>:</p>
+<ul>
+<li><p>a port named <cite>dependency</cite> with <cite>MovAI/Dependency</cite> template</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="ports-i-o-templates">
+<h2>Ports (I/O templates)<a class="headerlink" href="#ports-i-o-templates" title="Permalink to this heading"></a></h2>
+<p>Ports are complex structures based on the following concepts:</p>
+<ul class="simple">
+<li><p>Transports: the base communication mechanism used by the protocol, e.g. ROS1, ROS2, Redis, AioHttp, MovAI</p></li>
+<li><p>Protocols and primitives (direction): the specific communication pattern used by the port, e.g. Publisher, Subscriber
+- In MovAI <cite>Protocol</cite> is used to identify both the protocol and the primitive</p></li>
+<li><p>I/O templates: configuration of a transport and protocol + primitive, e.g. MovAI/ContextClient
+- This is the structure that can actually be added to a node. It can be an in port, an out port, or both.</p></li>
+</ul>
+<p>Each Transport has the following I/O templates available:</p>
+<ul class="simple">
+<li><p><cite>ROS1</cite>:</p>
+<ul>
+<li><p><cite>ROS1/ActionClient</cite></p></li>
+<li><p><cite>ROS1/ActionServer</cite></p></li>
+<li><p><cite>ROS1/Bag</cite></p></li>
+<li><p><cite>ROS1/NodeletClient</cite></p></li>
+<li><p><cite>ROS1/NodeletServer</cite></p></li>
+<li><p><cite>ROS1/ParameterServer</cite></p></li>
+<li><p><cite>ROS1/PluginClient</cite></p></li>
+<li><p><cite>ROS1/PluginServer</cite></p></li>
+<li><p><cite>ROS1/Publisher</cite></p></li>
+<li><p><cite>ROS1/ReconfigureClient</cite></p></li>
+<li><p><cite>ROS1/ReconfigureServer</cite></p></li>
+<li><p><cite>ROS1/ServiceClient</cite></p></li>
+<li><p><cite>ROS1/ServiceServer</cite></p></li>
+<li><p><cite>ROS1/Subscriber</cite></p></li>
+<li><p><cite>ROS1/TFPublisher</cite></p></li>
+<li><p><cite>ROS1/TFSubscriber</cite></p></li>
+<li><p><cite>ROS1/Timer</cite></p></li>
+<li><p><cite>ROS1/TopicHz</cite></p></li>
+</ul>
+</li>
+<li><p><cite>ROS2</cite>:</p>
+<ul>
+<li><p><cite>ROS2/Publisher</cite></p></li>
+<li><p><cite>ROS2/ServiceClient</cite></p></li>
+<li><p><cite>ROS2/ServiceServer</cite></p></li>
+<li><p><cite>ROS2/Subscriber</cite></p></li>
+<li><p><cite>ROS2/ActionServer</cite></p></li>
+<li><p><cite>ROS2/ActionClient</cite></p></li>
+</ul>
+</li>
+<li><p><cite>MovAI</cite>:</p>
+<ul>
+<li><p><cite>MovAI/ContextClient</cite></p></li>
+<li><p><cite>MovAI/ContextServer</cite></p></li>
+<li><p><cite>MovAI/Dependency</cite></p></li>
+<li><p><cite>MovAI/Depends</cite></p></li>
+<li><p><cite>MovAI/Init</cite></p></li>
+<li><p><cite>MovAI/TransitionFor</cite> (aka <cite>MovAI/TransitionOut</cite>)</p></li>
+<li><p><cite>MovAI/TransitionTo</cite> (aka <cite>MovAI/TransitionIn</cite>)</p></li>
+</ul>
+</li>
+<li><p><cite>Redis</cite>:</p>
+<ul>
+<li><p><cite>Redis/Subscriber</cite></p></li>
+<li><p><cite>Redis/VarSubscriber</cite></p></li>
+</ul>
+</li>
+<li><p><cite>AioHttp</cite>:</p>
+<ul>
+<li><p><cite>AioHttp/Http</cite></p></li>
+<li><p><cite>AioHttp/Websocket</cite></p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="schemas.html" class="btn btn-neutral float-left" title="Schemas and validation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="backup.html" class="btn btn-neutral float-right" title="Mobdata CLI Tool" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Backend.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Read the Docs</span>
+        v: main
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dt>Versions</dt>
+        <dl id="docs-versions"></dl>
+        <hr />
+        <a href="https://tech.michaelaltfield.net/2020/07/18/sphinx-rtd-github-pages-1/">Continuous
+            Documentation</a> hosting provided by <a href="https://pages.github.com/">GitHub Pages</a>.
+    </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
