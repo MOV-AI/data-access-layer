@@ -1,5 +1,8 @@
 # Changelog
 
+## vTBD
+- [BP-1673](https://movai.atlassian.net/browse/BP-1673): List mandatory ports based on Node type
+
 ## v3.24.6
 - [BP-1685](https://movai.atlassian.net/browse/BP-1685): Fix spam on lock release when in standalone
 

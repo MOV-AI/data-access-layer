@@ -12,22 +12,51 @@
 
 import re
 from movai_core_shared.consts import (
+    ROS1_NODELET,
+    ROS1_PLUGIN,
     MOVAI_STATE,
-    ROS1_NODE_TYPES,
-    ROS2_NODE_TYPES,
-    ROS1_PORT_TEMPLATES,
-    ROS2_PORT_TEMPLATES,
+    MOVAI_SERVER,
     NODE_TYPES,
-    MOVAI_TRANSITION,
+    MOVAI_CONTEXTCLIENT,
+    MOVAI_CONTEXTSERVER,
+    MOVAI_DEPENDENCY,
+    MOVAI_DEPENDS,
+    MOVAI_INIT,
     MOVAI_TRANSITIONFOR,
     MOVAI_TRANSITIONTO,
-    ROS1_PLUGINCLIENT,
-    ROS1_PLUGIN,
-    ROS1_NODELET,
+    REDIS_SUBSCRIBER,
+    REDIS_VARSUBSCRIBER,
+    ROS1_ACTIONCLIENT,
+    ROS1_ACTIONSERVER,
+    ROS1_BAG,
     ROS1_NODELETCLIENT,
     ROS1_NODELETSERVER,
-    MOVAI_SERVER,
-    AIOHTTP_PORT_TEMPLATES,
+    ROS1_PARAMETERSERVER,
+    ROS1_PLUGINCLIENT,
+    ROS1_PLUGINSERVER,
+    ROS1_PUBLISHER,
+    ROS1_RECONFIGURECLIENT,
+    ROS1_RECONFIGURESERVER,
+    ROS1_SERVICECLIENT,
+    ROS1_SERVICESERVER,
+    ROS1_SUBSCRIBER,
+    ROS1_TFPUBLISHER,
+    ROS1_TFSUBSCRIBER,
+    ROS1_TIMER,
+    ROS1_TOPICHZ,
+    ROS2_PUBLISHER,
+    ROS2_SERVICECLIENT,
+    ROS2_SERVICESERVER,
+    ROS2_SUBSCRIBER,
+    ROS2_ACTIONSERVER,
+    ROS2_ACTIONCLIENT,
+    AIOHTTP_HTTP,
+    AIOHTTP_WEBSOCKET,
+    ROS1_NODE_TYPES,
+    ROS2_NODE_TYPES,
+    ROS1_IO_TEMPLATES,
+    ROS2_IO_TEMPLATES,
+    AIOHTTP_IO_TEMPLATES,
 )
 from dal.scopes.scope import Scope
 from dal.utils.usage_search.usage_types import (
@@ -43,6 +72,135 @@ from typing import Dict, Set
 
 
 LOGGER = Log.get_logger(__name__)
+
+IO_TEMPLATES_ROS1_NODELET = [
+    MOVAI_DEPENDS,
+    MOVAI_DEPENDENCY,
+    ROS1_ACTIONCLIENT,
+    ROS1_ACTIONSERVER,
+    ROS1_BAG,
+    ROS1_NODELETCLIENT,
+    ROS1_NODELETSERVER,
+    ROS1_PARAMETERSERVER,
+    ROS1_PLUGINCLIENT,
+    ROS1_PLUGINSERVER,
+    ROS1_PUBLISHER,
+    ROS1_RECONFIGURECLIENT,
+    ROS1_RECONFIGURESERVER,
+    ROS1_SERVICECLIENT,
+    ROS1_SERVICESERVER,
+    ROS1_SUBSCRIBER,
+    ROS1_TFPUBLISHER,
+    ROS1_TFSUBSCRIBER,
+    ROS1_TIMER,
+    ROS1_TOPICHZ,
+]
+IO_TEMPLATES_ROS1_NODE = [
+    MOVAI_DEPENDS,
+    MOVAI_DEPENDENCY,
+    ROS1_ACTIONCLIENT,
+    ROS1_ACTIONSERVER,
+    ROS1_BAG,
+    ROS1_PARAMETERSERVER,
+    ROS1_PLUGINSERVER,
+    ROS1_PUBLISHER,
+    ROS1_RECONFIGURECLIENT,
+    ROS1_RECONFIGURESERVER,
+    ROS1_SERVICECLIENT,
+    ROS1_SERVICESERVER,
+    ROS1_SUBSCRIBER,
+    ROS1_TFPUBLISHER,
+    ROS1_TFSUBSCRIBER,
+    ROS1_TIMER,
+    ROS1_TOPICHZ,
+]
+IO_TEMPLATES_ROS1_PLUGIN = [
+    ROS1_PLUGINCLIENT,
+]
+IO_TEMPLATES_MOVAI_NODE = [
+    MOVAI_CONTEXTCLIENT,
+    MOVAI_CONTEXTSERVER,
+    MOVAI_DEPENDENCY,
+    MOVAI_DEPENDS,
+    MOVAI_INIT,
+    ROS1_ACTIONCLIENT,
+    ROS1_BAG,
+    ROS1_PARAMETERSERVER,
+    ROS1_PUBLISHER,
+    ROS1_RECONFIGURECLIENT,
+    ROS1_RECONFIGURESERVER,
+    ROS1_SERVICECLIENT,
+    ROS1_SERVICESERVER,
+    ROS1_SUBSCRIBER,
+    ROS1_TFPUBLISHER,
+    ROS1_TFSUBSCRIBER,
+    ROS1_TIMER,
+    ROS1_TOPICHZ,
+    REDIS_SUBSCRIBER,
+    REDIS_VARSUBSCRIBER,
+]
+IO_TEMPLATES_MOVAI_STATE = [
+    MOVAI_CONTEXTCLIENT,
+    MOVAI_CONTEXTSERVER,
+    MOVAI_DEPENDENCY,
+    MOVAI_DEPENDS,
+    MOVAI_INIT,
+    MOVAI_TRANSITIONFOR,
+    MOVAI_TRANSITIONTO,
+    ROS1_ACTIONCLIENT,
+    ROS1_BAG,
+    ROS1_PARAMETERSERVER,
+    ROS1_PUBLISHER,
+    ROS1_RECONFIGURECLIENT,
+    ROS1_RECONFIGURESERVER,
+    ROS1_SERVICECLIENT,
+    ROS1_SERVICESERVER,
+    ROS1_SUBSCRIBER,
+    ROS1_TFPUBLISHER,
+    ROS1_TFSUBSCRIBER,
+    ROS1_TIMER,
+    ROS1_TOPICHZ,
+    REDIS_SUBSCRIBER,
+    REDIS_VARSUBSCRIBER,
+]
+IO_TEMPLATES_MOVAI_SERVER = [
+    MOVAI_CONTEXTCLIENT,
+    MOVAI_CONTEXTSERVER,
+    MOVAI_DEPENDENCY,
+    MOVAI_DEPENDS,
+    MOVAI_INIT,
+    ROS1_ACTIONCLIENT,
+    ROS1_BAG,
+    ROS1_PARAMETERSERVER,
+    ROS1_PUBLISHER,
+    ROS1_RECONFIGURECLIENT,
+    ROS1_RECONFIGURESERVER,
+    ROS1_SERVICECLIENT,
+    ROS1_SERVICESERVER,
+    ROS1_SUBSCRIBER,
+    ROS1_TFPUBLISHER,
+    ROS1_TFSUBSCRIBER,
+    ROS1_TIMER,
+    ROS1_TOPICHZ,
+    REDIS_SUBSCRIBER,
+    REDIS_VARSUBSCRIBER,
+    AIOHTTP_HTTP,
+    AIOHTTP_WEBSOCKET,
+]
+IO_TEMPLATES_ROS2_NODE = [
+    MOVAI_DEPENDS,
+    MOVAI_DEPENDENCY,
+    ROS2_PUBLISHER,
+    ROS2_SERVICECLIENT,
+    ROS2_SERVICESERVER,
+    ROS2_SUBSCRIBER,
+    ROS2_ACTIONSERVER,
+    ROS2_ACTIONCLIENT,
+]
+IO_TEMPLATES_ROS2_LAUNCH = [
+    MOVAI_DEPENDS,
+    MOVAI_DEPENDENCY,
+]
 
 
 class Node(Scope):
@@ -546,8 +704,8 @@ class Node(Scope):
 
         Validations:
         - Type must be one of the defined NODE_TYPES
-        - If Type is ROS1, PortsInst cannot have ROS2 templates
-        - If Type is ROS2, PortsInst cannot have ROS1 templates
+        - If Type is in ROS1 category, PortsInst cannot have ROS2 templates
+        - If Type is in ROS2 category, PortsInst cannot have ROS1 templates
         - If Type is MovAI/State, PortsInst must have at least one transition template
         - If Type is not MovAI/State, PortsInst cannot have transition templates
         - If Type is ROS1/Plugin, PortsInst must have at least one ROS1/PluginClient template
@@ -573,22 +731,21 @@ class Node(Scope):
 
         if node_type in ROS1_NODE_TYPES:
             # no ROS2 ports allowed
-            if ROS2_PORT_TEMPLATES & port_templates:
+            if ROS2_IO_TEMPLATES & port_templates:
                 raise ValueError(f"{node_type} nodes cannot have ROS2 ports")
 
         elif node_type in ROS2_NODE_TYPES:
             # no ROS1 ports allowed
-            if ROS1_PORT_TEMPLATES & port_templates:
+            if ROS1_IO_TEMPLATES & port_templates:
                 raise ValueError(f"{node_type} nodes cannot have ROS1 ports")
 
         if node_type == MOVAI_STATE:
             # must have at least one transition port
-            if not {MOVAI_TRANSITION, MOVAI_TRANSITIONFOR, MOVAI_TRANSITIONTO} & port_templates:
+            if not {MOVAI_TRANSITIONFOR, MOVAI_TRANSITIONTO} & port_templates:
                 raise ValueError(f"{node_type} nodes must have at least one transition port")
         else:
             # no transition ports allowed
             if {
-                MOVAI_TRANSITION,
                 MOVAI_TRANSITIONFOR,
                 MOVAI_TRANSITIONTO,
             } & port_templates:
@@ -622,9 +779,9 @@ class Node(Scope):
 
         if node_type == MOVAI_SERVER:
             # must have at least one MOV.AI http port
-            if not AIOHTTP_PORT_TEMPLATES & port_templates:
+            if not AIOHTTP_IO_TEMPLATES & port_templates:
                 raise ValueError(f"{node_type} nodes must have at least one http port")
         else:
             # no MOV.AI http ports allowed
-            if AIOHTTP_PORT_TEMPLATES & port_templates:
+            if AIOHTTP_IO_TEMPLATES & port_templates:
                 raise ValueError(f"{node_type} nodes cannot have http ports")
