@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.25.0
 - [BP-1673](https://movai.atlassian.net/browse/BP-1673): List mandatory ports based on Node type
 
 ## v3.24.6
