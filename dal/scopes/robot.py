@@ -69,8 +69,13 @@ class Robot(Scope):
 
         else:  # no robot exists so lets init one
             unique_id = uuid.uuid4()
+
             # Use DEVICE_NAME if available to avoid race condition with temporary auto-generated names
-            robot_name = DEVICE_NAME or f"robot_{unique_id.hex[0:6]}"
+            if DEVICE_NAME == "UNDEFINED_ROBOT_NAME":
+                robot_name = f"robot_{unique_id.hex[0:6]}"
+            else:
+                robot_name = DEVICE_NAME
+
             LOGGER.info(
                 f"INITIALIZING ROBOT: No existing Robot found in local db, initializing new Robot {robot_name} with id {unique_id.hex}"
             )
