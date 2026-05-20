@@ -1,5 +1,8 @@
 # Changelog
 
+## vTBD
+- [BP-1703](https://movai.atlassian.net/browse/BP-1703): Apply DEVICE_NAME to robot name on init, rather than a temporary name
+
 ## v3.25.0
 - [BP-1673](https://movai.atlassian.net/browse/BP-1673): List mandatory ports based on Node type
 
