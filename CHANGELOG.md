@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.23.6
 - [BP-1703](https://movai.atlassian.net/browse/BP-1703): Apply DEVICE_NAME to robot name on init, rather than a temporary name
 
 ## v3.23.5
