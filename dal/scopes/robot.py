@@ -54,6 +54,10 @@ class Robot(Scope):
         robot_struct = MovaiDB("local").search_by_args("Robot", Name="*")[0]
 
         if robot_struct:
+            LOGGER.info(
+                "INITIALIZING ROBOT: Existing Robot found in local db, initializing Robot %s",
+                robot_struct["Robot"],
+            )
             for name in robot_struct["Robot"]:
                 super().__init__(scope="Robot", name=name, version="latest", new=False, db="local")
                 try:
@@ -66,7 +70,18 @@ class Robot(Scope):
 
         else:  # no robot exists so lets init one
             unique_id = uuid.uuid4()
-            # print(unique_id.hex)
+
+            if DEVICE_NAME == "UNDEFINED_ROBOT_NAME":
+                robot_name = f"robot_{unique_id.hex[0:6]}"
+            else:
+                robot_name = DEVICE_NAME
+
+            LOGGER.info(
+                "INITIALIZING ROBOT: No existing Robot found in local db, initializing new Robot %s with id %s",
+                robot_name,
+                unique_id.hex,
+            )
+
             super().__init__(
                 scope="Robot",
                 name=unique_id.hex,
@@ -74,10 +89,10 @@ class Robot(Scope):
                 new=True,
                 db="local",
             )
-            self.RobotName = "robot_" + unique_id.hex[0:6]
+            self.RobotName = robot_name
 
             self.__dict__["fleet"] = FleetRobot(unique_id.hex, new=True)
-            self.fleet.RobotName = "robot_" + unique_id.hex[0:6]
+            self.fleet.RobotName = robot_name
             self.RobotType = ""
             self.fleet.RobotType = ""
             self.RobotModel = ""

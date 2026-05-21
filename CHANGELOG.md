@@ -1,5 +1,8 @@
 # Changelog
 
+## vTBD
+- [BP-1703](https://movai.atlassian.net/browse/BP-1703): Apply DEVICE_NAME to robot name on init, rather than a temporary name
+
 ## v3.23.5
 - [BP-1685](https://movai.atlassian.net/browse/BP-1685): Fix spam on lock release when in standalone
 
