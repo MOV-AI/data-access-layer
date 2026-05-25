@@ -54,10 +54,6 @@ class Robot(Scope):
         robot_struct = MovaiDB("local").search_by_args("Robot", Name="*")[0]
 
         if robot_struct:
-            LOGGER.info(
-                "INITIALIZING ROBOT: Existing Robot found in local db, initializing Robot %s",
-                robot_struct["Robot"],
-            )
             for name in robot_struct["Robot"]:
                 super().__init__(scope="Robot", name=name, version="latest", new=False, db="local")
                 try:
@@ -76,8 +72,8 @@ class Robot(Scope):
             else:
                 robot_name = DEVICE_NAME
 
-            LOGGER.info(
-                "INITIALIZING ROBOT: No existing Robot found in local db, initializing new Robot %s with id %s",
+            LOGGER.debug(
+                "Initializing Robot Scope: No existing Robot found in local db, initializing new Robot %s with id %s",
                 robot_name,
                 unique_id.hex,
             )
