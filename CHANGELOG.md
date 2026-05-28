@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.25.2
 - [BP-899](https://movai.atlassian.net/browse/BP-899): Not possible to obtain active_flow
   - Use Redis pipeline when writing
 
