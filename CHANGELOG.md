@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.25.2
+- [BP-899](https://movai.atlassian.net/browse/BP-899): Not possible to obtain active_flow
+  - Use Redis pipeline when writing
+
 ## v3.25.1
 - [BP-1703](https://movai.atlassian.net/browse/BP-1703): Apply DEVICE_NAME to robot name on init, rather than a temporary name
 
