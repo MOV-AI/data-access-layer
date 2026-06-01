@@ -31,16 +31,6 @@ if TYPE_CHECKING:
     from .translation_constants import DEFAULT_LANGUAGE
     from .user import User
     from .widget import Widget
-    from dal.utils import (
-        DirectFlowUsageItem,
-        DirectNodeUsageItem,
-        FlowFlowUsage,
-        IndirectFlowUsageItem,
-        IndirectNodeUsageItem,
-        NodeFlowUsage,
-        UsageSearchResult,
-        get_usage_search_scope_map,
-    )
 
 # Mapping of attribute names to their module paths
 _LAZY_IMPORTS = {
@@ -66,14 +56,6 @@ _LAZY_IMPORTS = {
     "User": ".user",
     "Widget": ".widget",
     "DEFAULT_LANGUAGE": ".translation_constants",
-    "UsageSearchResult": "dal.utils",
-    "DirectNodeUsageItem": "dal.utils",
-    "IndirectNodeUsageItem": "dal.utils",
-    "DirectFlowUsageItem": "dal.utils",
-    "IndirectFlowUsageItem": "dal.utils",
-    "NodeFlowUsage": "dal.utils",
-    "FlowFlowUsage": "dal.utils",
-    "get_usage_search_scope_map": "dal.utils",
 }
 
 
@@ -97,17 +79,11 @@ __all__ = [
     "Callback",
     "Config",
     "Configuration",
-    "DirectFlowUsageItem",
-    "DirectNodeUsageItem",
     "FleetRobot",
     "Flow",
-    "FlowFlowUsage",
     "Form",
-    "IndirectFlowUsageItem",
-    "IndirectNodeUsageItem",
     "Message",
     "Node",
-    "NodeFlowUsage",
     "Package",
     "Ports",
     "Robot",
@@ -117,12 +93,10 @@ __all__ = [
     "SMVars",
     "Struct",
     "System",
-    "UsageSearchResult",
     "User",
     "Widget",
     "Alert",
     "DEFAULT_LANGUAGE",
-    "get_usage_search_scope_map",
 ]
 
 try:
