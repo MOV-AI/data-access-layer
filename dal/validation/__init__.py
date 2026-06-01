@@ -6,6 +6,7 @@
    Developers:
    - Moawiya Mograbi (moawiya@mov.ai) - 2022
 """
+import importlib
 from typing import TYPE_CHECKING
 
 from .constants import REDIS_SCHEMA_FOLDER_PATH, JSON_SCHEMA_FOLDER_PATH
@@ -16,21 +17,21 @@ if TYPE_CHECKING:
     from .template import Template
     from .validator import JsonValidator
 
+_LAZY_IMPORTS = {
+    "Schema": ".schema",
+    "Template": ".template",
+    "JsonValidator": ".validator",
+}
+
 
 def __getattr__(name):
-    """Lazy-load validation classes to avoid loading jsonschema unless actually needed."""
-    if name == "Schema":
-        from .schema import Schema
-
-        return Schema
-    elif name == "JsonValidator":
-        from .validator import JsonValidator
-
-        return JsonValidator
-    elif name == "Template":
-        from .template import Template
-
-        return Template
+    """Dynamically import classes on first access to reduce memory usage."""
+    if name in _LAZY_IMPORTS:
+        module = importlib.import_module(_LAZY_IMPORTS[name], package=__name__)
+        attr = getattr(module, name)
+        # Cache it in globals for faster subsequent access
+        globals()[name] = attr
+        return attr
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
