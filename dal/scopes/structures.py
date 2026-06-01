@@ -13,7 +13,7 @@ import copy
 from movai_core_shared.exceptions import AlreadyExist
 
 from dal.movaidb import MovaiDB
-from dal.helpers import Helpers
+from dal.helpers.helpers import Helpers
 
 
 class List(list):

@@ -29,7 +29,7 @@ from dal.utils.usage_search.usage_types import (
     DirectNodeUsageItem,
     IndirectNodeUsageItem,
 )
-from dal.helpers import Helpers
+from dal.helpers.helpers import Helpers
 from movai_core_shared.logger import Log
 from typing import Dict
 
