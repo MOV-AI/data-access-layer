@@ -19,33 +19,16 @@ from asyncio import CancelledError
 from movai_core_shared.logger import Log
 from movai_core_shared.exceptions import TransitionException
 
-# Imports from DAL
-
-from dal.models.callback import Callback as CallbackModel
-
 from dal.models.lock import Lock
-from dal.models.container import Container
 from dal.models.nodeinst import NodeInst
-from dal.scopes.package import Package
-from dal.models.ports import Ports
 from dal.models.var import Var
 from dal.models.scopestree import ScopesTree, scopes
 
-from dal.scopes.configuration import Configuration
-from dal.scopes.fleetrobot import FleetRobot
-from dal.scopes.message import Message
 from dal.scopes.robot import Robot
-from dal.scopes.statemachine import StateMachine
-from dal.scopes.alert import Alert
 
+# Check if enterprise modules are available
 try:
-    from movai_core_enterprise.models.annotation import Annotation
-    from movai_core_enterprise.models.graphicscene import GraphicScene
-    from movai_core_enterprise.models.layout import Layout
-    from movai_core_enterprise.scopes.task import Task
-    from movai_core_enterprise.models.taskentry import TaskEntry
-    from movai_core_enterprise.models.tasktemplate import TaskTemplate
-    from movai_core_enterprise.message_client_handlers.metrics import Metrics
+    import movai_core_enterprise  # pylint: disable=unused-import
 
     enterprise = True
 except ImportError:
@@ -74,6 +57,27 @@ class LazyInstantiation:
         return getattr(instance, name)
 
 
+class LazyModule:
+    """Delay module/class import until first attribute access."""
+
+    def __init__(self, module_path, class_name=None):
+        self._module_path = module_path
+        self._class_name = class_name
+        self._cached = None
+
+    def _load(self):
+        if self._cached is None:
+            module = importlib.import_module(self._module_path)
+            self._cached = getattr(module, self._class_name) if self._class_name else module
+        return self._cached
+
+    def __getattr__(self, name):
+        return getattr(self._load(), name)
+
+    def __call__(self, *args, **kwargs):
+        return self._load()(*args, **kwargs)
+
+
 class UserFunctions:
     """Class that provides functions to the callback execution"""
 
@@ -98,7 +102,7 @@ class UserFunctions:
         self.load_classes(_node_name, _port_name, _user)
 
     def load_classes(self, _node_name, _port_name, _user):
-        _robot_id: str = Callback.robot().name
+        _robot_id: str = UserCallback.robot().name
 
         class UserVar(Var):
             """Class for user to set and get vars"""
@@ -123,36 +127,47 @@ class UserFunctions:
             self.globals.update(
                 {
                     "scopes": scopes,
-                    "Package": Package,
-                    "Message": Message,
-                    "Ports": Ports,
-                    "StateMachine": StateMachine,  # TODO implement model
+                    "Package": LazyModule("dal.scopes.package", "Package"),
+                    "Message": LazyModule("dal.scopes.message", "Message"),
+                    "Ports": LazyModule("dal.scopes.ports", "Ports"),
                     "Var": UserVar,
-                    "Robot": Callback.robot(),
-                    "FleetRobot": FleetRobot,
+                    "Robot": UserCallback.robot(),
+                    "FleetRobot": LazyModule("dal.scopes.fleetrobot", "FleetRobot"),
                     "logger": logger,
                     "PortName": _port_name,
-                    "Callback": CallbackModel,
+                    "Callback": LazyModule("dal.scopes.callback", "Callback"),
                     "Lock": UserLock,
                     "print": self.user_print,
-                    "Scene": LazyInstantiation(Callback.scene),
+                    "Scene": LazyInstantiation(UserCallback.scene),
                     "NodeInst": NodeInst,
-                    "Container": Container,
-                    "Configuration": Configuration,
+                    "Container": LazyModule("dal.scopes.container", "Container"),
+                    "Configuration": LazyModule("dal.scopes.configuration", "Configuration"),
                 }
             )
 
             if enterprise:
                 self.globals.update(
                     {
-                        "Alert": Alert,
-                        "Annotation": Annotation,
-                        "GraphicScene": GraphicScene,
-                        "Layout": Layout,
-                        "metrics": LazyInstantiation(Metrics),
-                        "Task": Task,
-                        "TaskEntry": TaskEntry,
-                        "TaskTemplate": TaskTemplate,
+                        "Alert": LazyModule("dal.scopes.alert", "Alert"),
+                        "Annotation": LazyModule(
+                            "movai_core_enterprise.models.annotation", "Annotation"
+                        ),
+                        "GraphicScene": LazyModule(
+                            "movai_core_enterprise.models.graphicscene", "GraphicScene"
+                        ),
+                        "Layout": LazyModule("movai_core_enterprise.models.layout", "Layout"),
+                        "metrics": LazyInstantiation(
+                            LazyModule(
+                                "movai_core_enterprise.message_client_handlers.metrics", "Metrics"
+                            )
+                        ),
+                        "Task": LazyModule("movai_core_enterprise.scopes.task", "Task"),
+                        "TaskEntry": LazyModule(
+                            "movai_core_enterprise.models.taskentry", "TaskEntry"
+                        ),
+                        "TaskTemplate": LazyModule(
+                            "movai_core_enterprise.models.tasktemplate", "TaskTemplate"
+                        ),
                     }
                 )
 
@@ -192,7 +207,7 @@ class UserFunctions:
         exec(compiled_code, globais)
 
 
-class Callback:
+class UserCallback:
     """Callback class used by GD_Node to execute code
 
     Args:
