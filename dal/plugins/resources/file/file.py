@@ -9,7 +9,6 @@
 from io import BytesIO, StringIO
 from json import JSONDecodeError, load
 from os import listdir, path, getenv, getcwd
-import yaml
 from dal.plugins.classes import Plugin, Resource, ResourcePlugin, ResourceException
 
 __DRIVER_NAME__ = "Filesystem Plugin"
@@ -64,6 +63,8 @@ class FilePlugin(ResourcePlugin):
         """
         read a yaml file, returns a dict
         """
+        import yaml
+
         local_path = self._get_local_path(url)
 
         with open(local_path, "r") as fd:

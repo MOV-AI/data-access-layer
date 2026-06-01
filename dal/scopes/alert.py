@@ -8,7 +8,6 @@ from dal.scopes.scope import Scope
 from dal.scopes.robot import Robot
 from movai_core_shared.logger import Log
 from movai_core_shared.consts import DeactivationType
-from movai_core_shared.messages.alert_data import AlertActivationData
 
 try:
     from movai_core_enterprise.message_client_handlers._alert_metrics import AlertMetricsFactory
@@ -71,6 +70,8 @@ class Alert(Scope):
             **kwargs: Parameters to fill placeholders in Title, Info, and Action fields.
 
         """
+        from movai_core_shared.messages.alert_data import AlertActivationData
+
         # Verify that all necessary activation fields were provided
         self.validate_parameters("Title", self.Title, **kwargs)
         self.validate_parameters("Info", self.Info, **kwargs)

@@ -21,7 +21,6 @@ import aioredis
 import dal
 import redis
 import random
-from deepdiff import DeepDiff
 from redis.client import Pipeline
 from redis.connection import Connection
 
@@ -1164,6 +1163,8 @@ class MovaiDB:
     @staticmethod
     def calc_scope_update(old_dict: dict, new_dict: dict, structure: dict) -> List[Dict[str, Any]]:
         """Calculate scope updates dicts"""
+        from deepdiff import DeepDiff
+
         # Translate dict to list of paths
         old_dict_paths = [p for p in MovaiDB.dict_to_paths(old_dict)]
         # Translate dict to list of paths
