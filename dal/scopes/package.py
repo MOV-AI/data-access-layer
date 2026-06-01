@@ -15,7 +15,7 @@ import os
 
 from dal.scopes.scope import Scope
 from dal.scopes.structures import Struct
-from dal.helpers import Helpers
+from dal.helpers.helpers import Helpers
 from movai_core_shared.logger import Log
 
 LOGGER = Log.get_logger("spawner.mov.ai")

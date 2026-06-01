@@ -13,7 +13,7 @@ import re
 import uuid
 from itertools import product
 
-from dal.helpers import flatten
+from dal.helpers.helpers import flatten
 from movai_core_shared.consts import (
     CONFIG_REGEX,
     LINK_REGEX,
