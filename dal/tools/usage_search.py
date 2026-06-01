@@ -2,7 +2,7 @@ import json
 
 from movai_core_shared.exceptions import DoesNotExist
 from dal.utils.usage_search.usage_types import UsageSearchResult, UsageData
-from dal.utils import get_usage_search_scope_map
+from dal.utils.usage_search.scope_map import get_usage_search_scope_map
 
 
 class Searcher:
