@@ -8,7 +8,6 @@
    - Moawiya Mograni (moawiya@mov.ai) - 2023
 """
 import pickle
-import yaml
 from dal.movaidb import MovaiDB
 from .model import Model
 from dal.helpers.cache import ThreadSafeCache
@@ -20,6 +19,8 @@ class ConfigurationCache(metaclass=Singleton):
         self._map = {}
 
     def yaml_load(self, config_name, yaml_str):
+        import yaml
+
         with self.__class__._lock:  # Lock for thread safety
             map_key = config_name
             if map_key in self._map:
@@ -53,6 +54,7 @@ class Configuration(Model):
 
     def get_value(self, cached=True) -> dict:
         """Returns a dictionary with the configuration values"""
+        import yaml
 
         if self.Type == "xml":
             # Yaml is the name of the field
