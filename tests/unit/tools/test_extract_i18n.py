@@ -88,7 +88,7 @@ logger.info(f'Work conditions not met: {s}', ui=True)
             main()
 
         from dal.tools.backup import Importer
-        from dal.scopes import Translation
+        from dal.scopes.translation import Translation
 
         importer = Importer(
             tmp_path,
