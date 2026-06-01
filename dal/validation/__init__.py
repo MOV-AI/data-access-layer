@@ -6,10 +6,32 @@
    Developers:
    - Moawiya Mograbi (moawiya@mov.ai) - 2022
 """
+from typing import TYPE_CHECKING
+
 from .constants import REDIS_SCHEMA_FOLDER_PATH, JSON_SCHEMA_FOLDER_PATH
-from .schema import Schema
-from .validator import JsonValidator
-from .template import Template
+
+# Import for type checking only - actual imports are lazy-loaded via __getattr__
+if TYPE_CHECKING:
+    from .schema import Schema
+    from .template import Template
+    from .validator import JsonValidator
+
+
+def __getattr__(name):
+    """Lazy-load validation classes to avoid loading jsonschema unless actually needed."""
+    if name == "Schema":
+        from .schema import Schema
+
+        return Schema
+    elif name == "JsonValidator":
+        from .validator import JsonValidator
+
+        return JsonValidator
+    elif name == "Template":
+        from .template import Template
+
+        return Template
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 __all__ = [

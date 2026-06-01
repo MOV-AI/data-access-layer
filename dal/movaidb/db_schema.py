@@ -2,7 +2,7 @@ from os import path
 from typing import Dict
 
 from dal.plugins.classes import Resource
-from dal.validation import REDIS_SCHEMA_FOLDER_PATH
+from dal.validation.constants import REDIS_SCHEMA_FOLDER_PATH
 
 
 class DBSchema(dict):

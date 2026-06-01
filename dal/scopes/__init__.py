@@ -23,9 +23,9 @@ from .scope import Scope
 from .statemachine import StateMachine, SMVars
 from .structures import Struct
 from .system import System
-from .translation import Translation
 from .user import User
 from .widget import Widget
+from .translation_constants import DEFAULT_LANGUAGE
 from dal.utils import (
     UsageSearchResult,
     DirectNodeUsageItem,
@@ -62,11 +62,11 @@ __all__ = [
     "SMVars",
     "Struct",
     "System",
-    "Translation",
     "UsageSearchResult",
     "User",
     "Widget",
     "Alert",
+    "DEFAULT_LANGUAGE",
     "get_usage_search_scope_map",
 ]
 

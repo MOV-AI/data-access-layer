@@ -13,13 +13,10 @@ Attributes:
 """
 from typing import List
 from functools import cached_property
-
-from dal.validation.validator import Validator
 from movai_core_shared.exceptions import DoesNotExist, AlreadyExist
 from .structures import Struct
 from dal.movaidb import MovaiDB
 from dal.movaidb.db_schema import DBSchema
-from dal.validation import JsonValidator
 
 
 SCOPES_TO_VALIDATE: List[str] = ["Translation", "Alert", "Node"]
@@ -29,13 +26,30 @@ class Scope(Struct):
     """Scope main class.
 
     Attributes:
-        validator (JsonValidator): Validator for the scope.
+        validator (JsonValidator): Validator for the scope
 
     """
 
     permissions = ["create", "read", "update", "delete"]
 
-    validator: Validator = JsonValidator()
+    validator = None
+
+    @classmethod
+    def get_validator(cls):
+        """Lazy-load validator only when actually needed.
+
+        If a subclass defines its own validator, use that instead.
+        """
+        # Check if this specific class has its own validator
+        if "validator" in cls.__dict__ and cls.__dict__["validator"] is not None:
+            return cls.__dict__["validator"]
+
+        # Otherwise, lazy-load the default validator
+        if cls.validator is None:
+            from dal.validation import JsonValidator
+
+            cls.validator = JsonValidator()
+        return cls.validator
 
     def __init__(self, scope, name, version, new=False, db="global"):
         self.__dict__["name"] = name
@@ -164,5 +178,5 @@ class Scope(Struct):
 
         """
         if scope in SCOPES_TO_VALIDATE:
-            cls.validator.validate(scope, data)
+            cls.get_validator().validate(scope, data)
             cls._validate_content(data)
