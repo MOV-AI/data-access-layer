@@ -9,7 +9,7 @@
 
    Module that implements Robot namespace
 """
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 import asyncio
 import uuid
 import pickle
@@ -23,17 +23,20 @@ from movai_core_shared.consts import (
 )
 from movai_core_shared.envvars import SPAWNER_BIND_ADDR, DEVICE_NAME
 from movai_core_shared.logger import Log
-from movai_core_shared.messages.alert_data import (
-    AlertActivationData,
-    AlertDeactivationData,
-    AlertData,
-)
 
 from dal.scopes.scope import Scope
 from dal.movaidb import MovaiDB
 from dal.scopes.fleetrobot import FleetRobot, Role
 from datetime import datetime
 from .configuration import Configuration
+
+if TYPE_CHECKING:
+    from movai_core_shared.messages.alert_data import (
+        AlertActivationData,
+        AlertDeactivationData,
+        AlertData,
+    )
+
 
 LOGGER = Log.get_logger("dal.mov.ai")
 
@@ -145,7 +148,7 @@ class Robot(Scope):
     def add_active_alert(
         self,
         alert_id: str,
-        data: AlertActivationData,
+        data: "AlertActivationData",
     ):
         """Add an active alert to the Robot"""
         if "ActiveAlerts" not in self.fleet.__dict__:
@@ -158,8 +161,14 @@ class Robot(Scope):
 
     def pop_alert(
         self, alert_id: str, deactivation_type: str = DeactivationType.REQUESTED
-    ) -> Optional[AlertData]:
+    ) -> Optional["AlertData"]:
         """Remove an active alert from the Robot"""
+        from movai_core_shared.messages.alert_data import (
+            AlertActivationData,
+            AlertDeactivationData,
+            AlertData,
+        )
+
         if "ActiveAlerts" in self.fleet.__dict__:
             if alert_id in self.fleet.ActiveAlerts:
                 alert = self.fleet.ActiveAlerts.pop(alert_id)
@@ -175,8 +184,16 @@ class Robot(Scope):
                     **deactivation.model_dump(),
                 )
 
-    def clear_alerts(self, deactivation_type: str = DeactivationType.REQUESTED) -> List[AlertData]:
+    def clear_alerts(
+        self, deactivation_type: str = DeactivationType.REQUESTED
+    ) -> List["AlertData"]:
         """Clear all active alerts from the Robot"""
+        from movai_core_shared.messages.alert_data import (
+            AlertActivationData,
+            AlertDeactivationData,
+            AlertData,
+        )
+
         if "ActiveAlerts" in self.__dict__:
             LOGGER.warning(f"Clearing all alerts from robot {self.RobotName}")
             alert_metrics = []
