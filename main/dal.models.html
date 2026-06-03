@@ -1289,23 +1289,6 @@ Proprietary and confidential</p>
 <dd><p>Bases: <a class="reference internal" href="#dal.models.model.Model" title="dal.models.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a></p>
 <p>Callback Model</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="dal.models.callback.Callback.export_modules">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">export_modules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jump_over_modules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.models.callback.Callback.export_modules" title="Permalink to this definition"></a></dt>
-<dd><p>Get modules and save them to db (System)</p>
-<p>this takes about 4 seconds to run</p>
-<p>and prints a LOT of stuff to the terminal</p>
-<p>currently (14-10 on spawner) uses about 19kb of memory (?)
-:param jump_over_modules: the list of modules not to expand
-:type jump_over_modules: list</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.models.callback.Callback.fetch_modules_api">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch_modules_api</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#dal.models.callback.Callback.fetch_modules_api" title="Permalink to this definition"></a></dt>
-<dd><p>to be called from rest api</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="dal.models.callback.Callback.get_full_modules">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_full_modules</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#dal.models.callback.Callback.get_full_modules" title="Permalink to this definition"></a></dt>
 <dd><p>get get full dict of modules</p>
@@ -4714,23 +4697,6 @@ needs an update.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.models.</span></span><span class="sig-name descname"><span class="pre">Callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref_or_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'global'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'__UNVERSIONED__'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.Callback" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dal.models.model.Model" title="dal.models.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a></p>
 <p>Callback Model</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.models.Callback.export_modules">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">export_modules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jump_over_modules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.models.Callback.export_modules" title="Permalink to this definition"></a></dt>
-<dd><p>Get modules and save them to db (System)</p>
-<p>this takes about 4 seconds to run</p>
-<p>and prints a LOT of stuff to the terminal</p>
-<p>currently (14-10 on spawner) uses about 19kb of memory (?)
-:param jump_over_modules: the list of modules not to expand
-:type jump_over_modules: list</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.models.Callback.fetch_modules_api">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch_modules_api</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#dal.models.Callback.fetch_modules_api" title="Permalink to this definition"></a></dt>
-<dd><p>to be called from rest api</p>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.models.Callback.get_full_modules">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_full_modules</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#dal.models.Callback.get_full_modules" title="Permalink to this definition"></a></dt>
