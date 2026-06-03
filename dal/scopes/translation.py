@@ -2,7 +2,7 @@ from dal.validation.validator import TranslationValidator
 from .scope import Scope
 
 # pylint: disable=unused-import
-from .translation_constants import DEFAULT_LANGUAGE
+from dal.constants.translation import DEFAULT_LANGUAGE
 
 
 class Translation(Scope):

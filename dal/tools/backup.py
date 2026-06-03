@@ -79,17 +79,12 @@ class Factory:
     def get_class(scope):
         """Get scope class."""
         if scope not in Factory.CLASSES_CACHE:
-            # Translation is not in package-level imports to avoid heavy validator load
-            # Import directly when needed
-            if scope == "Translation":
-                mod = import_module("dal.scopes.translation")
+            mod = import_module("dal.scopes")
+
+            try:
                 Factory.CLASSES_CACHE[scope] = getattr(mod, scope)
-            else:
-                mod = import_module("dal.scopes")
-                try:
-                    Factory.CLASSES_CACHE[scope] = getattr(mod, scope)
-                except AttributeError as exc:
-                    raise BackupException(f"Scope does not exists {scope}") from exc
+            except AttributeError as exc:
+                raise BackupException(f"Scope does not exists {scope}") from exc
 
         return Factory.CLASSES_CACHE[scope]
 

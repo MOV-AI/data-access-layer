@@ -27,7 +27,7 @@ from dal.models.scopestree import ScopesTree, scopes
 from dal.models.model import Model
 from dal.models.acl import NewACLManager
 from dal.models.acl import ResourceType
-from dal.scopes.translation_constants import DEFAULT_LANGUAGE
+from dal.constants.translation import DEFAULT_LANGUAGE
 
 
 class BaseUser(Model):
