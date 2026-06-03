@@ -33,7 +33,6 @@ from .configuration import Configuration
 if TYPE_CHECKING:
     from movai_core_shared.messages.alert_data import (
         AlertActivationData,
-        AlertDeactivationData,
         AlertData,
     )
 

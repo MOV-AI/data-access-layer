@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     from .statemachine import SMVars, StateMachine
     from .structures import Struct
     from .system import System
-    from .translation_constants import DEFAULT_LANGUAGE
+    from .translation import Translation
     from .user import User
     from .widget import Widget
 
@@ -55,7 +55,7 @@ _LAZY_IMPORTS = {
     "System": ".system",
     "User": ".user",
     "Widget": ".widget",
-    "DEFAULT_LANGUAGE": ".translation_constants",
+    "Translation": ".translation",
 }
 
 
@@ -96,7 +96,7 @@ __all__ = [
     "User",
     "Widget",
     "Alert",
-    "DEFAULT_LANGUAGE",
+    "Translation",
 ]
 
 try:

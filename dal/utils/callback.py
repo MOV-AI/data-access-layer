@@ -13,7 +13,7 @@ import copy
 import time
 import importlib
 from os import getenv
-from typing import Any, Dict
+from typing import TYPE_CHECKING, Any, Dict
 from asyncio import CancelledError
 
 from movai_core_shared.logger import Log
@@ -25,6 +25,9 @@ from dal.models.var import Var
 from dal.models.scopestree import ScopesTree, scopes
 
 from dal.scopes.robot import Robot
+
+if TYPE_CHECKING:
+    from movai_core_enterprise.models.graphicscene import GraphicScene
 
 # Check if enterprise modules are available
 try:
