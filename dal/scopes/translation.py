@@ -1,8 +1,8 @@
 from dal.validation.validator import TranslationValidator
 from .scope import Scope
 
-
-DEFAULT_LANGUAGE = "en"
+# pylint: disable=unused-import
+from dal.constants.translation import DEFAULT_LANGUAGE
 
 
 class Translation(Scope):

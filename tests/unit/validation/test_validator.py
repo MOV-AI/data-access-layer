@@ -2,7 +2,7 @@
 import pytest
 import time
 
-from dal.validation import JsonValidator
+from dal.validation.validator import JsonValidator
 import dal.exceptions
 from dal.classes.filesystem import FileSystem
 

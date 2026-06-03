@@ -3,8 +3,8 @@ import pytest
 from pathlib import Path
 import urllib.parse
 
-from dal.validation import Schema
-from dal.validation import JSON_SCHEMA_FOLDER_PATH
+from dal.validation.schema import Schema
+from dal.validation.constants import JSON_SCHEMA_FOLDER_PATH
 from dal.classes.filesystem import FileSystem
 
 

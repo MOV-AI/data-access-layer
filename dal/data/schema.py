@@ -12,7 +12,7 @@ from dal.plugins.classes import PluginManager, Resource
 from .tree import TreeNode, DictNode, ObjectNode, PropertyNode, CallableNode
 from .serialization import ObjectDeserializer
 from .version import VersionNode
-from dal.validation import REDIS_SCHEMA_FOLDER_PATH
+from dal.validation.constants import REDIS_SCHEMA_FOLDER_PATH
 
 
 class SchemaNode(DictNode):
