@@ -46,7 +46,7 @@ class Scope(Struct):
 
         # Otherwise, lazy-load the default validator
         if cls.validator is None:
-            from dal.validation import JsonValidator
+            from dal.validation.validator import JsonValidator
 
             cls.validator = JsonValidator()
         return cls.validator
