@@ -1,6 +1,9 @@
 # Changelog
 
 ## vTBD
+- [BP-1704](https://movai.atlassian.net/browse/BP-1704): Optimize and remove unused imports
+  - Use lazy imports for dal/scopes
+  - Remove unused code from dal.scopes.callback
 - [BP-899](https://movai.atlassian.net/browse/BP-899): Not possible to obtain active_flow
   - Use Redis pipeline when writing
 
