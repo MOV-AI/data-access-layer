@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.23.7
 - [BP-1704](https://movai.atlassian.net/browse/BP-1704): Optimize and remove unused imports
   - Use lazy imports for dal/scopes
   - Remove unused code from dal.scopes.callback
