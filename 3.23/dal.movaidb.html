@@ -628,7 +628,20 @@ list of matching keys</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.set">
 <span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pickl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">px</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.set" title="Permalink to this definition"></a></dt>
-<dd><p>Set key values in database.</p>
+<dd><p>Set key values in database, always using a Redis pipeline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_input</strong> (<em>dict</em>) – The input dict to be saved in the database.</p></li>
+<li><p><strong>pickl</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to pickle values before saving. Defaults to True.</p></li>
+<li><p><strong>pipe</strong> (<em>Pipeline</em><em>, </em><em>optional</em>) – Redis pipeline to use for the operation. Defaults to None.</p></li>
+<li><p><strong>ex</strong> (<em>int</em><em>, </em><em>optional</em>) – Expiration time in seconds. Defaults to None.</p></li>
+<li><p><strong>px</strong> (<em>int</em><em>, </em><em>optional</em>) – Expiration time in milliseconds. Defaults to None.</p></li>
+<li><p><strong>nx</strong> (<em>bool</em><em>, </em><em>optional</em>) – Only set the key if it does not already exist. Defaults to False.</p></li>
+<li><p><strong>xx</strong> (<em>bool</em><em>, </em><em>optional</em>) – Only set the key if it already exists. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1314,7 +1327,20 @@ list of matching keys</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.movaidb.MovaiDB.set">
 <span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pickl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">px</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.movaidb.MovaiDB.set" title="Permalink to this definition"></a></dt>
-<dd><p>Set key values in database.</p>
+<dd><p>Set key values in database, always using a Redis pipeline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_input</strong> (<em>dict</em>) – The input dict to be saved in the database.</p></li>
+<li><p><strong>pickl</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to pickle values before saving. Defaults to True.</p></li>
+<li><p><strong>pipe</strong> (<em>Pipeline</em><em>, </em><em>optional</em>) – Redis pipeline to use for the operation. Defaults to None.</p></li>
+<li><p><strong>ex</strong> (<em>int</em><em>, </em><em>optional</em>) – Expiration time in seconds. Defaults to None.</p></li>
+<li><p><strong>px</strong> (<em>int</em><em>, </em><em>optional</em>) – Expiration time in milliseconds. Defaults to None.</p></li>
+<li><p><strong>nx</strong> (<em>bool</em><em>, </em><em>optional</em>) – Only set the key if it does not already exist. Defaults to False.</p></li>
+<li><p><strong>xx</strong> (<em>bool</em><em>, </em><em>optional</em>) – Only set the key if it already exists. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
