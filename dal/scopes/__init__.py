@@ -6,53 +6,84 @@
    Developers:
    - Moawiya Mograbi  (moawiya@mov.ai) - 2022
 """
-from .application import Application
-from .alert import Alert
-from .callback import Callback
-from .configuration import Config, Configuration
-from .fleetrobot import FleetRobot
-from .flow import Flow
-from .form import Form
-from .message import Message
-from .node import Node
-from .package import Package
-from .ports import Ports
-from .robot import Robot
-from .role import Role
-from .scope import Scope
-from .statemachine import StateMachine, SMVars
-from .structures import Struct
-from .system import System
-from .translation import Translation
-from .user import User
-from .widget import Widget
-from dal.utils import (
-    UsageSearchResult,
-    DirectNodeUsageItem,
-    IndirectNodeUsageItem,
-    DirectFlowUsageItem,
-    IndirectFlowUsageItem,
-    NodeFlowUsage,
-    FlowFlowUsage,
-    get_usage_search_scope_map,
-)
+import importlib
+from typing import TYPE_CHECKING
+
+# Import for type checking only - actual imports are lazy-loaded via __getattr__
+if TYPE_CHECKING:
+    from .alert import Alert
+    from .application import Application
+    from .callback import Callback
+    from .configuration import Config, Configuration
+    from .fleetrobot import FleetRobot
+    from .flow import Flow
+    from .form import Form
+    from .message import Message
+    from .node import Node
+    from .package import Package
+    from .ports import Ports
+    from .robot import Robot
+    from .role import Role
+    from .scope import Scope
+    from .statemachine import SMVars, StateMachine
+    from .structures import Struct
+    from .system import System
+    from .translation import Translation
+    from .user import User
+    from .widget import Widget
+
+# Mapping of attribute names to their module paths
+_LAZY_IMPORTS = {
+    "Application": ".application",
+    "Alert": ".alert",
+    "Callback": ".callback",
+    "Config": ".configuration",
+    "Configuration": ".configuration",
+    "FleetRobot": ".fleetrobot",
+    "Flow": ".flow",
+    "Form": ".form",
+    "Message": ".message",
+    "Node": ".node",
+    "Package": ".package",
+    "Ports": ".ports",
+    "Robot": ".robot",
+    "Role": ".role",
+    "Scope": ".scope",
+    "StateMachine": ".statemachine",
+    "SMVars": ".statemachine",
+    "Struct": ".structures",
+    "System": ".system",
+    "User": ".user",
+    "Widget": ".widget",
+    "Translation": ".translation",
+}
+
+
+def __getattr__(name):
+    """Dynamically import classes on first access to reduce memory usage."""
+    if name in _LAZY_IMPORTS:
+        module_path = _LAZY_IMPORTS[name]
+        if module_path.startswith("."):
+            module = importlib.import_module(module_path, package=__name__)
+        else:
+            module = importlib.import_module(module_path)
+        attr = getattr(module, name)
+        # Cache it in globals for faster subsequent access
+        globals()[name] = attr
+        return attr
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
 
 __all__ = [
     "Application",
     "Callback",
     "Config",
     "Configuration",
-    "DirectFlowUsageItem",
-    "DirectNodeUsageItem",
     "FleetRobot",
     "Flow",
-    "FlowFlowUsage",
     "Form",
-    "IndirectFlowUsageItem",
-    "IndirectNodeUsageItem",
     "Message",
     "Node",
-    "NodeFlowUsage",
     "Package",
     "Ports",
     "Robot",
@@ -62,12 +93,10 @@ __all__ = [
     "SMVars",
     "Struct",
     "System",
-    "Translation",
-    "UsageSearchResult",
     "User",
     "Widget",
     "Alert",
-    "get_usage_search_scope_map",
+    "Translation",
 ]
 
 try:

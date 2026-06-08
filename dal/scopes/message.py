@@ -14,7 +14,6 @@
 import os
 import rospkg
 import genmsg
-import rosmsg
 from dal.scopes.scope import Scope
 from dal.movaidb import MovaiDB
 
@@ -34,6 +33,7 @@ class Message(Scope):
     @classmethod
     def get_packages(cls, msg_type="all", db="global") -> list:
         """Gives a list of all packages containing messages of a type"""
+        import rosmsg
 
         if msg_type not in ["all", "msg", "srv", "action"]:
             raise Exception(
@@ -82,6 +82,7 @@ class Message(Scope):
     @classmethod
     def get_msgs(cls, package: str, msg_type="all", db="global") -> list:
         """Gives a list of all messages of some type in a package"""
+        import rosmsg
 
         if msg_type not in ["all", "msg", "srv", "action"]:
             raise Exception(
@@ -138,6 +139,8 @@ class Message(Scope):
     @classmethod
     def get_all(cls, db="global") -> dict:
         """Gives the all available messages of all types organized by package"""
+        import rosmsg
+
         rospack = rospkg.RosPack()
 
         full_dict = {}
@@ -165,6 +168,7 @@ class Message(Scope):
     @classmethod
     def export_portdata(cls, db="global") -> dict:
         """Gives all messages/services available organized by type. Possibly intended to replace get_all(), but kept for legacy reasons"""
+        import rosmsg
 
         rospack = rospkg.RosPack()
 
@@ -280,6 +284,8 @@ class Message(Scope):
     @staticmethod
     def get_structure(message: str) -> dict:
         """Gives the full structure of a message given the 'package/message' input"""
+        import rosmsg
+
         rospack = rospkg.RosPack()
         package, msg_name = message.split("/")
         try:  # MESSAGE

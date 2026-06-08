@@ -21,7 +21,6 @@ import aioredis
 import dal
 import redis
 import random
-from deepdiff import DeepDiff
 from redis.client import Pipeline
 from redis.connection import Connection
 
@@ -480,12 +479,23 @@ class MovaiDB:
         xx=False,
         validate=True,  # TODO: remove unused parameter
     ) -> None:
-        """Set key values in database."""
+        """Set key values in database, always using a Redis pipeline.
+
+        Args:
+            _input (dict): The input dict to be saved in the database.
+            pickl (bool, optional): Whether to pickle values before saving. Defaults to True.
+            pipe (Pipeline, optional): Redis pipeline to use for the operation. Defaults to None.
+            ex (int, optional): Expiration time in seconds. Defaults to None.
+            px (int, optional): Expiration time in milliseconds. Defaults to None.
+            nx (bool, optional): Only set the key if it does not already exist. Defaults to False.
+            xx (bool, optional): Only set the key if it already exists. Defaults to False.
+
+        """
 
         # here we validate our dict and get the keys
         kvs = self.dict_to_keys(_input)
 
-        db_set = pipe if isinstance(pipe, Pipeline) else self.db_write
+        db_set = pipe if isinstance(pipe, Pipeline) else self.db_write.pipeline()
         # Save each key value in redis according to template value type
         for key, value, source in kvs:
             if pickl and source not in ["hash", "list"]:
@@ -518,6 +528,9 @@ class MovaiDB:
                         db_set.set(key, value, ex=ex, px=px, nx=nx, xx=xx)
             except Exception as e:
                 LOGGER.error("Something went wrong while saving this in Redis: %s", e)
+
+        if not isinstance(pipe, Pipeline):
+            db_set.execute()
 
     def delete(self, _input: dict, pipe=None) -> Optional[int]:
         """
@@ -1150,6 +1163,8 @@ class MovaiDB:
     @staticmethod
     def calc_scope_update(old_dict: dict, new_dict: dict, structure: dict) -> List[Dict[str, Any]]:
         """Calculate scope updates dicts"""
+        from deepdiff import DeepDiff
+
         # Translate dict to list of paths
         old_dict_paths = [p for p in MovaiDB.dict_to_paths(old_dict)]
         # Translate dict to list of paths

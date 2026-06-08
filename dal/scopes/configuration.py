@@ -9,8 +9,6 @@
 Module that implements Configuration scope class
 """
 import pickle
-import yaml
-from box import Box
 
 from dal.helpers.cache import ThreadSafeCache
 from .scope import Scope
@@ -41,6 +39,8 @@ class Configuration(Scope):
 
     def get_value(self) -> dict:
         """Returns a dictionary with the configuration values"""
+        import yaml
+
         if self.Type == "xml":
             # Yaml is the name of the field
             return self._get_db_yaml()
@@ -70,12 +70,3 @@ class Configuration(Scope):
                 '"%s" is not a valid parameter in configuration "%s"' % (param, self.name)
             )
         return value
-
-
-class Config(Box):
-    """Config with dot accessible elements"""
-
-    def __init__(self, name):
-        # raises DoesNotExist in case Configuration name does not exist
-        config = Configuration(name).get_value()
-        super().__init__(Box(config))

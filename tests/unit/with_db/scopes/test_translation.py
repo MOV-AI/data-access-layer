@@ -4,7 +4,7 @@
 class TestTranslation:
     def test_translation(self, global_db, metadata_folder):
         from dal.tools.backup import Importer
-        from dal.scopes import Translation
+        from dal.scopes.translation import Translation
 
         tool = Importer(
             metadata_folder,

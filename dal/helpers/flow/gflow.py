@@ -18,7 +18,7 @@ from movai_core_shared.consts import (
     MOVAI_TRANSITIONTO,
 )
 from movai_core_shared.exceptions import RemapValidationError
-from dal.validation import Template
+from dal.validation.template import Template
 
 if TYPE_CHECKING:
     from dal.models import Flow

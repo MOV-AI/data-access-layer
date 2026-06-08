@@ -11,7 +11,7 @@ from dal.utils.usage_search.usage_types import (
     IndirectNodeUsageItem,
     IndirectFlowUsageItem,
 )
-from dal.utils import get_usage_search_scope_map
+from dal.utils.usage_search.scope_map import get_usage_search_scope_map
 
 
 def get_scope_instance(search_type, name):
