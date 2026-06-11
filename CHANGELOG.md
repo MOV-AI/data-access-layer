@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.25.4
 - [BP-1715](https://movai.atlassian.net/browse/BP-1715): Add tests for scopes import/export functionality
 
 ## v3.25.3
