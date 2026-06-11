@@ -1,5 +1,8 @@
 # Changelog
 
+## vTBD
+- [BP-1715](https://movai.atlassian.net/browse/BP-1715): Add tests for scopes import/export functionality
+
 ## v3.25.3
 - [BP-1704](https://movai.atlassian.net/browse/BP-1704): Optimize and remove unused imports
   - Use lazy imports for dal/scopes

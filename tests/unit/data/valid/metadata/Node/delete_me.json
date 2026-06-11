@@ -1,7 +1,7 @@
 {
     "Node": {
         "delete_me": {
-            "Info": null,
+            "Info": "imported node",
             "Label": "delete_me",
             "LastUpdate": {
                 "date": "18/11/2022 at 15:30:55",

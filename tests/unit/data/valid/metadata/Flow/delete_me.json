@@ -1,7 +1,7 @@
 {
     "Flow": {
         "delete_me": {
-            "Description": "",
+            "Description": "imported flow",
             "ExposedPorts": {},
             "Info": "",
             "Label": "delete_me",
