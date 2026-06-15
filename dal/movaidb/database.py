@@ -32,11 +32,24 @@ from .db_schema import DBSchema
 StrOrDictRecursive = Union[str, None, Dict[str, "StrOrDictRecursive"]]
 DB_CONNECT_RETRIES = 3
 DB_CONNECT_BASE_DELAY = 0.1
+REDIS_WRITE_BUFFER = 64 * 1024 * 1024
 
 LOGGER = Log.get_logger("dal.mov.ai")
 
 
 dal_directory = path.dirname(dal.__file__)
+
+
+def redis_value_size(value: Any) -> int:
+    """Best-effort byte size for Redis write diagnostics."""
+    if isinstance(value, bytes):
+        return len(value)
+    if isinstance(value, str):
+        return len(value.encode("utf-8"))
+    try:
+        return len(pickle.dumps(value))
+    except Exception:
+        return 0
 
 
 def longest_common_prefix(strings: List[str]) -> str:
@@ -342,6 +355,21 @@ class MovaiDB:
 
         self._background_tasks = set()
 
+    def validate_file_write(self, key, value):
+        payload_size = redis_value_size(value)
+        required_memory = payload_size + REDIS_WRITE_BUFFER
+
+        memory = self.db_write.info("memory")
+        maxmemory = memory.get("maxmemory", 0)
+        used_memory = memory.get("used_memory", 0)
+
+        available_memory = maxmemory - used_memory
+
+        if required_memory > available_memory:
+            raise Exception(
+                f"Cannot write key '{key}': payload size {payload_size} bytes exceeds available memory {available_memory} bytes."
+            )
+
     def search(self, _input: dict) -> list:
         """
         Search redis for a certain structure, returns a list of matching
@@ -498,6 +526,32 @@ class MovaiDB:
         db_set = pipe if isinstance(pipe, Pipeline) else self.db_write.pipeline()
         # Save each key value in redis according to template value type
         for key, value, source in kvs:
+            if source == "file":
+                # For files, validate if file size is within Redis limits before writing
+                self.validate_file_write(key, value)
+
+                if pickl:
+                    value = pickle.dumps(value)
+
+                try:
+                    # The file may still not fit in Redis, even if it passed validation
+                    # as there is some object and allocation overhead.
+                    # If the write fails (due to noneviction policy), an OOM error is raised.
+
+                    # Pipeline errors include the full command in redis-py 3.x.
+                    # For large values, formatting that error can exhaust the
+                    # backend memory when Redis uses the noeviction policy.
+                    self.db_write.set(key, value, ex=ex, px=px, nx=nx, xx=xx)
+                except Exception as error:
+                    LOGGER.error(
+                        "Redis file write failed for key '%s' (%s bytes) with error: %s",
+                        key,
+                        redis_value_size(value),
+                        error,
+                    )
+                    raise
+                continue
+
             if pickl and source not in ["hash", "list"]:
                 value = pickle.dumps(value)
             try:
