@@ -1,5 +1,9 @@
 # Changelog
 
+## vTBD
+- [BP-1714](https://movai.atlassian.net/browse/BP-1714): Validate file size and safeguard for noneviction raised errors
+  - Add validation for file size is lower than available memory before writing to Redis.
+
 ## v3.23.7
 - [BP-1704](https://movai.atlassian.net/browse/BP-1704): Optimize and remove unused imports
   - Use lazy imports for dal/scopes
