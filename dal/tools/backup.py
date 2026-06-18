@@ -202,6 +202,84 @@ class FilesystemProjectSource(ProjectSource):
         return self._resolve(relative_path)
 
 
+class InMemoryProjectSource(ProjectSource):
+    """In-memory project source for gRPC payloads."""
+
+    def __init__(self, files: dict):
+        self.files = {}
+        for path, content in files.items():
+            normalized = self.normalize_path(path)
+            if isinstance(content, str):
+                content = content.encode("utf-8")
+            self.files[normalized] = content
+
+    def list_dir(self, relative_dir: str) -> List[str]:
+        prefix = self.normalize_path(relative_dir)
+        if prefix and not prefix.endswith("/"):
+            prefix += "/"
+
+        children = set()
+        for path in self.files:
+            if not path.startswith(prefix):
+                continue
+            children.add(path[len(prefix) :].split("/", 1)[0])
+
+        return sorted(children)
+
+    def is_file(self, relative_path: str) -> bool:
+        normalized = self.normalize_path(relative_path)
+        return normalized in self.files
+
+    def is_dir(self, relative_path: str) -> bool:
+        prefix = self.normalize_path(relative_path)
+        if prefix and not prefix.endswith("/"):
+            prefix += "/"
+        return any(path.startswith(prefix) for path in self.files)
+
+    def read_text(self, relative_path: str) -> str:
+        normalized = self.normalize_path(relative_path)
+        if normalized not in self.files:
+            raise FileNotFoundError(f"File not found: {relative_path}")
+        return self.read_bytes(normalized).decode("utf-8")
+
+    def read_bytes(self, relative_path: str) -> bytes:
+        normalized = self.normalize_path(relative_path)
+        if normalized not in self.files:
+            raise FileNotFoundError(f"File not found: {relative_path}")
+        return self.files[normalized]
+
+    def walk(self, relative_dir: str):
+        """
+        Walk the in-memory file structure, yielding (relative_root, dirs, files).
+        """
+        root = self.normalize_path(relative_dir)
+        stack = [root]
+
+        while stack:
+            current = stack.pop()
+            dirs = []
+            files = []
+
+            for path in self.files:
+                if not path.startswith(current):
+                    continue
+                relative_path = path[len(current) :].lstrip("/")
+                if "/" in relative_path:
+                    dir_name = relative_path.split("/", 1)[0]
+                    if dir_name not in dirs:
+                        dirs.append(dir_name)
+                else:
+                    files.append(relative_path)
+
+            yield current, dirs, files
+
+            for dir_name in dirs:
+                stack.append(self.join(current, dir_name))
+
+    def display_path(self, relative_path: str) -> str:
+        return self.normalize_path(relative_path)
+
+
 class Backup:
     """Base class for Importer and Exporter."""
 
