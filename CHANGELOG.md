@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.25.5
+- [BP-1714](https://movai.atlassian.net/browse/BP-1714): Validate file size and safeguard for noneviction raised errors
+  - Add validation for file size is lower than available memory before writing to Redis.
+
 ## v3.25.4
 - [BP-1715](https://movai.atlassian.net/browse/BP-1715): Add tests for scopes import/export functionality
 
