@@ -367,7 +367,6 @@ class Backup:
             all_default: Default value for all objects, applied when '*' is found.
 
         """
-        objects = {}
         # let it blow
         with open(manifest) as manifest_file:
             return Backup.parse_manifest(manifest_file.readlines(), all_default)
