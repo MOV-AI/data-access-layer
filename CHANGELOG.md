@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.25.6
 - [BP-1719](https://movai.atlassian.net/browse/BP-1719): Allow for both in-memory and file-system project sources for metadata import.
 
 ## v3.25.5
