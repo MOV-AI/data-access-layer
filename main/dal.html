@@ -2215,7 +2215,9 @@
 <li class="toctree-l2"><a class="reference internal" href="dal.tools.html#module-dal.tools.backup">dal.tools.backup module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="dal.tools.html#dal.tools.backup.Backup"><code class="docutils literal notranslate"><span class="pre">Backup</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.Backup.SCOPES"><code class="docutils literal notranslate"><span class="pre">Backup.SCOPES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.Backup.parse_manifest"><code class="docutils literal notranslate"><span class="pre">Backup.parse_manifest()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.Backup.read_manifest"><code class="docutils literal notranslate"><span class="pre">Backup.read_manifest()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.Backup.read_manifest_content"><code class="docutils literal notranslate"><span class="pre">Backup.read_manifest_content()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.Backup.run"><code class="docutils literal notranslate"><span class="pre">Backup.run()</span></code></a></li>
 </ul>
 </li>
@@ -2254,6 +2256,16 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.Factory.get_class"><code class="docutils literal notranslate"><span class="pre">Factory.get_class()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="dal.tools.html#dal.tools.backup.FilesystemProjectSource"><code class="docutils literal notranslate"><span class="pre">FilesystemProjectSource</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.FilesystemProjectSource.display_path"><code class="docutils literal notranslate"><span class="pre">FilesystemProjectSource.display_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.FilesystemProjectSource.is_dir"><code class="docutils literal notranslate"><span class="pre">FilesystemProjectSource.is_dir()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.FilesystemProjectSource.is_file"><code class="docutils literal notranslate"><span class="pre">FilesystemProjectSource.is_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.FilesystemProjectSource.list_dir"><code class="docutils literal notranslate"><span class="pre">FilesystemProjectSource.list_dir()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.FilesystemProjectSource.read_bytes"><code class="docutils literal notranslate"><span class="pre">FilesystemProjectSource.read_bytes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.FilesystemProjectSource.read_text"><code class="docutils literal notranslate"><span class="pre">FilesystemProjectSource.read_text()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.FilesystemProjectSource.walk"><code class="docutils literal notranslate"><span class="pre">FilesystemProjectSource.walk()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="dal.tools.html#dal.tools.backup.ImportException"><code class="docutils literal notranslate"><span class="pre">ImportException</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="dal.tools.html#dal.tools.backup.Importer"><code class="docutils literal notranslate"><span class="pre">Importer</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.Importer.SKIP_SCOPE_DELETE"><code class="docutils literal notranslate"><span class="pre">Importer.SKIP_SCOPE_DELETE</span></code></a></li>
@@ -2278,6 +2290,28 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.Importer.imported"><code class="docutils literal notranslate"><span class="pre">Importer.imported()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.Importer.run"><code class="docutils literal notranslate"><span class="pre">Importer.run()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.Importer.set_imported"><code class="docutils literal notranslate"><span class="pre">Importer.set_imported()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.tools.html#dal.tools.backup.InMemoryProjectSource"><code class="docutils literal notranslate"><span class="pre">InMemoryProjectSource</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.InMemoryProjectSource.display_path"><code class="docutils literal notranslate"><span class="pre">InMemoryProjectSource.display_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.InMemoryProjectSource.is_dir"><code class="docutils literal notranslate"><span class="pre">InMemoryProjectSource.is_dir()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.InMemoryProjectSource.is_file"><code class="docutils literal notranslate"><span class="pre">InMemoryProjectSource.is_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.InMemoryProjectSource.list_dir"><code class="docutils literal notranslate"><span class="pre">InMemoryProjectSource.list_dir()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.InMemoryProjectSource.read_bytes"><code class="docutils literal notranslate"><span class="pre">InMemoryProjectSource.read_bytes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.InMemoryProjectSource.read_text"><code class="docutils literal notranslate"><span class="pre">InMemoryProjectSource.read_text()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.InMemoryProjectSource.walk"><code class="docutils literal notranslate"><span class="pre">InMemoryProjectSource.walk()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.tools.html#dal.tools.backup.ProjectSource"><code class="docutils literal notranslate"><span class="pre">ProjectSource</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.ProjectSource.display_path"><code class="docutils literal notranslate"><span class="pre">ProjectSource.display_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.ProjectSource.is_dir"><code class="docutils literal notranslate"><span class="pre">ProjectSource.is_dir()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.ProjectSource.is_file"><code class="docutils literal notranslate"><span class="pre">ProjectSource.is_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.ProjectSource.join"><code class="docutils literal notranslate"><span class="pre">ProjectSource.join()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.ProjectSource.list_dir"><code class="docutils literal notranslate"><span class="pre">ProjectSource.list_dir()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.ProjectSource.normalize_path"><code class="docutils literal notranslate"><span class="pre">ProjectSource.normalize_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.ProjectSource.read_bytes"><code class="docutils literal notranslate"><span class="pre">ProjectSource.read_bytes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.ProjectSource.read_text"><code class="docutils literal notranslate"><span class="pre">ProjectSource.read_text()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html#dal.tools.backup.ProjectSource.walk"><code class="docutils literal notranslate"><span class="pre">ProjectSource.walk()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="dal.tools.html#dal.tools.backup.RemoveException"><code class="docutils literal notranslate"><span class="pre">RemoveException</span></code></a></li>
