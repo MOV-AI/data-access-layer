@@ -3,6 +3,8 @@ import os
 import json
 from filecmp import cmpfiles
 
+import pytest
+
 
 class TestToolsBackup:
     """Test suite for the backup tool's import/export functionality.
@@ -29,11 +31,40 @@ class TestToolsBackup:
     - Invalid data handling
     """
 
-    def test_import_manifest(self, global_db, metadata_folder, manifest_file):
-        from dal.tools.backup import Importer
+    @staticmethod
+    def get_source(manifest_file, metadata_folder, source_type):
+        """Get the appropriate source based on the source_type."""
+        from dal.tools.backup import FilesystemProjectSource, InMemoryProjectSource
+
+        if source_type == "FilesystemProjectSource":
+            return FilesystemProjectSource(metadata_folder)
+        else:
+            files = {manifest_file.name: manifest_file.read_bytes()}
+
+            for file in metadata_folder.rglob("*"):
+                if file.is_file():
+                    path = InMemoryProjectSource.normalize_path(file.relative_to(metadata_folder))
+                    if path.startswith("metadata/"):
+                        path = path[len("metadata/") :]
+
+                    files[path] = file.read_bytes()
+
+            return InMemoryProjectSource(files)
+
+    @pytest.mark.parametrize(
+        "source_type",
+        [
+            "FilesystemProjectSource",
+            "InMemoryProjectSource",
+        ],
+        ids=["FilesystemProjectSource", "InMemoryProjectSource"],
+    )
+    def test_import_manifest(self, global_db, metadata_folder, manifest_file, source_type):
+        from dal.tools.backup import Importer, Backup
 
         tool = Importer(
             metadata_folder,
+            source=self.get_source(manifest_file, metadata_folder, source_type),
             force=True,
             dry=False,
             debug=False,
@@ -41,8 +72,11 @@ class TestToolsBackup:
             clean_old_data=True,
         )
 
-        objects = tool.read_manifest(manifest_file)
-
+        objects = (
+            tool.read_manifest(manifest_file)
+            if source_type == "FilesystemProjectSource"
+            else Backup.read_manifest_content(manifest_file.read_text(), tool.get_objs)
+        )
         tool.run(objects)
 
     def test_export_manifest(self, global_db, manifest_file, tmp_path):
@@ -77,12 +111,23 @@ class TestToolsBackup:
 
         tool.run(objects)
 
-    def test_import_export_alert(self, global_db, metadata_folder, manifest_file, tmp_path):
+    @pytest.mark.parametrize(
+        "source_type",
+        [
+            "FilesystemProjectSource",
+            "InMemoryProjectSource",
+        ],
+        ids=["FilesystemProjectSource", "InMemoryProjectSource"],
+    )
+    def test_import_export_alert(
+        self, global_db, metadata_folder, manifest_file, tmp_path, source_type
+    ):
         """Test alert import and export."""
         from dal.tools.backup import Importer, Exporter
 
         importer = Importer(
             metadata_folder,
+            self.get_source(manifest_file, metadata_folder, source_type),
             force=True,
             dry=False,
             debug=False,
@@ -110,7 +155,17 @@ class TestToolsBackup:
 
             assert imported_content == exported_content
 
-    def test_import_export_callback(self, global_db, metadata_folder, tmp_path):
+    @pytest.mark.parametrize(
+        "source_type",
+        [
+            "FilesystemProjectSource",
+            "InMemoryProjectSource",
+        ],
+        ids=["FilesystemProjectSource", "InMemoryProjectSource"],
+    )
+    def test_import_export_callback(
+        self, global_db, metadata_folder, manifest_file, tmp_path, source_type
+    ):
         """Test callback import with .py file and export."""
         from dal.tools.backup import Importer, Exporter
         from dal.scopes.callback import Callback
@@ -118,6 +173,7 @@ class TestToolsBackup:
         # Import
         importer = Importer(
             metadata_folder,
+            source=self.get_source(manifest_file, metadata_folder, source_type),
             force=True,
             dry=False,
             debug=False,
@@ -159,7 +215,17 @@ class TestToolsBackup:
             exported_content = json.load(callback_json)
             assert original_content == exported_content
 
-    def test_import_export_configuration(self, global_db, metadata_folder, tmp_path):
+    @pytest.mark.parametrize(
+        "source_type",
+        [
+            "FilesystemProjectSource",
+            "InMemoryProjectSource",
+        ],
+        ids=["FilesystemProjectSource", "InMemoryProjectSource"],
+    )
+    def test_import_export_configuration(
+        self, global_db, metadata_folder, manifest_file, tmp_path, source_type
+    ):
         """Test configuration import with .yaml file and export."""
         from dal.tools.backup import Importer, Exporter
         from dal.scopes.configuration import Configuration
@@ -167,6 +233,7 @@ class TestToolsBackup:
         # Import
         importer = Importer(
             metadata_folder,
+            source=self.get_source(manifest_file, metadata_folder, source_type),
             force=True,
             dry=False,
             debug=False,
@@ -208,7 +275,17 @@ class TestToolsBackup:
             exported_content = json.load(exported_json)
             assert original_content == exported_content
 
-    def test_import_export_flow(self, global_db, metadata_folder, tmp_path):
+    @pytest.mark.parametrize(
+        "source_type",
+        [
+            "FilesystemProjectSource",
+            "InMemoryProjectSource",
+        ],
+        ids=["FilesystemProjectSource", "InMemoryProjectSource"],
+    )
+    def test_import_export_flow(
+        self, global_db, metadata_folder, manifest_file, tmp_path, source_type
+    ):
         """Test flow import and export."""
         from dal.tools.backup import Importer, Exporter
         from dal.scopes.flow import Flow
@@ -216,6 +293,7 @@ class TestToolsBackup:
         # Import
         importer = Importer(
             metadata_folder,
+            source=self.get_source(manifest_file, metadata_folder, source_type),
             force=True,
             dry=False,
             debug=False,
@@ -249,7 +327,17 @@ class TestToolsBackup:
             exported_content = json.load(exported)
             assert imported_content == exported_content
 
-    def test_import_flow_with_dependencies(self, global_db, metadata_folder, tmp_path):
+    @pytest.mark.parametrize(
+        "source_type",
+        [
+            "FilesystemProjectSource",
+            "InMemoryProjectSource",
+        ],
+        ids=["FilesystemProjectSource", "InMemoryProjectSource"],
+    )
+    def test_import_flow_with_dependencies(
+        self, global_db, metadata_folder, manifest_file, tmp_path, source_type
+    ):
         """Test flow import with recursive dependencies (nodes and subflows)."""
         from dal.tools.backup import Importer
         from dal.scopes.flow import Flow
@@ -258,6 +346,7 @@ class TestToolsBackup:
         # Import with recursive=True to import dependencies
         importer = Importer(
             metadata_folder,
+            source=self.get_source(manifest_file, metadata_folder, source_type),
             force=True,
             dry=False,
             debug=False,
@@ -286,7 +375,17 @@ class TestToolsBackup:
         subflow = Flow("flow_with_duplicated_subflow")
         assert subflow.Label == "flow_with_duplicated_subflow"
 
-    def test_import_export_node(self, global_db, metadata_folder, tmp_path):
+    @pytest.mark.parametrize(
+        "source_type",
+        [
+            "FilesystemProjectSource",
+            "InMemoryProjectSource",
+        ],
+        ids=["FilesystemProjectSource", "InMemoryProjectSource"],
+    )
+    def test_import_export_node(
+        self, global_db, metadata_folder, manifest_file, tmp_path, source_type
+    ):
         """Test node import and export."""
         from dal.tools.backup import Importer, Exporter
         from dal.scopes.node import Node
@@ -294,6 +393,7 @@ class TestToolsBackup:
         # Import
         importer = Importer(
             metadata_folder,
+            source=self.get_source(manifest_file, metadata_folder, source_type),
             force=True,
             dry=False,
             debug=False,
@@ -326,7 +426,17 @@ class TestToolsBackup:
             exported_content = json.load(exported)
             assert imported_content == exported_content
 
-    def test_import_node_multiple(self, global_db, metadata_folder, tmp_path):
+    @pytest.mark.parametrize(
+        "source_type",
+        [
+            "FilesystemProjectSource",
+            "InMemoryProjectSource",
+        ],
+        ids=["FilesystemProjectSource", "InMemoryProjectSource"],
+    )
+    def test_import_node_multiple(
+        self, global_db, metadata_folder, manifest_file, tmp_path, source_type
+    ):
         """Test importing multiple nodes at once."""
         from dal.tools.backup import Importer
         from dal.scopes.node import Node
@@ -334,6 +444,7 @@ class TestToolsBackup:
         # Import
         importer = Importer(
             metadata_folder,
+            source=self.get_source(manifest_file, metadata_folder, source_type),
             force=True,
             dry=False,
             debug=False,
@@ -349,13 +460,28 @@ class TestToolsBackup:
             node = Node(node_name)
             assert node.Label == node_name
 
-    def test_import_package(self, global_db, metadata_folder, metadata2_folder):
+    @pytest.mark.parametrize(
+        "source_type",
+        [
+            "FilesystemProjectSource",
+            "InMemoryProjectSource",
+        ],
+        ids=["FilesystemProjectSource", "InMemoryProjectSource"],
+    )
+    def test_import_package(
+        self, global_db, metadata_folder, metadata2_folder, manifest_file, source_type
+    ):
         """Test that consecutive imports merge package contents correctly."""
         from dal.tools.backup import Importer
         from dal.scopes.package import Package
 
+        # Clean any existing Package data from previous test runs
+        # (clean_old_data doesn't work for Package due to SKIP_SCOPE_DELETE)
+        global_db.delete_by_args("Package", Name="maps")
+
         importer1 = Importer(
             metadata_folder,
+            source=self.get_source(manifest_file, metadata_folder, source_type),
             force=True,
             dry=False,
             debug=False,
@@ -365,6 +491,7 @@ class TestToolsBackup:
 
         importer2 = Importer(
             metadata2_folder,
+            source=self.get_source(manifest_file, metadata2_folder, source_type),
             force=True,
             dry=False,
             debug=False,
@@ -387,12 +514,23 @@ class TestToolsBackup:
             "delete_me2.yaml",
         }
 
-    def test_import_export_translation(self, global_db, metadata_folder, manifest_file, tmp_path):
+    @pytest.mark.parametrize(
+        "source_type",
+        [
+            "FilesystemProjectSource",
+            "InMemoryProjectSource",
+        ],
+        ids=["FilesystemProjectSource", "InMemoryProjectSource"],
+    )
+    def test_import_export_translation(
+        self, global_db, metadata_folder, manifest_file, tmp_path, source_type
+    ):
         """Test translation import and export."""
         from dal.tools.backup import Importer, Exporter
 
         importer = Importer(
             metadata_folder,
+            source=self.get_source(manifest_file, metadata_folder, source_type),
             force=True,
             dry=False,
             debug=False,
@@ -425,14 +563,30 @@ class TestToolsBackup:
         assert not diff
         assert not err
 
+    @pytest.mark.parametrize(
+        "source_type",
+        [
+            "FilesystemProjectSource",
+            "InMemoryProjectSource",
+        ],
+        ids=["FilesystemProjectSource", "InMemoryProjectSource"],
+    )
     def test_import_invalid_data(
-        self, global_db, metadata_folder_invalid_data, manifest_file_invalid_data, capsys
+        self,
+        global_db,
+        metadata_folder_invalid_data,
+        manifest_file_invalid_data,
+        capsys,
+        source_type,
     ):
         """Test import validates and reports invalid data."""
         from dal.tools.backup import Importer
 
         tool = Importer(
             metadata_folder_invalid_data,
+            source=self.get_source(
+                manifest_file_invalid_data, metadata_folder_invalid_data, source_type
+            ),
             force=True,
             dry=False,
             debug=False,
