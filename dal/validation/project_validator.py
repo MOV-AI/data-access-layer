@@ -7,6 +7,7 @@ Proprietary and confidential
 from dal.models.scopestree import scopes
 from dal.scopes.flow import Flow, Node
 from typing import List, Dict, Optional, Set
+from pydantic import BaseModel, ConfigDict
 from dal.validation.issues import (
     ProjIssue,
     MissingMob,
@@ -35,6 +36,37 @@ VALIDATED_SCOPES = [
     "SharedDataTemplate",
     "TaskTemplate",
 ]
+
+
+class Summary(BaseModel):
+    """Summary of validation results."""
+
+    total_issues: int
+    errors: int
+    warnings: int
+    scopes_checked: List[str]
+
+
+class ProjectValidationResult(BaseModel):
+    """Result structure for usage search.
+
+    Format:
+    {
+        "summary": {
+            "total_issues": int,
+            "errors": int,
+            "warnings": int,
+            "scopes_checked": List[str]
+        },
+        "issues": List[ProjIssue]
+    }
+    """
+
+    # To allow for ProjIssue instances in the issues list
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    summary: Summary
+    issues: List[ProjIssue]
 
 
 class MissingFlowTemplateExc(Exception):
@@ -112,15 +144,15 @@ class ProjectValidator:
 
         LOGGER.info(f"Validation complete: {error_count} errors, {warning_count} warnings")
 
-        return {
-            "summary": {
-                "total_issues": len(self.issues),
-                "errors": error_count,
-                "warnings": warning_count,
-                "scopes_checked": VALIDATED_SCOPES,
-            },
-            "issues": self.issues,
-        }
+        return ProjectValidationResult(
+            summary=Summary(
+                total_issues=len(self.issues),
+                errors=error_count,
+                warnings=warning_count,
+                scopes_checked=VALIDATED_SCOPES,
+            ),
+            issues=self.issues,
+        )
 
     def _build_object_cache(self):
         """Build a cache of all objects in workspace by scope."""

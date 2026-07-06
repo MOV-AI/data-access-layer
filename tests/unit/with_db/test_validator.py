@@ -1,4 +1,4 @@
-from dal.validation.project_validator import ProjectValidator
+from dal.validation.project_validator import ProjectValidationResult, ProjectValidator
 from dal.validation.issues import ProjIssue
 import pytest
 
@@ -11,13 +11,13 @@ class TestProjectValidator:
     ):
         print(f"Validator output: {validator_output}")
 
-        issue_count = validator_output["summary"]["total_issues"]
+        issue_count = validator_output.summary.total_issues
         assert issue_count == len(
             expected_issues
         ), f"Expected {len(expected_issues)} issues, but got {issue_count}"
 
         for i in range(issue_count):
-            actual_issue = validator_output["issues"][i]
+            actual_issue = validator_output.issues[i]
             expected_issue = expected_issues[i]
 
             print(actual_issue.json_path)
@@ -49,10 +49,10 @@ class TestProjectValidator:
         from dal.validation.issues import NonMatchingLinkPorts
 
         with setup_test_data_from_path(folder_invalid_data / "proj-non-matching-ports"):
-            validator_output = ProjectValidator().validate()
+            validator_output: ProjectValidationResult = ProjectValidator().validate()
 
             issue_order = {
-                issue.json_path: index for index, issue in enumerate(validator_output["issues"])
+                issue.json_path: index for index, issue in enumerate(validator_output.issues)
             }
 
             self.execute_and_assert_same_type_issues(
@@ -90,7 +90,7 @@ class TestProjectValidator:
         from dal.validation.issues import MissingMob
 
         with setup_test_data_from_path(folder_invalid_data / path):
-            validator_output = ProjectValidator().validate()
+            validator_output: ProjectValidationResult = ProjectValidator().validate()
             self.execute_and_assert_same_type_issues(
                 validator_output,
                 [
@@ -113,7 +113,7 @@ class TestProjectValidator:
         from dal.validation.issues import MissingMob
 
         with setup_test_data_from_path(folder_invalid_data / "proj-missing-flow"):
-            validator_output = ProjectValidator().validate()
+            validator_output: ProjectValidationResult = ProjectValidator().validate()
             self.execute_and_assert_same_type_issues(
                 validator_output,
                 [
@@ -136,7 +136,7 @@ class TestProjectValidator:
         from dal.validation.issues import MissingFlowInstance
 
         with setup_test_data_from_path(folder_invalid_data / "proj-missing-flow-instance"):
-            validator_output = ProjectValidator().validate()
+            validator_output: ProjectValidationResult = ProjectValidator().validate()
             self.execute_and_assert_same_type_issues(
                 validator_output,
                 [
@@ -154,7 +154,7 @@ class TestProjectValidator:
         from dal.validation.issues import MissingNodeInstance
 
         with setup_test_data_from_path(folder_invalid_data / "proj-missing-node-instance"):
-            validator_output = ProjectValidator().validate()
+            validator_output: ProjectValidationResult = ProjectValidator().validate()
             self.execute_and_assert_same_type_issues(
                 validator_output,
                 [
@@ -172,7 +172,7 @@ class TestProjectValidator:
         from dal.validation.issues import MissingMob
 
         with setup_test_data_from_path(folder_invalid_data / "proj-missing-port"):
-            validator_output = ProjectValidator().validate()
+            validator_output: ProjectValidationResult = ProjectValidator().validate()
             self.execute_and_assert_same_type_issues(
                 validator_output,
                 [
