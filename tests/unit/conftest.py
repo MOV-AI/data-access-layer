@@ -2,6 +2,7 @@ import os
 import pytest
 import sys
 import importlib
+from contextlib import contextmanager
 
 from pathlib import Path
 
@@ -317,3 +318,79 @@ def circular_dependency_data(global_db):
         db.delete({"Node": {"TestNodeMultiCircular": {}}})
     except Exception:
         pass
+
+
+@pytest.fixture(scope="session")
+def folder_invalid_data():
+    return DATA_FOLDER / "invalid"
+
+
+@pytest.fixture()
+def setup_test_data_from_path(global_db):
+    """Import test metadata from a given path before each test."""
+
+    @contextmanager
+    def _setup(path: Path):
+        from dal.tools.backup import Importer
+        from dal.scopes.node import Node
+        from dal.scopes.flow import Flow
+
+        # Find all packages in the path (each subdirectory with metadata/ folder)
+        packages = [p for p in path.iterdir() if p.is_dir() and (p / "metadata").exists()]
+
+        all_nodes = []
+        all_flows = []
+
+        # Import from each package
+        for package in packages:
+            metadata_path = package / "metadata"
+
+            # Scan for Flows and Nodes
+            flow_dir = metadata_path / "Flow"
+            node_dir = metadata_path / "Node"
+
+            if flow_dir.exists():
+                flows = [f.stem for f in flow_dir.glob("*.json")]
+                all_flows.extend(flows)
+
+            if node_dir.exists():
+                nodes = [n.stem for n in node_dir.glob("*.json")]
+                all_nodes.extend(nodes)
+
+            # Import metadata using Importer
+            importer = Importer(
+                metadata_path,
+                force=True,
+                dry=False,
+                debug=False,
+                recursive=True,
+                clean_old_data=False,  # Don't clean between packages
+            )
+
+            # Import nodes first (flows may depend on them)
+            if all_nodes:
+                importer.run({"Node": nodes})
+
+            # Then import flows
+            if all_flows:
+                importer.run({"Flow": flows})
+
+        try:
+            yield
+        finally:
+            # Cleanup after test
+            for node_name in all_nodes:
+                try:
+                    node = Node(node_name)
+                    node.remove(force=True)
+                except Exception as e:
+                    print(f"Failed to remove node {node_name} during cleanup: {e}")
+
+            for flow_name in all_flows:
+                try:
+                    flow = Flow(flow_name)
+                    flow.remove(force=True)
+                except Exception as e:
+                    print(f"Failed to remove flow {flow_name} during cleanup: {e}")
+
+    return _setup

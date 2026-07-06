@@ -1,0 +1,54 @@
+{
+    "Node": {
+        "test_ros": {
+            "Info": "",
+            "Label": "test_ros",
+            "LastUpdate": {
+                "date": "04/11/2022 at 18:40:23",
+                "user": "movai@internal"
+            },
+            "Launch": true,
+            "PackageDepends": "",
+            "Path": "",
+            "Persistent": false,
+            "PortsInst": {
+                "pub": {
+                    "Message": "Bool",
+                    "Out": {
+                        "out": {
+                            "Message": "std_msgs/Bool"
+                        }
+                    },
+                    "Package": "std_msgs",
+                    "Template": "ROS1/Publisher"
+                },
+                "pub_empty": {
+                    "Message": "Empty",
+                    "Out": {
+                        "out": {
+                            "Message": "std_msgs/Empty"
+                        }
+                    },
+                    "Package": "std_msgs",
+                    "Template": "ROS1/Publisher"
+                },
+                "sub": {
+                    "In": {
+                        "in": {
+                            "Callback": "place_holder",
+                            "Message": "std_msgs/Bool"
+                        }
+                    },
+                    "Message": "Bool",
+                    "Package": "std_msgs",
+                    "Template": "ROS1/Subscriber"
+                }
+            },
+            "Remappable": true,
+            "Type": "MovAI/Node",
+            "User": "",
+            "Version": "",
+            "VersionDelta": {}
+        }
+    }
+}
