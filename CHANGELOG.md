@@ -1,5 +1,9 @@
 # Changelog
 
+## vTBD
+- [BP-1747](https://movai.atlassian.net/browse/BP-1747): Project Validator translated to Redis from mobtest/proj_tests
+  - Add tests for project validator
+
 ## v3.25.6
 - [BP-1719](https://movai.atlassian.net/browse/BP-1719): Allow for both in-memory and file-system project sources for metadata import.
 
