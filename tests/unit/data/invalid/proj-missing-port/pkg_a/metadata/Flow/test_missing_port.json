@@ -4,6 +4,7 @@
             "Description": "",
             "ExposedPorts": {},
             "Info": "",
+            "InstallPath": "",
             "Label": "test_missing_port",
             "LastUpdate": {
                 "date": "07/07/2023 at 15:03:39",

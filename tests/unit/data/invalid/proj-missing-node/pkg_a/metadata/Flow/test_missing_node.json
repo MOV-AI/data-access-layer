@@ -4,6 +4,7 @@
             "Description": "",
             "ExposedPorts": {},
             "Info": "",
+            "InstallPath": "",
             "Label": "test_missing_node",
             "LastUpdate": {
                 "date": "07/11/2022 at 11:34:56",
@@ -34,7 +35,7 @@
                     }
                 },
                 "test_something": {
-                    "NodeLabel": "test_any",
+                    "NodeLabel": "test_something",
                     "Template": "test_any",
                     "Visualization": {
                         "x": {

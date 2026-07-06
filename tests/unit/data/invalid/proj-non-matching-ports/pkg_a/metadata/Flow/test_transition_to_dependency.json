@@ -4,6 +4,7 @@
             "Description": "",
             "ExposedPorts": {},
             "Info": "",
+            "InstallPath": "",
             "Label": "test_transition_to_dependency",
             "LastUpdate": {
                 "date": "04/11/2022 at 18:02:49",

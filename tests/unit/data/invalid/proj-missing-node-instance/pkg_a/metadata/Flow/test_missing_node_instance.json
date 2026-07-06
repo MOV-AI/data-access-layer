@@ -1,10 +1,11 @@
 {
     "Flow": {
-        "test_missing_flow": {
+        "test_missing_node_instance": {
             "Description": "",
             "ExposedPorts": {},
             "Info": "",
-            "Label": "test_missing_flow",
+            "InstallPath": "",
+            "Label": "test_missing_node_instance",
             "LastUpdate": {
                 "date": "07/07/2023 at 09:28:39",
                 "user": "movai@internal"
@@ -14,7 +15,7 @@
                 "c4087d62-e7f1-4d45-b1a8-caeb5d78137c": {
                     "Dependency": 0,
                     "From": "start/start/start",
-                    "To": "non_existing_instance__get_task/start/in"
+                    "To": "non_existing_instance/start/in"
                 }
             },
             "User": "",

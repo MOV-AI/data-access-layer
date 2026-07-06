@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from enum import Enum
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 
 class Severity(Enum):
@@ -42,7 +42,7 @@ class Issue:
         iss_type: str,
         severity: Severity,
         msg: str,
-        line_start: int = 0,
+        line_start: Optional[int] = None,
         line_ranges: List[Dict[str, int]] = None,
     ) -> None:
         self.category = category
@@ -102,6 +102,7 @@ class MissingFlowInstance(ProjIssue):
         self,
         json_path: Path,
         msg: str,
+        line_start: Optional[int] = None,
     ) -> None:
         self.json_path = json_path
 
@@ -110,6 +111,7 @@ class MissingFlowInstance(ProjIssue):
             "Missing flow instance referenced by link",
             Severity.ERROR,
             msg,
+            line_start=line_start,
         )
 
 
@@ -126,6 +128,7 @@ class MissingNodeInstance(ProjIssue):
         self,
         json_path: Path,
         msg: str,
+        line_start: Optional[int] = None,
     ) -> None:
         self.json_path = json_path
 
@@ -134,26 +137,7 @@ class MissingNodeInstance(ProjIssue):
             "Missing node instance referenced by link",
             Severity.ERROR,
             msg,
-        )
-
-
-class DuplicatedMob(ProjIssue):
-    """Duplicated MOV.AI object is detected
-
-    Attributes:
-        msg (str): Issue message.
-
-    """
-
-    def __init__(
-        self,
-        msg: str,
-    ) -> None:
-        super().__init__(
-            "Formating",
-            "Duplicated metadata",
-            Severity.ERROR,
-            msg,
+            line_start=line_start,
         )
 
 
@@ -170,6 +154,7 @@ class MissingMob(ProjIssue):
         self,
         json_path: Path,
         msg: str,
+        line_start: Optional[int] = None,
     ) -> None:
         self.json_path = json_path
 
@@ -178,6 +163,7 @@ class MissingMob(ProjIssue):
             "Missing Flow or Node",
             Severity.ERROR,
             msg,
+            line_start=line_start,
         )
 
 
@@ -194,6 +180,7 @@ class MissingNodePort(ProjIssue):
         self,
         json_path: Path,
         msg: str,
+        line_start: Optional[int] = None,
     ) -> None:
         self.json_path = json_path
 
@@ -202,6 +189,7 @@ class MissingNodePort(ProjIssue):
             "Missing Node port",
             Severity.ERROR,
             msg,
+            line_start=line_start,
         )
 
 
@@ -218,6 +206,7 @@ class NonMatchingLinkPorts(ProjIssue):
         self,
         json_path: Path,
         msg: str,
+        line_start: Optional[int] = None,
     ) -> None:
         self.json_path = json_path
 
@@ -226,4 +215,5 @@ class NonMatchingLinkPorts(ProjIssue):
             "Non matching link ports",
             Severity.ERROR,
             msg,
+            line_start=line_start,
         )
