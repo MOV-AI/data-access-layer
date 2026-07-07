@@ -43,6 +43,16 @@ class TestProjectValidator:
                 actual_issue.line_start == expected_issue.line_start
             ), f"Expected line_start '{expected_issue.line_start}', but got '{actual_issue.line_start}'"
 
+    def test_valid_project(self, setup_test_data, setup_test_data_from_path):
+        """Tests that a valid project has no issues."""
+
+        validator_output: ProjectValidationResult = ProjectValidator().validate()
+        print(f"Validator output: {validator_output}")
+        for issue in validator_output.issues:
+            print(f"Issue: {issue}")
+        assert validator_output.summary.total_issues == 0
+        assert len(validator_output.issues) == 0
+
     def test_non_matching_ports(self, folder_invalid_data, setup_test_data_from_path):
         """Tests that non matching ports are found."""
 

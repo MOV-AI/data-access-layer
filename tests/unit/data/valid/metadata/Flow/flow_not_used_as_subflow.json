@@ -10,8 +10,8 @@
         "LastUpdate": "16/12/2025 at 17:20:00",
         "Links": {
             "abc123-test-link-flow_not_used_as_subflow": {
-                "From": "nodepub1/pubport/out",
-                "To": "nodesub1/subport/in"
+                "From": "pub/pubport/out",
+                "To": "sub/subport/in"
             }
         },
         "NodeInst": {
