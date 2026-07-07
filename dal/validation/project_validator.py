@@ -47,6 +47,20 @@ class Summary(BaseModel):
     scopes_checked: List[str]
 
 
+class ProjectIssue(BaseModel):
+    """Base class for project validation issues."""
+
+    category: str
+    iss_type: str
+    severity: Severity
+    msg: str
+    json_path: str
+    line_start: Optional[int] = None
+
+    def __str__(self):
+        return f"[{self.severity.name}] {self.category} - {self.iss_type}: {self.msg} (Line: {self.line_start})"
+
+
 class ProjectValidationResult(BaseModel):
     """Result structure for usage search.
 
@@ -58,7 +72,7 @@ class ProjectValidationResult(BaseModel):
             "warnings": int,
             "scopes_checked": List[str]
         },
-        "issues": List[ProjIssue]
+        "issues": List[ProjectIssue]
     }
     """
 
@@ -66,7 +80,7 @@ class ProjectValidationResult(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     summary: Summary
-    issues: List[ProjIssue]
+    issues: List[ProjectIssue]
 
 
 class MissingFlowTemplateExc(Exception):
@@ -151,7 +165,17 @@ class ProjectValidator:
                 warnings=warning_count,
                 scopes_checked=VALIDATED_SCOPES,
             ),
-            issues=self.issues,
+            issues=[
+                ProjectIssue(
+                    category=issue.category,
+                    iss_type=issue.iss_type,
+                    severity=issue.severity,
+                    msg=issue.msg,
+                    json_path=getattr(issue, "json_path", "N/A"),
+                    line_start=getattr(issue, "line_start", None),
+                )
+                for issue in self.issues
+            ],
         )
 
     def _build_object_cache(self):

@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List, Dict, Optional
 
 
-class Severity(Enum):
+class Severity(str, Enum):
     """Severity enumeration."""
 
     LOW = 1
