@@ -225,7 +225,7 @@ class ProjectValidator:
                     for container_name, container_data in flow_content["Container"].items():
                         template_name = container_data.get("ContainerFlow")
                         if template_name and not self._object_exists("Flow", template_name):
-                            line_num = self._find_json_path_line(
+                            line_num = _find_json_path_line(
                                 flow_data,
                                 ["Flow", flow_ref, "Container", container_name, "ContainerFlow"],
                             )
@@ -233,7 +233,7 @@ class ProjectValidator:
                             # but we can assume the convention that the flow name corresponds to a JSON file in the project
                             issue = MissingMob(
                                 json_path=f"{flow_ref}.json",
-                                msg=f"Flow '{template_name}' missing, required by Flow '{flow_ref}' (container '{container_name}')",
+                                msg=f"Flow '{template_name}' missing, required by Flow '{flow_ref}' (instance '{container_name}')",
                                 line_start=line_num,
                             )
                             self.issues.append(issue)
@@ -243,13 +243,13 @@ class ProjectValidator:
                     for node_inst_name, node_inst_data in flow_content["NodeInst"].items():
                         template_name = node_inst_data.get("Template")
                         if template_name and not self._object_exists("Node", template_name):
-                            line_num = self._find_json_path_line(
+                            line_num = _find_json_path_line(
                                 flow_data,
                                 ["Flow", flow_ref, "NodeInst", node_inst_name, "Template"],
                             )
                             issue = MissingMob(
                                 json_path=f"{flow_ref}.json",
-                                msg=f"Node '{template_name}' missing, required by Flow '{flow_ref}' (node instance '{node_inst_name}')",
+                                msg=f"Node '{template_name}' missing, required by Flow '{flow_ref}' (instance '{node_inst_name}')",
                                 line_start=line_num,
                             )
                             self.issues.append(issue)
@@ -263,7 +263,7 @@ class ProjectValidator:
         """
         LOGGER.info("Checking link port compatibility")
 
-        link_validator = LinkValidator(project_validator=self, logger=LOGGER)
+        link_validator = LinkValidator(objects_by_scope=self._objects_by_scope, logger=LOGGER)
 
         flow_refs = self._objects_by_scope.get("Flow", set())
 
@@ -284,8 +284,10 @@ class ProjectValidator:
                         to_path = link_data.get("To", "")
 
                         # Validate link endpoints
-                        link_validator.validate_link(
-                            flow_ref, flow_data, flow_content, link_id, from_path, to_path
+                        self.issues.extend(
+                            link_validator.validate_link(
+                                flow_ref, flow_data, flow_content, link_id, from_path, to_path
+                            )
                         )
 
             except Exception as e:
@@ -295,67 +297,12 @@ class ProjectValidator:
         """Check if an object exists in the workspace cache."""
         return ref in self._objects_by_scope.get(scope, set())
 
-    @staticmethod
-    def _find_json_path_line(json_data: dict, path: List[str]) -> Optional[int]:
-        """
-        Find the line number of a specific JSON path in formatted JSON.
-
-        Uses MOV.AI standard formatting (indent=4, sort_keys=True) to match
-        how files are exported from Redis and displayed in the IDE.
-
-        Args:
-            json_data: The JSON data dictionary
-            path: List of keys representing the path (e.g., ["Flow", "MyFlow", "NodeInst", "node1"])
-
-        Returns:
-            Line number (1-indexed) or None if not found
-        """
-        try:
-            # Serialize with standard formatting (2-space indent)
-            json_str = json.dumps(json_data, indent=4, sort_keys=True)
-            lines = json_str.split("\n")
-
-            # Build regex pattern to find the key at the end of the path
-            # We look for the last key in the path, properly quoted
-            if not path:
-                return None
-
-            target_key = path[-1]
-            # Pattern matches: "key": (with optional whitespace)
-            pattern = rf'^\s*"{re.escape(target_key)}":\s*'
-
-            # Track which parent keys we've seen to ensure we're in the right context
-            parents_to_find = path[:-1]  # All keys except the last one
-            parents_found_count = 0
-
-            for i, line in enumerate(lines, start=1):  # 1-indexed line numbers
-                # Check if this line contains the next parent key we're looking for
-                if parents_found_count < len(parents_to_find):
-                    parent_pattern = rf'^\s*"{re.escape(parents_to_find[parents_found_count])}":\s*'
-                    if re.search(parent_pattern, line):
-                        parents_found_count += 1
-                        # Don't continue - check if target is also on same line (shouldn't happen but be safe)
-
-                # Once we've found all parents, look for the target key
-                if parents_found_count == len(parents_to_find):
-                    if re.search(pattern, line):
-                        return i
-
-            # Debug: If we didn't find it, log some info
-            LOGGER.debug(
-                f"Could not find path {path} in JSON. Found {parents_found_count}/{len(parents_to_find)} parents."
-            )
-            return None
-        except Exception as e:
-            LOGGER.debug(f"Error finding JSON path line: {e}")
-            return None
-
 
 class LinkValidator:
     """Link validator class."""
 
-    def __init__(self, project_validator: ProjectValidator, logger):
-        self.project_validator = project_validator
+    def __init__(self, objects_by_scope: Dict, logger):
+        self._objects_by_scope = objects_by_scope
         self.logger = logger
 
     def validate_link(
@@ -366,7 +313,7 @@ class LinkValidator:
         link_id: str,
         from_path: str,
         to_path: str,
-    ):
+    ) -> List[ProjIssue]:
         """
         Validate a single link.
 
@@ -378,6 +325,7 @@ class LinkValidator:
             from_path: Link source path (format: "node__subnode/port/out")
             to_path: Link destination path (format: "node__subnode/port/in")
         """
+        issues = []
 
         # Parse link paths
         from_info = self._parse_link_path(
@@ -387,16 +335,16 @@ class LinkValidator:
 
         # Check if parsing succeeded
         if from_info.get("error"):
-            self.project_validator.issues.append(from_info["error"])
-            return
+            issues.append(from_info["error"])
+            return issues
         if to_info.get("error"):
-            self.project_validator.issues.append(to_info["error"])
-            return
+            issues.append(to_info["error"])
+            return issues
 
         # Keep mobtest parity: if a node/flow template is missing in a link path,
         # skip link checks here because template-reference validation already reports it.
         if from_info.get("template_missing") or to_info.get("template_missing"):
-            return
+            return []
 
         # Check if ports exist on the node templates
         src_port_type = from_info.get("port_type")
@@ -404,41 +352,37 @@ class LinkValidator:
 
         # Check source port existence (mobtest parity: return early like 'continue')
         if not src_port_type:
-            line_num = self.project_validator._find_json_path_line(
-                flow_data, ["Flow", flow_ref, "Links", link_id, "From"]
-            )
+            line_num = _find_json_path_line(flow_data, ["Flow", flow_ref, "Links", link_id, "From"])
             issue = MissingNodePort(
                 json_path=f"{flow_ref}.json",
                 msg=f"Source port of link {link_id} does not exist | From: {from_path} | To: {to_path}",
                 line_start=line_num,
             )
-            self.project_validator.issues.append(issue)
-            return
+            issues.append(issue)
+            return issues
 
         # Check destination port existence (mobtest parity: return early like 'continue')
         if not dst_port_type:
-            line_num = self.project_validator._find_json_path_line(
-                flow_data, ["Flow", flow_ref, "Links", link_id, "To"]
-            )
+            line_num = _find_json_path_line(flow_data, ["Flow", flow_ref, "Links", link_id, "To"])
             issue = MissingNodePort(
                 json_path=f"{flow_ref}.json",
                 msg=f"Destination port of link {link_id} does not exist | From: {from_path} | To: {to_path}",
                 line_start=line_num,
             )
-            self.project_validator.issues.append(issue)
-            return
+            issues.append(issue)
+            return issues
 
         # Check port compatibility
         if not self._ports_match(src_port_type, dst_port_type):
-            line_num = self.project_validator._find_json_path_line(
-                flow_data, ["Flow", flow_ref, "Links", link_id]
-            )
+            line_num = _find_json_path_line(flow_data, ["Flow", flow_ref, "Links", link_id])
             issue = NonMatchingLinkPorts(
                 json_path=f"{flow_ref}.json",
                 msg=f"The ports of link {link_id} in Flow {flow_ref} do not match | From: {from_path} | To: {to_path}",
                 line_start=line_num,
             )
-            self.project_validator.issues.append(issue)
+            issues.append(issue)
+
+        return issues
 
     def _parse_link_path(
         self,
@@ -497,7 +441,7 @@ class LinkValidator:
                 if "Container" not in current_flow_data:
                     # Find line number for the link
                     line_num = (
-                        self.project_validator._find_json_path_line(
+                        _find_json_path_line(
                             flow_data, ["Flow", flow_ref, "Links", link_id, direction.capitalize()]
                         )
                         if link_id
@@ -513,7 +457,7 @@ class LinkValidator:
 
                 if instance not in current_flow_data["Container"]:
                     line_num = (
-                        self.project_validator._find_json_path_line(
+                        _find_json_path_line(
                             flow_data, ["Flow", flow_ref, "Links", link_id, direction.capitalize()]
                         )
                         if link_id
@@ -528,9 +472,7 @@ class LinkValidator:
 
                 # Get flow template and move to that flow data (mobtest parity)
                 template_name = current_flow_data["Container"][instance].get("ContainerFlow")
-                if not template_name or not self.project_validator._object_exists(
-                    "Flow", template_name
-                ):
+                if not template_name or not self._object_exists("Flow", template_name):
                     raise MissingFlowTemplateExc(template_name)
 
                 template_flow = Flow(template_name)
@@ -547,7 +489,7 @@ class LinkValidator:
             final_instance = instances[-1]
             if "NodeInst" not in current_flow_data:
                 line_num = (
-                    self.project_validator._find_json_path_line(
+                    _find_json_path_line(
                         flow_data, ["Flow", flow_ref, "Links", link_id, direction.capitalize()]
                     )
                     if link_id
@@ -562,7 +504,7 @@ class LinkValidator:
 
             if final_instance not in current_flow_data["NodeInst"]:
                 line_num = (
-                    self.project_validator._find_json_path_line(
+                    _find_json_path_line(
                         flow_data, ["Flow", flow_ref, "Links", link_id, direction.capitalize()]
                     )
                     if link_id
@@ -608,7 +550,7 @@ class LinkValidator:
         Returns:
             Port type dictionary or empty dict if port not found
         """
-        if node_template and not self.project_validator._object_exists("Node", node_template):
+        if node_template and not self._object_exists("Node", node_template):
             raise MissingNodeTemplateExc(node_template)
 
         try:
@@ -767,3 +709,62 @@ class LinkValidator:
         except Exception as e:
             self.logger.debug(f"Error checking port compatibility: {e}")
             return True
+
+    def _object_exists(self, scope: str, ref: str) -> bool:
+        """Check if an object exists in the workspace cache."""
+        return ref in self._objects_by_scope.get(scope, set())
+
+
+def _find_json_path_line(json_data: dict, path: List[str]) -> Optional[int]:
+    """
+    Find the line number of a specific JSON path in formatted JSON.
+
+    Uses MOV.AI standard formatting (indent=4, sort_keys=True) to match
+    how files are exported from Redis and displayed in the IDE.
+
+    Args:
+        json_data: The JSON data dictionary
+        path: List of keys representing the path (e.g., ["Flow", "MyFlow", "NodeInst", "node1"])
+
+    Returns:
+        Line number (1-indexed) or None if not found
+    """
+    try:
+        # Serialize with standard formatting (2-space indent)
+        json_str = json.dumps(json_data, indent=4, sort_keys=True)
+        lines = json_str.split("\n")
+
+        # Build regex pattern to find the key at the end of the path
+        # We look for the last key in the path, properly quoted
+        if not path:
+            return None
+
+        target_key = path[-1]
+        # Pattern matches: "key": (with optional whitespace)
+        pattern = rf'^\s*"{re.escape(target_key)}":\s*'
+
+        # Track which parent keys we've seen to ensure we're in the right context
+        parents_to_find = path[:-1]  # All keys except the last one
+        parents_found_count = 0
+
+        for i, line in enumerate(lines, start=1):  # 1-indexed line numbers
+            # Check if this line contains the next parent key we're looking for
+            if parents_found_count < len(parents_to_find):
+                parent_pattern = rf'^\s*"{re.escape(parents_to_find[parents_found_count])}":\s*'
+                if re.search(parent_pattern, line):
+                    parents_found_count += 1
+                    # Don't continue - check if target is also on same line (shouldn't happen but be safe)
+
+            # Once we've found all parents, look for the target key
+            if parents_found_count == len(parents_to_find):
+                if re.search(pattern, line):
+                    return i
+
+        # Debug: If we didn't find it, log some info
+        LOGGER.debug(
+            f"Could not find path {path} in JSON. Found {parents_found_count}/{len(parents_to_find)} parents."
+        )
+        return None
+    except Exception as e:
+        LOGGER.debug(f"Error finding JSON path line: {e}")
+        return None

@@ -106,12 +106,12 @@ class TestProjectValidator:
                 [
                     MissingMob(
                         json_path="test_missing_node.json",
-                        msg="Node 'test_any' missing, required by Flow 'test_missing_node' (node instance 'test_any')",
+                        msg="Node 'test_any' missing, required by Flow 'test_missing_node' (instance 'test_any')",
                         line_start=27,
                     ),
                     MissingMob(
                         json_path="test_missing_node.json",
-                        msg="Node 'test_any' missing, required by Flow 'test_missing_node' (node instance 'test_something')",
+                        msg="Node 'test_any' missing, required by Flow 'test_missing_node' (instance 'test_something')",
                         line_start=39,
                     ),
                 ],
@@ -129,12 +129,12 @@ class TestProjectValidator:
                 [
                     MissingMob(
                         json_path="test_missing_flow.json",
-                        msg="Flow 'device_api' missing, required by Flow 'test_missing_flow' (container 'device_api')",
+                        msg="Flow 'device_api' missing, required by Flow 'test_missing_flow' (instance 'device_api')",
                         line_start=6,
                     ),
                     MissingMob(
                         json_path="test_missing_flow.json",
-                        msg="Flow 'tugbot' missing, required by Flow 'test_missing_flow' (container 'tugbot')",
+                        msg="Flow 'tugbot' missing, required by Flow 'test_missing_flow' (instance 'tugbot')",
                         line_start=18,
                     ),
                 ],
@@ -188,7 +188,7 @@ class TestProjectValidator:
                 [
                     MissingMob(
                         json_path="test_missing_port.json",
-                        msg="Node 'dependency' missing, required by Flow 'test_missing_port' (node instance 'dependency')",
+                        msg="Node 'dependency' missing, required by Flow 'test_missing_port' (instance 'dependency')",
                         line_start=24,
                     ),
                 ],
