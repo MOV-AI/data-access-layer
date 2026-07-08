@@ -5,11 +5,13 @@ Proprietary and confidential
 """
 
 from dal.models.scopestree import scopes
+from dal.models.package import Package
 from dal.scopes.flow import Flow, Node
 from typing import List, Dict, Optional, Set
 from pydantic import BaseModel, ConfigDict
 from dal.validation.issues import (
     ProjIssue,
+    DuplicatedMob,
     MissingMob,
     Severity,
     NonMatchingLinkPorts,
@@ -193,11 +195,44 @@ class ProjectValidator:
         """
         Check for duplicate names across workspace.
 
-        Note: In Redis/DAL, duplicates within a workspace shouldn't exist
-        (refs are unique within a scope), but we check anyway for completeness.
+        In Redis/DAL, duplicates within a workspace shouldn't exist
+        We check for duplicates in the packages information stored in the local db
         """
-        # For now, duplicates within a single workspace are prevented by Redis keys
-        # This check is more relevant if we're checking across multiple databases
+        LOGGER.info("Checking for duplicate names across workspace")
+
+        # Get all objects from the package data
+        all_packages_sys = Package.get_packagedata()
+        all_packages = all_packages_sys.Value if isinstance(all_packages_sys.Value, dict) else {}
+
+        # Check for duplicates per workspace
+        for workspace_name, packages_dict in all_packages.items():
+            # Track objects by scope and name to find duplicates
+            # Structure: {scope: {object_name: [package1, package2, ...]}}
+            objects_by_scope_and_name: Dict[str, Dict[str, List[str]]] = {}
+
+            for package_name, package_entry in packages_dict.items():
+                # Extract scope lists from "data" sub-dict
+                scopes_dict = package_entry.get("data", {})
+                for scope, objects_list in scopes_dict.items():
+                    if not isinstance(objects_list, list):
+                        continue
+                    if scope not in objects_by_scope_and_name:
+                        objects_by_scope_and_name[scope] = {}
+
+                    for obj_name in objects_list:
+                        if obj_name not in objects_by_scope_and_name[scope]:
+                            objects_by_scope_and_name[scope][obj_name] = []
+                        objects_by_scope_and_name[scope][obj_name].append(package_name)
+
+            # Check for duplicates within each scope
+            for scope, objects_dict in objects_by_scope_and_name.items():
+                for obj_name, packages_list in objects_dict.items():
+                    if len(packages_list) > 1:
+                        issue = DuplicatedMob(
+                            json_path=f"{obj_name}.json",
+                            msg=f"Duplicate MOB name '{obj_name}' found in packages: {', '.join(sorted(packages_list))} installed in workspace '{workspace_name}'",
+                        )
+                        self.issues.append(issue)
 
     def _check_nodes_flows_ref_in_flows(self):
         """

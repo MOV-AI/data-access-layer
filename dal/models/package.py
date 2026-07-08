@@ -10,9 +10,15 @@
 """
 
 import hashlib
-from typing import Tuple
+from typing import Dict, Tuple
 from .scopestree import scopes
+from dal.scopes.system import System
 from .model import Model
+
+from movai_core_shared.logger import Log
+
+
+logger = Log.get_logger(__name__)
 
 
 class Package(Model):
@@ -90,6 +96,94 @@ class Package(Model):
             return scopes.from_path(package_name, scope="Package")
         except KeyError:
             return scopes().create("Package", package_name)
+
+    @staticmethod
+    def get_packagedata(db="local") -> System:
+        """
+        Retrieve package-tracking root System object.
+
+        Args:
+            db (str): The database identifier to connect to (default is "local").
+
+        Returns:
+            System: Root System object for PackagesData.
+        """
+        try:
+            return System("PackagesData", db=db)
+        except Exception as e:
+            logger.info("PackagesData not found: %s", e)
+            return System("PackagesData", new=True, db=db)
+
+    @staticmethod
+    def update_packagedata(workspace: str, package_name: str, new_data: Dict):
+        """
+        Update the PackagesData value.
+
+        Merges package/scope/object entries into existing data.
+
+        Structure:
+            {
+                "workspace_name": {
+                    "package_name": {
+                        "version": "1.0.0-1",
+                        "import-date": "2024-06-01T12:00:00Z",
+                        "data": {
+                            "ScopeName": ["object_a", "object_b"]
+                        }
+                    }
+                }
+            }
+
+        Args:
+            new_data (Dict): A dictionary containing the new data for the packages.
+        """
+        # Get or create the root PackagesData
+        all_packages = Package.get_packagedata(db="local")
+
+        # Get current data
+        all_data = all_packages.Value if isinstance(all_packages.Value, dict) else {}
+
+        # Ensure workspace exists
+        if workspace not in all_data or not isinstance(all_data[workspace], dict):
+            all_data[workspace] = {}
+
+        # Get existing package data or initialize
+        db_data = all_data[workspace].get(package_name, {})
+        logger.warn(
+            f"Updating package data for workspace '{workspace}', package '{package_name}': {new_data}"
+        )
+        if not isinstance(db_data, dict):
+            db_data = {}
+
+        # Preserve scalar metadata fields when provided
+        if "version" in new_data and isinstance(new_data["version"], str):
+            db_data["version"] = new_data["version"]
+        if "import-date" in new_data and isinstance(new_data["import-date"], str):
+            db_data["import-date"] = new_data["import-date"]
+
+        # Ensure "data" sub-dict exists for scope lists
+        if "data" not in db_data or not isinstance(db_data["data"], dict):
+            db_data["data"] = {}
+
+        # Merge scope object lists into "data" sub-dict
+        for scope_name, objects in new_data.items():
+            if scope_name in ("version", "import-date"):
+                continue
+            if not isinstance(objects, list):
+                continue
+            if scope_name not in db_data["data"] or not isinstance(
+                db_data["data"][scope_name], list
+            ):
+                db_data["data"][scope_name] = []
+            for obj_name in objects:
+                if obj_name not in db_data["data"][scope_name]:
+                    db_data["data"][scope_name].append(obj_name)
+
+        # Update the package data in the nested structure
+        all_data[workspace][package_name] = db_data
+
+        # Write back to Redis (single write to root key)
+        all_packages.Value = all_data
 
 
 Model.register_model_class("Package", Package)

@@ -103,6 +103,10 @@ def delete_all_robots(global_db):
 def setup_test_data(global_db, metadata_folder):
     """Import test metadata before each test."""
     from dal.tools.backup import Importer
+    from dal.models.package import Package
+
+    # Ensure package tracking does not leak between tests.
+    Package.get_all_packagedata().Value = {}
 
     # Import all nodes and flows for testing
     importer = Importer(
@@ -156,6 +160,8 @@ def setup_test_data(global_db, metadata_folder):
             flow.remove(force=True)
         except Exception:
             print(f"Failed to remove flow {flow_name} during cleanup.")
+
+    Package.get_all_packagedata().Value = {}
 
 
 @pytest.fixture()
@@ -334,6 +340,10 @@ def setup_test_data_from_path(global_db):
         from dal.tools.backup import Importer
         from dal.scopes.node import Node
         from dal.scopes.flow import Flow
+        from dal.models.package import Package
+
+        # Ensure package tracking does not leak between tests.
+        Package.get_packagedata().Value = {}
 
         # Find all packages in the path (each subdirectory with metadata/ folder)
         packages = [p for p in path.iterdir() if p.is_dir() and (p / "metadata").exists()]
@@ -344,6 +354,8 @@ def setup_test_data_from_path(global_db):
         # Import from each package
         for package in packages:
             metadata_path = package / "metadata"
+            nodes = []
+            flows = []
 
             # Scan for Flows and Nodes
             flow_dir = metadata_path / "Flow"
@@ -368,11 +380,11 @@ def setup_test_data_from_path(global_db):
             )
 
             # Import nodes first (flows may depend on them)
-            if all_nodes:
+            if nodes:
                 importer.run({"Node": nodes})
 
             # Then import flows
-            if all_flows:
+            if flows:
                 importer.run({"Flow": flows})
 
         try:
@@ -392,5 +404,7 @@ def setup_test_data_from_path(global_db):
                     flow.remove(force=True)
                 except Exception as e:
                     print(f"Failed to remove flow {flow_name} during cleanup: {e}")
+
+            Package.get_packagedata().Value = {}
 
     return _setup

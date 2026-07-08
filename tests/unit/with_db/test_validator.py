@@ -53,6 +53,23 @@ class TestProjectValidator:
         assert validator_output.summary.total_issues == 0
         assert len(validator_output.issues) == 0
 
+    def test_duplicated_metadata(self, folder_invalid_data, setup_test_data_from_path):
+        """Tests that duplicated metadata is found."""
+
+        from dal.validation.issues import DuplicatedMob
+
+        with setup_test_data_from_path(folder_invalid_data / "proj-duplicated-metadata"):
+            validator_output: ProjectValidationResult = ProjectValidator().validate()
+            self.execute_and_assert_same_type_issues(
+                validator_output,
+                [
+                    DuplicatedMob(
+                        json_path="check_bool.json",
+                        msg="Duplicate MOB name 'check_bool' found in packages: pkg_a, pkg_b installed in workspace 'ros1-workspace'",
+                    ),
+                ],
+            )
+
     def test_non_matching_ports(self, folder_invalid_data, setup_test_data_from_path):
         """Tests that non matching ports are found."""
 

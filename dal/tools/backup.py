@@ -9,18 +9,22 @@
    Backup a.k.a. Import Export tool
 """
 import argparse
+import datetime
 import hashlib
 import json
 import os
 import pickle
 import re
 import sys
+from pathlib import Path
 from importlib import import_module
 import warnings
 from abc import ABC, abstractmethod
 from typing import Iterator, List, Tuple
+import xml.etree.ElementTree as ET
 
 from dal.movaidb import MovaiDB
+from dal.models.package import Package
 
 
 def test_reachable(redis_url):
@@ -406,6 +410,7 @@ class Importer(Backup):
 
         self.project_path = os.path.abspath(project) if project else ""
         self.source = source or FilesystemProjectSource(self.project_path)
+        self.import_container = self._detect_import_container()
 
         self.force = force
         self.dry_run = dry
@@ -424,6 +429,15 @@ class Importer(Backup):
         else:
             self._db = MovaiDB()
             self.dry_print = lambda *paths: None
+
+    @staticmethod
+    def _detect_import_container() -> str:
+        """
+        Extracts the import container name from the environment variable HOSTNAME.
+        """
+
+        hostname = os.getenv("HOSTNAME")
+        return hostname if hostname else "ros1-workspace"
 
     def _read_json(self, relative_path: str) -> dict:
         """Read a JSON file from the configured project source."""
@@ -487,6 +501,80 @@ class Importer(Backup):
         if name not in self._imported[scope]:
             self.log(f"Imported {scope}:{name}")
             self._imported[scope].append(name)
+
+    def _extract_package_version(self, package_path: Path) -> str:
+        """
+        If a package_path contains a package.xml file,
+        extract the version from it.
+
+        Args:
+            package_path (Path): Path to the package directory.
+
+        Returns:
+            str: The version string if found in the format xx.xx.xx-xx, otherwise "N/A".
+
+        """
+        version_file = package_path / "package.xml"
+        if version_file.exists():
+            tree = ET.parse(version_file)
+            root = tree.getroot()
+            version_element = root.find("version")
+            if version_element is None or version_element.text is None:
+                return "N/A"
+            build_version_element = root.find("export/build_version")
+            if build_version_element is None or build_version_element.text is None:
+                return version_element.text
+
+            return f"{version_element.text}-{build_version_element.text}"
+
+        return "N/A"
+
+    def _update_package_tracking(self, scope, name):
+        """Update package data structure for duplicate detection.
+
+        Tracks which objects belong to which packages by parsing the import path.
+        Expected structure: {package_name: {scope: [obj1, obj2, ...]}}
+
+        Args:
+            scope (str): The scope of the imported object (e.g., 'Flow', 'Node')
+            name (str): The name of the imported object
+        """
+        try:
+            package_name = "default_package"
+            package_version = "N/A"
+            # Typical MOV.AI structure: project/pkg_name/metadata/Scope/object.json
+            path = Path(self.project_path)
+
+            # Check if the current path ends with "metadata"
+            if path.name == "metadata":
+                # Parent directory is the package
+                package_name = path.parent.name
+                package_version = self._extract_package_version(path.parent)
+            else:
+                # Otherwise, look for a parent with a "metadata" child
+                for parent in [path] + list(path.parents):
+                    if (parent / "metadata").exists():
+                        package_name = parent.name
+                        package_version = self._extract_package_version(parent)
+                        break
+
+            print(
+                f"Updating package tracking for {scope}:{name} under package '{package_name}' in workspace '{self.import_container}' with version '{package_version}'"
+            )
+            # Persist only the new delta; merge/dedup logic lives in Package model.
+            Package.update_packagedata(
+                workspace=self.import_container,
+                package_name=package_name,
+                new_data={
+                    "version": package_version,
+                    "import-date": datetime.datetime.now().isoformat(),
+                    scope: [name],
+                },
+            )
+
+        except Exception as e:
+            # Don't fail imports due to tracking issues, just log
+            print(f"Warning: Failed to update package tracking for {scope}:{name}: {e}")
 
     def _list_files(self, scope, extract=None, match=None):
         """Lists files in the given scope."""
@@ -576,6 +664,7 @@ class Importer(Backup):
             path (str): Path of origin of the data.
 
         """
+        print(f"Importing {scope}:{name} from {self.source.display_path(path)}")
         data[scope][name]["InstallPath"] = self.source.display_path(path)
 
         try:
@@ -611,6 +700,8 @@ class Importer(Backup):
         try:
             self._db.set(data)
             self.set_imported(scope, name)
+            # Update package data structure for duplicate detection
+            self._update_package_tracking(scope, name)
         except Exception:
             _msg = f"Failed to import '{scope}:{name}'"
             if self.validate:

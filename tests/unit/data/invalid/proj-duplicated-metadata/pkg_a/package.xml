@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>package_a</name>
+  <version>2.6.0</version>
+  <description>movai_tugbot base package.</description>
+  <maintainer email="badger@mov.ai">Badger</maintainer>
+  <url>https://github.com/MOV-AI/pkg_a</url>
+  <license>Copyright</license>
+
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <export>
+        <build_version>1</build_version>
+  </export>
+</package>

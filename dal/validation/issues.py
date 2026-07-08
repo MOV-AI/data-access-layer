@@ -89,6 +89,29 @@ class ProjIssue(Issue):
         return f"[{level}] {self.msg}"
 
 
+class DuplicatedMob(ProjIssue):
+    """Duplicated flow or node instance in multiple packages
+
+    Attributes:
+        msg (str): Issue message.
+
+    """
+
+    def __init__(
+        self,
+        json_path: Path,
+        msg: str,
+    ) -> None:
+        self.json_path = json_path
+
+        super().__init__(
+            "Formating",
+            "Duplicated metadata",
+            Severity.ERROR,
+            msg,
+        )
+
+
 class MissingFlowInstance(ProjIssue):
     """Missing flow instance referenced by link.
 

@@ -1,0 +1,65 @@
+{
+    "Node": {
+        "check_bool": {
+            "Info": "",
+            "Label": "check_bool",
+            "LastUpdate": {
+                "date": "02/06/2021 at 12:09:19",
+                "user": "movai"
+            },
+            "Launch": true,
+            "PackageDepends": "",
+            "Path": "",
+            "Persistent": false,
+            "PortsInst": {
+                "bool": {
+                    "In": {
+                        "in": {
+                            "Callback": "check_bool",
+                            "Message": "std_msgs/Bool"
+                        }
+                    },
+                    "Message": "Bool",
+                    "Package": "std_msgs",
+                    "Template": "ROS1/Subscriber"
+                },
+                "false": {
+                    "Message": "Transition",
+                    "Out": {
+                        "out": {
+                            "Message": "movai_msgs/Transition"
+                        }
+                    },
+                    "Package": "movai_msgs",
+                    "Template": "MovAI/TransitionFor"
+                },
+                "start": {
+                    "In": {
+                        "in": {
+                            "Callback": "place_holder",
+                            "Message": "movai_msgs/Transition"
+                        }
+                    },
+                    "Message": "Transition",
+                    "Package": "movai_msgs",
+                    "Template": "MovAI/TransitionTo"
+                },
+                "true": {
+                    "Message": "Transition",
+                    "Out": {
+                        "out": {
+                            "Message": "movai_msgs/Transition"
+                        }
+                    },
+                    "Package": "movai_msgs",
+                    "Template": "MovAI/TransitionFor"
+                }
+            },
+            "Remappable": true,
+            "Type": "MovAI/State",
+            "User": "",
+            "Version": "",
+            "VersionDelta": {}
+        }
+    }
+}
