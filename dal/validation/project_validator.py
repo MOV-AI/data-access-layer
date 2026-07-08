@@ -202,15 +202,21 @@ class ProjectValidator:
 
         # Get all objects from the package data
         all_packages_sys = Package.get_packagedata()
-        all_packages = all_packages_sys.Value if isinstance(all_packages_sys.Value, dict) else {}
 
         # Check for duplicates per workspace
-        for workspace_name, packages_dict in all_packages.items():
+        for workspace_name, workspace_struct in all_packages_sys.Workspaces.items():
             # Track objects by scope and name to find duplicates
             # Structure: {scope: {object_name: [package1, package2, ...]}}
             objects_by_scope_and_name: Dict[str, Dict[str, List[str]]] = {}
 
-            for package_name, package_entry in packages_dict.items():
+            packages_dict = (
+                workspace_struct.Packages if hasattr(workspace_struct, "Packages") else {}
+            )
+
+            for package_name, package_struct in packages_dict.items():
+                package_entry = (
+                    package_struct.Value if isinstance(package_struct.Value, dict) else {}
+                )
                 # Extract scope lists from "data" sub-dict
                 scopes_dict = package_entry.get("data", {})
                 for scope, objects_list in scopes_dict.items():

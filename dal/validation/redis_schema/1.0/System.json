@@ -3,6 +3,15 @@
   "schema": {
     "$name": {
       "Value": "any",
+      "Workspaces": {
+        "$name": {
+          "Packages": {
+            "$name": {
+              "Value": "any"
+            }
+          }
+        }
+      },
       "Label": "str",
       "Parameter": {
         "$name": {

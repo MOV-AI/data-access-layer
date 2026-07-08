@@ -115,6 +115,19 @@ class Package(Model):
             return System("PackagesData", new=True, db=db)
 
     @staticmethod
+    def clear_packagedata(db="local"):
+        """Remove all package-tracking entries."""
+        packages_data = Package.get_packagedata(db=db)
+        try:
+            packages_data.remove_partial({"Workspaces": "**"})
+        except Exception as e:
+            logger.warning("Failed to clear package data: %s", e)
+
+        raw_cache = packages_data.__dict__.get("Workspaces")
+        if isinstance(raw_cache, dict):
+            raw_cache.clear()
+
+    @staticmethod
     def update_packagedata(workspace: str, package_name: str, new_data: Dict):
         """
         Update the PackagesData value.
@@ -138,20 +151,22 @@ class Package(Model):
             new_data (Dict): A dictionary containing the new data for the packages.
         """
         # Get or create the root PackagesData
-        all_packages = Package.get_packagedata(db="local")
+        package_data = Package.get_packagedata(db="local")
 
-        # Get current data
-        all_data = all_packages.Value if isinstance(all_packages.Value, dict) else {}
+        # Check if the workspace exists, if not create it
+        if workspace in package_data.Workspaces:
+            workspace_data = package_data.Workspaces[workspace]
+        else:
+            workspace_data = package_data.add("Workspaces", workspace)
 
-        # Ensure workspace exists
-        if workspace not in all_data or not isinstance(all_data[workspace], dict):
-            all_data[workspace] = {}
+        workspace_packages = workspace_data.Packages if hasattr(workspace_data, "Packages") else {}
+        if package_name in workspace_packages:
+            package_struct = workspace_packages[package_name]
+            db_data = package_struct.Value if isinstance(package_struct.Value, dict) else {}
+        else:
+            package_struct = workspace_data.add("Packages", package_name)
+            db_data = {}
 
-        # Get existing package data or initialize
-        db_data = all_data[workspace].get(package_name, {})
-        logger.warn(
-            f"Updating package data for workspace '{workspace}', package '{package_name}': {new_data}"
-        )
         if not isinstance(db_data, dict):
             db_data = {}
 
@@ -179,11 +194,7 @@ class Package(Model):
                 if obj_name not in db_data["data"][scope_name]:
                     db_data["data"][scope_name].append(obj_name)
 
-        # Update the package data in the nested structure
-        all_data[workspace][package_name] = db_data
-
-        # Write back to Redis (single write to root key)
-        all_packages.Value = all_data
+        package_struct.Value = db_data
 
 
 Model.register_model_class("Package", Package)
