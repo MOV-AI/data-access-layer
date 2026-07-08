@@ -106,7 +106,7 @@ def setup_test_data(global_db, metadata_folder):
     from dal.models.package import Package
 
     # Ensure package tracking does not leak between tests.
-    Package.get_all_packagedata().Value = {}
+    Package.get_packagedata().Value = {}
 
     # Import all nodes and flows for testing
     importer = Importer(
@@ -161,7 +161,7 @@ def setup_test_data(global_db, metadata_folder):
         except Exception:
             print(f"Failed to remove flow {flow_name} during cleanup.")
 
-    Package.get_all_packagedata().Value = {}
+    Package.get_packagedata().Value = {}
 
 
 @pytest.fixture()

@@ -514,8 +514,13 @@ class Importer(Backup):
             str: The version string if found in the format xx.xx.xx-xx, otherwise "N/A".
 
         """
-        version_file = package_path / "package.xml"
-        if version_file.exists():
+        version_file = None
+
+        for path in package_path.rglob("package.xml"):
+            if path.is_file():
+                version_file = path
+
+        if version_file and version_file.exists():
             tree = ET.parse(version_file)
             root = tree.getroot()
             version_element = root.find("version")
@@ -541,7 +546,6 @@ class Importer(Backup):
         """
         try:
             package_name = "default_package"
-            package_version = "N/A"
             # Typical MOV.AI structure: project/pkg_name/metadata/Scope/object.json
             path = Path(self.project_path)
 
