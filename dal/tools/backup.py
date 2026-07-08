@@ -534,7 +534,7 @@ class Importer(Backup):
 
         return "N/A"
 
-    def _update_package_tracking(self, scope, name):
+    def _update_package_tracking(self, scope, name, tracked_names=None):
         """Update package data structure for duplicate detection.
 
         Tracks which objects belong to which packages by parsing the import path.
@@ -562,6 +562,7 @@ class Importer(Backup):
                         package_version = self._extract_package_version(parent)
                         break
 
+            tracked_objects = tracked_names if isinstance(tracked_names, list) else [name]
             print(
                 f"Updating package tracking for {scope}:{name} under package '{package_name}' in workspace '{self.import_container}' with version '{package_version}'"
             )
@@ -572,7 +573,7 @@ class Importer(Backup):
                 new_data={
                     "version": package_version,
                     "import-date": datetime.datetime.now().isoformat(),
-                    scope: [name],
+                    scope: tracked_objects,
                 },
             )
 
@@ -658,7 +659,9 @@ class Importer(Backup):
             return self._list_files(scope, extract, list_match)
         return self._get_files(scope, names, build, get_match)
 
-    def _import_data(self, scope, name, data, path):  # pylint: disable=method-hidden
+    def _import_data(
+        self, scope, name, data, path, tracked_names=None
+    ):  # pylint: disable=method-hidden
         """Imports data to the database.
 
         Args:
@@ -705,7 +708,7 @@ class Importer(Backup):
             self._db.set(data)
             self.set_imported(scope, name)
             # Update package data structure for duplicate detection
-            self._update_package_tracking(scope, name)
+            self._update_package_tracking(scope, name, tracked_names=tracked_names)
         except Exception:
             _msg = f"Failed to import '{scope}:{name}'"
             if self.validate:
@@ -805,6 +808,7 @@ class Importer(Backup):
 
             package_path = dir_path
             imported_file_path = package_path
+            tracked_files = []
 
             for root, _, files in self.source.walk(dir_path):
                 for file in files:
@@ -820,13 +824,18 @@ class Importer(Backup):
                     except UnicodeError:
                         pass
 
-                    file_dict[file_path.replace(package_path, "", 1)[1:]] = {
+                    relative_path = file_path.replace(package_path, "", 1)[1:]
+                    file_dict[relative_path] = {
                         "Value": contents,
                         "Checksum": checksum.hexdigest(),
                         "FileLabel": file,
                     }
+                    tracked_files.append(ProjectSource.join(name, relative_path))
 
-            self._import_data("Package", name, data, imported_file_path)
+            # pylint: disable=unexpected-keyword-arg
+            self._import_data(
+                "Package", name, data, imported_file_path, tracked_names=tracked_files
+            )
 
     def import_message(self, names=None):
         files = self.get_files("Message", names)
