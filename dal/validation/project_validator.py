@@ -4,8 +4,10 @@ Unauthorized copying of this file, via any medium is strictly prohibited
 Proprietary and confidential
 """
 
+import time
+
 from dal.models.scopestree import scopes
-from dal.models.package import Package
+from dal.scopes.package import Package
 from dal.scopes.flow import Flow, Node
 from typing import List, Dict, Optional, Set
 from pydantic import BaseModel, ConfigDict
@@ -145,6 +147,7 @@ class ProjectValidator:
             dict: A dictionary containing the validation results with summary and issues.
         """
         LOGGER.info("Starting project validation")
+        start_time = time.perf_counter()
 
         # Build cache of all objects first
         self._build_object_cache()
@@ -158,7 +161,9 @@ class ProjectValidator:
         error_count = sum(1 for issue in self.issues if issue.severity == Severity.ERROR)
         warning_count = sum(1 for issue in self.issues if issue.severity != Severity.ERROR)
 
-        LOGGER.info(f"Validation complete: {error_count} errors, {warning_count} warnings")
+        LOGGER.info(
+            f"Validation complete: {error_count} errors, {warning_count} warnings, took {time.perf_counter() - start_time:.2f} seconds"
+        )
 
         return ProjectValidationResult(
             summary=Summary(

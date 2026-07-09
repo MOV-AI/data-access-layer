@@ -24,7 +24,7 @@ from typing import Iterator, List, Tuple
 import xml.etree.ElementTree as ET
 
 from dal.movaidb import MovaiDB
-from dal.models.package import Package
+from dal.scopes.package import Package
 
 
 def test_reachable(redis_url):

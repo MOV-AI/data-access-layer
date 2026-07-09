@@ -103,7 +103,7 @@ def delete_all_robots(global_db):
 def setup_test_data(global_db, metadata_folder):
     """Import test metadata before each test."""
     from dal.tools.backup import Importer
-    from dal.models.package import Package
+    from dal.scopes.package import Package
 
     # Ensure package tracking does not leak between tests.
     Package.clear_packagedata()
@@ -340,7 +340,7 @@ def setup_test_data_from_path(global_db):
         from dal.tools.backup import Importer
         from dal.scopes.node import Node
         from dal.scopes.flow import Flow
-        from dal.models.package import Package
+        from dal.scopes.package import Package
 
         # Ensure package tracking does not leak between tests.
         Package.clear_packagedata()
