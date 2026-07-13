@@ -9,7 +9,7 @@ import time
 from dal.models.scopestree import scopes
 from dal.scopes.package import Package
 from dal.scopes.flow import Flow, Node
-from typing import List, Dict, Optional, Set
+from typing import List, Dict, Optional, Set, Tuple
 from pydantic import BaseModel, ConfigDict
 from dal.validation.issues import (
     ProjIssue,
@@ -138,6 +138,14 @@ class ProjectValidator:
         self.issues: List[ProjIssue] = []
         # Cache of all objects by scope: {"Flow": {"name1", "name2"}, "Node": {...}}
         self._objects_by_scope: Dict[str, Set[str]] = {}
+        # Cache loaded Flow dictionaries to avoid repeated DAL fetches.
+        self._flow_dict_cache: Dict[str, dict] = {}
+
+    def _get_flow_dict(self, flow_ref: str) -> dict:
+        """Get flow dict with in-memory cache."""
+        if flow_ref not in self._flow_dict_cache:
+            self._flow_dict_cache[flow_ref] = Flow(flow_ref).get_dict()
+        return self._flow_dict_cache[flow_ref]
 
     def validate(self) -> Dict:
         """
@@ -257,8 +265,7 @@ class ProjectValidator:
         for flow_ref in flow_refs:
             try:
                 # Load the flow object
-                flow_obj = Flow(flow_ref)
-                flow_data = flow_obj.get_dict()
+                flow_data = self._get_flow_dict(flow_ref)
 
                 # Navigate to the actual flow data
                 if "Flow" not in flow_data or flow_ref not in flow_data["Flow"]:
@@ -315,8 +322,7 @@ class ProjectValidator:
 
         for flow_ref in flow_refs:
             try:
-                flow_obj = Flow(flow_ref)
-                flow_data = flow_obj.get_dict()
+                flow_data = self._get_flow_dict(flow_ref)
 
                 if "Flow" not in flow_data or flow_ref not in flow_data["Flow"]:
                     continue
@@ -350,6 +356,33 @@ class LinkValidator:
     def __init__(self, objects_by_scope: Dict, logger):
         self._objects_by_scope = objects_by_scope
         self.logger = logger
+        # Caches to reduce repeated DAL access during link validation.
+        self._flow_content_cache: Dict[str, dict] = {}
+        self._node_dict_cache: Dict[str, dict] = {}
+        # Map of (node_template, port_name) to port type dict.
+        self._port_type_cache: Dict[Tuple[str, str], dict] = {}
+
+    def _get_flow_content(self, flow_template: str) -> dict:
+        """Load a flow template content from DAL once and reuse it."""
+        if flow_template and not self._object_exists("Flow", flow_template):
+            raise MissingFlowTemplateExc(flow_template)
+
+        if flow_template not in self._flow_content_cache:
+            template_flow = Flow(flow_template)
+            template_flow_data = template_flow.get_dict()
+            if "Flow" not in template_flow_data or flow_template not in template_flow_data["Flow"]:
+                raise MissingFlowTemplateExc(flow_template)
+            self._flow_content_cache[flow_template] = template_flow_data["Flow"][flow_template]
+
+        return self._flow_content_cache[flow_template]
+
+    def _get_node_dict(self, node_template: str) -> dict:
+        """Load a node template dict from DAL once and reuse it."""
+        if node_template not in self._node_dict_cache:
+            node = Node(node_template)
+            self._node_dict_cache[node_template] = node.get_dict()
+
+        return self._node_dict_cache[node_template]
 
     def validate_link(
         self,
@@ -518,18 +551,10 @@ class LinkValidator:
 
                 # Get flow template and move to that flow data (mobtest parity)
                 template_name = current_flow_data["Container"][instance].get("ContainerFlow")
-                if not template_name or not self._object_exists("Flow", template_name):
+                if not template_name:
                     raise MissingFlowTemplateExc(template_name)
 
-                template_flow = Flow(template_name)
-                template_flow_data = template_flow.get_dict()
-                if (
-                    "Flow" not in template_flow_data
-                    or template_name not in template_flow_data["Flow"]
-                ):
-                    raise MissingFlowTemplateExc(template_name)
-
-                current_flow_data = template_flow_data["Flow"][template_name]
+                current_flow_data = self._get_flow_content(template_name)
 
             # Last instance should be a NodeInst
             final_instance = instances[-1]
@@ -596,24 +621,31 @@ class LinkValidator:
         Returns:
             Port type dictionary or empty dict if port not found
         """
-        if node_template and not self._object_exists("Node", node_template):
+        if not node_template or (node_template and not self._object_exists("Node", node_template)):
             raise MissingNodeTemplateExc(node_template)
 
+        cache_key = (node_template, port_name)
+        if cache_key in self._port_type_cache:
+            return self._port_type_cache[cache_key]
+
         try:
-            node = Node(node_template)
-            node_data = node.get_dict()
+            node_data = self._get_node_dict(node_template)
 
             # Direct access equivalent to mobtest's template_node.dict_data["Node"][template_name]["PortsInst"]
             if "Node" in node_data and node_template in node_data["Node"]:
                 node_content = node_data["Node"][node_template]
                 ports_inst = node_content.get("PortsInst", {})
-                return ports_inst.get(port_name, {})
+                port_type = ports_inst.get(port_name, {})
+                self._port_type_cache[cache_key] = port_type
+                return port_type
 
+            self._port_type_cache[cache_key] = {}
             return {}
         except MissingNodeTemplateExc:
             raise
         except Exception as e:
             self.logger.debug(f"Error getting port type for {node_template}/{port_name}: {e}")
+            self._port_type_cache[cache_key] = {}
             return {}
 
     def _ports_match(self, src_port: dict, dst_port: dict) -> bool:
