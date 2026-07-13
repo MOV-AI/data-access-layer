@@ -46,8 +46,8 @@ class Summary(BaseModel):
     """Summary of validation results."""
 
     total_issues: int
-    errors: int
-    warnings: int
+    error_count: int
+    warning_count: int
     scopes_checked: List[str]
 
 
@@ -72,8 +72,8 @@ class ProjectValidationResult(BaseModel):
     {
         "summary": {
             "total_issues": int,
-            "errors": int,
-            "warnings": int,
+            "errors_count": int,
+            "warnings_count": int,
             "scopes_checked": List[str]
         },
         "issues": List[ProjectIssue]
@@ -168,8 +168,8 @@ class ProjectValidator:
         return ProjectValidationResult(
             summary=Summary(
                 total_issues=len(self.issues),
-                errors=error_count,
-                warnings=warning_count,
+                error_count=error_count,
+                warning_count=warning_count,
                 scopes_checked=VALIDATED_SCOPES,
             ),
             issues=[
