@@ -7,10 +7,10 @@ from typing import List, Dict, Optional
 class Severity(str, Enum):
     """Severity enumeration."""
 
-    LOW = 1
-    NORMAL = 2
-    HIGH = 3
-    ERROR = 4
+    LOW = "LOW"
+    NORMAL = "NORMAL"
+    HIGH = "HIGH"
+    ERROR = "ERROR"
 
     def __str__(self) -> str:
         """Provides correct casing.
