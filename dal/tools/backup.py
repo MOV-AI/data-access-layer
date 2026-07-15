@@ -20,11 +20,15 @@ from pathlib import Path
 from importlib import import_module
 import warnings
 from abc import ABC, abstractmethod
-from typing import Iterator, List, Tuple
+from typing import Iterator, List, Tuple, Optional
 import xml.etree.ElementTree as ET
 
 from dal.movaidb import MovaiDB
 from dal.scopes.package import Package
+
+from movai_core_shared.logger import Log
+
+LOGGER = Log.get_logger(__name__)
 
 
 def test_reachable(redis_url):
@@ -400,6 +404,8 @@ class Importer(Backup):
     def __init__(
         self,
         project,
+        workspace: Optional[str] = None,
+        package_version: Optional[str] = None,
         source: ProjectSource = None,
         force: bool = False,
         dry: bool = False,
@@ -408,9 +414,11 @@ class Importer(Backup):
     ):
         super().__init__(project, **kwargs)
 
+        self.project = project
         self.project_path = os.path.abspath(project) if project else ""
         self.source = source or FilesystemProjectSource(self.project_path)
-        self.import_container = self._detect_import_container()
+        self.import_container = workspace or self._extract_import_container()
+        self.import_package_version = package_version or "N/A"
 
         self.force = force
         self.dry_run = dry
@@ -431,7 +439,7 @@ class Importer(Backup):
             self.dry_print = lambda *paths: None
 
     @staticmethod
-    def _detect_import_container() -> str:
+    def _extract_import_container() -> str:
         """
         Extracts the import container name from the environment variable HOSTNAME.
         """
@@ -545,25 +553,28 @@ class Importer(Backup):
             name (str): The name of the imported object
         """
         try:
-            package_name = "default_package"
+            package_name = self.project
+            package_version = self.import_package_version or "N/A"
             # Typical MOV.AI structure: project/pkg_name/metadata/Scope/object.json
             path = Path(self.project_path)
 
-            # Check if the current path ends with "metadata"
-            if path.name == "metadata":
-                # Parent directory is the package
-                package_name = path.parent.name
-                package_version = self._extract_package_version(path.parent)
-            else:
-                # Otherwise, look for a parent with a "metadata" child
-                for parent in [path] + list(path.parents):
-                    if (parent / "metadata").exists():
-                        package_name = parent.name
-                        package_version = self._extract_package_version(parent)
-                        break
+            # If package version was not provided by caller, infer it from package.xml.
+            if package_version in ("", "N/A"):
+                # Check if the current path ends with "metadata"
+                if path.name == "metadata":
+                    # Parent directory is the package
+                    package_name = path.parent.name
+                    package_version = self._extract_package_version(path.parent)
+                else:
+                    # Otherwise, look for a parent with a "metadata" child
+                    for parent in [path] + list(path.parents):
+                        if (parent / "metadata").exists():
+                            package_name = parent.name
+                            package_version = self._extract_package_version(parent)
+                            break
 
             tracked_objects = tracked_names if isinstance(tracked_names, list) else [name]
-            print(
+            LOGGER.debug(
                 f"Updating package tracking for {scope}:{name} under package '{package_name}' in workspace '{self.import_container}' with version '{package_version}'"
             )
             # Persist only the new delta; merge/dedup logic lives in Package model.
@@ -579,7 +590,7 @@ class Importer(Backup):
 
         except Exception as e:
             # Don't fail imports due to tracking issues, just log
-            print(f"Warning: Failed to update package tracking for {scope}:{name}: {e}")
+            LOGGER.warning(f"Failed to update package tracking for {scope}:{name}: {e}")
 
     def _list_files(self, scope, extract=None, match=None):
         """Lists files in the given scope."""
@@ -671,7 +682,7 @@ class Importer(Backup):
             path (str): Path of origin of the data.
 
         """
-        print(f"Importing {scope}:{name} from {self.source.display_path(path)}")
+        LOGGER.info(f"Importing {scope}:{name} from {self.source.display_path(path)}")
         data[scope][name]["InstallPath"] = self.source.display_path(path)
 
         try:
