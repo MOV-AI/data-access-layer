@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.26.0
 - [BP-1747](https://movai.atlassian.net/browse/BP-1747): Project Validator translated to Redis from mobtest/proj_tests
   - Add tests for project validator
 
