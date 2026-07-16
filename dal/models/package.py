@@ -14,11 +14,6 @@ from typing import Tuple
 from .scopestree import scopes
 from .model import Model
 
-from movai_core_shared.logger import Log
-
-
-logger = Log.get_logger(__name__)
-
 
 class Package(Model):
     """

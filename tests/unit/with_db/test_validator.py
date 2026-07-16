@@ -1,8 +1,85 @@
 from dal.validation.project_validator import ProjectValidationResult, ProjectValidator
 from dal.validation.issues import ProjIssue
 import pytest
+from pathlib import Path
+from contextlib import contextmanager
 
 from typing import Dict, List
+
+
+@contextmanager
+def setup_test_data_from_path(path: Path):
+    """Import test metadata from a given path before each test."""
+
+    from dal.tools.backup import Importer
+    from dal.scopes.node import Node
+    from dal.scopes.flow import Flow
+    from dal.scopes.package import Package
+
+    # Ensure package tracking does not leak between tests.
+    Package.clear_packagedata()
+
+    # Find all packages in the path (each subdirectory with metadata/ folder)
+    packages = [p for p in path.iterdir() if p.is_dir() and (p / "metadata").exists()]
+
+    all_nodes = []
+    all_flows = []
+
+    # Import from each package
+    for package in packages:
+        metadata_path = package / "metadata"
+        nodes = []
+        flows = []
+
+        # Scan for Flows and Nodes
+        flow_dir = metadata_path / "Flow"
+        node_dir = metadata_path / "Node"
+
+        if flow_dir.exists():
+            flows = [f.stem for f in flow_dir.glob("*.json")]
+            all_flows.extend(flows)
+
+        if node_dir.exists():
+            nodes = [n.stem for n in node_dir.glob("*.json")]
+            all_nodes.extend(nodes)
+
+        # Import metadata using Importer
+        importer = Importer(
+            metadata_path,
+            force=True,
+            dry=False,
+            debug=False,
+            recursive=True,
+            clean_old_data=False,  # Don't clean between packages
+        )
+
+        # Import nodes first (flows may depend on them)
+        if nodes:
+            importer.run({"Node": nodes})
+
+        # Then import flows
+        if flows:
+            importer.run({"Flow": flows})
+
+    try:
+        yield
+    finally:
+        # Cleanup after test
+        for node_name in all_nodes:
+            try:
+                node = Node(node_name)
+                node.remove(force=True)
+            except Exception as e:
+                print(f"Failed to remove node {node_name} during cleanup: {e}")
+
+        for flow_name in all_flows:
+            try:
+                flow = Flow(flow_name)
+                flow.remove(force=True)
+            except Exception as e:
+                print(f"Failed to remove flow {flow_name} during cleanup: {e}")
+
+        Package.clear_packagedata()
 
 
 class TestProjectValidator:
@@ -43,7 +120,7 @@ class TestProjectValidator:
                 actual_issue.line_start == expected_issue.line_start
             ), f"Expected line_start '{expected_issue.line_start}', but got '{actual_issue.line_start}'"
 
-    def test_valid_project(self, setup_test_data, setup_test_data_from_path):
+    def test_valid_project(self, setup_test_data):
         """Tests that a valid project has no issues."""
 
         validator_output: ProjectValidationResult = ProjectValidator().validate()
@@ -53,7 +130,7 @@ class TestProjectValidator:
         assert validator_output.summary.total_issues == 0
         assert len(validator_output.issues) == 0
 
-    def test_duplicated_metadata(self, folder_invalid_data, setup_test_data_from_path):
+    def test_duplicated_metadata(self, global_db, folder_invalid_data):
         """Tests that duplicated metadata is found."""
 
         from dal.validation.issues import DuplicatedMob
@@ -65,12 +142,12 @@ class TestProjectValidator:
                 [
                     DuplicatedMob(
                         json_path="check_bool.json",
-                        msg="Duplicate MOB name 'check_bool' found in packages: pkg_a, pkg_b installed in workspace 'ros1-workspace'",
+                        msg="Duplicate MOB name 'check_bool' found in packages: pkg_a, pkg_b installed in workspace 'unknown'",
                     ),
                 ],
             )
 
-    def test_non_matching_ports(self, folder_invalid_data, setup_test_data_from_path):
+    def test_non_matching_ports(self, global_db, folder_invalid_data):
         """Tests that non matching ports are found."""
 
         from dal.validation.issues import NonMatchingLinkPorts
@@ -112,7 +189,7 @@ class TestProjectValidator:
             )
 
     @pytest.mark.parametrize("path", ["proj-missing-node"])
-    def test_missing_node(self, folder_invalid_data, setup_test_data_from_path, path):
+    def test_missing_node(self, global_db, folder_invalid_data, path):
         """Tests that missing node issue is found."""
         from dal.validation.issues import MissingMob
 
@@ -134,7 +211,7 @@ class TestProjectValidator:
                 ],
             )
 
-    def test_missing_flow(self, folder_invalid_data, setup_test_data_from_path):
+    def test_missing_flow(self, global_db, folder_invalid_data):
         """Tests that missing flow issue is found."""
 
         from dal.validation.issues import MissingMob
@@ -157,7 +234,7 @@ class TestProjectValidator:
                 ],
             )
 
-    def test_missing_flow_instance(self, folder_invalid_data, setup_test_data_from_path):
+    def test_missing_flow_instance(self, global_db, folder_invalid_data):
         """Tests that missing flow instance mentioned in flow is found."""
 
         from dal.validation.issues import MissingFlowInstance
@@ -175,7 +252,7 @@ class TestProjectValidator:
                 ],
             )
 
-    def test_missing_node_instance(self, folder_invalid_data, setup_test_data_from_path):
+    def test_missing_node_instance(self, global_db, folder_invalid_data):
         """Tests that missing node instance mentioned in flow is found."""
 
         from dal.validation.issues import MissingNodeInstance
@@ -193,7 +270,7 @@ class TestProjectValidator:
                 ],
             )
 
-    def test_missing_port(self, folder_invalid_data, setup_test_data_from_path):
+    def test_missing_port(self, global_db, folder_invalid_data):
         """Tests that missing node port issue is found."""
 
         from dal.validation.issues import MissingMob

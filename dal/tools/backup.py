@@ -445,7 +445,7 @@ class Importer(Backup):
         """
 
         hostname = os.getenv("HOSTNAME")
-        return hostname if hostname else "ros1-workspace"
+        return hostname if hostname else "unknown"
 
     def _read_json(self, relative_path: str) -> dict:
         """Read a JSON file from the configured project source."""
@@ -682,7 +682,7 @@ class Importer(Backup):
             path (str): Path of origin of the data.
 
         """
-        LOGGER.info(f"Importing {scope}:{name} from {self.source.display_path(path)}")
+        LOGGER.debug(f"Importing {scope}:{name} from {self.source.display_path(path)}")
         data[scope][name]["InstallPath"] = self.source.display_path(path)
 
         try:
