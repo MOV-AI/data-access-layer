@@ -1,0 +1,39 @@
+{
+    "Flow": {
+        "test_transition_to_dependency": {
+            "Description": "",
+            "ExposedPorts": {},
+            "Info": "",
+            "InstallPath": "",
+            "Label": "test_transition_to_dependency",
+            "LastUpdate": {
+                "date": "04/11/2022 at 18:02:49",
+                "user": "movai@internal"
+            },
+            "Layers": {},
+            "Links": {
+                "20893b58-911b-470d-9306-1e4ac32b76d1": {
+                    "From": "start/start/start",
+                    "To": "dep/dependency/in"
+                }
+            },
+            "NodeInst": {
+                "dep": {
+                    "NodeLabel": "dep",
+                    "Template": "dependency",
+                    "Visualization": {
+                        "x": {
+                            "Value": 0.011000000000000001
+                        },
+                        "y": {
+                            "Value": 0.0071333333333333335
+                        }
+                    }
+                }
+            },
+            "User": "",
+            "Version": "",
+            "VersionDelta": {}
+        }
+    }
+}

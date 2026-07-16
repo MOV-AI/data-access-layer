@@ -13,10 +13,14 @@ import copy
 import hashlib
 import os
 
+from typing import Dict
+
 from dal.scopes.scope import Scope
+from dal.scopes.system import System
 from dal.scopes.structures import Struct
 from dal.helpers.helpers import Helpers
 from movai_core_shared.logger import Log
+
 
 LOGGER = Log.get_logger("spawner.mov.ai")
 
@@ -146,3 +150,102 @@ class Package(Scope):
             return Package(package_name)
         except Exception as e:
             return Package(package_name, new=True)
+
+    @staticmethod
+    def get_packagedata(db="local") -> System:
+        """
+        Retrieve package-tracking root System object.
+
+        Args:
+            db (str): The database identifier to connect to (default is "local").
+
+        Returns:
+            System: Root System object for PackagesData.
+        """
+        try:
+            return System("PackagesData", db=db)
+        except Exception as e:
+            LOGGER.info("PackagesData not found: %s", e)
+            return System("PackagesData", new=True, db=db)
+
+    @staticmethod
+    def clear_packagedata(db="local"):
+        """Remove all package-tracking entries."""
+        packages_data = Package.get_packagedata(db=db)
+        try:
+            packages_data.remove_partial({"Workspaces": "**"})
+        except Exception as e:
+            LOGGER.warning("Failed to clear package data: %s", e)
+
+        raw_cache = packages_data.__dict__.get("Workspaces")
+        if isinstance(raw_cache, dict):
+            raw_cache.clear()
+
+    @staticmethod
+    def update_packagedata(workspace: str, package_name: str, new_data: Dict):
+        """
+        Update the PackagesData value.
+
+        Merges package/scope/object entries into existing data.
+
+        Structure:
+            {
+                "workspace_name": {
+                    "package_name": {
+                        "version": "1.0.0-1",
+                        "import-date": "2024-06-01T12:00:00Z",
+                        "data": {
+                            "ScopeName": ["object_a", "object_b"]
+                        }
+                    }
+                }
+            }
+
+        Args:
+            new_data (Dict): A dictionary containing the new data for the packages.
+        """
+        # Get or create the root PackagesData
+        package_data = Package.get_packagedata(db="local")
+
+        # Check if the workspace exists, if not create it
+        if workspace in package_data.Workspaces:
+            workspace_data = package_data.Workspaces[workspace]
+        else:
+            workspace_data = package_data.add("Workspaces", workspace)
+
+        workspace_packages = workspace_data.Packages if hasattr(workspace_data, "Packages") else {}
+        if package_name in workspace_packages:
+            package_struct = workspace_packages[package_name]
+            db_data = package_struct.Value if isinstance(package_struct.Value, dict) else {}
+        else:
+            package_struct = workspace_data.add("Packages", package_name)
+            db_data = {}
+
+        if not isinstance(db_data, dict):
+            db_data = {}
+
+        # Preserve scalar metadata fields when provided
+        if "version" in new_data and isinstance(new_data["version"], str):
+            db_data["version"] = new_data["version"]
+        if "import-date" in new_data and isinstance(new_data["import-date"], str):
+            db_data["import-date"] = new_data["import-date"]
+
+        # Ensure "data" sub-dict exists for scope lists
+        if "data" not in db_data or not isinstance(db_data["data"], dict):
+            db_data["data"] = {}
+
+        # Merge scope object lists into "data" sub-dict
+        for scope_name, objects in new_data.items():
+            if scope_name in ("version", "import-date"):
+                continue
+            if not isinstance(objects, list):
+                continue
+            if scope_name not in db_data["data"] or not isinstance(
+                db_data["data"][scope_name], list
+            ):
+                db_data["data"][scope_name] = []
+            for obj_name in objects:
+                if obj_name not in db_data["data"][scope_name]:
+                    db_data["data"][scope_name].append(obj_name)
+
+        package_struct.Value = db_data

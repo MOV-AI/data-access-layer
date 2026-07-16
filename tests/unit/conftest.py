@@ -102,6 +102,10 @@ def delete_all_robots(global_db):
 def setup_test_data(global_db, metadata_folder):
     """Import test metadata before each test."""
     from dal.tools.backup import Importer
+    from dal.scopes.package import Package
+
+    # Ensure package tracking does not leak between tests.
+    Package.clear_packagedata()
 
     # Import all nodes and flows for testing
     importer = Importer(
@@ -155,6 +159,8 @@ def setup_test_data(global_db, metadata_folder):
             flow.remove(force=True)
         except Exception:
             print(f"Failed to remove flow {flow_name} during cleanup.")
+
+    Package.clear_packagedata()
 
 
 @pytest.fixture()
@@ -317,3 +323,8 @@ def circular_dependency_data(global_db):
         db.delete({"Node": {"TestNodeMultiCircular": {}}})
     except Exception:
         pass
+
+
+@pytest.fixture(scope="session")
+def folder_invalid_data():
+    return DATA_FOLDER / "invalid"

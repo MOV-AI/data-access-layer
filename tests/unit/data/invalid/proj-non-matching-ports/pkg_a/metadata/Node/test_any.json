@@ -1,0 +1,44 @@
+{
+    "Node": {
+        "test_any": {
+            "Info": "",
+            "Label": "test_any",
+            "LastUpdate": {
+                "date": "07/11/2022 at 11:34:21",
+                "user": "movai@internal"
+            },
+            "Launch": true,
+            "PackageDepends": "",
+            "Path": "",
+            "Persistent": false,
+            "PortsInst": {
+                "pub": {
+                    "Message": "Any",
+                    "Out": {
+                        "out": {
+                            "Message": "movai_msgs/Any"
+                        }
+                    },
+                    "Package": "movai_msgs",
+                    "Template": "ROS1/Publisher"
+                },
+                "sub": {
+                    "In": {
+                        "in": {
+                            "Callback": "place_holder",
+                            "Message": "movai_msgs/Any"
+                        }
+                    },
+                    "Message": "Any",
+                    "Package": "movai_msgs",
+                    "Template": "ROS1/Subscriber"
+                }
+            },
+            "Remappable": true,
+            "Type": "MovAI/Node",
+            "User": "",
+            "Version": "",
+            "VersionDelta": {}
+        }
+    }
+}

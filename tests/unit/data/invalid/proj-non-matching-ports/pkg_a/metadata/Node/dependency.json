@@ -1,0 +1,51 @@
+{
+    "Node": {
+        "dependency": {
+            "Info": "",
+            "Label": "dependency",
+            "LastUpdate": "10/06/2020 at 16:41:57",
+            "Launch": "",
+            "PackageDepends": "",
+            "Path": "",
+            "Persistent": false,
+            "PortsInst": {
+                "dependency": {
+                    "In": {
+                        "in": {
+                            "Message": "movai_msgs/Dependency"
+                        }
+                    },
+                    "Message": "Dependency",
+                    "Package": "movai_msgs",
+                    "Template": "MovAI/Dependency"
+                },
+                "depends": {
+                    "Message": "Dependency",
+                    "Out": {
+                        "out": {
+                            "Message": "movai_msgs/Dependency"
+                        }
+                    },
+                    "Package": "movai_msgs",
+                    "Template": "MovAI/Depends"
+                },
+                "entry": {
+                    "In": {
+                        "in": {
+                            "Callback": "place_holder",
+                            "Message": "movai_msgs/Transition"
+                        }
+                    },
+                    "Message": "Transition",
+                    "Package": "movai_msgs",
+                    "Template": "MovAI/TransitionTo"
+                }
+            },
+            "Remappable": "",
+            "Type": "MovAI/State",
+            "User": "movai",
+            "Version": "",
+            "VersionDelta": {}
+        }
+    }
+}
