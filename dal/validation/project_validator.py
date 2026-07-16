@@ -276,8 +276,8 @@ class ProjectValidator:
                 # Check Container (subflows)
                 if "Container" in flow_content:
                     for container_name, container_data in flow_content["Container"].items():
-                        template_name = container_data.get("ContainerFlow")
-                        if template_name and not self._object_exists("Flow", template_name):
+                        template_name = container_data.get("ContainerFlow", "")
+                        if not self._object_exists("Flow", template_name):
                             line_num = _find_json_path_line(
                                 flow_data,
                                 ["Flow", flow_ref, "Container", container_name, "ContainerFlow"],
@@ -294,8 +294,8 @@ class ProjectValidator:
                 # Check NodeInst (node instances)
                 if "NodeInst" in flow_content:
                     for node_inst_name, node_inst_data in flow_content["NodeInst"].items():
-                        template_name = node_inst_data.get("Template")
-                        if template_name and not self._object_exists("Node", template_name):
+                        template_name = node_inst_data.get("Template", "")
+                        if not self._object_exists("Node", template_name):
                             line_num = _find_json_path_line(
                                 flow_data,
                                 ["Flow", flow_ref, "NodeInst", node_inst_name, "Template"],
