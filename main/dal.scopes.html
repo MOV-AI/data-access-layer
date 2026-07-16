@@ -1459,6 +1459,12 @@ Proprietary and confidential</p>
 <span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.package.Package.add" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.package.Package.clear_packagedata">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clear_packagedata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'local'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.package.Package.clear_packagedata" title="Permalink to this definition"></a></dt>
+<dd><p>Remove all package-tracking entries.</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dal.scopes.package.Package.db">
 <span class="sig-name descname"><span class="pre">db</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dal.scopes.package.Package.db" title="Permalink to this definition"></a></dt>
@@ -1500,6 +1506,23 @@ Proprietary and confidential</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.package.Package.get_packagedata">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_packagedata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'local'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#dal.scopes.system.System" title="dal.scopes.system.System"><span class="pre">System</span></a></span></span><a class="headerlink" href="#dal.scopes.package.Package.get_packagedata" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieve package-tracking root System object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>db</strong> (<em>str</em>) – The database identifier to connect to (default is “local”).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Root System object for PackagesData.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="dal.models.html#dal.models.system.System" title="dal.models.system.System">System</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.package.Package.is_checksum_valid">
 <span class="sig-name descname"><span class="pre">is_checksum_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checksum</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.package.Package.is_checksum_valid" title="Permalink to this definition"></a></dt>
 <dd><p>Compares db checksum with file checksum</p>
@@ -1514,6 +1537,40 @@ Proprietary and confidential</p>
 <dt class="sig sig-object py" id="dal.scopes.package.Package.scope">
 <span class="sig-name descname"><span class="pre">scope</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Package'</span></em><a class="headerlink" href="#dal.scopes.package.Package.scope" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.package.Package.update_packagedata">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">update_packagedata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">workspace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.package.Package.update_packagedata" title="Permalink to this definition"></a></dt>
+<dd><p>Update the PackagesData value.</p>
+<p>Merges package/scope/object entries into existing data.</p>
+<dl>
+<dt>Structure:</dt><dd><dl>
+<dt>{</dt><dd><dl>
+<dt>“workspace_name”: {</dt><dd><dl>
+<dt>“package_name”: {</dt><dd><p>“version”: “1.0.0-1”,
+“import-date”: “2024-06-01T12:00:00Z”,
+“data”: {</p>
+<blockquote>
+<div><p>“ScopeName”: [“object_a”, “object_b”]</p>
+</div></blockquote>
+<p>}</p>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_data</strong> (<em>Dict</em>) – A dictionary containing the new data for the packages.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 

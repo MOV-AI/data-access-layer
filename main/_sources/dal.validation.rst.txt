@@ -12,6 +12,22 @@ dal.validation.constants module
    :undoc-members:
    :show-inheritance:
 
+dal.validation.issues module
+----------------------------
+
+.. automodule:: dal.validation.issues
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.validation.project\_validator module
+----------------------------------------
+
+.. automodule:: dal.validation.project_validator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dal.validation.schema module
 ----------------------------
 

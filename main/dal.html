@@ -2012,6 +2012,7 @@
 <li class="toctree-l3"><a class="reference internal" href="dal.scopes.html#dal.scopes.package.Package"><code class="docutils literal notranslate"><span class="pre">Package</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.package.Package.Name"><code class="docutils literal notranslate"><span class="pre">Package.Name</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.package.Package.add"><code class="docutils literal notranslate"><span class="pre">Package.add()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.package.Package.clear_packagedata"><code class="docutils literal notranslate"><span class="pre">Package.clear_packagedata()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.package.Package.db"><code class="docutils literal notranslate"><span class="pre">Package.db</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.package.Package.dump"><code class="docutils literal notranslate"><span class="pre">Package.dump()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.package.Package.dump_file"><code class="docutils literal notranslate"><span class="pre">Package.dump_file()</span></code></a></li>
@@ -2019,9 +2020,11 @@
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.package.Package.get_checksum"><code class="docutils literal notranslate"><span class="pre">Package.get_checksum()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.package.Package.get_file_checksum"><code class="docutils literal notranslate"><span class="pre">Package.get_file_checksum()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.package.Package.get_or_create"><code class="docutils literal notranslate"><span class="pre">Package.get_or_create()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.package.Package.get_packagedata"><code class="docutils literal notranslate"><span class="pre">Package.get_packagedata()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.package.Package.is_checksum_valid"><code class="docutils literal notranslate"><span class="pre">Package.is_checksum_valid()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.package.Package.movaidb"><code class="docutils literal notranslate"><span class="pre">Package.movaidb</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.package.Package.scope"><code class="docutils literal notranslate"><span class="pre">Package.scope</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html#dal.scopes.package.Package.update_packagedata"><code class="docutils literal notranslate"><span class="pre">Package.update_packagedata()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -2482,6 +2485,114 @@
 <li class="toctree-l1"><a class="reference internal" href="dal.validation.html">dal.validation package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dal.validation.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dal.validation.html#module-dal.validation.constants">dal.validation.constants module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dal.validation.html#module-dal.validation.issues">dal.validation.issues module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.issues.DuplicatedMob"><code class="docutils literal notranslate"><span class="pre">DuplicatedMob</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.DuplicatedMob.msg"><code class="docutils literal notranslate"><span class="pre">DuplicatedMob.msg</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.issues.Issue"><code class="docutils literal notranslate"><span class="pre">Issue</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.Issue.category"><code class="docutils literal notranslate"><span class="pre">Issue.category</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.Issue.iss_type"><code class="docutils literal notranslate"><span class="pre">Issue.iss_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.Issue.severity"><code class="docutils literal notranslate"><span class="pre">Issue.severity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.Issue.msg"><code class="docutils literal notranslate"><span class="pre">Issue.msg</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.Issue.line_start"><code class="docutils literal notranslate"><span class="pre">Issue.line_start</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.Issue.line_ranges"><code class="docutils literal notranslate"><span class="pre">Issue.line_ranges</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.issues.MissingFlowInstance"><code class="docutils literal notranslate"><span class="pre">MissingFlowInstance</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.MissingFlowInstance.json_path"><code class="docutils literal notranslate"><span class="pre">MissingFlowInstance.json_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.MissingFlowInstance.msg"><code class="docutils literal notranslate"><span class="pre">MissingFlowInstance.msg</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.issues.MissingMob"><code class="docutils literal notranslate"><span class="pre">MissingMob</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.MissingMob.json_path"><code class="docutils literal notranslate"><span class="pre">MissingMob.json_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.MissingMob.msg"><code class="docutils literal notranslate"><span class="pre">MissingMob.msg</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.issues.MissingNodeInstance"><code class="docutils literal notranslate"><span class="pre">MissingNodeInstance</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.MissingNodeInstance.json_path"><code class="docutils literal notranslate"><span class="pre">MissingNodeInstance.json_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.MissingNodeInstance.msg"><code class="docutils literal notranslate"><span class="pre">MissingNodeInstance.msg</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.issues.MissingNodePort"><code class="docutils literal notranslate"><span class="pre">MissingNodePort</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.MissingNodePort.json_path"><code class="docutils literal notranslate"><span class="pre">MissingNodePort.json_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.MissingNodePort.msg"><code class="docutils literal notranslate"><span class="pre">MissingNodePort.msg</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.issues.NonMatchingLinkPorts"><code class="docutils literal notranslate"><span class="pre">NonMatchingLinkPorts</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.NonMatchingLinkPorts.json_path"><code class="docutils literal notranslate"><span class="pre">NonMatchingLinkPorts.json_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.NonMatchingLinkPorts.msg"><code class="docutils literal notranslate"><span class="pre">NonMatchingLinkPorts.msg</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.issues.ProjIssue"><code class="docutils literal notranslate"><span class="pre">ProjIssue</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.ProjIssue.json_path"><code class="docutils literal notranslate"><span class="pre">ProjIssue.json_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.ProjIssue.category"><code class="docutils literal notranslate"><span class="pre">ProjIssue.category</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.ProjIssue.iss_type"><code class="docutils literal notranslate"><span class="pre">ProjIssue.iss_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.ProjIssue.severity"><code class="docutils literal notranslate"><span class="pre">ProjIssue.severity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.ProjIssue.msg"><code class="docutils literal notranslate"><span class="pre">ProjIssue.msg</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.ProjIssue.line_start"><code class="docutils literal notranslate"><span class="pre">ProjIssue.line_start</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.ProjIssue.line_ranges"><code class="docutils literal notranslate"><span class="pre">ProjIssue.line_ranges</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.issues.Severity"><code class="docutils literal notranslate"><span class="pre">Severity</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.Severity.ERROR"><code class="docutils literal notranslate"><span class="pre">Severity.ERROR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.Severity.HIGH"><code class="docutils literal notranslate"><span class="pre">Severity.HIGH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.Severity.LOW"><code class="docutils literal notranslate"><span class="pre">Severity.LOW</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.issues.Severity.NORMAL"><code class="docutils literal notranslate"><span class="pre">Severity.NORMAL</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dal.validation.html#module-dal.validation.project_validator">dal.validation.project_validator module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.LinkValidator"><code class="docutils literal notranslate"><span class="pre">LinkValidator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.LinkValidator.validate_link"><code class="docutils literal notranslate"><span class="pre">LinkValidator.validate_link()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.MissingFlowInstanceExc"><code class="docutils literal notranslate"><span class="pre">MissingFlowInstanceExc</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.MissingFlowInstanceExc.flow"><code class="docutils literal notranslate"><span class="pre">MissingFlowInstanceExc.flow</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.MissingFlowInstanceExc.expected_instance"><code class="docutils literal notranslate"><span class="pre">MissingFlowInstanceExc.expected_instance</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.MissingFlowTemplateExc"><code class="docutils literal notranslate"><span class="pre">MissingFlowTemplateExc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.MissingNodeInstanceExc"><code class="docutils literal notranslate"><span class="pre">MissingNodeInstanceExc</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.MissingNodeInstanceExc.flow"><code class="docutils literal notranslate"><span class="pre">MissingNodeInstanceExc.flow</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.MissingNodeInstanceExc.expected_instance"><code class="docutils literal notranslate"><span class="pre">MissingNodeInstanceExc.expected_instance</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.MissingNodeTemplateExc"><code class="docutils literal notranslate"><span class="pre">MissingNodeTemplateExc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.ProjectIssue"><code class="docutils literal notranslate"><span class="pre">ProjectIssue</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.ProjectIssue.category"><code class="docutils literal notranslate"><span class="pre">ProjectIssue.category</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.ProjectIssue.iss_type"><code class="docutils literal notranslate"><span class="pre">ProjectIssue.iss_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.ProjectIssue.json_path"><code class="docutils literal notranslate"><span class="pre">ProjectIssue.json_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.ProjectIssue.line_start"><code class="docutils literal notranslate"><span class="pre">ProjectIssue.line_start</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.ProjectIssue.model_config"><code class="docutils literal notranslate"><span class="pre">ProjectIssue.model_config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.ProjectIssue.model_fields"><code class="docutils literal notranslate"><span class="pre">ProjectIssue.model_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.ProjectIssue.msg"><code class="docutils literal notranslate"><span class="pre">ProjectIssue.msg</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.ProjectIssue.severity"><code class="docutils literal notranslate"><span class="pre">ProjectIssue.severity</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.ProjectValidationResult"><code class="docutils literal notranslate"><span class="pre">ProjectValidationResult</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.ProjectValidationResult.issues"><code class="docutils literal notranslate"><span class="pre">ProjectValidationResult.issues</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.ProjectValidationResult.model_config"><code class="docutils literal notranslate"><span class="pre">ProjectValidationResult.model_config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.ProjectValidationResult.model_fields"><code class="docutils literal notranslate"><span class="pre">ProjectValidationResult.model_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.ProjectValidationResult.summary"><code class="docutils literal notranslate"><span class="pre">ProjectValidationResult.summary</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.ProjectValidator"><code class="docutils literal notranslate"><span class="pre">ProjectValidator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.ProjectValidator.validate"><code class="docutils literal notranslate"><span class="pre">ProjectValidator.validate()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.Summary"><code class="docutils literal notranslate"><span class="pre">Summary</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.Summary.error_count"><code class="docutils literal notranslate"><span class="pre">Summary.error_count</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.Summary.model_config"><code class="docutils literal notranslate"><span class="pre">Summary.model_config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.Summary.model_fields"><code class="docutils literal notranslate"><span class="pre">Summary.model_fields</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.Summary.scopes_checked"><code class="docutils literal notranslate"><span class="pre">Summary.scopes_checked</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.Summary.total_issues"><code class="docutils literal notranslate"><span class="pre">Summary.total_issues</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.project_validator.Summary.warning_count"><code class="docutils literal notranslate"><span class="pre">Summary.warning_count</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="dal.validation.html#module-dal.validation.schema">dal.validation.schema module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="dal.validation.html#dal.validation.schema.Schema"><code class="docutils literal notranslate"><span class="pre">Schema</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="dal.validation.html#dal.validation.schema.Schema.validate"><code class="docutils literal notranslate"><span class="pre">Schema.validate()</span></code></a></li>
