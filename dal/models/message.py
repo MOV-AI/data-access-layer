@@ -11,10 +11,9 @@
 
 # pylint: disable=invalid-name
 from collections import deque
-from typing import Dict, List
+from typing import Dict
 import genmsg
 import rosmsg
-import rospkg
 
 from .scopestree import scopes
 from dal.scopes.system import System
@@ -89,152 +88,6 @@ class Message(Model):
 
         ports_data.Value = db_data
 
-    # was a classmethod, no references found
-    @staticmethod
-    def get_packages(msg_type: str = "all", db: str = "global") -> List:
-        """Get a list of all packages containing messages of type `msg_type`"""
-
-        if msg_type not in ("all", "msg", "srv", "action"):
-            raise ValueError("Invalid message type, allowed: 'all', 'msg', 'srv', 'action'")
-
-        rospack = rospkg.RosPack()
-
-        db_scopes = scopes()  # always global TODO change in future
-
-        msg_packs = []
-        srv_packs = []
-        action_packs = []
-        action_names = ("ActionFeedback", "ActionGoal", "ActionResult")
-
-        # [{url:, scope:, ref:}, ...]
-        db_packs = db_scopes.list_scopes(scope="Message")
-
-        if msg_type in ("msg", "all"):
-            msg_packs = [
-                *(pkg for pkg, _ in rosmsg.iterate_packages(rospack, ".msg")),
-                *(
-                    pkg["ref"] for pkg in db_packs if db_scopes.Message[pkg["ref"]].Msg.count > 0
-                ),  # this yields "movai_msgs"
-            ]  # This yields a list[str]
-
-        if msg_type in ("srv", "all"):
-            srv_packs = [
-                *(pkg for pkg, _ in rosmsg.iterate_packages(rospack, ".srv")),
-                *(
-                    pkg["ref"] for pkg in db_packs if db_scopes.Message[pkg["ref"]].Srv.count > 0
-                ),  # this yields "movai_srvs"
-            ]  # This yields a list[str]
-
-        if msg_type == "action":
-            for pkg, direc in rosmsg.iterate_packages(rospack, ".msg"):
-                temp_list = rosmsg._list_types(direc, "msg", ".msg")
-                for msg in action_names:
-                    if not any(elem.endswith(msg) for elem in temp_list):
-                        break
-                else:
-                    action_packs.append(pkg)
-            for pkg in db_packs:
-                if db_scopes.Message[pkg["ref"]].Action.count > 0:
-                    action_packs.append(pkg["ref"])
-
-        return list(set(msg_packs + srv_packs + action_packs))
-
-    @staticmethod
-    def get_msgs(package: str, msg_type: str = "all", db: str = "global") -> List:
-        """Get a list of all messages inside a package, filtered by `msg_type`"""
-
-        if msg_type not in ("all", "msg", "srv", "action"):
-            raise ValueError("Invalid message type, allowed: 'all', 'msg', 'srv', 'action'")
-
-        rospack = rospkg.RosPack()
-
-        db_scopes = scopes()  # also global
-
-        pkg_len = len(package) + 1
-        msg_list = []
-        srv_list = []
-        action_list = []
-
-        if msg_type in ("msg", "all"):
-            try:
-                msg_list = [msg[pkg_len:] for msg in rosmsg.list_msgs(package, rospack)]
-            except rospkg.common.ResourceNotFound:
-                # check on DB
-                try:
-                    msg_list = list(db_scopes.Message[package].Msg)
-                except KeyError:
-                    # package not found
-                    logger.warning("package not found")
-        if msg_type in ("srv", "all"):
-            try:
-                srv_list = [msg[pkg_len:] for msg in rosmsg.list_srvs(package, rospack)]
-            except rospkg.common.ResourceNotFound:
-                # check on DB
-                try:
-                    srv_list = list(db_scopes.Message[package].Srv)
-                except KeyError:
-                    # package not found
-                    logger.warning("package not found")
-        if msg_type == "action":
-            try:
-                temp_msg_list = [msg[pkg_len:] for msg in rosmsg.list_msgs(package, rospack)]
-                for msg in temp_msg_list:
-                    if msg.endswith("Action"):
-                        action_list.append(msg)
-            except rospkg.common.ResourceNotFound:
-                try:
-                    action_list = list(db_scopes.Message[package].Action)
-                except KeyError:
-                    # not found
-                    logger.warning("KeyError after rospkg.common.ResourceNotFound")
-
-        return list(set(msg_list + srv_list + action_list))
-
-    @staticmethod
-    def get_all(db="global") -> Dict[str, List]:
-        """Get a map of package -> messages from all packages"""
-
-        db_scopes = scopes()  # global for now
-        db_packs = db_scopes.list_scopes(scope="Message")
-
-        base_dict = {
-            package: Message.get_msgs(package, db=db) for package in Message.get_packages(db=db)
-        }
-
-        for pack in db_packs:
-            base_dict[pack] = base_dict.get("pack", []) + Message.get_msgs(pack, "action", db)
-
-        return base_dict
-
-    @staticmethod
-    def export_portdata(db="global") -> Dict:
-        """Store all messages, by type, on `db`"""
-
-        db_scopes = scopes()  # fetch from global
-
-        value = {"ROS1_msg": {}, "ROS1_srv": {}, "ROS1_action": {}}
-
-        for mtype in ("msg", "srv", "action"):
-            dkey = f"ROS1_{mtype}"
-            for pack in Message.get_packages(mtype, db):
-                value[dkey][pack] = Message.get_msgs(pack, mtype, db)
-
-        # remove actions from messages
-        for pack, msgs in value["ROS1_msg"].items():
-            while True:
-                for msg in msgs:
-                    if msg.endswith("ActionGoal"):
-                        base = msg[:-10]
-                        break
-                else:
-                    # not found, exit
-                    break
-
-                for suffix in ("Action", "ActionGoal", "ActionFeedback", "ActionResult"):
-                    msgs.remove(base + suffix)
-
-        Message.update_portdata(value)
-
     @staticmethod
     def fetch_portdata_messages() -> Dict:
         """Get all messages and services available for callbacks"""
@@ -249,7 +102,7 @@ class Message(Model):
 
     @staticmethod
     def get_structure(message: str) -> Dict:
-        """Gives the full structure of a message fiven 'package/message' input"""
+        """Gives the full structure of a message given 'package/message' input"""
 
         package, name = message.split("/")
 
