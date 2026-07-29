@@ -16,6 +16,7 @@ from movai_core_shared.logger import Log
 from dal.models.scopestree import scopes
 from dal.models.var import Var
 from dal.movaidb import MovaiDB
+from dal.exceptions import UndefinedFlowParameterError
 
 if TYPE_CHECKING:
     from dal.models.container import Container
@@ -28,10 +29,6 @@ class ObjectWithName(Protocol):
     @property
     def name(self) -> str:
         ...
-
-
-class UndefinedFlowParameterError(Exception):
-    """Raised when a $(flow ...) reference targets an undefined flow parameter."""
 
 
 class ParamParser:

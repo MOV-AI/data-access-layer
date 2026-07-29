@@ -1,44 +1,73 @@
 {
-"Flow": {
-    "flow_with_duplicated_subflow": {
-        "Description": "Test flow with nodes and two instances of the same subflow",
-        "ExposedPorts": {
-            "NodePub1": {"pub": ["pubport/out"]},
-            "NodeSub1": {"sub": ["subport/in"]},
-            "Subflow1": {"flow_with_four_nodes": ["subflowport/in", "subflowport/out"]}
-        },
-        "Label": "flow_with_duplicated_subflow",
-        "LastUpdate": "16/12/2025 at 17:20:00",
-        "Links": {
-            "abc123-test-link-flow_with_duplicated_subflow": {
-                "From": "pub/pubport/out",
-                "To": "sub1/subport/in"
-            }
-        },
-        "NodeInst": {
-            "pub": {
-                "NodeLabel": "NodePub1",
-                "Template": "NodePub1"
+    "Flow": {
+        "flow_with_duplicated_subflow": {
+            "Container": {
+                "subflow1": {
+                    "ContainerFlow": "flow_with_four_nodes",
+                    "ContainerLabel": "Subflow1"
+                },
+                "subflow1_extra": {
+                    "ContainerFlow": "flow_with_four_nodes",
+                    "ContainerLabel": "Subflow1"
+                },
+                "subflow2": {
+                    "ContainerFlow": "flow_with_four_nodes",
+                    "ContainerLabel": "Subflow2"
+                },
+                "subflow3": {
+                    "ContainerFlow": "flow_with_duplicated_node",
+                    "ContainerLabel": "Subflow3"
+                }
             },
-            "sub1": {
-                "NodeLabel": "NodeSub1",
-                "Template": "NodeSub1"
+            "Description": "Test flow with nodes and two instances of the same subflow",
+            "ExposedPorts": {
+                "NodePub1": {
+                    "pub": [
+                        "pubport/out"
+                    ]
+                },
+                "NodeSub1": {
+                    "sub": [
+                        "subport/in"
+                    ]
+                },
+                "Subflow1": {
+                    "flow_with_four_nodes": [
+                        "subflowport/in",
+                        "subflowport/out"
+                    ]
+                }
             },
-            "sub2": {
-                "NodeLabel": "NodeSub1",
-                "Template": "NodeSub1"
-            }
-        },
-        "Container": {
-            "subflow1": {
-                "ContainerLabel": "Subflow1",
-                "ContainerFlow": "flow_with_four_nodes"
+            "Info": "",
+            "Label": "flow_with_duplicated_subflow",
+            "LastUpdate": "16/12/2025 at 17:20:00",
+            "Layers": {},
+            "Links": {
+                "abc123-test-link-flow_with_duplicated_subflow": {
+                    "From": "pub/pubport/out",
+                    "To": "sub1/subport/in"
+                }
             },
-            "subflow2": {
-                "ContainerLabel": "Subflow2",
-                "ContainerFlow": "flow_with_four_nodes"
-            }
+            "NodeInst": {
+                "pub": {
+                    "NodeLabel": "NodePub1",
+                    "Template": "NodePub1"
+                },
+                "sub": {
+                    "NodeLabel": "NodeSub1"
+                },
+                "sub1": {
+                    "NodeLabel": "NodeSub1",
+                    "Template": "NodeSub1"
+                },
+                "sub2": {
+                    "NodeLabel": "NodeSub1",
+                    "Template": "NodeSub1"
+                }
+            },
+            "User": "",
+            "Version": "",
+            "VersionDelta": {}
         }
     }
-}
 }

@@ -130,6 +130,9 @@ def setup_test_data(global_db, metadata_folder):
             "flow_not_used_as_subflow",
             "flow_with_duplicated_subflow",
             "flow_with_nodes_and_subflow",
+            "inner_flow",
+            "middle_flow",
+            "outer_flow",
         ],
     }
     importer.run(objects)
@@ -153,6 +156,9 @@ def setup_test_data(global_db, metadata_folder):
         "flow_not_used_as_subflow",
         "flow_with_duplicated_subflow",
         "flow_with_nodes_and_subflow",
+        "inner_flow",
+        "middle_flow",
+        "outer_flow",
     ]:
         try:
             flow = Flow(flow_name)

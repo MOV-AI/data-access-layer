@@ -46,6 +46,14 @@ class DalException(Exception):
     pass
 
 
+class UndefinedParameterError(Exception):
+    """Raised when a reference targets an undefined parameter."""
+
+
+class UndefinedFlowParameterError(UndefinedParameterError):
+    """Raised when a $(flow ...) reference targets an undefined flow parameter."""
+
+
 # Git Errors
 # ----------------------------------------------------------------------------
 class GitException(DalException):

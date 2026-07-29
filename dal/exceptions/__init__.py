@@ -23,6 +23,8 @@ from .exceptions import (
     FileDoesNotExist,
     RepositoryDoesNotExist,
     GitPermissionErr,
+    UndefinedParameterError,
+    UndefinedFlowParameterError,
 )
 
 __all__ = [
@@ -41,4 +43,6 @@ __all__ = [
     "FileDoesNotExist",
     "RepositoryDoesNotExist",
     "GitPermissionErr",
+    "UndefinedParameterError",
+    "UndefinedFlowParameterError",
 ]
