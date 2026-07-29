@@ -1,35 +1,14 @@
 {
     "Flow": {
         "flow_with_nodes_and_subflow": {
-            "Container": {
-                "subflow": {
-                    "ContainerFlow": "flow_with_duplicated_subflow",
-                    "ContainerLabel": "Subflow"
-                }
-            },
             "Description": "Test flow with nodes and a subflow",
             "ExposedPorts": {
-                "NodePub1": {
-                    "pub": [
-                        "pubport/out"
-                    ]
-                },
-                "NodeSub1": {
-                    "sub": [
-                        "subport/in"
-                    ]
-                },
-                "Subflow3": {
-                    "flow_with_duplicated_subflow": [
-                        "subflowport/in",
-                        "subflowport/out"
-                    ]
-                }
+                "NodePub1": {"pub": ["pubport/out"]},
+                "NodeSub1": {"sub": ["subport/in"]},
+                "Subflow3": {"flow_with_duplicated_subflow": ["subflowport/in", "subflowport/out"]}
             },
-            "Info": "",
             "Label": "flow_with_nodes_and_subflow",
             "LastUpdate": "16/12/2025 at 17:20:00",
-            "Layers": {},
             "Links": {
                 "abc123-test-link-flow-with-nodes-and-subflow": {
                     "From": "pub/pubport/out",
@@ -46,9 +25,12 @@
                     "Template": "NodeSub1"
                 }
             },
-            "User": "",
-            "Version": "",
-            "VersionDelta": {}
+            "Container": {
+                "subflow": {
+                    "ContainerLabel": "Subflow",
+                    "ContainerFlow": "flow_with_duplicated_subflow"
+                }
+            }
         }
     }
 }
