@@ -30,6 +30,10 @@ class ObjectWithName(Protocol):
         ...
 
 
+class UndefinedFlowParameterError(Exception):
+    """Raised when a $(flow ...) reference targets an undefined flow parameter."""
+
+
 class ParamParser:
     """
     Parser for the node instance, container and flow parameters
@@ -266,38 +270,14 @@ class ParamParser:
         node_name_arr = node_name.split("__")
         # Check if this is the main flow or a subflow
         is_subflow = len(node_name_arr) > 1
-        value = instance.flow.get_param(param_name, context=self.context, is_subflow=is_subflow)
-        if value is None:
-            value = default
 
-        if len(node_name_arr) > 1:
-            # instance is not in the main flow
+        flow = instance.flow
+        if not flow.has_param(param_name):
+            raise UndefinedFlowParameterError(
+                f'Flow parameter "{param_name}" is not defined in flow "{flow.ref}"'
+            )
 
-            # not using istance bc import
-            if type(instance).__name__ in ["NodeInst", "Container"]:
-                ctr_arr = node_name_arr[:-1]
-
-                if ctr_arr:
-                    # get the name of the container
-                    _name = "__".join(ctr_arr)
-
-                    # get the container instance
-                    ctr_instance = self.flow.get_container(_name, self.context)
-                    assert ctr_instance is not None, f"Container {_name} not found"
-
-                    # get the instance parameter value
-                    # if there is no instance param, set to default
-                    ctr_value = ctr_instance.get_param(
-                        param_name, _name, self.context, default_value=value
-                    )
-
-                    value = value if ctr_value is None else ctr_value
-
-            else:
-                msg = f'Instance type "{type(instance).__name__}" not supported'
-                raise ValueError(msg)
-
-        return value
+        return flow.get_param(param_name, context=self.context, is_subflow=is_subflow)
 
 
 def get_string_from_template(template: str, task_entry: object) -> str:
