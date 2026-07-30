@@ -25,6 +25,9 @@ from .exceptions import (
     GitPermissionErr,
     UndefinedParameterError,
     UndefinedFlowParameterError,
+    UndefinedConfigParameterError,
+    UndefinedVarParameterError,
+    UndefinedParamParameterError,
 )
 
 __all__ = [
@@ -45,4 +48,7 @@ __all__ = [
     "GitPermissionErr",
     "UndefinedParameterError",
     "UndefinedFlowParameterError",
+    "UndefinedConfigParameterError",
+    "UndefinedVarParameterError",
+    "UndefinedParamParameterError",
 ]

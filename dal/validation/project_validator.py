@@ -9,9 +9,18 @@ import time
 from dal.models.scopestree import scopes
 from dal.scopes.package import Package
 from dal.scopes.flow import Flow, Node
+from dal.models.flow import Flow as ModelFlow
+from dal.exceptions import (
+    UndefinedConfigParameterError,
+    UndefinedFlowParameterError,
+    UndefinedParameterError,
+    UndefinedParamParameterError,
+    UndefinedVarParameterError,
+)
 from typing import List, Dict, Optional, Set, Tuple
 from pydantic import BaseModel, ConfigDict
 from dal.validation.issues import (
+    MissingReferencedParameter,
     ProjIssue,
     DuplicatedMob,
     MissingMob,
@@ -163,6 +172,7 @@ class ProjectValidator:
         # Run validations
         self._check_duplicates()
         self._check_nodes_flows_ref_in_flows()
+        self._check_flow_parameters_in_flows()
         self._check_link_ports_match()
 
         # Build summary
@@ -252,6 +262,182 @@ class ProjectValidator:
                             msg=f"Duplicate MOB name '{obj_name}' found in packages: {', '.join(sorted(packages_list))} installed in workspace '{workspace_name}'",
                         )
                         self.issues.append(issue)
+
+    def _check_flow_parameters(self, flow_ref: str) -> List[ProjIssue]:
+        """
+        Check parameter expressions in a specific flow using the runtime parser.
+        """
+        LOGGER.info(f"Checking Flow parameters in flow '{flow_ref}'")
+
+        flow_issues = []
+
+        try:
+            flow_data = self._get_flow_dict(flow_ref)
+
+            if "Flow" not in flow_data or flow_ref not in flow_data["Flow"]:
+                return flow_issues  # Flow not found, no issues to report
+
+            flow_content = flow_data["Flow"][flow_ref]
+            flow = ModelFlow(flow_ref)
+
+            if "Container" in flow_content:
+                for container_name, container_data in flow_content["Container"].items():
+                    try:
+                        container = flow.get_container(container_name, flow_ref)
+                    except Exception as error:
+                        LOGGER.debug(
+                            f"Skipping parameters for container '{container_name}' "
+                            f"in flow '{flow_ref}': {error}"
+                        )
+                        continue
+
+                    for param_key in container_data.get("Parameter", {}):
+                        try:
+                            container.get_param(param_key, container_name, flow_ref)
+                        except UndefinedParameterError as error:
+                            line_num = _find_json_path_line(
+                                flow_data,
+                                [
+                                    "Flow",
+                                    flow_ref,
+                                    "Container",
+                                    container_name,
+                                    "Parameter",
+                                    param_key,
+                                    "Value",
+                                ],
+                            )
+                            flow_issues.append(
+                                self._make_missing_parameter_issue(
+                                    flow_ref=flow_ref,
+                                    owner_type="Container",
+                                    owner_name=container_name,
+                                    param_key=param_key,
+                                    error=error,
+                                    line_start=line_num,
+                                )
+                            )
+
+            # Check NodeInst for parameter references
+            if "NodeInst" in flow_content:
+                for node_inst_name in flow_content["NodeInst"]:
+                    try:
+                        node_inst = flow.get_node_inst(node_inst_name)
+                        param_names = set(node_inst.Parameter.keys())
+                        param_names.update(node_inst.node_template.Parameter.keys())
+                    except Exception as error:
+                        LOGGER.debug(
+                            f"Skipping parameters for node '{node_inst_name}' "
+                            f"in flow '{flow_ref}': {error}"
+                        )
+                        continue
+
+                    LOGGER.info(
+                        "Checking parameters for node instance '%s' in flow '%s'",
+                        node_inst_name,
+                        flow_ref,
+                    )
+
+                    for param_key in param_names:
+                        LOGGER.info(
+                            "Checking parameter '%s' for node instance '%s' in flow '%s'",
+                            param_key,
+                            node_inst_name,
+                            flow_ref,
+                        )
+                        try:
+                            node_inst.get_param(param_key, node_inst_name, flow_ref)
+                            LOGGER.info(
+                                "Parameter '%s' for node instance '%s' in flow '%s' is valid",
+                                param_key,
+                                node_inst_name,
+                                flow_ref,
+                            )
+                        except UndefinedParameterError as error:
+                            line_num = _find_json_path_line(
+                                flow_data,
+                                [
+                                    "Flow",
+                                    flow_ref,
+                                    "NodeInst",
+                                    node_inst_name,
+                                    "Parameter",
+                                    param_key,
+                                    "Value",
+                                ],
+                            )
+                            flow_issues.append(
+                                self._make_missing_parameter_issue(
+                                    flow_ref=flow_ref,
+                                    owner_type="Node instance",
+                                    owner_name=node_inst_name,
+                                    param_key=param_key,
+                                    error=error,
+                                    line_start=line_num,
+                                )
+                            )
+
+            # Check Flow parameters
+            for param_key in flow_content.get("Parameter", {}):
+                LOGGER.error("Checking parameter '%s' for flow '%s'", param_key, flow_ref)
+                try:
+                    flow.get_param(param_key, flow_ref)
+                except UndefinedParameterError as error:
+                    line_num = _find_json_path_line(
+                        flow_data, ["Flow", flow_ref, "Parameter", param_key, "Value"]
+                    )
+                    flow_issues.append(
+                        self._make_missing_parameter_issue(
+                            flow_ref=flow_ref,
+                            owner_type="Flow",
+                            owner_name=flow_ref,
+                            param_key=param_key,
+                            error=error,
+                            line_start=line_num,
+                        )
+                    )
+
+            return flow_issues
+        except Exception as e:
+            LOGGER.error(f"Error checking flow parameters in flow '{flow_ref}': {e}")
+            return flow_issues
+
+    def _make_missing_parameter_issue(
+        self,
+        flow_ref: str,
+        owner_type: str,
+        owner_name: str,
+        param_key: str,
+        error: UndefinedParameterError,
+        line_start: Optional[int],
+    ) -> ProjIssue:
+        """Convert a parser undefined-parameter error into a project issue."""
+
+        reference_type = {
+            UndefinedFlowParameterError: "flow",
+            UndefinedConfigParameterError: "config",
+            UndefinedVarParameterError: "var",
+            UndefinedParamParameterError: "param",
+        }.get(type(error), "parameter")
+
+        return MissingReferencedParameter(
+            json_path=f"{flow_ref}.json",
+            msg=(
+                f"{owner_type} '{owner_name}' parameter '{param_key}' has an "
+                f"undefined {reference_type} reference in Flow '{flow_ref}'"
+            ),
+            line_start=line_start,
+        )
+
+    def _check_flow_parameters_in_flows(self):
+        """
+        Check parameter expressions in all flows.
+        """
+        LOGGER.info("Checking Flow parameters")
+
+        flow_refs = self._objects_by_scope.get("Flow", set())
+        for flow_ref in flow_refs:
+            self.issues.extend(self._check_flow_parameters(flow_ref))
 
     def _check_nodes_flows_ref_in_flow(self, flow_ref: str) -> List[ProjIssue]:
         """

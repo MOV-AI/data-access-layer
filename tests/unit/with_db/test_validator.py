@@ -88,7 +88,7 @@ def execute_and_assert_same_type_issues(validator_output: Dict, expected_issues:
     issue_count = validator_output.summary.total_issues
     assert issue_count == len(
         expected_issues
-    ), f"Expected {len(expected_issues)} issues, but got {issue_count}"
+    ), f"Expected {len(expected_issues)} issues, but got {issue_count}: {validator_output.issues}"
 
     for i in range(issue_count):
         actual_issue = validator_output.issues[i]
@@ -289,6 +289,42 @@ class TestProjectValidator:
                 ],
             )
 
+    def test_missing_referenced_parameters(self, global_db, folder_invalid_data):
+        """Tests that missing flow parameters are found."""
+
+        from dal.validation.issues import MissingReferencedParameter
+
+        with setup_test_data_from_path(folder_invalid_data / "proj-missing-referenced-params"):
+            validator_output: ProjectValidationResult = ProjectValidator().validate()
+            validator_output.issues.sort(key=lambda issue: issue.line_start)
+            print(f"Validator output: {validator_output}")
+
+            execute_and_assert_same_type_issues(
+                validator_output,
+                [
+                    MissingReferencedParameter(
+                        json_path="test_missing_referenced_parameters.json",
+                        msg="Node instance 'dependency' parameter 'missing_compound_param' has an undefined param reference in Flow 'test_missing_referenced_parameters'",
+                        line_start=27,
+                    ),
+                    MissingReferencedParameter(
+                        json_path="test_missing_referenced_parameters.json",
+                        msg="Node instance 'dependency' parameter 'missing_flow_parameter' has an undefined flow reference in Flow 'test_missing_referenced_parameters'",
+                        line_start=31,
+                    ),
+                    MissingReferencedParameter(
+                        json_path="test_missing_referenced_parameters.json",
+                        msg="Node instance 'dependency' parameter 'missing_var_parameter' has an undefined var reference in Flow 'test_missing_referenced_parameters'",
+                        line_start=35,
+                    ),
+                    MissingReferencedParameter(
+                        json_path="test_missing_referenced_parameters.json",
+                        msg="Flow 'test_missing_referenced_parameters' parameter 'missing_config_parameter' has an undefined config reference in Flow 'test_missing_referenced_parameters'",
+                        line_start=52,
+                    ),
+                ],
+            )
+
 
 class TestFlowValidator:
     def test_flow_with_valid_links(self, global_db, setup_test_data):
@@ -439,6 +475,45 @@ class TestFlowValidator:
                         json_path="test_missing_flow.json",
                         msg="Flow 'tugbot' missing, required by Flow 'test_missing_flow' (instance 'tugbot')",
                         line_start=18,
+                    ),
+                ],
+            )
+
+    def test_flow_with_missing_referenced_parameters(self, global_db, folder_invalid_data):
+        """Tests that a flow with missing referenced parameters has issues."""
+
+        from dal.validation.issues import MissingReferencedParameter
+        from dal.validation.flow_validator import FlowValidator
+
+        with setup_test_data_from_path(folder_invalid_data / "proj-missing-referenced-params"):
+            validator_output: ProjectValidationResult = FlowValidator(
+                "test_missing_referenced_parameters"
+            ).validate_flow()
+            validator_output.issues.sort(key=lambda issue: issue.line_start)
+            print(f"Validator output: {validator_output}")
+
+            execute_and_assert_same_type_issues(
+                validator_output,
+                [
+                    MissingReferencedParameter(
+                        json_path="test_missing_referenced_parameters.json",
+                        msg="Node instance 'dependency' parameter 'missing_compound_param' has an undefined param reference in Flow 'test_missing_referenced_parameters'",
+                        line_start=27,
+                    ),
+                    MissingReferencedParameter(
+                        json_path="test_missing_referenced_parameters.json",
+                        msg="Node instance 'dependency' parameter 'missing_flow_parameter' has an undefined flow reference in Flow 'test_missing_referenced_parameters'",
+                        line_start=31,
+                    ),
+                    MissingReferencedParameter(
+                        json_path="test_missing_referenced_parameters.json",
+                        msg="Node instance 'dependency' parameter 'missing_var_parameter' has an undefined var reference in Flow 'test_missing_referenced_parameters'",
+                        line_start=35,
+                    ),
+                    MissingReferencedParameter(
+                        json_path="test_missing_referenced_parameters.json",
+                        msg="Flow 'test_missing_referenced_parameters' parameter 'missing_config_parameter' has an undefined config reference in Flow 'test_missing_referenced_parameters'",
+                        line_start=52,
                     ),
                 ],
             )

@@ -16,7 +16,12 @@ from movai_core_shared.logger import Log
 from dal.models.scopestree import scopes
 from dal.models.var import Var
 from dal.movaidb import MovaiDB
-from dal.exceptions import UndefinedFlowParameterError
+from dal.exceptions import (
+    UndefinedFlowParameterError,
+    UndefinedConfigParameterError,
+    UndefinedVarParameterError,
+    UndefinedParamParameterError,
+)
 
 if TYPE_CHECKING:
     from dal.models.container import Container
@@ -180,7 +185,9 @@ class ParamParser:
             obj = cast("Configuration", scopes.from_path(_config_name, scope="Configuration"))
 
         except KeyError as exc:
-            raise ValueError(f"Configuration {_config_name} does not exist") from exc
+            raise UndefinedConfigParameterError(
+                f"Configuration {_config_name} does not exist"
+            ) from exc
 
         output = obj.get_param(_config_param)
 
@@ -209,9 +216,17 @@ class ParamParser:
 
         cls_name = type(instance).__name__
         if cls_name == "Flow":  # Flows don't have a node name
+            if not instance.has_param(param_name):
+                raise UndefinedParamParameterError(
+                    f'Parameter "{param_name}" is not defined in flow "{instance.ref}"'
+                )
             instance = cast("Flow", instance)
             output = instance.get_param(param_name, self.context) or default
         elif cls_name in ["NodeInst", "Container"]:
+            if not instance.has_param(param_name, node_name, self.context):
+                raise UndefinedParamParameterError(
+                    f'Parameter "{param_name}" is not defined in "{node_name}" of flow "{instance.flow.ref}"'
+                )
             output = instance.get_param(param_name, node_name, self.context) or default
         else:
             raise ValueError(f'Instance type "{cls_name}" not supported')
@@ -239,7 +254,7 @@ class ParamParser:
         output = Var(context, robot_name).get(param_name)
 
         if not output:
-            raise ValueError(f'"{param_name}" does not exist in Var "{context}"')
+            raise UndefinedVarParameterError(f'"{param_name}" does not exist in Var "{context}"')
 
         return output
 

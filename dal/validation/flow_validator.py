@@ -36,6 +36,7 @@ class FlowValidator:
 
             # Validate the specific flow
             self.issues.extend(self.project._check_nodes_flows_ref_in_flow(self.flow_ref))
+            self.issues.extend(self.project._check_flow_parameters(self.flow_ref))
             self.issues.extend(self.project._check_flow_links(self.flow_ref))
 
         except Exception as e:
