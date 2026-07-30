@@ -156,12 +156,12 @@ class ProjectValidator:
             self._flow_dict_cache[flow_ref] = Flow(flow_ref).get_dict()
         return self._flow_dict_cache[flow_ref]
 
-    def validate(self) -> Dict:
+    def validate(self) -> ProjectValidationResult:
         """
         Validate the project data.
 
         Returns:
-            dict: A dictionary containing the validation results with summary and issues.
+            ProjectValidationResult: The result of the project validation, including issues found.
         """
         LOGGER.info("Starting project validation")
         start_time = time.perf_counter()

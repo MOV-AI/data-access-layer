@@ -1,7 +1,5 @@
-from typing import List
-
 from movai_core_shared import Log
-from dal.validation.issues import ProjIssue, Severity
+from dal.validation.issues import Severity
 from dal.validation.project_validator import (
     ProjectIssue,
     ProjectValidator,
@@ -22,12 +20,12 @@ class FlowValidator:
         self.flow_ref = flow_ref
         self.issues = []
 
-    def validate_flow(self) -> List[ProjIssue]:
+    def validate_flow(self) -> ProjectValidationResult:
         """
         Validate a specific flow by its reference.
 
         Returns:
-            List[ProjIssue]: A list of issues found for this specific flow.
+            ProjectValidationResult: The result of the flow validation, including issues found.
         """
         try:
             # Build object cache if not already built
