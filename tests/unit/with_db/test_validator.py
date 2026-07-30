@@ -7,6 +7,29 @@ from contextlib import contextmanager
 from typing import Dict, List
 
 
+@pytest.fixture(autouse=True)
+def isolated_database(global_db):
+    """Ensure each test runs in an isolated database environment."""
+
+    from dal.movaidb.database import MovaiDB
+    from dal.scopes.package import Package
+    from dal.validation.project_validator import VALIDATED_SCOPES
+
+    isolated_db = MovaiDB()
+
+    def clear():
+        Package.clear_packagedata()
+        for scope in VALIDATED_SCOPES:
+            try:
+                isolated_db.delete_by_args(scope, Name="*")
+            except Exception as e:
+                print(f"Failed to remove scope data for {scope}: {e}")
+
+    clear()
+    yield
+    clear()
+
+
 @contextmanager
 def setup_test_data_from_path(path: Path):
     """Import test metadata from a given path before each test."""
@@ -131,7 +154,7 @@ class TestProjectValidator:
         ), f"Expected 0 issues, but got {validator_output.summary.total_issues}: {validator_output.issues}"
         assert len(validator_output.issues) == 0
 
-    def test_duplicated_metadata(self, global_db, folder_invalid_data):
+    def test_duplicated_metadata(self, isolated_database, folder_invalid_data):
         """Tests that duplicated metadata is found."""
 
         from dal.validation.issues import DuplicatedMob
@@ -148,7 +171,7 @@ class TestProjectValidator:
                 ],
             )
 
-    def test_non_matching_ports(self, global_db, folder_invalid_data):
+    def test_non_matching_ports(self, isolated_database, folder_invalid_data):
         """Tests that non matching ports are found."""
 
         from dal.validation.issues import NonMatchingLinkPorts
@@ -190,7 +213,7 @@ class TestProjectValidator:
             )
 
     @pytest.mark.parametrize("path", ["proj-missing-node"])
-    def test_missing_node(self, global_db, folder_invalid_data, path):
+    def test_missing_node(self, isolated_database, folder_invalid_data, path):
         """Tests that missing node issue is found."""
         from dal.validation.issues import MissingMob
 
@@ -212,7 +235,7 @@ class TestProjectValidator:
                 ],
             )
 
-    def test_missing_flow(self, global_db, folder_invalid_data):
+    def test_missing_flow(self, isolated_database, folder_invalid_data):
         """Tests that missing flow issue is found."""
 
         from dal.validation.issues import MissingMob
@@ -235,7 +258,7 @@ class TestProjectValidator:
                 ],
             )
 
-    def test_missing_flow_instance(self, global_db, folder_invalid_data):
+    def test_missing_flow_instance(self, isolated_database, folder_invalid_data):
         """Tests that missing flow instance mentioned in flow is found."""
 
         from dal.validation.issues import MissingFlowInstance
@@ -253,7 +276,7 @@ class TestProjectValidator:
                 ],
             )
 
-    def test_missing_node_instance(self, global_db, folder_invalid_data):
+    def test_missing_node_instance(self, isolated_database, folder_invalid_data):
         """Tests that missing node instance mentioned in flow is found."""
 
         from dal.validation.issues import MissingNodeInstance
@@ -271,7 +294,7 @@ class TestProjectValidator:
                 ],
             )
 
-    def test_missing_port(self, global_db, folder_invalid_data):
+    def test_missing_port(self, isolated_database, folder_invalid_data):
         """Tests that missing node port issue is found."""
 
         from dal.validation.issues import MissingMob
@@ -289,7 +312,7 @@ class TestProjectValidator:
                 ],
             )
 
-    def test_missing_referenced_parameters(self, global_db, folder_invalid_data):
+    def test_missing_referenced_parameters(self, isolated_database, folder_invalid_data):
         """Tests that missing flow parameters are found."""
 
         from dal.validation.issues import MissingReferencedParameter
