@@ -1,5 +1,11 @@
 # Changelog
 
+## vTBD
+- [BP-1680](https://movai.atlassian.net/browse/BP-1680): Fix cascading propagation of flow parameters during parsing
+  - Add referenced parameter validation to ProjectValidator
+  - Add FlowValidator to perform validations at individual flow level
+  - Add tests for FlowValidator, new validation logic in ProjectValidator and flow parameter propagation during parsing
+
 ## v3.26.0
 - [BP-1747](https://movai.atlassian.net/browse/BP-1747): Project Validator translated to Redis from mobtest/proj_tests
   - Add tests for project validator
