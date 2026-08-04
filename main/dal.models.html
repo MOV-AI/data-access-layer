@@ -2490,12 +2490,6 @@ Proprietary and confidential</p>
 <p>Message Model implementation</p>
 <p>use Deprecated one instead</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="dal.models.message.Message.export_portdata">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">export_portdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'global'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#dal.models.message.Message.export_portdata" title="Permalink to this definition"></a></dt>
-<dd><p>Store all messages, by type, on <cite>db</cite></p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="dal.models.message.Message.fetch_portdata_api">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch_portdata_api</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#dal.models.message.Message.fetch_portdata_api" title="Permalink to this definition"></a></dt>
 <dd><p>Fetch the stored PortsData value for API usage.</p>
@@ -2513,24 +2507,6 @@ Proprietary and confidential</p>
 <dt class="sig sig-object py" id="dal.models.message.Message.fetch_portdata_messages">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch_portdata_messages</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#dal.models.message.Message.fetch_portdata_messages" title="Permalink to this definition"></a></dt>
 <dd><p>Get all messages and services available for callbacks</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.models.message.Message.get_all">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'global'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.models.message.Message.get_all" title="Permalink to this definition"></a></dt>
-<dd><p>Get a map of package -&gt; messages from all packages</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.models.message.Message.get_msgs">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_msgs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">package</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'global'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="headerlink" href="#dal.models.message.Message.get_msgs" title="Permalink to this definition"></a></dt>
-<dd><p>Get a list of all messages inside a package, filtered by <cite>msg_type</cite></p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.models.message.Message.get_packages">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_packages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'global'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="headerlink" href="#dal.models.message.Message.get_packages" title="Permalink to this definition"></a></dt>
-<dd><p>Get a list of all packages containing messages of type <cite>msg_type</cite></p>
 </dd></dl>
 
 <dl class="py method">
@@ -2554,7 +2530,7 @@ Proprietary and confidential</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.models.message.Message.get_structure">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#dal.models.message.Message.get_structure" title="Permalink to this definition"></a></dt>
-<dd><p>Gives the full structure of a message fiven ‘package/message’ input</p>
+<dd><p>Gives the full structure of a message given ‘package/message’ input</p>
 </dd></dl>
 
 <dl class="py method">
@@ -5770,12 +5746,6 @@ Thread will exit when Lock is not in enabled_locks anymore</p>
 <p>Message Model implementation</p>
 <p>use Deprecated one instead</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="dal.models.Message.export_portdata">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">export_portdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'global'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#dal.models.Message.export_portdata" title="Permalink to this definition"></a></dt>
-<dd><p>Store all messages, by type, on <cite>db</cite></p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="dal.models.Message.fetch_portdata_api">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch_portdata_api</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#dal.models.Message.fetch_portdata_api" title="Permalink to this definition"></a></dt>
 <dd><p>Fetch the stored PortsData value for API usage.</p>
@@ -5793,24 +5763,6 @@ Thread will exit when Lock is not in enabled_locks anymore</p>
 <dt class="sig sig-object py" id="dal.models.Message.fetch_portdata_messages">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch_portdata_messages</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#dal.models.Message.fetch_portdata_messages" title="Permalink to this definition"></a></dt>
 <dd><p>Get all messages and services available for callbacks</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.models.Message.get_all">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'global'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.models.Message.get_all" title="Permalink to this definition"></a></dt>
-<dd><p>Get a map of package -&gt; messages from all packages</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.models.Message.get_msgs">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_msgs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">package</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'global'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="headerlink" href="#dal.models.Message.get_msgs" title="Permalink to this definition"></a></dt>
-<dd><p>Get a list of all messages inside a package, filtered by <cite>msg_type</cite></p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dal.models.Message.get_packages">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_packages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'global'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="headerlink" href="#dal.models.Message.get_packages" title="Permalink to this definition"></a></dt>
-<dd><p>Get a list of all packages containing messages of type <cite>msg_type</cite></p>
 </dd></dl>
 
 <dl class="py method">
@@ -5834,7 +5786,7 @@ Thread will exit when Lock is not in enabled_locks anymore</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.models.Message.get_structure">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#dal.models.Message.get_structure" title="Permalink to this definition"></a></dt>
-<dd><p>Gives the full structure of a message fiven ‘package/message’ input</p>
+<dd><p>Gives the full structure of a message given ‘package/message’ input</p>
 </dd></dl>
 
 <dl class="py method">
