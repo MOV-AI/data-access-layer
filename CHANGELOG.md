@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.26.1
 - [BP-1731](https://movai.atlassian.net/browse/BP-1731): [Workspace-agent | ros1] Implement ros1 init local db in workspace agent
   - Remove old init_local_db
 
