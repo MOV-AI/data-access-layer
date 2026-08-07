@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "data-access-layer"
-version = "3.26.0.2"
+version = "3.26.1.1"
 authors = [
     {name = "Backend team", email = "backend@mov.ai"},
 ]
@@ -47,7 +47,6 @@ mobdata = "dal.tools.mobdata:main"
 edit_yaml = "dal.tools.edit_yaml:main"
 secret_key = "dal.tools.secret_key:main"
 logs4translation = "dal.tools.extract_i18n:main"
-init_local_db = "dal.tools.init_local_db:main"
 
 [tool.setuptools.packages.find]
 include = ["dal*"]
