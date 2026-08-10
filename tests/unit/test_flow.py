@@ -651,6 +651,8 @@ class FlowTests(unittest.TestCase):
 class FlowParamsTests(unittest.TestCase):
     @patch("dal.models.scopestree.Persistence.get_plugin_class")
     def test_missing_flow_param(self, mock_get_plugin):
+        from dal.exceptions import UndefinedConfigParameterError
+
         # Clear existing Redis plugins, if any
         del scopes._children["global"]
 
@@ -677,14 +679,10 @@ class FlowParamsTests(unittest.TestCase):
         mock_get_plugin.return_value = mock_plugin
         flow = Flow("test")
 
-        with self.assertLogs("ParamParser.mov.ai") as cm:
+        with pytest.raises(UndefinedConfigParameterError) as cm:
             flow.get_param("config_file")
 
         self.assertEqual(
-            cm.output,
-            [
-                'ERROR:ParamParser.mov.ai:Error evaluating "config_file" '
-                'with value "$(config project.configurations.smart)" of '
-                'flow "test"; Configuration project does not exist'
-            ],
+            str(cm.value),
+            "Configuration project does not exist",
         )

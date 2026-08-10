@@ -298,6 +298,18 @@ class Flow(Model):
 
         return output
 
+    def has_param(self, key: str) -> bool:
+        """
+        Checks if a specific parameter exists in the flow
+
+        Args:
+            key (str): The parameter key to check.
+
+        Returns:
+            bool: True if the parameter exists, False otherwise.
+        """
+        return key in self.Parameter.keys()
+
     def get_node_inst_param(self, name: str, key: str, context: str = None) -> Any:
         """Returns the node instance parameter"""
         _context = context or self.ref
