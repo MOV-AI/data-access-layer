@@ -1,0 +1,40 @@
+{
+    "Node": {
+        "FlowParamTestNode": {
+            "Info": "Node used by flow parameter parser tests",
+            "Label": "FlowParamTestNode",
+            "LastUpdate": {
+                "date": "11/08/2026 at 00:00:00",
+                "user": "movai@internal"
+            },
+            "Launch": true,
+            "PackageDepends": "",
+            "Parameter": {
+                "log_description": {
+                    "Type": "string",
+                    "Value": "default"
+                }
+            },
+            "Path": "",
+            "Persistent": false,
+            "PortsInst": {
+                "in": {
+                    "In": {
+                        "in": {
+                            "Callback": "global/Callback/delete_me",
+                            "Message": "movai_msgs/Transition"
+                        }
+                    },
+                    "Message": "Transition",
+                    "Package": "movai_msgs",
+                    "Template": "MovAI/TransitionTo"
+                }
+            },
+            "Remappable": true,
+            "Type": "MovAI/State",
+            "User": "",
+            "Version": "",
+            "VersionDelta": {}
+        }
+    }
+}
