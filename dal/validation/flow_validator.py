@@ -48,6 +48,8 @@ class FlowValidator:
                     severity=issue.severity,
                     msg=issue.msg,
                     json_path=getattr(issue, "json_path", "N/A"),
+                    document_type=getattr(issue, "document_type", "Flow"),
+                    document_name=getattr(issue, "document_name", self.flow_ref),
                     line_start=getattr(issue, "line_start", None),
                 )
                 for issue in self.issues

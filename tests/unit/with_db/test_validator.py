@@ -117,6 +117,11 @@ def execute_and_assert_same_type_issues(validator_output: Dict, expected_issues:
         actual_issue = validator_output.issues[i]
         expected_issue = expected_issues[i]
 
+        expected_document_name = Path(expected_issue.json_path).stem
+        expected_document_type = (
+            None if expected_issue.iss_type == "Duplicated metadata" else "Flow"
+        )
+
         print(actual_issue.json_path)
         print(f"Actual issue: {actual_issue}")
         print(f"Expected issue: {expected_issue}")
@@ -139,6 +144,19 @@ def execute_and_assert_same_type_issues(validator_output: Dict, expected_issues:
         assert (
             actual_issue.line_start == expected_issue.line_start
         ), f"Expected line_start '{expected_issue.line_start}', but got '{actual_issue.line_start}'"
+        assert (
+            actual_issue.document_name == expected_document_name
+        ), f"Expected document_name '{expected_document_name}', but got '{actual_issue.document_name}'"
+        if expected_document_type is not None:
+            assert (
+                actual_issue.document_type == expected_document_type
+            ), f"Expected document_type '{expected_document_type}', but got '{actual_issue.document_type}'"
+        else:
+            assert actual_issue.document_type not in {
+                "",
+                "Unknown",
+                None,
+            }, "Expected duplicate issue to have a concrete document_type"
 
 
 class TestProjectValidator:
