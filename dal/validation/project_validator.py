@@ -171,9 +171,11 @@ class ProjectValidator:
 
         # Run validations
         self._check_duplicates()
-        self._check_nodes_flows_ref_in_flows()
-        self._check_flow_parameters_in_flows()
-        self._check_link_ports_match()
+
+        flow_refs = self._objects_by_scope.get("Flow", set())
+
+        for flow_ref in flow_refs:
+            self.issues.extend(self.check_flow(flow_ref))
 
         # Build summary
         error_count = sum(1 for issue in self.issues if issue.severity == Severity.ERROR)
@@ -263,7 +265,7 @@ class ProjectValidator:
                         )
                         self.issues.append(issue)
 
-    def check_flow_parameters(self, flow_ref: str) -> List[ProjIssue]:
+    def _check_flow_parameters(self, flow_ref: str) -> List[ProjIssue]:
         """
         Check parameter expressions in a specific flow using the runtime parser.
         """
@@ -429,17 +431,21 @@ class ProjectValidator:
             line_start=line_start,
         )
 
-    def _check_flow_parameters_in_flows(self):
+    def check_flow(self, flow_ref) -> List[ProjIssue]:
         """
-        Check parameter expressions in all flows.
+        Check a specific flow for issues.
+
+        Args:
+            flow_ref: Reference of the flow to check.
         """
-        LOGGER.info("Checking Flow parameters")
 
-        flow_refs = self._objects_by_scope.get("Flow", set())
-        for flow_ref in flow_refs:
-            self.issues.extend(self.check_flow_parameters(flow_ref))
+        flow_issues = []
+        flow_issues.extend(self._check_nodes_flows_ref_in_flow(flow_ref))
+        flow_issues.extend(self._check_flow_parameters(flow_ref))
+        flow_issues.extend(self._check_flow_links(flow_ref))
+        return flow_issues
 
-    def check_nodes_flows_ref_in_flow(self, flow_ref: str) -> List[ProjIssue]:
+    def _check_nodes_flows_ref_in_flow(self, flow_ref: str) -> List[ProjIssue]:
         """
         Check that all nodes and flows referenced in a specific flow exist in the project.
         """
@@ -493,19 +499,7 @@ class ProjectValidator:
             LOGGER.error(f"Error checking flow {flow_ref}: {e}")
         return flow_issues
 
-    def _check_nodes_flows_ref_in_flows(self):
-        """
-        Check that all nodes and flows referenced in flows exist in the project.
-        """
-        LOGGER.info("Checking Flow/Node template references")
-
-        # Get all flows
-        flow_refs = self._objects_by_scope.get("Flow", set())
-
-        for flow_ref in flow_refs:
-            self.issues.extend(self.check_nodes_flows_ref_in_flow(flow_ref))
-
-    def check_flow_links(self, flow_ref: str) -> List[ProjIssue]:
+    def _check_flow_links(self, flow_ref: str) -> List[ProjIssue]:
         """
         Check that all links in a specific flow have valid instances and compatible ports.
         """
@@ -539,17 +533,6 @@ class ProjectValidator:
         except Exception as e:
             LOGGER.error(f"Error checking links in flow {flow_ref}: {e}")
         return flow_issues
-
-    def _check_link_ports_match(self):
-        """
-        Check that all links have valid instances and compatible ports.
-        """
-        LOGGER.info("Checking link port compatibility")
-
-        flow_refs = self._objects_by_scope.get("Flow", set())
-
-        for flow_ref in flow_refs:
-            self.issues.extend(self.check_flow_links(flow_ref))
 
     def _object_exists(self, scope: str, ref: str) -> bool:
         """Check if an object exists in the workspace cache."""
