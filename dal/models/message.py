@@ -83,8 +83,10 @@ class Message(Model):
         if db_data is None:
             db_data = {}
 
-        for package_type in new_data.keys():
-            db_data[package_type] = new_data[package_type]
+        for package_type, packages in new_data.items():
+            if package_type not in db_data:
+                db_data[package_type] = {}
+            db_data[package_type].update(packages)
 
         ports_data.Value = db_data
 
