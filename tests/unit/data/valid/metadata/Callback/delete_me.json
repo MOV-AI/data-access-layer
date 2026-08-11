@@ -8,15 +8,15 @@
                 "user": "movai@internal"
             },
             "Message": "",
-            "User": "",
-            "Version": "",
-            "VersionDelta": {},
             "Py3Lib": {
                 "Application": {
                     "Class": "Application",
                     "Module": "API2.Application"
                 }
-            }
+            },
+            "User": "",
+            "Version": "",
+            "VersionDelta": {}
         }
     }
 }

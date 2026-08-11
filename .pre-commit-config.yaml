@@ -19,6 +19,16 @@ repos:
     - id: mixed-line-ending         # fixes line files line ending
       args: [--fix=lf]
     - id: trailing-whitespace       # removes trailing whitespaces from text files
+    - id: pretty-format-json
+      args:
+        - "--autofix"
+        - "--indent=4"
+      exclude: |
+          (?x)^(
+              .vscode/|
+              dal/validation/json_schema/.*|
+              dal/validation/redis_schema/.*
+          )$
 
   - repo: https://github.com/ambv/black     # formats Python code
     rev: 23.7.0

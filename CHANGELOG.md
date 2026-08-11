@@ -1,5 +1,8 @@
 # Changelog
 
+## vTBD
+- Always format json files
+
 ## v3.27.1
 - [BP-1797](https://movai.atlassian.net/browse/BP-1797): Fix update_portdata overwriting old messages in Redis
 

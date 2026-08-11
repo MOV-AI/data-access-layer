@@ -3,8 +3,16 @@
         "flow_not_used_as_subflow": {
             "Description": "Test flow with only two nodes",
             "ExposedPorts": {
-                "NodePub1": {"pub": ["pubport/out"]},
-                "NodeSub1": {"sub": ["subport/in"]}
+                "NodePub1": {
+                    "pub": [
+                        "pubport/out"
+                    ]
+                },
+                "NodeSub1": {
+                    "sub": [
+                        "subport/in"
+                    ]
+                }
             },
             "Label": "flow_not_used_as_subflow",
             "LastUpdate": "16/12/2025 at 17:20:00",

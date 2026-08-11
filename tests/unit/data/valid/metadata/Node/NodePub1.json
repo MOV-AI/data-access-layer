@@ -7,13 +7,17 @@
             "PortsInst": {
                 "pubport": {
                     "Message": "Float32",
-                    "Out": {"out": {"Message": "std_msgs/Float32"}},
+                    "Out": {
+                        "out": {
+                            "Message": "std_msgs/Float32"
+                        }
+                    },
                     "Package": "std_msgs",
                     "Template": "ROS1/Publisher"
                 }
             },
-            "Type": "ROS1/Node",
-            "Remappable": "True"
+            "Remappable": "True",
+            "Type": "ROS1/Node"
         }
     }
 }
