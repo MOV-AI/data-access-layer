@@ -150,6 +150,9 @@ class ProjectValidator:
         # Cache loaded Flow dictionaries to avoid repeated DAL fetches.
         self._flow_dict_cache: Dict[str, dict] = {}
 
+        # Build cache of all objects first
+        self._build_object_cache()
+
     def _get_flow_dict(self, flow_ref: str) -> dict:
         """Get flow dict with in-memory cache."""
         if flow_ref not in self._flow_dict_cache:
@@ -165,9 +168,6 @@ class ProjectValidator:
         """
         LOGGER.info("Starting project validation")
         start_time = time.perf_counter()
-
-        # Build cache of all objects first
-        self._build_object_cache()
 
         # Run validations
         self._check_duplicates()
@@ -263,7 +263,7 @@ class ProjectValidator:
                         )
                         self.issues.append(issue)
 
-    def _check_flow_parameters(self, flow_ref: str) -> List[ProjIssue]:
+    def check_flow_parameters(self, flow_ref: str) -> List[ProjIssue]:
         """
         Check parameter expressions in a specific flow using the runtime parser.
         """
@@ -437,9 +437,9 @@ class ProjectValidator:
 
         flow_refs = self._objects_by_scope.get("Flow", set())
         for flow_ref in flow_refs:
-            self.issues.extend(self._check_flow_parameters(flow_ref))
+            self.issues.extend(self.check_flow_parameters(flow_ref))
 
-    def _check_nodes_flows_ref_in_flow(self, flow_ref: str) -> List[ProjIssue]:
+    def check_nodes_flows_ref_in_flow(self, flow_ref: str) -> List[ProjIssue]:
         """
         Check that all nodes and flows referenced in a specific flow exist in the project.
         """
@@ -503,9 +503,9 @@ class ProjectValidator:
         flow_refs = self._objects_by_scope.get("Flow", set())
 
         for flow_ref in flow_refs:
-            self.issues.extend(self._check_nodes_flows_ref_in_flow(flow_ref))
+            self.issues.extend(self.check_nodes_flows_ref_in_flow(flow_ref))
 
-    def _check_flow_links(self, flow_ref: str) -> List[ProjIssue]:
+    def check_flow_links(self, flow_ref: str) -> List[ProjIssue]:
         """
         Check that all links in a specific flow have valid instances and compatible ports.
         """
@@ -549,7 +549,7 @@ class ProjectValidator:
         flow_refs = self._objects_by_scope.get("Flow", set())
 
         for flow_ref in flow_refs:
-            self.issues.extend(self._check_flow_links(flow_ref))
+            self.issues.extend(self.check_flow_links(flow_ref))
 
     def _object_exists(self, scope: str, ref: str) -> bool:
         """Check if an object exists in the workspace cache."""

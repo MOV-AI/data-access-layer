@@ -28,14 +28,10 @@ class FlowValidator:
             ProjectValidationResult: The result of the flow validation, including issues found.
         """
         try:
-            # Build object cache if not already built
-            if not self.project._objects_by_scope:
-                self.project._build_object_cache()
-
             # Validate the specific flow
-            self.issues.extend(self.project._check_nodes_flows_ref_in_flow(self.flow_ref))
-            self.issues.extend(self.project._check_flow_parameters(self.flow_ref))
-            self.issues.extend(self.project._check_flow_links(self.flow_ref))
+            self.issues.extend(self.project.check_nodes_flows_ref_in_flow(self.flow_ref))
+            self.issues.extend(self.project.check_flow_parameters(self.flow_ref))
+            self.issues.extend(self.project.check_flow_links(self.flow_ref))
 
         except Exception as e:
             LOGGER.error(f"Error validating flow {self.flow_ref}: {e}")

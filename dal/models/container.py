@@ -77,8 +77,8 @@ class Container(ScopeObjectNode):
             return False
 
         try:
-            _ = self.get_param(key, _name, _context)
-            return True
+            param = self.get_param(key, _name, _context)
+            return True if param is not None else False
         except Exception:
             return False
 
