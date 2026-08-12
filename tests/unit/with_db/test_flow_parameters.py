@@ -1,6 +1,5 @@
 import pytest
 
-
 TEST_NODE = "FlowParamTestNode"
 FLOW_WITH_PARAM = "test_flow_parameter_with_param"
 FLOW_MISSING_PARAM = "test_flow_parameter_missing_param"
@@ -8,105 +7,52 @@ PARENT_FLOW = "test_flow_parameter_parent"
 CHILD_FLOW = "test_flow_parameter_child"
 NODE_INST = "test_node"
 CONTAINER = "child"
+FLOW_PARAMETER_FLOWS = [
+    FLOW_WITH_PARAM,
+    FLOW_MISSING_PARAM,
+    CHILD_FLOW,
+    PARENT_FLOW,
+]
+FLOW_PARAMETER_NODES = [TEST_NODE]
 
 
 @pytest.fixture()
-def flow_parameter_test_data(global_db):
-    """Create the minimal node/flow graph needed by the flow parameter tests."""
+def flow_parameter_test_data(global_db, metadata_folder_flow_parameters):
+    """Import the minimal node/flow graph needed by the flow parameter tests."""
 
-    global_db.set(
-        {
-            "Node": {
-                TEST_NODE: {
-                    "Label": TEST_NODE,
-                    "Type": "MovAI/State",
-                    "Parameter": {
-                        "log_description": {
-                            "Type": "string",
-                            "Value": "default",
-                        }
-                    },
-                }
-            },
-            "Flow": {
-                FLOW_WITH_PARAM: {
-                    "Label": FLOW_WITH_PARAM,
-                    "NodeInst": {
-                        NODE_INST: {
-                            "NodeLabel": NODE_INST,
-                            "Template": TEST_NODE,
-                            "Parameter": {
-                                "log_description": {
-                                    "Type": "string",
-                                    "Value": "Parameter is $(flow param)",
-                                }
-                            },
-                        }
-                    },
-                    "Parameter": {
-                        "param": {
-                            "Description": "",
-                            "Type": "string",
-                            "Value": "parsed correctly",
-                        }
-                    },
-                },
-                FLOW_MISSING_PARAM: {
-                    "Label": FLOW_MISSING_PARAM,
-                    "NodeInst": {
-                        NODE_INST: {
-                            "NodeLabel": NODE_INST,
-                            "Template": TEST_NODE,
-                            "Parameter": {
-                                "log_description": {
-                                    "Type": "string",
-                                    "Value": "Parameter is $(flow param)",
-                                }
-                            },
-                        }
-                    },
-                },
-                PARENT_FLOW: {
-                    "Label": PARENT_FLOW,
-                    "Container": {
-                        CONTAINER: {
-                            "ContainerFlow": CHILD_FLOW,
-                            "ContainerLabel": CONTAINER,
-                        }
-                    },
-                    "Parameter": {
-                        "param": {
-                            "Description": "",
-                            "Type": "string",
-                            "Value": "parent value",
-                        }
-                    },
-                },
-                CHILD_FLOW: {
-                    "Label": CHILD_FLOW,
-                    "NodeInst": {
-                        NODE_INST: {
-                            "NodeLabel": NODE_INST,
-                            "Template": TEST_NODE,
-                            "Parameter": {
-                                "log_description": {
-                                    "Type": "string",
-                                    "Value": "Parameter is $(flow param)",
-                                }
-                            },
-                        }
-                    },
-                },
-            },
-        }
+    from dal.scopes.flow import Flow
+    from dal.scopes.node import Node
+    from dal.scopes.package import Package
+    from dal.tools.backup import Importer
+
+    Package.clear_packagedata()
+
+    importer = Importer(
+        metadata_folder_flow_parameters,
+        force=True,
+        dry=False,
+        debug=False,
+        recursive=True,
+        clean_old_data=True,
     )
+    importer.run({"Node": FLOW_PARAMETER_NODES})
+    importer.run({"Flow": FLOW_PARAMETER_FLOWS})
 
     yield
 
-    for flow_name in [FLOW_WITH_PARAM, FLOW_MISSING_PARAM, PARENT_FLOW, CHILD_FLOW]:
-        global_db.delete({"Flow": {flow_name: {}}})
+    for flow_name in FLOW_PARAMETER_FLOWS:
+        try:
+            Flow(flow_name).remove(force=True)
+        except Exception:
+            print(f"Failed to remove flow {flow_name} during cleanup.")
 
-    global_db.delete({"Node": {TEST_NODE: {}}})
+    for node_name in FLOW_PARAMETER_NODES:
+        try:
+            Node(node_name).remove(force=True)
+        except Exception:
+            print(f"Failed to remove node {node_name} during cleanup.")
+
+    Package.clear_packagedata()
 
 
 class TestFlowParameters:
