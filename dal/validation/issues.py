@@ -76,6 +76,30 @@ class ProjIssue(Issue):
 
     """
 
+    def __init__(
+        self,
+        category: str,
+        iss_type: str,
+        severity: Severity,
+        msg: str,
+        json_path: Path,
+        line_start: Optional[int] = None,
+        line_ranges: List[Dict[str, int]] = None,
+        document_type: str = "Unknown",
+        document_name: str = "Unknown",
+    ) -> None:
+        self.json_path = json_path
+        self.document_type = document_type
+        self.document_name = document_name
+        super().__init__(
+            category=category,
+            iss_type=iss_type,
+            severity=severity,
+            msg=msg,
+            line_start=line_start,
+            line_ranges=line_ranges,
+        )
+
     def __str__(self) -> str:
         """Provides issue string representation.
 
@@ -101,14 +125,17 @@ class DuplicatedMob(ProjIssue):
         self,
         json_path: Path,
         msg: str,
+        document_type: str = "Unknown",
+        document_name: str = "Unknown",
     ) -> None:
-        self.json_path = json_path
-
         super().__init__(
-            "Formating",
-            "Duplicated metadata",
-            Severity.ERROR,
-            msg,
+            category="Formating",
+            iss_type="Duplicated metadata",
+            severity=Severity.ERROR,
+            msg=msg,
+            json_path=json_path,
+            document_type=document_type,
+            document_name=document_name,
         )
 
 
@@ -126,15 +153,18 @@ class MissingFlowInstance(ProjIssue):
         json_path: Path,
         msg: str,
         line_start: Optional[int] = None,
+        document_type: str = "Unknown",
+        document_name: str = "Unknown",
     ) -> None:
-        self.json_path = json_path
-
         super().__init__(
-            "Formating",
-            "Missing flow instance referenced by link",
-            Severity.ERROR,
-            msg,
+            category="Formating",
+            iss_type="Missing flow instance referenced by link",
+            severity=Severity.ERROR,
+            msg=msg,
+            json_path=json_path,
             line_start=line_start,
+            document_type=document_type,
+            document_name=document_name,
         )
 
 
@@ -152,15 +182,18 @@ class MissingNodeInstance(ProjIssue):
         json_path: Path,
         msg: str,
         line_start: Optional[int] = None,
+        document_type: str = "Unknown",
+        document_name: str = "Unknown",
     ) -> None:
-        self.json_path = json_path
-
         super().__init__(
-            "Formating",
-            "Missing node instance referenced by link",
-            Severity.ERROR,
-            msg,
+            category="Formating",
+            iss_type="Missing node instance referenced by link",
+            severity=Severity.ERROR,
+            msg=msg,
+            json_path=json_path,
             line_start=line_start,
+            document_type=document_type,
+            document_name=document_name,
         )
 
 
@@ -178,15 +211,18 @@ class MissingMob(ProjIssue):
         json_path: Path,
         msg: str,
         line_start: Optional[int] = None,
+        document_type: str = "Unknown",
+        document_name: str = "Unknown",
     ) -> None:
-        self.json_path = json_path
-
         super().__init__(
-            "Formating",
-            "Missing Flow or Node",
-            Severity.ERROR,
-            msg,
+            category="Formating",
+            iss_type="Missing Flow or Node",
+            severity=Severity.ERROR,
+            msg=msg,
+            json_path=json_path,
             line_start=line_start,
+            document_type=document_type,
+            document_name=document_name,
         )
 
 
@@ -204,15 +240,18 @@ class MissingNodePort(ProjIssue):
         json_path: Path,
         msg: str,
         line_start: Optional[int] = None,
+        document_type: str = "Unknown",
+        document_name: str = "Unknown",
     ) -> None:
-        self.json_path = json_path
-
         super().__init__(
-            "Formating",
-            "Missing Node port",
-            Severity.ERROR,
-            msg,
+            category="Formating",
+            iss_type="Missing Node port",
+            severity=Severity.ERROR,
+            msg=msg,
+            json_path=json_path,
             line_start=line_start,
+            document_type=document_type,
+            document_name=document_name,
         )
 
 
@@ -230,15 +269,18 @@ class NonMatchingLinkPorts(ProjIssue):
         json_path: Path,
         msg: str,
         line_start: Optional[int] = None,
+        document_type: str = "Unknown",
+        document_name: str = "Unknown",
     ) -> None:
-        self.json_path = json_path
-
         super().__init__(
-            "Formating",
-            "Non matching link ports",
-            Severity.ERROR,
-            msg,
+            category="Formating",
+            iss_type="Non matching link ports",
+            severity=Severity.ERROR,
+            msg=msg,
+            json_path=json_path,
             line_start=line_start,
+            document_type=document_type,
+            document_name=document_name,
         )
 
 
@@ -256,13 +298,16 @@ class MissingReferencedParameter(ProjIssue):
         json_path: Path,
         msg: str,
         line_start: Optional[int] = None,
+        document_type: str = "Unknown",
+        document_name: str = "Unknown",
     ) -> None:
-        self.json_path = json_path
-
         super().__init__(
-            "Formating",
-            "Missing referenced parameter",
-            Severity.ERROR,
-            msg,
+            category="Formating",
+            iss_type="Missing referenced parameter",
+            severity=Severity.ERROR,
+            msg=msg,
+            json_path=json_path,
             line_start=line_start,
+            document_type=document_type,
+            document_name=document_name,
         )

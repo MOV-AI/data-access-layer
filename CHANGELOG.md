@@ -1,5 +1,8 @@
 # Changelog
 
+## vTBD
+- [BP-1792](https://movai.atlassian.net/browse/BP-1792): Add document name and type to validator response issues
+
 ## v3.27.1
 - [BP-1797](https://movai.atlassian.net/browse/BP-1797): Fix update_portdata overwriting old messages in Redis
 
