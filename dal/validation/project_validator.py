@@ -68,6 +68,8 @@ class ProjectIssue(BaseModel):
     severity: Severity
     msg: str
     json_path: str
+    document_type: str
+    document_name: str
     line_start: Optional[int] = None
 
     def __str__(self):
@@ -199,6 +201,8 @@ class ProjectValidator:
                     severity=issue.severity,
                     msg=issue.msg,
                     json_path=getattr(issue, "json_path", "N/A"),
+                    document_type=getattr(issue, "document_type", "Unknown"),
+                    document_name=getattr(issue, "document_name", "Unknown"),
                     line_start=getattr(issue, "line_start", None),
                 )
                 for issue in self.issues
@@ -262,6 +266,8 @@ class ProjectValidator:
                         issue = DuplicatedMob(
                             json_path=f"{obj_name}.json",
                             msg=f"Duplicate MOB name '{obj_name}' found in packages: {', '.join(sorted(packages_list))} installed in workspace '{workspace_name}'",
+                            document_type=scope,
+                            document_name=obj_name,
                         )
                         self.issues.append(issue)
 
@@ -429,6 +435,8 @@ class ProjectValidator:
                 f"undefined {reference_type} reference in Flow '{flow_ref}'"
             ),
             line_start=line_start,
+            document_type="Flow",
+            document_name=flow_ref,
         )
 
     def check_flow(self, flow_ref) -> List[ProjIssue]:
@@ -476,6 +484,8 @@ class ProjectValidator:
                             json_path=f"{flow_ref}.json",
                             msg=f"Flow '{template_name}' missing, required by Flow '{flow_ref}' (instance '{container_name}')",
                             line_start=line_num,
+                            document_type="Flow",
+                            document_name=flow_ref,
                         )
                         flow_issues.append(issue)
 
@@ -492,6 +502,8 @@ class ProjectValidator:
                             json_path=f"{flow_ref}.json",
                             msg=f"Node '{template_name}' missing, required by Flow '{flow_ref}' (instance '{node_inst_name}')",
                             line_start=line_num,
+                            document_type="Flow",
+                            document_name=flow_ref,
                         )
                         flow_issues.append(issue)
 
@@ -625,6 +637,8 @@ class LinkValidator:
                 json_path=f"{flow_ref}.json",
                 msg=f"Source port of link {link_id} does not exist | From: {from_path} | To: {to_path}",
                 line_start=line_num,
+                document_type="Flow",
+                document_name=flow_ref,
             )
             issues.append(issue)
             return issues
@@ -636,6 +650,8 @@ class LinkValidator:
                 json_path=f"{flow_ref}.json",
                 msg=f"Destination port of link {link_id} does not exist | From: {from_path} | To: {to_path}",
                 line_start=line_num,
+                document_type="Flow",
+                document_name=flow_ref,
             )
             issues.append(issue)
             return issues
@@ -647,6 +663,8 @@ class LinkValidator:
                 json_path=f"{flow_ref}.json",
                 msg=f"The ports of link {link_id} in Flow {flow_ref} do not match | From: {from_path} | To: {to_path}",
                 line_start=line_num,
+                document_type="Flow",
+                document_name=flow_ref,
             )
             issues.append(issue)
 
@@ -720,6 +738,8 @@ class LinkValidator:
                         json_path=f"{flow_ref}.json",
                         msg=f"Link {link_id} path references missing flow instance '{instance}' in Flow '{flow_ref}'",
                         line_start=line_num,
+                        document_type="Flow",
+                        document_name=flow_ref,
                     )
                     return {"valid": False, "error": issue}
 
@@ -735,6 +755,8 @@ class LinkValidator:
                         json_path=f"{flow_ref}.json",
                         msg=f"Flow instance '{instance}' not found in Flow '{flow_ref}' (referenced in link {link_id} path)",
                         line_start=line_num,
+                        document_type="Flow",
+                        document_name=flow_ref,
                     )
                     return {"valid": False, "error": issue}
 
@@ -759,6 +781,8 @@ class LinkValidator:
                     json_path=f"{flow_ref}.json",
                     msg=f"Link {link_id} path references missing node instance '{final_instance}' in Flow '{flow_ref}'",
                     line_start=line_num,
+                    document_type="Flow",
+                    document_name=flow_ref,
                 )
                 return {"valid": False, "error": issue}
 
@@ -774,6 +798,8 @@ class LinkValidator:
                     json_path=f"{flow_ref}.json",
                     msg=f"Node instance '{final_instance}' not found in Flow '{flow_ref}' (referenced in link {link_id} path)",
                     line_start=line_num,
+                    document_type="Flow",
+                    document_name=flow_ref,
                 )
                 return {"valid": False, "error": issue}
 
