@@ -73,8 +73,8 @@ class Container(ScopeObjectNode):
         _name = name or self.name
         _context = context or self.flow.ref
 
-        if key not in self.Parameter:
-            return False
+        if key in self.Parameter:
+            return True
 
         try:
             param = self.get_param(key, _name, _context)
