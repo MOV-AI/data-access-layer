@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.28.1
 - Always format json files
 
 ## v3.28.0
