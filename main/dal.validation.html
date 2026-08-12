@@ -115,6 +115,30 @@
 <span id="dal-validation-constants-module"></span><h2>dal.validation.constants module<a class="headerlink" href="#module-dal.validation.constants" title="Permalink to this heading"></a></h2>
 <p>Validation constants</p>
 </section>
+<section id="module-dal.validation.flow_validator">
+<span id="dal-validation-flow-validator-module"></span><h2>dal.validation.flow_validator module<a class="headerlink" href="#module-dal.validation.flow_validator" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.flow_validator.FlowValidator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.flow_validator.</span></span><span class="sig-name descname"><span class="pre">FlowValidator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.flow_validator.FlowValidator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Validates a specific flow within the project.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.validation.flow_validator.FlowValidator.validate_flow">
+<span class="sig-name descname"><span class="pre">validate_flow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#dal.validation.project_validator.ProjectValidationResult" title="dal.validation.project_validator.ProjectValidationResult"><span class="pre">ProjectValidationResult</span></a></span></span><a class="headerlink" href="#dal.validation.flow_validator.FlowValidator.validate_flow" title="Permalink to this definition"></a></dt>
+<dd><p>Validate a specific flow by its reference.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The result of the flow validation, including issues found.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#dal.validation.project_validator.ProjectValidationResult" title="dal.validation.project_validator.ProjectValidationResult">ProjectValidationResult</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="module-dal.validation.issues">
 <span id="dal-validation-issues-module"></span><h2>dal.validation.issues module<a class="headerlink" href="#module-dal.validation.issues" title="Permalink to this heading"></a></h2>
 <dl class="py class">
@@ -314,6 +338,35 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dal.validation.issues.MissingNodePort.msg">
 <span class="sig-name descname"><span class="pre">msg</span></span><a class="headerlink" href="#dal.validation.issues.MissingNodePort.msg" title="Permalink to this definition"></a></dt>
+<dd><p>Issue message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.issues.MissingReferencedParameter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.issues.</span></span><span class="sig-name descname"><span class="pre">MissingReferencedParameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.issues.MissingReferencedParameter" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.validation.issues.ProjIssue" title="dal.validation.issues.ProjIssue"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProjIssue</span></code></a></p>
+<p>Missing flow parameter referenced by node instance.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.MissingReferencedParameter.json_path">
+<span class="sig-name descname"><span class="pre">json_path</span></span><a class="headerlink" href="#dal.validation.issues.MissingReferencedParameter.json_path" title="Permalink to this definition"></a></dt>
+<dd><p>Path to file with issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.MissingReferencedParameter.msg">
+<span class="sig-name descname"><span class="pre">msg</span></span><a class="headerlink" href="#dal.validation.issues.MissingReferencedParameter.msg" title="Permalink to this definition"></a></dt>
 <dd><p>Issue message.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -672,15 +725,26 @@ mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</
 - For each Flow, check that all referenced Flows/Nodes exist in the project
 - For each Link, validate instances exist and ports are compatible</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="dal.validation.project_validator.ProjectValidator.check_flow">
+<span class="sig-name descname"><span class="pre">check_flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow_ref</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#dal.validation.issues.ProjIssue" title="dal.validation.issues.ProjIssue"><span class="pre">ProjIssue</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.validation.project_validator.ProjectValidator.check_flow" title="Permalink to this definition"></a></dt>
+<dd><p>Check a specific flow for issues.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>flow_ref</strong> – Reference of the flow to check.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dal.validation.project_validator.ProjectValidator.validate">
-<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#dal.validation.project_validator.ProjectValidator.validate" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#dal.validation.project_validator.ProjectValidationResult" title="dal.validation.project_validator.ProjectValidationResult"><span class="pre">ProjectValidationResult</span></a></span></span><a class="headerlink" href="#dal.validation.project_validator.ProjectValidator.validate" title="Permalink to this definition"></a></dt>
 <dd><p>Validate the project data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A dictionary containing the validation results with summary and issues.</p>
+<dd class="field-odd"><p>The result of the project validation, including issues found.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>dict</p>
+<dd class="field-even"><p><a class="reference internal" href="#dal.validation.project_validator.ProjectValidationResult" title="dal.validation.project_validator.ProjectValidationResult">ProjectValidationResult</a></p>
 </dd>
 </dl>
 </dd></dl>
