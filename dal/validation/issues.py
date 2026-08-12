@@ -240,3 +240,29 @@ class NonMatchingLinkPorts(ProjIssue):
             msg,
             line_start=line_start,
         )
+
+
+class MissingReferencedParameter(ProjIssue):
+    """Missing flow parameter referenced by node instance.
+
+    Attributes:
+        json_path (Path): Path to file with issue.
+        msg (str): Issue message.
+
+    """
+
+    def __init__(
+        self,
+        json_path: Path,
+        msg: str,
+        line_start: Optional[int] = None,
+    ) -> None:
+        self.json_path = json_path
+
+        super().__init__(
+            "Formating",
+            "Missing referenced parameter",
+            Severity.ERROR,
+            msg,
+            line_start=line_start,
+        )
