@@ -3,6 +3,9 @@
 ## vTBD
 - [BP-1792](https://movai.atlassian.net/browse/BP-1792): Add document name and type to validator response issues
 
+## v3.27.1
+- [BP-1797](https://movai.atlassian.net/browse/BP-1797): Fix update_portdata overwriting old messages in Redis
+
 ## v3.27.0
 - [BP-1680](https://movai.atlassian.net/browse/BP-1680): Fix cascading propagation of flow parameters during parsing
   - Add referenced parameter validation to ProjectValidator
