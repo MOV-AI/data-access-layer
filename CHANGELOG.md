@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.27.0
 - [BP-1680](https://movai.atlassian.net/browse/BP-1680): Fix cascading propagation of flow parameters during parsing
   - Add referenced parameter validation to ProjectValidator
   - Add FlowValidator to perform validations at individual flow level
