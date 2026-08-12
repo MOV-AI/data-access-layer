@@ -1,5 +1,11 @@
 # Changelog
 
+## vTBD
+- [BP-1680](https://movai.atlassian.net/browse/BP-1680): Fix cascading propagation of flow parameters during parsing
+  - Add referenced parameter validation to ProjectValidator
+  - Add FlowValidator to perform validations at individual flow level
+  - Add tests for FlowValidator, new validation logic in ProjectValidator and flow parameter propagation during parsing
+
 ## v3.26.1
 - [BP-1731](https://movai.atlassian.net/browse/BP-1731): [Workspace-agent | ros1] Implement ros1 init local db in workspace agent
   - Remove old init_local_db

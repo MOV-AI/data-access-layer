@@ -11,11 +11,15 @@ import re
 from dataclasses import dataclass, field
 from typing import Any, Dict, Iterable, Optional, Tuple, TypedDict, Union, cast, TYPE_CHECKING
 
+
+from movai_core_shared.logger import Log
 from movai_core_shared.consts import ROS1_NODELETSERVER
 from dal.helpers.flow import GFlow
 from dal.helpers.parsers import ParamParser
 from .model import Model
 from .scopestree import scopes
+
+LOGGER = Log.get_logger(__name__)
 
 if TYPE_CHECKING:
     from dal.data.tree import DictNode, ObjectNode, PropertyNode
@@ -280,6 +284,9 @@ class Flow(Model):
         try:
             param = self.Parameter[key].Value
         except KeyError:
+            LOGGER.error(
+                f"Parameter '{key}' not found in flow '{self.ref}' with parameters {list(self.Parameter.keys())}"
+            )
             return None
 
         if is_subflow:
@@ -297,6 +304,11 @@ class Flow(Model):
         output = self.parser.parse(key, param, "", self, context=_context)
 
         return output
+
+    def has_param(self, key: str) -> bool:
+        """Returns whether the flow defines a parameter."""
+
+        return key in self.Parameter.keys()
 
     def get_node_inst_param(self, name: str, key: str, context: str = None) -> Any:
         """Returns the node instance parameter"""

@@ -151,6 +151,28 @@ class NodeInst(ScopeObjectNode):
 
         return params
 
+    def has_param(
+        self, key: str, name: Optional[str] = None, context: Optional[str] = None
+    ) -> bool:
+        """Checks if a parameter exists"""
+        _name = name or self.name
+        _context = context or self.flow.ref
+
+        # check if the parameter is defined in the template
+        if key not in self.node_template.Parameter:
+            return False
+
+        # check if the parameter is defined in the instance
+        if key not in self.Parameter:
+            return False
+
+        # check if the parameter is defined in the flow
+        try:
+            param = self.get_param(key, _name, _context)
+            return True if param is not None else False
+        except Exception:
+            return False
+
     def get_param(
         self,
         key: str,

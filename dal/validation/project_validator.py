@@ -9,9 +9,18 @@ import time
 from dal.models.scopestree import scopes
 from dal.scopes.package import Package
 from dal.scopes.flow import Flow, Node
+from dal.models.flow import Flow as ModelFlow
+from dal.exceptions import (
+    UndefinedConfigParameterError,
+    UndefinedFlowParameterError,
+    UndefinedParameterError,
+    UndefinedParamParameterError,
+    UndefinedVarParameterError,
+)
 from typing import List, Dict, Optional, Set, Tuple
 from pydantic import BaseModel, ConfigDict
 from dal.validation.issues import (
+    MissingReferencedParameter,
     ProjIssue,
     DuplicatedMob,
     MissingMob,
@@ -141,29 +150,32 @@ class ProjectValidator:
         # Cache loaded Flow dictionaries to avoid repeated DAL fetches.
         self._flow_dict_cache: Dict[str, dict] = {}
 
+        # Build cache of all objects first
+        self._build_object_cache()
+
     def _get_flow_dict(self, flow_ref: str) -> dict:
         """Get flow dict with in-memory cache."""
         if flow_ref not in self._flow_dict_cache:
             self._flow_dict_cache[flow_ref] = Flow(flow_ref).get_dict()
         return self._flow_dict_cache[flow_ref]
 
-    def validate(self) -> Dict:
+    def validate(self) -> ProjectValidationResult:
         """
         Validate the project data.
 
         Returns:
-            dict: A dictionary containing the validation results with summary and issues.
+            ProjectValidationResult: The result of the project validation, including issues found.
         """
         LOGGER.info("Starting project validation")
         start_time = time.perf_counter()
 
-        # Build cache of all objects first
-        self._build_object_cache()
-
         # Run validations
         self._check_duplicates()
-        self._check_nodes_flows_ref_in_flows()
-        self._check_link_ports_match()
+
+        flow_refs = self._objects_by_scope.get("Flow", set())
+
+        for flow_ref in flow_refs:
+            self.issues.extend(self.check_flow(flow_ref))
 
         # Build summary
         error_count = sum(1 for issue in self.issues if issue.severity == Severity.ERROR)
@@ -253,101 +265,274 @@ class ProjectValidator:
                         )
                         self.issues.append(issue)
 
-    def _check_nodes_flows_ref_in_flows(self):
+    def _check_flow_parameters(self, flow_ref: str) -> List[ProjIssue]:
         """
-        Check that all nodes and flows referenced in flows exist in the project.
+        Check parameter expressions in a specific flow using the runtime parser.
         """
-        LOGGER.info("Checking Flow/Node template references")
+        LOGGER.info(f"Checking Flow parameters in flow '{flow_ref}'")
 
-        # Get all flows
-        flow_refs = self._objects_by_scope.get("Flow", set())
+        flow_issues = []
 
-        for flow_ref in flow_refs:
-            try:
-                # Load the flow object
-                flow_data = self._get_flow_dict(flow_ref)
+        try:
+            flow_data = self._get_flow_dict(flow_ref)
 
-                # Navigate to the actual flow data
-                if "Flow" not in flow_data or flow_ref not in flow_data["Flow"]:
-                    continue
+            if "Flow" not in flow_data or flow_ref not in flow_data["Flow"]:
+                return flow_issues  # Flow not found, no issues to report
 
-                flow_content = flow_data["Flow"][flow_ref]
+            flow_content = flow_data["Flow"][flow_ref]
+            flow = ModelFlow(flow_ref)
 
-                # Check Container (subflows)
-                if "Container" in flow_content:
-                    for container_name, container_data in flow_content["Container"].items():
-                        template_name = container_data.get("ContainerFlow")
-                        if template_name is not None and not self._object_exists(
-                            "Flow", template_name
-                        ):
-                            line_num = _find_json_path_line(
-                                flow_data,
-                                ["Flow", flow_ref, "Container", container_name, "ContainerFlow"],
-                            )
-                            # Reference to file -> file name is not available in Redis,
-                            # but we can assume the convention that the flow name corresponds to a JSON file in the project
-                            issue = MissingMob(
-                                json_path=f"{flow_ref}.json",
-                                msg=f"Flow '{template_name}' missing, required by Flow '{flow_ref}' (instance '{container_name}')",
-                                line_start=line_num,
-                            )
-                            self.issues.append(issue)
-
-                # Check NodeInst (node instances)
-                if "NodeInst" in flow_content:
-                    for node_inst_name, node_inst_data in flow_content["NodeInst"].items():
-                        template_name = node_inst_data.get("Template")
-                        if template_name is not None and not self._object_exists(
-                            "Node", template_name
-                        ):
-                            line_num = _find_json_path_line(
-                                flow_data,
-                                ["Flow", flow_ref, "NodeInst", node_inst_name, "Template"],
-                            )
-                            issue = MissingMob(
-                                json_path=f"{flow_ref}.json",
-                                msg=f"Node '{template_name}' missing, required by Flow '{flow_ref}' (instance '{node_inst_name}')",
-                                line_start=line_num,
-                            )
-                            self.issues.append(issue)
-
-            except Exception as e:
-                LOGGER.error(f"Error checking flow {flow_ref}: {e}")
-
-    def _check_link_ports_match(self):
-        """
-        Check that all links have valid instances and compatible ports.
-        """
-        LOGGER.info("Checking link port compatibility")
-
-        link_validator = LinkValidator(objects_by_scope=self._objects_by_scope, logger=LOGGER)
-
-        flow_refs = self._objects_by_scope.get("Flow", set())
-
-        for flow_ref in flow_refs:
-            try:
-                flow_data = self._get_flow_dict(flow_ref)
-
-                if "Flow" not in flow_data or flow_ref not in flow_data["Flow"]:
-                    continue
-
-                flow_content = flow_data["Flow"][flow_ref]
-
-                # Check all links
-                if "Links" in flow_content:
-                    for link_id, link_data in flow_content["Links"].items():
-                        from_path = link_data.get("From", "")
-                        to_path = link_data.get("To", "")
-
-                        # Validate link endpoints
-                        self.issues.extend(
-                            link_validator.validate_link(
-                                flow_ref, flow_data, flow_content, link_id, from_path, to_path
-                            )
+            if "Container" in flow_content:
+                for container_name, container_data in flow_content["Container"].items():
+                    try:
+                        container = flow.get_container(container_name, flow_ref)
+                    except Exception as error:
+                        LOGGER.debug(
+                            f"Skipping parameters for container '{container_name}' "
+                            f"in flow '{flow_ref}': {error}"
                         )
+                        continue
 
-            except Exception as e:
-                LOGGER.error(f"Error checking links in flow {flow_ref}: {e}")
+                    for param_key in container_data.get("Parameter", {}):
+                        try:
+                            container.get_param(param_key, container_name, flow_ref)
+                        except UndefinedParameterError as error:
+                            line_num = _find_json_path_line(
+                                flow_data,
+                                [
+                                    "Flow",
+                                    flow_ref,
+                                    "Container",
+                                    container_name,
+                                    "Parameter",
+                                    param_key,
+                                    "Value",
+                                ],
+                            )
+                            flow_issues.append(
+                                self._make_missing_parameter_issue(
+                                    flow_ref=flow_ref,
+                                    owner_type="Container",
+                                    owner_name=container_name,
+                                    param_key=param_key,
+                                    error=error,
+                                    line_start=line_num,
+                                )
+                            )
+
+            # Check NodeInst for parameter references
+            if "NodeInst" in flow_content:
+                for node_inst_name in flow_content["NodeInst"]:
+                    try:
+                        node_inst = flow.get_node_inst(node_inst_name)
+                        param_names = set(node_inst.Parameter.keys())
+                        param_names.update(node_inst.node_template.Parameter.keys())
+                    except Exception as error:
+                        LOGGER.debug(
+                            f"Skipping parameters for node '{node_inst_name}' "
+                            f"in flow '{flow_ref}': {error}"
+                        )
+                        continue
+
+                    LOGGER.info(
+                        "Checking parameters for node instance '%s' in flow '%s'",
+                        node_inst_name,
+                        flow_ref,
+                    )
+
+                    for param_key in param_names:
+                        LOGGER.info(
+                            "Checking parameter '%s' for node instance '%s' in flow '%s'",
+                            param_key,
+                            node_inst_name,
+                            flow_ref,
+                        )
+                        try:
+                            node_inst.get_param(param_key, node_inst_name, flow_ref)
+                            LOGGER.info(
+                                "Parameter '%s' for node instance '%s' in flow '%s' is valid",
+                                param_key,
+                                node_inst_name,
+                                flow_ref,
+                            )
+                        except UndefinedParameterError as error:
+                            line_num = _find_json_path_line(
+                                flow_data,
+                                [
+                                    "Flow",
+                                    flow_ref,
+                                    "NodeInst",
+                                    node_inst_name,
+                                    "Parameter",
+                                    param_key,
+                                    "Value",
+                                ],
+                            )
+                            flow_issues.append(
+                                self._make_missing_parameter_issue(
+                                    flow_ref=flow_ref,
+                                    owner_type="Node instance",
+                                    owner_name=node_inst_name,
+                                    param_key=param_key,
+                                    error=error,
+                                    line_start=line_num,
+                                )
+                            )
+
+            # Check Flow parameters
+            for param_key in flow_content.get("Parameter", {}):
+                LOGGER.error("Checking parameter '%s' for flow '%s'", param_key, flow_ref)
+                try:
+                    flow.get_param(param_key, flow_ref)
+                except UndefinedParameterError as error:
+                    line_num = _find_json_path_line(
+                        flow_data, ["Flow", flow_ref, "Parameter", param_key, "Value"]
+                    )
+                    flow_issues.append(
+                        self._make_missing_parameter_issue(
+                            flow_ref=flow_ref,
+                            owner_type="Flow",
+                            owner_name=flow_ref,
+                            param_key=param_key,
+                            error=error,
+                            line_start=line_num,
+                        )
+                    )
+
+            return flow_issues
+        except Exception as e:
+            LOGGER.error(f"Error checking flow parameters in flow '{flow_ref}': {e}")
+            return flow_issues
+
+    def _make_missing_parameter_issue(
+        self,
+        flow_ref: str,
+        owner_type: str,
+        owner_name: str,
+        param_key: str,
+        error: UndefinedParameterError,
+        line_start: Optional[int],
+    ) -> ProjIssue:
+        """Convert a parser undefined-parameter error into a project issue."""
+
+        reference_type = {
+            UndefinedFlowParameterError: "flow",
+            UndefinedConfigParameterError: "config",
+            UndefinedVarParameterError: "var",
+            UndefinedParamParameterError: "param",
+        }.get(type(error), "parameter")
+
+        return MissingReferencedParameter(
+            json_path=f"{flow_ref}.json",
+            msg=(
+                f"{owner_type} '{owner_name}' parameter '{param_key}' has an "
+                f"undefined {reference_type} reference in Flow '{flow_ref}'"
+            ),
+            line_start=line_start,
+        )
+
+    def check_flow(self, flow_ref) -> List[ProjIssue]:
+        """
+        Check a specific flow for issues.
+
+        Args:
+            flow_ref: Reference of the flow to check.
+        """
+
+        flow_issues = []
+        flow_issues.extend(self._check_nodes_flows_ref_in_flow(flow_ref))
+        flow_issues.extend(self._check_flow_parameters(flow_ref))
+        flow_issues.extend(self._check_flow_links(flow_ref))
+        return flow_issues
+
+    def _check_nodes_flows_ref_in_flow(self, flow_ref: str) -> List[ProjIssue]:
+        """
+        Check that all nodes and flows referenced in a specific flow exist in the project.
+        """
+        LOGGER.info(f"Checking Flow/Node template references in flow '{flow_ref}'")
+
+        flow_issues = []
+
+        try:
+            # Load the flow object
+            flow_data = self._get_flow_dict(flow_ref)
+
+            # Navigate to the actual flow data
+            if "Flow" not in flow_data or flow_ref not in flow_data["Flow"]:
+                return flow_issues  # Flow not found, no issues to report
+
+            flow_content = flow_data["Flow"][flow_ref]
+
+            # Check Container (subflows)
+            if "Container" in flow_content:
+                for container_name, container_data in flow_content["Container"].items():
+                    template_name = container_data.get("ContainerFlow")
+                    if template_name is not None and not self._object_exists("Flow", template_name):
+                        line_num = _find_json_path_line(
+                            flow_data,
+                            ["Flow", flow_ref, "Container", container_name, "ContainerFlow"],
+                        )
+                        issue = MissingMob(
+                            json_path=f"{flow_ref}.json",
+                            msg=f"Flow '{template_name}' missing, required by Flow '{flow_ref}' (instance '{container_name}')",
+                            line_start=line_num,
+                        )
+                        flow_issues.append(issue)
+
+            # Check NodeInst (node instances)
+            if "NodeInst" in flow_content:
+                for node_inst_name, node_inst_data in flow_content["NodeInst"].items():
+                    template_name = node_inst_data.get("Template")
+                    if template_name is not None and not self._object_exists("Node", template_name):
+                        line_num = _find_json_path_line(
+                            flow_data,
+                            ["Flow", flow_ref, "NodeInst", node_inst_name, "Template"],
+                        )
+                        issue = MissingMob(
+                            json_path=f"{flow_ref}.json",
+                            msg=f"Node '{template_name}' missing, required by Flow '{flow_ref}' (instance '{node_inst_name}')",
+                            line_start=line_num,
+                        )
+                        flow_issues.append(issue)
+
+        except Exception as e:
+            LOGGER.error(f"Error checking flow {flow_ref}: {e}")
+        return flow_issues
+
+    def _check_flow_links(self, flow_ref: str) -> List[ProjIssue]:
+        """
+        Check that all links in a specific flow have valid instances and compatible ports.
+        """
+        LOGGER.info(f"Checking link port compatibility in flow '{flow_ref}'")
+
+        flow_issues = []
+
+        try:
+            flow_data = self._get_flow_dict(flow_ref)
+
+            if "Flow" not in flow_data or flow_ref not in flow_data["Flow"]:
+                return flow_issues  # Flow not found, no issues to report
+
+            flow_content = flow_data["Flow"][flow_ref]
+
+            # Check all links
+            if "Links" in flow_content:
+                for link_id, link_data in flow_content["Links"].items():
+                    from_path = link_data.get("From", "")
+                    to_path = link_data.get("To", "")
+
+                    # Validate link endpoints
+                    flow_issues.extend(
+                        LinkValidator(
+                            objects_by_scope=self._objects_by_scope, logger=LOGGER
+                        ).validate_link(
+                            flow_ref, flow_data, flow_content, link_id, from_path, to_path
+                        )
+                    )
+
+        except Exception as e:
+            LOGGER.error(f"Error checking links in flow {flow_ref}: {e}")
+        return flow_issues
 
     def _object_exists(self, scope: str, ref: str) -> bool:
         """Check if an object exists in the workspace cache."""

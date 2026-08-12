@@ -53,6 +53,35 @@ class Container(ScopeObjectNode):
 
         return params
 
+    def has_param(
+        self,
+        key: str,
+        name: Optional[str] = None,
+        context: Optional[str] = None,
+    ) -> bool:
+        """
+        Checks if a specific parameter exists in the container.
+
+        Args:
+            key (str): The parameter key to check.
+            name (Optional[str]): The name of the container. Defaults to None.
+            context (Optional[str]): The context for parameter resolution. Defaults to None.
+
+        Returns:
+            bool: True if the parameter exists, False otherwise.
+        """
+        _name = name or self.name
+        _context = context or self.flow.ref
+
+        if key not in self.Parameter:
+            return False
+
+        try:
+            param = self.get_param(key, _name, _context)
+            return True if param is not None else False
+        except Exception:
+            return False
+
     def get_param(
         self,
         key: str,
