@@ -159,12 +159,12 @@ class NodeInst(ScopeObjectNode):
         _context = context or self.flow.ref
 
         # check if the parameter is defined in the template
-        if key not in self.node_template.Parameter:
-            return False
+        if key in self.node_template.Parameter:
+            return True
 
         # check if the parameter is defined in the instance
-        if key not in self.Parameter:
-            return False
+        if key in self.Parameter:
+            return True
 
         # check if the parameter is defined in the flow
         try:
