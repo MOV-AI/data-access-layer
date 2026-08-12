@@ -1,5 +1,8 @@
 # Changelog
 
+## vTBD
+- Always format json files
+
 ## v3.28.0
 - [BP-1792](https://movai.atlassian.net/browse/BP-1792): Add document name and type to validator response issues
 

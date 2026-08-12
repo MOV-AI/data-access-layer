@@ -25,10 +25,10 @@
                 }
             },
             "Remappable": true,
-            "invalid_data": "invalid_data",
             "User": "",
             "Version": "",
-            "VersionDelta": {}
+            "VersionDelta": {},
+            "invalid_data": "invalid_data"
         }
     }
 }

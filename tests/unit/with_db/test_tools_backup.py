@@ -550,12 +550,19 @@ class TestToolsBackup:
 
         exporter.run(data)
 
+        # compare json files
+        with open(metadata_folder / "Translation" / "delete_me.json", "r") as f1, open(
+            tmp_path / "Translation" / "delete_me.json", "r"
+        ) as f2:
+            data1 = json.load(f1)
+            data2 = json.load(f2)
+        assert data1 == data2
+
+        # compare po files
         to_check = [
-            "delete_me.json",
             "delete_me.pt.po",
             "delete_me.fr.po",
         ]
-
         equal, diff, err = cmpfiles(
             metadata_folder / "Translation", tmp_path / "Translation", to_check
         )

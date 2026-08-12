@@ -12,13 +12,13 @@
             },
             "Layers": {},
             "Links": {
-                "8395d1a2-af21-4b12-a1a3-e2dfbf7c198f": {
-                    "From": "start/start/start",
-                    "To": "test_any/sub/in"
-                },
                 "20893b58-911b-470d-9306-1e4ac32b76d1": {
                     "From": "start/start/start",
                     "To": "test_something/sub/in"
+                },
+                "8395d1a2-af21-4b12-a1a3-e2dfbf7c198f": {
+                    "From": "start/start/start",
+                    "To": "test_any/sub/in"
                 }
             },
             "NodeInst": {
