@@ -303,68 +303,51 @@ class ParamParser:
         is_subflow = len(node_name_arr) > 1
 
         flow = instance.flow
-        value = None
-        has_value = False
-        containers: List[Tuple[str, "Container"]] = []
-        nearest_container = None
-        nearest_container_name = None
+        cls_name = type(instance).__name__
+        flow_has_param = flow.has_param(param_name)
 
-        if is_subflow and type(instance).__name__ in ["NodeInst", "Container"]:
-            containers = self._get_parent_containers(node_name_arr)
-
-        if containers:
-            nearest_container_name, nearest_container = containers[0]
-
-        direct_parent_flow = nearest_container.flow if nearest_container is not None else None
-
-        if flow.has_param(param_name):
+        # Check if the main flow has the parameter defined.
+        if not flow_has_param:
+            if not is_subflow or cls_name == "Container":
+                # If this is the main flow and the parameter is not defined, raise an error
+                # or
+                # If a container tried to resolve a parameter that is not defined in the main flow or itself, raise an error
+                raise UndefinedFlowParameterError(
+                    f'Flow parameter "{param_name}" is not defined in flow "{flow.ref}"'
+                )
+            value = default
+        else:
             value = flow.get_param(param_name, context=self.context, is_subflow=is_subflow)
 
-            has_value = not self._has_unresolved_flow_reference(value)
+            # Use the default value if the flow parameter is None
+            if value is None:
+                value = default
 
-        if nearest_container is not None and param_name in nearest_container.Parameter:
-            value = nearest_container.get_param(param_name, nearest_container_name, self.context)
-            has_value = not self._has_unresolved_flow_reference(value)
+        if is_subflow:
+            # instance is not in the main flow, check parent containers for the parameter value
+            if cls_name not in ["NodeInst", "Container"]:
+                msg = f'Instance type "{cls_name}" not supported'
+                raise ValueError(msg)
 
-        if (
-            not has_value
-            and direct_parent_flow is not None
-            and direct_parent_flow.has_param(param_name)
-        ):
-            value = direct_parent_flow.get_param(
-                param_name,
-                context=self.context,
-                is_subflow=len(containers) > 1,
-            )
-            has_value = not self._has_unresolved_flow_reference(value)
+            containers = self._get_parent_containers(node_name_arr)
 
-        if self._has_unresolved_flow_reference(value):
-            for container_name, container in containers[1:]:
-                if param_name not in container.Parameter:
-                    continue
+            if containers:
+                container_name, container = containers[0]
+                container_value = container.get_param(
+                    param_name,
+                    container_name,
+                    self.context,
+                    default_value=value,
+                )
 
-                value = container.get_param(param_name, container_name, self.context)
-                has_value = not self._has_unresolved_flow_reference(value)
+                # If the container has a value for the parameter, use it instead of the flow value
+                # As this value is more specific to the node instance than the flow value
+                value = value if container_value is None else container_value
 
-                if has_value:
-                    break
-
-        if (
-            not has_value
-            and self._has_unresolved_flow_reference(value)
-            and flow.has_param(param_name)
-            and nearest_container is not None
-        ):
-            value = self.parse(
-                param_name,
-                value,
-                nearest_container_name,
-                nearest_container,
-                self.context,
-            )
-            has_value = not self._has_unresolved_flow_reference(value)
-
-        if not has_value:
+        # If the value is None or still contains an unresolved flow reference,
+        # it means the parameter is not defined in the flow or its parent container
+        # so we raise an error
+        if value is None or self._has_unresolved_flow_reference(value):
             raise UndefinedFlowParameterError(
                 f'Flow parameter "{param_name}" is not defined in flow "{flow.ref}"'
             )

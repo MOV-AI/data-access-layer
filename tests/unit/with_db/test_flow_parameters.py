@@ -116,7 +116,7 @@ class TestFlowParameters:
 
         with pytest.raises(
             UndefinedFlowParameterError,
-            match=f'Flow parameter "param" is not defined in flow "{CHILD_FLOW}"',
+            match=f'Flow parameter "param" is not defined in flow "{NESTED_MISSING_CHILD_FLOW}"',
         ):
             Flow(NESTED_MISSING_PARENT_FLOW).get_node_params("child__grandchild__test_node")
 
