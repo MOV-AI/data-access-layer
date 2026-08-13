@@ -10,7 +10,7 @@
 import ast
 import re
 import os
-from typing import TYPE_CHECKING, Any, Optional, Protocol, Union, cast
+from typing import TYPE_CHECKING, Any, Optional, Protocol, Union, cast, List, Tuple
 
 from movai_core_shared.logger import Log
 from dal.models.scopestree import scopes
@@ -258,6 +258,25 @@ class ParamParser:
 
         return output
 
+    @staticmethod
+    def _has_unresolved_flow_reference(value: Any) -> bool:
+        """Returns whether a parsed value still contains a flow reference."""
+
+        return isinstance(value, str) and re.search(r"\$\(flow\s+[\w\.-]+\)", value) is not None
+
+    def _get_parent_containers(self, node_name_arr: list) -> List[Tuple[str, "Container"]]:
+        """Returns parent containers from nearest to farthest for a node path."""
+
+        containers = []
+
+        for index in range(len(node_name_arr) - 1, 0, -1):
+            container_name = "__".join(node_name_arr[:index])
+            container = self.flow.get_container(container_name, self.context)
+            assert container is not None, f"Container {container_name} not found"
+            containers.append((container_name, container))
+
+        return containers
+
     def eval_flow(
         self,
         param_name: str,
@@ -284,12 +303,73 @@ class ParamParser:
         is_subflow = len(node_name_arr) > 1
 
         flow = instance.flow
-        if not flow.has_param(param_name):
+        value = None
+        has_value = False
+        containers: List[Tuple[str, "Container"]] = []
+        nearest_container = None
+        nearest_container_name = None
+
+        if is_subflow and type(instance).__name__ in ["NodeInst", "Container"]:
+            containers = self._get_parent_containers(node_name_arr)
+
+        if containers:
+            nearest_container_name, nearest_container = containers[0]
+
+        direct_parent_flow = nearest_container.flow if nearest_container is not None else None
+
+        if flow.has_param(param_name):
+            value = flow.get_param(param_name, context=self.context, is_subflow=is_subflow)
+
+            has_value = not self._has_unresolved_flow_reference(value)
+
+        if nearest_container is not None and param_name in nearest_container.Parameter:
+            value = nearest_container.get_param(param_name, nearest_container_name, self.context)
+            has_value = not self._has_unresolved_flow_reference(value)
+
+        if (
+            not has_value
+            and direct_parent_flow is not None
+            and direct_parent_flow.has_param(param_name)
+        ):
+            value = direct_parent_flow.get_param(
+                param_name,
+                context=self.context,
+                is_subflow=len(containers) > 1,
+            )
+            has_value = not self._has_unresolved_flow_reference(value)
+
+        if self._has_unresolved_flow_reference(value):
+            for container_name, container in containers[1:]:
+                if param_name not in container.Parameter:
+                    continue
+
+                value = container.get_param(param_name, container_name, self.context)
+                has_value = not self._has_unresolved_flow_reference(value)
+
+                if has_value:
+                    break
+
+        if (
+            not has_value
+            and self._has_unresolved_flow_reference(value)
+            and flow.has_param(param_name)
+            and nearest_container is not None
+        ):
+            value = self.parse(
+                param_name,
+                value,
+                nearest_container_name,
+                nearest_container,
+                self.context,
+            )
+            has_value = not self._has_unresolved_flow_reference(value)
+
+        if not has_value:
             raise UndefinedFlowParameterError(
                 f'Flow parameter "{param_name}" is not defined in flow "{flow.ref}"'
             )
 
-        return flow.get_param(param_name, context=self.context, is_subflow=is_subflow)
+        return value
 
 
 def get_string_from_template(template: str, task_entry: object) -> str:

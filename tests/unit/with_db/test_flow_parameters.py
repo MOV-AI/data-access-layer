@@ -4,6 +4,15 @@ TEST_NODE = "FlowParamTestNode"
 FLOW_WITH_PARAM = "test_flow_parameter_with_param"
 FLOW_MISSING_PARAM = "test_flow_parameter_missing_param"
 PARENT_FLOW = "test_flow_parameter_parent"
+PARENT_FLOW_WITH_CONTAINER_PARAM = "test_flow_parameter_parent_with_container_param"
+NESTED_PARENT_FLOW = "test_flow_parameter_nested_parent"
+NESTED_MISSING_PARENT_FLOW = "test_flow_parameter_nested_missing_parent"
+NESTED_MISSING_CHILD_FLOW = "test_flow_parameter_nested_missing_child"
+NESTED_PARENT_FLOW_WITH_ANCESTOR_CONTAINER_PARAM = (
+    "test_flow_parameter_nested_parent_with_ancestor_container_param"
+)
+NESTED_CHILD_FLOW = "test_flow_parameter_nested_child"
+NESTED_GRANDCHILD_FLOW = "test_flow_parameter_nested_grandchild"
 CHILD_FLOW = "test_flow_parameter_child"
 NODE_INST = "test_node"
 CONTAINER = "child"
@@ -12,6 +21,13 @@ FLOW_PARAMETER_FLOWS = [
     FLOW_MISSING_PARAM,
     CHILD_FLOW,
     PARENT_FLOW,
+    PARENT_FLOW_WITH_CONTAINER_PARAM,
+    NESTED_PARENT_FLOW,
+    NESTED_MISSING_PARENT_FLOW,
+    NESTED_MISSING_CHILD_FLOW,
+    NESTED_PARENT_FLOW_WITH_ANCESTOR_CONTAINER_PARAM,
+    NESTED_CHILD_FLOW,
+    NESTED_GRANDCHILD_FLOW,
 ]
 FLOW_PARAMETER_NODES = [TEST_NODE]
 
@@ -79,11 +95,21 @@ class TestFlowParameters:
         ):
             Flow(FLOW_MISSING_PARAM).get_node_params(NODE_INST)
 
-    def test_missing_flow_parameter_does_not_fallback_to_parent_flow(
+    def test_flow_parameter_can_be_resolved_from_direct_parent_flow(self, flow_parameter_test_data):
+        """
+        Test that a subflow can resolve a missing parameter from its direct parent flow.
+        """
+        from dal.models.flow import Flow
+
+        params = Flow(PARENT_FLOW).get_node_params(f"{CONTAINER}__{NODE_INST}")
+
+        assert params["log_description"] == "Parameter is parent value"
+
+    def test_flow_parameter_does_not_skip_missing_direct_parent_flow(
         self, flow_parameter_test_data
     ):
         """
-        Test that a subflow does not resolve a missing parameter from its parent flow.
+        Test that a subflow does not skip a missing parent parameter to use a grandparent value.
         """
         from dal.exceptions import UndefinedFlowParameterError
         from dal.models.flow import Flow
@@ -92,4 +118,40 @@ class TestFlowParameters:
             UndefinedFlowParameterError,
             match=f'Flow parameter "param" is not defined in flow "{CHILD_FLOW}"',
         ):
-            Flow(PARENT_FLOW).get_node_params(f"{CONTAINER}__{NODE_INST}")
+            Flow(NESTED_MISSING_PARENT_FLOW).get_node_params("child__grandchild__test_node")
+
+    def test_flow_parameter_can_be_bound_by_parent_container(self, flow_parameter_test_data):
+        """
+        Test that a subflow parameter can be bound by the parent container.
+        """
+        from dal.models.flow import Flow
+
+        params = Flow(PARENT_FLOW_WITH_CONTAINER_PARAM).get_node_params(f"{CONTAINER}__{NODE_INST}")
+
+        assert params["log_description"] == "Parameter is parent value"
+
+    def test_flow_parameter_can_be_resolved_through_explicit_pass_through_chain(
+        self, flow_parameter_test_data
+    ):
+        """
+        Test that nested subflows can explicitly pass a flow parameter up one level at a time.
+        """
+        from dal.models.flow import Flow
+
+        params = Flow(NESTED_PARENT_FLOW).get_node_params("child__grandchild__test_node")
+
+        assert params["log_description"] == "Parameter is nested parent value"
+
+    def test_flow_parameter_can_be_bound_by_ancestor_container_through_pass_through_chain(
+        self, flow_parameter_test_data
+    ):
+        """
+        Test nested subflows can pass a parameter through to an ancestor container binding.
+        """
+        from dal.models.flow import Flow
+
+        params = Flow(NESTED_PARENT_FLOW_WITH_ANCESTOR_CONTAINER_PARAM).get_node_params(
+            "child__grandchild__test_node"
+        )
+
+        assert params["log_description"] == "Parameter is ancestor container value"

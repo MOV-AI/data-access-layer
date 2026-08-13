@@ -1,0 +1,45 @@
+{
+    "Flow": {
+        "test_flow_parameter_parent_with_container_param": {
+            "Container": {
+                "child": {
+                    "ContainerFlow": "test_flow_parameter_child",
+                    "ContainerLabel": "child",
+                    "Parameter": {
+                        "param": {
+                            "Value": "$(flow param)"
+                        }
+                    },
+                    "Visualization": {
+                        "x": {
+                            "Value": 0
+                        },
+                        "y": {
+                            "Value": 0
+                        }
+                    }
+                }
+            },
+            "Description": "",
+            "ExposedPorts": {},
+            "Info": "",
+            "Label": "test_flow_parameter_parent_with_container_param",
+            "LastUpdate": {
+                "date": "11/08/2026 at 00:00:00",
+                "user": "movai@internal"
+            },
+            "Layers": {},
+            "Links": {},
+            "Parameter": {
+                "param": {
+                    "Description": "",
+                    "Type": "string",
+                    "Value": "parent value"
+                }
+            },
+            "User": "",
+            "Version": "",
+            "VersionDelta": {}
+        }
+    }
+}
