@@ -101,9 +101,10 @@ class TestFlowParameters:
         """
         Test that disabled validation preserves the old unresolved flow parameter value.
         """
+        from dal.helpers import parsers
         from dal.models.flow import Flow
 
-        monkeypatch.setenv("RAISE_FLOW_VALIDATION_ERRORS", "False")
+        monkeypatch.setattr(parsers, "RAISE_FLOW_VALIDATION_ERRORS", False)
 
         params = Flow(FLOW_MISSING_PARAM).get_node_params(NODE_INST)
 
@@ -140,9 +141,10 @@ class TestFlowParameters:
         """
         Test that disabled validation preserves the old grandparent fallback behavior.
         """
+        from dal.helpers import parsers
         from dal.models.flow import Flow
 
-        monkeypatch.setenv("RAISE_FLOW_VALIDATION_ERRORS", "False")
+        monkeypatch.setattr(parsers, "RAISE_FLOW_VALIDATION_ERRORS", False)
 
         params = Flow(NESTED_MISSING_PARENT_FLOW).get_node_params("child__grandchild__test_node")
 
