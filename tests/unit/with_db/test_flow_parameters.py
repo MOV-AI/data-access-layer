@@ -95,6 +95,20 @@ class TestFlowParameters:
         ):
             Flow(FLOW_MISSING_PARAM).get_node_params(NODE_INST)
 
+    def test_missing_flow_parameter_returns_unresolved_when_errors_disabled(
+        self, flow_parameter_test_data, monkeypatch
+    ):
+        """
+        Test that disabled validation preserves the old unresolved flow parameter value.
+        """
+        from dal.models.flow import Flow
+
+        monkeypatch.setenv("RAISE_FLOW_VALIDATION_ERRORS", "False")
+
+        params = Flow(FLOW_MISSING_PARAM).get_node_params(NODE_INST)
+
+        assert params["log_description"] == "Parameter is $(flow param)"
+
     def test_flow_parameter_can_be_resolved_from_direct_parent_flow(self, flow_parameter_test_data):
         """
         Test that a subflow can resolve a missing parameter from its direct parent flow.
@@ -119,6 +133,20 @@ class TestFlowParameters:
             match=f'Flow parameter "param" is not defined in flow "{NESTED_MISSING_CHILD_FLOW}"',
         ):
             Flow(NESTED_MISSING_PARENT_FLOW).get_node_params("child__grandchild__test_node")
+
+    def test_missing_direct_parent_flow_uses_old_inheritance_when_errors_disabled(
+        self, flow_parameter_test_data, monkeypatch
+    ):
+        """
+        Test that disabled validation preserves the old grandparent fallback behavior.
+        """
+        from dal.models.flow import Flow
+
+        monkeypatch.setenv("RAISE_FLOW_VALIDATION_ERRORS", "False")
+
+        params = Flow(NESTED_MISSING_PARENT_FLOW).get_node_params("child__grandchild__test_node")
+
+        assert params["log_description"] == "Parameter is grandparent value"
 
     def test_flow_parameter_can_be_bound_by_parent_container(self, flow_parameter_test_data):
         """

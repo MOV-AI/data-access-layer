@@ -13,6 +13,7 @@ import os
 from typing import TYPE_CHECKING, Any, Optional, Protocol, Union, cast, List, Tuple
 
 from movai_core_shared.logger import Log
+from movai_core_shared.envvars import RAISE_FLOW_VALIDATION_ERRORS
 from dal.models.scopestree import scopes
 from dal.models.var import Var
 from dal.movaidb import MovaiDB
@@ -185,9 +186,16 @@ class ParamParser:
             obj = cast("Configuration", scopes.from_path(_config_name, scope="Configuration"))
 
         except KeyError as exc:
-            raise UndefinedConfigParameterError(
-                f"Configuration {_config_name} does not exist"
-            ) from exc
+            if RAISE_FLOW_VALIDATION_ERRORS:
+                raise UndefinedConfigParameterError(
+                    f"Configuration {_config_name} does not exist"
+                ) from exc
+            else:
+                self.logger.error(
+                    "VALIDATION ERRORS DISABLED: Configuration "
+                    f'"{_config_name}" does not exist. Using default value.'
+                )
+                return None
 
         output = obj.get_param(_config_param)
 
@@ -217,16 +225,33 @@ class ParamParser:
         cls_name = type(instance).__name__
         if cls_name == "Flow":  # Flows don't have a node name
             if not instance.has_param(param_name):
-                raise UndefinedParamParameterError(
-                    f'Parameter "{param_name}" is not defined in flow "{instance.ref}"'
-                )
+                if RAISE_FLOW_VALIDATION_ERRORS:
+                    raise UndefinedParamParameterError(
+                        f'Parameter "{param_name}" is not defined in flow "{instance.ref}"'
+                    )
+                else:
+                    self.logger.error(
+                        "VALIDATION ERRORS DISABLED: Parameter "
+                        f'"{param_name}" is not defined in flow "{instance.ref}". '
+                        "Using default value."
+                    )
+                    return default
             instance = cast("Flow", instance)
             output = instance.get_param(param_name, self.context) or default
         elif cls_name in ["NodeInst", "Container"]:
             if not instance.has_param(param_name, node_name, self.context):
-                raise UndefinedParamParameterError(
-                    f'Parameter "{param_name}" is not defined in "{node_name}" of flow "{instance.flow.ref}"'
-                )
+                if RAISE_FLOW_VALIDATION_ERRORS:
+                    raise UndefinedParamParameterError(
+                        f'Parameter "{param_name}" is not defined in '
+                        f'"{node_name}" of flow "{instance.flow.ref}"'
+                    )
+                else:
+                    self.logger.error(
+                        "VALIDATION ERRORS DISABLED: Parameter "
+                        f'"{param_name}" is not defined in "{node_name}" '
+                        f'of flow "{instance.flow.ref}". Using default value.'
+                    )
+                    return default
             output = instance.get_param(param_name, node_name, self.context) or default
         else:
             raise ValueError(f'Instance type "{cls_name}" not supported')
@@ -254,7 +279,17 @@ class ParamParser:
         output = Var(context, robot_name).get(param_name)
 
         if not output:
-            raise UndefinedVarParameterError(f'"{param_name}" does not exist in Var "{context}"')
+            if RAISE_FLOW_VALIDATION_ERRORS:
+                raise UndefinedVarParameterError(
+                    f'"{param_name}" does not exist in Var "{context}"'
+                )
+            else:
+                self.logger.error(
+                    "VALIDATION ERRORS DISABLED: "
+                    f'"{param_name}" does not exist in Var "{context}". '
+                    "Using default value."
+                )
+                return None
 
         return output
 
@@ -311,10 +346,18 @@ class ParamParser:
             if not is_subflow or cls_name == "Container":
                 # If this is the main flow and the parameter is not defined, raise an error
                 # or
-                # If a container tried to resolve a parameter that is not defined in the main flow or itself, raise an error
-                raise UndefinedFlowParameterError(
-                    f'Flow parameter "{param_name}" is not defined in flow "{flow.ref}"'
-                )
+                # If a container tried to resolve a parameter that is not defined
+                # in the main flow or itself, raise an error.
+                if RAISE_FLOW_VALIDATION_ERRORS:
+                    raise UndefinedFlowParameterError(
+                        f'Flow parameter "{param_name}" is not defined in flow "{flow.ref}"'
+                    )
+                else:
+                    self.logger.error(
+                        "VALIDATION ERRORS DISABLED: Flow parameter "
+                        f'"{param_name}" is not defined in flow "{flow.ref}". '
+                        "Continuing with default value."
+                    )
             value = default
         else:
             value = flow.get_param(param_name, context=self.context, is_subflow=is_subflow)
@@ -348,9 +391,17 @@ class ParamParser:
         # it means the parameter is not defined in the flow or its parent container
         # so we raise an error
         if value is None or self._has_unresolved_flow_reference(value):
-            raise UndefinedFlowParameterError(
-                f'Flow parameter "{param_name}" is not defined in flow "{flow.ref}"'
-            )
+            if RAISE_FLOW_VALIDATION_ERRORS:
+                raise UndefinedFlowParameterError(
+                    f'Flow parameter "{param_name}" is not defined in flow "{flow.ref}"'
+                )
+            else:
+                self.logger.error(
+                    "VALIDATION ERRORS DISABLED: Flow parameter "
+                    f'"{param_name}" is not defined in flow "{flow.ref}". '
+                    "Returning unresolved value."
+                )
+                return value
 
         return value
 
