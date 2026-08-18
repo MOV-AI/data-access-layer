@@ -10,9 +10,10 @@
 import ast
 import re
 import os
-from typing import TYPE_CHECKING, Any, Optional, Protocol, Union, cast
+from typing import TYPE_CHECKING, Any, Optional, Protocol, Union, cast, List, Tuple
 
 from movai_core_shared.logger import Log
+from movai_core_shared.envvars import RAISE_FLOW_VALIDATION_ERRORS
 from dal.models.scopestree import scopes
 from dal.models.var import Var
 from dal.movaidb import MovaiDB
@@ -185,9 +186,16 @@ class ParamParser:
             obj = cast("Configuration", scopes.from_path(_config_name, scope="Configuration"))
 
         except KeyError as exc:
-            raise UndefinedConfigParameterError(
-                f"Configuration {_config_name} does not exist"
-            ) from exc
+            if RAISE_FLOW_VALIDATION_ERRORS:
+                raise UndefinedConfigParameterError(
+                    f"Configuration {_config_name} does not exist"
+                ) from exc
+            else:
+                self.logger.error(
+                    "VALIDATION ERRORS DISABLED: Configuration "
+                    f'"{_config_name}" does not exist. Using default value.'
+                )
+                return None
 
         output = obj.get_param(_config_param)
 
@@ -217,16 +225,33 @@ class ParamParser:
         cls_name = type(instance).__name__
         if cls_name == "Flow":  # Flows don't have a node name
             if not instance.has_param(param_name):
-                raise UndefinedParamParameterError(
-                    f'Parameter "{param_name}" is not defined in flow "{instance.ref}"'
-                )
+                if RAISE_FLOW_VALIDATION_ERRORS:
+                    raise UndefinedParamParameterError(
+                        f'Parameter "{param_name}" is not defined in flow "{instance.ref}"'
+                    )
+                else:
+                    self.logger.error(
+                        "VALIDATION ERRORS DISABLED: Parameter "
+                        f'"{param_name}" is not defined in flow "{instance.ref}". '
+                        "Using default value."
+                    )
+                    return default
             instance = cast("Flow", instance)
             output = instance.get_param(param_name, self.context) or default
         elif cls_name in ["NodeInst", "Container"]:
             if not instance.has_param(param_name, node_name, self.context):
-                raise UndefinedParamParameterError(
-                    f'Parameter "{param_name}" is not defined in "{node_name}" of flow "{instance.flow.ref}"'
-                )
+                if RAISE_FLOW_VALIDATION_ERRORS:
+                    raise UndefinedParamParameterError(
+                        f'Parameter "{param_name}" is not defined in '
+                        f'"{node_name}" of flow "{instance.flow.ref}"'
+                    )
+                else:
+                    self.logger.error(
+                        "VALIDATION ERRORS DISABLED: Parameter "
+                        f'"{param_name}" is not defined in "{node_name}" '
+                        f'of flow "{instance.flow.ref}". Using default value.'
+                    )
+                    return default
             output = instance.get_param(param_name, node_name, self.context) or default
         else:
             raise ValueError(f'Instance type "{cls_name}" not supported')
@@ -254,9 +279,38 @@ class ParamParser:
         output = Var(context, robot_name).get(param_name)
 
         if not output:
-            raise UndefinedVarParameterError(f'"{param_name}" does not exist in Var "{context}"')
+            if RAISE_FLOW_VALIDATION_ERRORS:
+                raise UndefinedVarParameterError(
+                    f'"{param_name}" does not exist in Var "{context}"'
+                )
+            else:
+                self.logger.error(
+                    "VALIDATION ERRORS DISABLED: "
+                    f'"{param_name}" does not exist in Var "{context}". '
+                    "Using default value."
+                )
+                return None
 
         return output
+
+    @staticmethod
+    def _has_unresolved_flow_reference(value: Any) -> bool:
+        """Returns whether a parsed value still contains a flow reference."""
+
+        return isinstance(value, str) and re.search(r"\$\(flow\s+[\w\.-]+\)", value) is not None
+
+    def _get_parent_containers(self, node_name_arr: list) -> List[Tuple[str, "Container"]]:
+        """Returns parent containers from nearest to farthest for a node path."""
+
+        containers = []
+
+        for index in range(len(node_name_arr) - 1, 0, -1):
+            container_name = "__".join(node_name_arr[:index])
+            container = self.flow.get_container(container_name, self.context)
+            assert container is not None, f"Container {container_name} not found"
+            containers.append((container_name, container))
+
+        return containers
 
     def eval_flow(
         self,
@@ -284,12 +338,72 @@ class ParamParser:
         is_subflow = len(node_name_arr) > 1
 
         flow = instance.flow
-        if not flow.has_param(param_name):
-            raise UndefinedFlowParameterError(
-                f'Flow parameter "{param_name}" is not defined in flow "{flow.ref}"'
-            )
+        cls_name = type(instance).__name__
+        flow_has_param = flow.has_param(param_name)
 
-        return flow.get_param(param_name, context=self.context, is_subflow=is_subflow)
+        # Check if the main flow has the parameter defined.
+        if not flow_has_param:
+            if not is_subflow or cls_name == "Container":
+                # If this is the main flow and the parameter is not defined, raise an error
+                # or
+                # If a container tried to resolve a parameter that is not defined
+                # in the main flow or itself, raise an error.
+                if RAISE_FLOW_VALIDATION_ERRORS:
+                    raise UndefinedFlowParameterError(
+                        f'Flow parameter "{param_name}" is not defined in flow "{flow.ref}"'
+                    )
+                else:
+                    self.logger.error(
+                        "VALIDATION ERRORS DISABLED: Flow parameter "
+                        f'"{param_name}" is not defined in flow "{flow.ref}". '
+                        "Continuing with default value."
+                    )
+            value = default
+        else:
+            value = flow.get_param(param_name, context=self.context, is_subflow=is_subflow)
+
+            # Use the default value if the flow parameter is None
+            if value is None:
+                value = default
+
+        if is_subflow:
+            # instance is not in the main flow, check parent containers for the parameter value
+            if cls_name not in ["NodeInst", "Container"]:
+                msg = f'Instance type "{cls_name}" not supported'
+                raise ValueError(msg)
+
+            containers = self._get_parent_containers(node_name_arr)
+
+            if containers:
+                container_name, container = containers[0]
+                container_value = container.get_param(
+                    param_name,
+                    container_name,
+                    self.context,
+                    default_value=value,
+                )
+
+                # If the container has a value for the parameter, use it instead of the flow value
+                # As this value is more specific to the node instance than the flow value
+                value = value if container_value is None else container_value
+
+        # If the value is None or still contains an unresolved flow reference,
+        # it means the parameter is not defined in the flow or its parent container
+        # so we raise an error
+        if value is None or self._has_unresolved_flow_reference(value):
+            if RAISE_FLOW_VALIDATION_ERRORS:
+                raise UndefinedFlowParameterError(
+                    f'Flow parameter "{param_name}" is not defined in flow "{flow.ref}"'
+                )
+            else:
+                self.logger.error(
+                    "VALIDATION ERRORS DISABLED: Flow parameter "
+                    f'"{param_name}" is not defined in flow "{flow.ref}". '
+                    "Returning unresolved value."
+                )
+                return value
+
+        return value
 
 
 def get_string_from_template(template: str, task_entry: object) -> str:

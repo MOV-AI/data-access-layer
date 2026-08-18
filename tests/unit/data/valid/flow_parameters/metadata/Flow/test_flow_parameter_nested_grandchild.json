@@ -1,0 +1,46 @@
+{
+    "Flow": {
+        "test_flow_parameter_nested_grandchild": {
+            "Description": "",
+            "ExposedPorts": {},
+            "Info": "",
+            "Label": "test_flow_parameter_nested_grandchild",
+            "LastUpdate": {
+                "date": "11/08/2026 at 00:00:00",
+                "user": "movai@internal"
+            },
+            "Layers": {},
+            "Links": {},
+            "NodeInst": {
+                "test_node": {
+                    "NodeLabel": "test_node",
+                    "Parameter": {
+                        "log_description": {
+                            "Type": "string",
+                            "Value": "Parameter is $(flow param)"
+                        }
+                    },
+                    "Template": "FlowParamTestNode",
+                    "Visualization": {
+                        "x": {
+                            "Value": 0
+                        },
+                        "y": {
+                            "Value": 0
+                        }
+                    }
+                }
+            },
+            "Parameter": {
+                "param": {
+                    "Description": "",
+                    "Type": "string",
+                    "Value": "$(flow param)"
+                }
+            },
+            "User": "",
+            "Version": "",
+            "VersionDelta": {}
+        }
+    }
+}

@@ -368,6 +368,18 @@ class TestProjectValidator:
 
 
 class TestFlowValidator:
+    def test_validate_non_existing_flow(self, global_db, setup_test_data):
+        """Tests that validating a non-existing flow raises an exception."""
+
+        from dal.validation.flow_validator import FlowValidator
+
+        with pytest.raises(Exception) as exc_info:
+            FlowValidator("non_existing_flow").validate_flow()
+
+        assert "non_existing_flow does not exist" in str(
+            exc_info.value
+        ), f"Expected error message to contain 'non_existing_flow does not exist', but got: {exc_info.value}"
+
     def test_flow_with_valid_links(self, global_db, setup_test_data):
         """Tests that a flow with valid links has no issues."""
 
