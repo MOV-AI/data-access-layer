@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.28.2
 - [BP-1680](https://movai.atlassian.net/browse/BP-1680): Fix eval_flow to allow for subflow to extract flow params from direct parent
 
 ## v3.28.1
