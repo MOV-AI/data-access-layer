@@ -380,6 +380,23 @@ class Backup:
             return Backup.parse_manifest(manifest_file.readlines(), all_default)
 
     @staticmethod
+    def validate_manifest(manifest: dict) -> dict:
+        forbidden_words = {
+            "Ports": ["start", "end"],
+            "Node": ["start"],
+        }
+
+        for _type, words in forbidden_words.items():
+            if _type in manifest:
+                manifest[_type] = [
+                    name
+                    for name in manifest[_type]
+                    if not any(word.lower() in name.lower() for word in words)
+                ]
+
+        return manifest
+
+    @staticmethod
     def read_manifest_content(manifest_content: str, all_default=[None]) -> dict:
         """Reads a manifest content string and returns the declared objects.
 
@@ -388,7 +405,8 @@ class Backup:
             all_default: Default value for all objects, applied when '*' is found.
 
         """
-        return Backup.parse_manifest(manifest_content.splitlines(), all_default)
+        parsed_manifest = Backup.parse_manifest(manifest_content.splitlines(), all_default)
+        return Backup.validate_manifest(parsed_manifest)
 
     def run(self, objects: dict = {}):
         raise NotImplementedError
