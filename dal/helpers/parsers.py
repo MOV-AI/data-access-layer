@@ -61,6 +61,14 @@ class ParamParser:
         # context is required in order to the parse the expression $(flow varA) correctly
         # context is used to go up from a subflow instance to the main flow
         self.context = None
+        self._validation_disabled_logs = set()
+
+    def _log_validation_disabled_warning(self, message: str) -> None:
+        if message in self._validation_disabled_logs:
+            return
+
+        self._validation_disabled_logs.add(message)
+        self.logger.warning("VALIDATION ERRORS DISABLED: %s", message)
 
     def parse(
         self,
@@ -239,10 +247,10 @@ class ParamParser:
                     f"Configuration {_config_name} does not exist"
                 ) from exc
             else:
-                self.logger.error(
-                    "VALIDATION ERRORS DISABLED: Configuration "
-                    f'"{_config_name}" does not exist. Using default value.'
+                self._log_validation_disabled_warning(
+                    f'Configuration "{_config_name}" does not exist. Using None.'
                 )
+
                 return None
 
         output = obj.get_param(_config_param)
@@ -278,10 +286,9 @@ class ParamParser:
                         f'Parameter "{param_name}" is not defined in flow "{instance.ref}"'
                     )
                 else:
-                    self.logger.error(
-                        "VALIDATION ERRORS DISABLED: Parameter "
-                        f'"{param_name}" is not defined in flow "{instance.ref}". '
-                        "Using default value."
+                    self._log_validation_disabled_warning(
+                        f'Parameter "{param_name}" is not defined in flow "{instance.ref}". '
+                        f"Using default value."
                     )
                     return default
             instance = cast("Flow", instance)
@@ -294,9 +301,8 @@ class ParamParser:
                         f'"{node_name}" of flow "{instance.flow.ref}"'
                     )
                 else:
-                    self.logger.error(
-                        "VALIDATION ERRORS DISABLED: Parameter "
-                        f'"{param_name}" is not defined in "{node_name}" '
+                    self._log_validation_disabled_warning(
+                        f'Parameter "{param_name}" is not defined in "{node_name}" '
                         f'of flow "{instance.flow.ref}". Using default value.'
                     )
                     return default
@@ -332,10 +338,8 @@ class ParamParser:
                     f'"{param_name}" does not exist in Var "{context}"'
                 )
             else:
-                self.logger.error(
-                    "VALIDATION ERRORS DISABLED: "
-                    f'"{param_name}" does not exist in Var "{context}". '
-                    "Using default value."
+                self._log_validation_disabled_warning(
+                    f'"{param_name}" does not exist in Var "{context}". Using None.'
                 )
                 return None
 
@@ -400,12 +404,7 @@ class ParamParser:
                     raise UndefinedFlowParameterError(
                         f'Flow parameter "{param_name}" is not defined in flow "{flow.ref}"'
                     )
-                else:
-                    self.logger.error(
-                        "VALIDATION ERRORS DISABLED: Flow parameter "
-                        f'"{param_name}" is not defined in flow "{flow.ref}". '
-                        "Continuing with default value."
-                    )
+
             value = default
         else:
             value = flow.get_param(param_name, context=self.context, is_subflow=is_subflow)
@@ -444,10 +443,8 @@ class ParamParser:
                     f'Flow parameter "{param_name}" is not defined in flow "{flow.ref}"'
                 )
             else:
-                self.logger.error(
-                    "VALIDATION ERRORS DISABLED: Flow parameter "
-                    f'"{param_name}" is not defined in flow "{flow.ref}". '
-                    "Returning unresolved value."
+                self._log_validation_disabled_warning(
+                    f'Flow parameter "{param_name}" is not defined in flow "{flow.ref}". Returning unresolved value.'
                 )
                 return value
 
