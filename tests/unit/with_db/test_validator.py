@@ -570,3 +570,29 @@ class TestFlowValidator:
                     ),
                 ],
             )
+
+    def test_flow_with_missing_referenced_parameters_in_subflow(
+        self, global_db, folder_invalid_data
+    ):
+        """Tests that validating a flow also validates nested subflows."""
+
+        from dal.validation.issues import MissingReferencedParameter
+        from dal.validation.flow_validator import FlowValidator
+
+        with setup_test_data_from_path(
+            folder_invalid_data / "proj-subflow-missing-referenced-params"
+        ):
+            validator_output: ProjectValidationResult = FlowValidator(
+                "test_parent_with_invalid_subflow"
+            ).validate_flow()
+
+            execute_and_assert_same_type_issues(
+                validator_output,
+                [
+                    MissingReferencedParameter(
+                        json_path="test_invalid_parameter_subflow.json",
+                        msg="Flow 'test_invalid_parameter_subflow' parameter 'missing_config_parameter' has an undefined config reference in Flow 'test_invalid_parameter_subflow'",
+                        line_start=19,
+                    ),
+                ],
+            )
