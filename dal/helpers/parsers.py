@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, Any, Optional, Protocol, Union, cast, List, Tu
 
 from movai_core_shared.logger import Log
 
-# from movai_core_shared.envvars import RAISE_FLOW_VALIDATION_ERRORS
+from movai_core_shared.envvars import RAISE_FLOW_VALIDATION_ERRORS
 from dal.models.scopestree import scopes
 from dal.models.var import Var
 from dal.movaidb import MovaiDB
@@ -37,9 +37,6 @@ class ObjectWithName(Protocol):
     @property
     def name(self) -> str:
         ...
-
-
-RAISE_FLOW_VALIDATION_ERRORS = True
 
 
 class ParamParser:
@@ -151,9 +148,7 @@ class ParamParser:
     ) -> str:
         """Format a parser replacement step for parser error messages."""
 
-        return (
-            f'{self._format_owner(key, instance, node_name)} parsed "{previous}" ' f'to "{current}"'
-        )
+        return f'{self._format_owner(key, instance, node_name)} parsed "{previous}" to "{current}"'
 
     def eval_reference(
         self, key: str, expression: str, instance: ObjectWithName, node_name: str
