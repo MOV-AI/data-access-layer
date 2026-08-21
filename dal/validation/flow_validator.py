@@ -28,16 +28,48 @@ class FlowValidator:
         self.flow_ref = flow_ref
         self.issues = []
 
+    def _collect_flow_refs(self, flow_ref: str, visited=None):
+        """
+        Collect a flow and all subflows referenced by its containers.
+        """
+
+        visited = visited or set()
+        if flow_ref in visited:
+            return []
+
+        visited.add(flow_ref)
+        flow_refs = [flow_ref]
+
+        try:
+            flow_data = self.project._get_flow_dict(flow_ref)
+        except Exception as e:
+            LOGGER.error(f"Error loading flow {flow_ref}: {e}")
+            return flow_refs
+
+        flow_content = flow_data.get("Flow", {}).get(flow_ref, {})
+        for container_data in flow_content.get("Container", {}).values():
+            subflow_ref = container_data.get("ContainerFlow")
+            if not subflow_ref or subflow_ref in visited:
+                continue
+
+            if not self.project._object_exists("Flow", subflow_ref):
+                continue
+
+            flow_refs.extend(self._collect_flow_refs(subflow_ref, visited))
+
+        return flow_refs
+
     def validate_flow(self) -> ProjectValidationResult:
         """
-        Validate a specific flow by its reference.
+        Validate a specific flow and all subflows reachable from it.
 
         Returns:
             ProjectValidationResult: The result of the flow validation, including issues found.
         """
         try:
-            # Validate the specific flow
-            self.issues.extend(self.project.check_flow(self.flow_ref))
+            self.issues = []
+            for flow_ref in self._collect_flow_refs(self.flow_ref):
+                self.issues.extend(self.project.check_flow(flow_ref))
 
         except Exception as e:
             LOGGER.error(f"Error validating flow {self.flow_ref}: {e}")
