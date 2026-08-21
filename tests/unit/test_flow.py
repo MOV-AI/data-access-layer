@@ -654,7 +654,7 @@ class FlowParamsTests(unittest.TestCase):
         from dal.exceptions import UndefinedConfigParameterError
 
         # Clear existing Redis plugins, if any
-        del scopes._children["global"]
+        scopes._children.pop("global", None)
 
         # Set up mocks
         mock_plugin = Mock()
@@ -682,7 +682,62 @@ class FlowParamsTests(unittest.TestCase):
         with pytest.raises(UndefinedConfigParameterError) as cm:
             flow.get_param("config_file")
 
-        self.assertEqual(
-            str(cm.value),
-            "Configuration project does not exist",
+        exception_report = str(cm.value)
+        self.assertIn("Configuration project does not exist", exception_report)
+        self.assertIn(
+            'Flow "test" parameter "config_file" references '
+            '"$(config project.configurations.smart)"',
+            exception_report,
+        )
+
+    @patch("dal.models.scopestree.Persistence.get_plugin_class")
+    def test_missing_nested_config_reference_in_flow_param(self, mock_get_plugin):
+        from dal.exceptions import UndefinedConfigParameterError
+
+        # Clear existing Redis plugins, if any
+        scopes._children.pop("global", None)
+
+        # Set up mocks
+        mock_plugin = Mock()
+        mock_plugin.return_value = Mock()
+        mock_plugin.return_value.read.return_value = Mock()
+        mock_plugin.return_value.read.return_value.get.side_effect = [
+            "1.0",  # getting schema version
+            {
+                "test": {
+                    "Parameter": {
+                        "project_file_name": {
+                            "Value": "project_no",
+                            "Description": "",
+                            "Type": "any",
+                        },
+                        "smart_config_file_name": {
+                            "Value": ("$(config $(param project_file_name).configurations.smart)"),
+                            "Description": "",
+                            "Type": "any",
+                        },
+                    }
+                }
+            },  # getting Flow data
+            "1.0",  # getting schema version
+            {},  # getting Configuration version
+        ]
+        mock_get_plugin.return_value = mock_plugin
+        flow = Flow("test")
+
+        with pytest.raises(UndefinedConfigParameterError) as cm:
+            flow.get_param("smart_config_file_name")
+
+        exception_report = str(cm.value)
+        self.assertIn("Configuration project_no does not exist", exception_report)
+        self.assertIn(
+            'Flow "test" parameter "smart_config_file_name" parsed '
+            '"$(config $(param project_file_name).configurations.smart)" '
+            'to "$(config project_no.configurations.smart)"',
+            exception_report,
+        )
+        self.assertIn(
+            'Flow "test" parameter "smart_config_file_name" references '
+            '"$(config project_no.configurations.smart)"',
+            exception_report,
         )

@@ -49,6 +49,24 @@ class DalException(Exception):
 class UndefinedParameterError(Exception):
     """Raised when a reference targets an undefined parameter."""
 
+    def __init__(self, message: str, resolution_path=None):
+        super().__init__(message)
+        self.message = message
+        self.resolution_path = list(resolution_path or [])
+
+    def add_resolution_step(self, step: str) -> None:
+        """Add a parser resolution step to the error."""
+
+        if step and step not in self.resolution_path:
+            self.resolution_path.append(step)
+
+    def __str__(self) -> str:
+        if not self.resolution_path:
+            return self.message
+
+        path = "\n".join(f"- {step}" for step in reversed(self.resolution_path))
+        return f"{self.message}:\n{path}"
+
 
 class UndefinedFlowParameterError(UndefinedParameterError):
     """Raised when a $(flow ...) reference targets an undefined flow parameter."""

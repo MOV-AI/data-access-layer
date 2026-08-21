@@ -1,5 +1,8 @@
 # Changelog
 
+## vTBD
+- [BP-1774](https://movai.atlassian.net/browse/BP-1774): Cleanup logs for parser errors with a traceback for clearer understanding of nested reference failures.
+
 ## v3.28.2
 - [BP-1680](https://movai.atlassian.net/browse/BP-1680): Fix eval_flow to allow for subflow to extract flow params from direct parent
 

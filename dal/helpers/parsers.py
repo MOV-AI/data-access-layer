@@ -13,11 +13,13 @@ import os
 from typing import TYPE_CHECKING, Any, Optional, Protocol, Union, cast, List, Tuple
 
 from movai_core_shared.logger import Log
-from movai_core_shared.envvars import RAISE_FLOW_VALIDATION_ERRORS
+
+# from movai_core_shared.envvars import RAISE_FLOW_VALIDATION_ERRORS
 from dal.models.scopestree import scopes
 from dal.models.var import Var
 from dal.movaidb import MovaiDB
 from dal.exceptions import (
+    UndefinedParameterError,
     UndefinedFlowParameterError,
     UndefinedConfigParameterError,
     UndefinedVarParameterError,
@@ -35,6 +37,9 @@ class ObjectWithName(Protocol):
     @property
     def name(self) -> str:
         ...
+
+
+RAISE_FLOW_VALIDATION_ERRORS = True
 
 
 class ParamParser:
@@ -89,14 +94,23 @@ class ParamParser:
         # assign a different context if needed
         self.context = context or self.flow.ref
 
+        resolution_history = []
+
         while 1:
             temp_param = expression
 
-            expression = re.sub(
-                self.__REGEX__,
-                lambda m: self.eval_reference(key, m.group(), instance, node_name),
-                expression,
-            )
+            try:
+                expression = re.sub(
+                    self.__REGEX__,
+                    lambda m: self.eval_reference(key, m.group(), instance, node_name),
+                    expression,
+                )
+            except UndefinedParameterError as error:
+                for previous, current in reversed(resolution_history):
+                    error.add_resolution_step(
+                        self._format_parse_step(key, previous, current, instance, node_name)
+                    )
+                raise
 
             if expression == temp_param:
                 try:
@@ -106,7 +120,40 @@ class ParamParser:
                 except (ValueError, SyntaxError):
                     return expression
 
+            resolution_history.append((temp_param, expression))
+
         return expression
+
+    def _format_owner(self, key: str, instance: ObjectWithName, node_name: str) -> str:
+        """Format the parameter owner for parser error messages."""
+
+        from dal.models.flow import Flow
+
+        if isinstance(instance, Flow):
+            return f'Flow "{instance.ref}" parameter "{key}"'
+
+        return f'Flow "{self.flow.ref}" node "{node_name}" parameter "{key}"'
+
+    def _format_reference_step(
+        self, key: str, expression: str, instance: ObjectWithName, node_name: str
+    ) -> str:
+        """Format a reference lookup step for parser error messages."""
+
+        return f'{self._format_owner(key, instance, node_name)} references "{expression}"'
+
+    def _format_parse_step(
+        self,
+        key: str,
+        previous: str,
+        current: str,
+        instance: ObjectWithName,
+        node_name: str,
+    ) -> str:
+        """Format a parser replacement step for parser error messages."""
+
+        return (
+            f'{self._format_owner(key, instance, node_name)} parsed "{previous}" ' f'to "{current}"'
+        )
 
     def eval_reference(
         self, key: str, expression: str, instance: ObjectWithName, node_name: str
@@ -140,6 +187,12 @@ class ParamParser:
 
             # call
             output = func(result.group(2), expression, instance, node_name)
+
+        except UndefinedParameterError as error:
+            error.add_resolution_step(
+                self._format_reference_step(key, expression, instance, node_name)
+            )
+            raise
 
         except ValueError as error:
             extra_info = f'in flow "{self.flow.ref}"'
