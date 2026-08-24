@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.29.0
 - Branch out for EE 3.0.1
 
 ## v3.28.2
