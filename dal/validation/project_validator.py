@@ -151,6 +151,7 @@ class ProjectValidator:
         self._objects_by_scope: Dict[str, Set[str]] = {}
         # Cache loaded Flow dictionaries to avoid repeated DAL fetches.
         self._flow_dict_cache: Dict[str, dict] = {}
+        self._link_validator: Optional["LinkValidator"] = None
 
         # Build cache of all objects first
         self._build_object_cache()
@@ -161,6 +162,16 @@ class ProjectValidator:
             self._flow_dict_cache[flow_ref] = Flow(flow_ref).get_dict()
         return self._flow_dict_cache[flow_ref]
 
+    def _get_link_validator(self) -> "LinkValidator":
+        """Get a reusable link validator for this validation run."""
+
+        if self._link_validator is None:
+            self._link_validator = LinkValidator(
+                objects_by_scope=self._objects_by_scope,
+                logger=LOGGER,
+            )
+        return self._link_validator
+
     def validate(self) -> ProjectValidationResult:
         """
         Validate the project data.
@@ -170,6 +181,7 @@ class ProjectValidator:
         """
         LOGGER.info("Starting project validation")
         start_time = time.perf_counter()
+        self._link_validator = None
 
         # Run validations
         self._check_duplicates()
@@ -275,8 +287,6 @@ class ProjectValidator:
         """
         Check parameter expressions in a specific flow using the runtime parser.
         """
-        LOGGER.info(f"Checking Flow parameters in flow '{flow_ref}'")
-
         flow_issues = []
 
         try:
@@ -340,27 +350,9 @@ class ProjectValidator:
                         )
                         continue
 
-                    LOGGER.info(
-                        "Checking parameters for node instance '%s' in flow '%s'",
-                        node_inst_name,
-                        flow_ref,
-                    )
-
                     for param_key in param_names:
-                        LOGGER.info(
-                            "Checking parameter '%s' for node instance '%s' in flow '%s'",
-                            param_key,
-                            node_inst_name,
-                            flow_ref,
-                        )
                         try:
                             node_inst.get_param(param_key, node_inst_name, flow_ref)
-                            LOGGER.info(
-                                "Parameter '%s' for node instance '%s' in flow '%s' is valid",
-                                param_key,
-                                node_inst_name,
-                                flow_ref,
-                            )
                         except UndefinedParameterError as error:
                             line_num = _find_json_path_line(
                                 flow_data,
@@ -387,7 +379,6 @@ class ProjectValidator:
 
             # Check Flow parameters
             for param_key in flow_content.get("Parameter", {}):
-                LOGGER.error("Checking parameter '%s' for flow '%s'", param_key, flow_ref)
                 try:
                     flow.get_param(param_key, flow_ref)
                 except UndefinedParameterError as error:
@@ -457,8 +448,6 @@ class ProjectValidator:
         """
         Check that all nodes and flows referenced in a specific flow exist in the project.
         """
-        LOGGER.info(f"Checking Flow/Node template references in flow '{flow_ref}'")
-
         flow_issues = []
 
         try:
@@ -515,8 +504,6 @@ class ProjectValidator:
         """
         Check that all links in a specific flow have valid instances and compatible ports.
         """
-        LOGGER.info(f"Checking link port compatibility in flow '{flow_ref}'")
-
         flow_issues = []
 
         try:
@@ -526,6 +513,7 @@ class ProjectValidator:
                 return flow_issues  # Flow not found, no issues to report
 
             flow_content = flow_data["Flow"][flow_ref]
+            link_validator = self._get_link_validator()
 
             # Check all links
             if "Links" in flow_content:
@@ -535,9 +523,7 @@ class ProjectValidator:
 
                     # Validate link endpoints
                     flow_issues.extend(
-                        LinkValidator(
-                            objects_by_scope=self._objects_by_scope, logger=LOGGER
-                        ).validate_link(
+                        link_validator.validate_link(
                             flow_ref, flow_data, flow_content, link_id, from_path, to_path
                         )
                     )
