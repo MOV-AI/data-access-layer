@@ -366,6 +366,28 @@ class TestProjectValidator:
                 ],
             )
 
+    def test_missing_referenced_parameter_from_node_template_line(
+        self, isolated_database, folder_invalid_data
+    ):
+        """Tests that template-only node parameters point to the node metadata line."""
+
+        with setup_test_data_from_path(
+            folder_invalid_data / "proj-node-template-missing-referenced-param"
+        ):
+            validator_output: ProjectValidationResult = ProjectValidator().validate()
+
+            assert validator_output.summary.total_issues == 1
+            issue = validator_output.issues[0]
+            assert issue.msg == (
+                "Node instance 'template_node' parameter 'use_task_manager' has an "
+                "undefined flow reference in Flow "
+                "'test_node_template_missing_referenced_param'"
+            )
+            assert issue.json_path == "NodeTemplateMissingParam.json"
+            assert issue.document_type == "Node"
+            assert issue.document_name == "NodeTemplateMissingParam"
+            assert issue.line_start == 17
+
 
 class TestFlowValidator:
     def test_validate_non_existing_flow(self, global_db, setup_test_data):
