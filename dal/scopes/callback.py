@@ -18,6 +18,13 @@ from dal.movaidb import MovaiDB
 from dal.scopes.scope import Scope
 from dal.scopes.application import Application
 from dal.models.acl import ResourceType, ApplicationsType
+from dal.utils.usage_search.usage_types import (
+    UsageData,
+    UsageSearchResult,
+    CallbackNodeUsage,
+    DirectCallbackUsageItem,
+    IndirectCallbackUsageItem,
+)
 
 
 class Callback(Scope):
@@ -244,3 +251,72 @@ class Callback(Scope):
         }
 
         return to_return
+
+    def get_usage_info(self, recursive: bool = False) -> UsageSearchResult:
+        """
+        Get usage information for this callback.
+
+        Args:
+            recursive (bool): If True, also retrieves indirect usage in Flows.
+
+        Returns:
+            UsageSearchResult: The usage information for this callback.
+        """
+
+        usage_data = UsageData(node={})
+
+        # Search for direct usages in Nodes
+        # Note: Only "In" ports have Callbacks, "Out" ports don't according to the schema
+        direct_node_usages = self._movai_db_global.search(
+            {
+                "Node": {
+                    "*": {
+                        "PortsInst": {
+                            "*": {
+                                "In": {"*": {"Callback": self.name}},
+                            }
+                        }
+                    }
+                }
+            }
+        )
+
+        for node_key in direct_node_usages:
+            node = self._movai_db_global.keys_to_dict([(node_key, "")])
+            node_name = next(iter(node["Node"]))  # Get the first (and only) node name
+            for io_name in node["Node"][node_name]["PortsInst"]:
+                for iport_name in node["Node"][node_name]["PortsInst"][io_name]["In"]:
+                    if (
+                        node["Node"][node_name]["PortsInst"][io_name]["In"][iport_name]["Callback"]
+                        == self.name
+                    ):
+                        # Add direct usage to usage_data
+                        if node_name not in usage_data.node:
+                            usage_data.node[node_name] = CallbackNodeUsage(direct=[])
+                        usage_data.node[node_name].direct.append(
+                            DirectCallbackUsageItem(io_name=io_name, iport_name=iport_name)
+                        )
+
+        # If recursive is True, find indirect usages by checking which Flows contain Nodes that use this Callback
+        if recursive:
+            from dal.scopes import Node
+
+            # For each node that uses this callback, find flows that contain it
+            for node_name in usage_data.node:
+                node_scope = Node(name=node_name)
+
+                # Get all flows that directly use this node (no recursion needed)
+                node_usage = node_scope.get_usage_info(recursive=False)
+                direct_flows = node_usage.usage.flow
+
+                # Add indirect usage for each flow/node_instance combination
+                for flow_name, flow_usage in direct_flows.items():
+                    for direct_item in flow_usage.direct:
+                        usage_data.node[node_name].indirect.append(
+                            IndirectCallbackUsageItem(
+                                flow_name=flow_name,
+                                node_instance_name=direct_item.node_instance_name,
+                            )
+                        )
+
+        return UsageSearchResult(scope="Callback", name=self.name, usage=usage_data)

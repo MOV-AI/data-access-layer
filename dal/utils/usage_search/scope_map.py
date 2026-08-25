@@ -3,6 +3,7 @@ from typing import Dict, Type
 from dal.scopes.scope import Scope
 from dal.scopes.node import Node
 from dal.scopes.flow import Flow
+from dal.scopes.callback import Callback
 
 
 def get_usage_search_scope_map() -> Dict[str, Type[Scope]]:
@@ -16,4 +17,5 @@ def get_usage_search_scope_map() -> Dict[str, Type[Scope]]:
     return {
         "node": Node,
         "flow": Flow,
+        "callback": Callback,
     }
