@@ -6,10 +6,13 @@ from dal.utils.usage_search.usage_types import (
     UsageSearchResult,
     NodeFlowUsage,
     FlowFlowUsage,
+    CallbackNodeUsage,
     DirectNodeUsageItem,
     DirectFlowUsageItem,
     IndirectNodeUsageItem,
     IndirectFlowUsageItem,
+    DirectCallbackUsageItem,
+    IndirectCallbackUsageItem,
 )
 from dal.utils.usage_search.scope_map import get_usage_search_scope_map
 
@@ -466,3 +469,172 @@ class TestCircularDependencyHandling:
             ),
         )
         assert result.model_dump() == expected_result.model_dump()
+
+
+class TestCallbackUsageInfo:
+    """Test suite for Callback.get_usage_info() method."""
+
+    def test_callback_get_usage_info_direct_only(self, setup_test_data):
+        """
+        Test Callback.get_usage_info() with recursive=False (direct usages only).
+
+        Test scenario:
+        - place_holder callback is used in NodeSub1, NodeSub2, and UnusedNode
+        - NodeSub1 and NodeSub2 are used in flows, but with recursive=False, we only want direct usages
+        - UnusedNode is not used in any flow, but still uses the callback directly
+        - Each node uses it in specific ports
+        - With recursive=False, should only show direct node/port usage
+        """
+
+        callback = get_scope_instance("callback", "place_holder")
+        result: UsageSearchResult = callback.get_usage_info(recursive=False)
+
+        expected_result = UsageSearchResult(
+            scope="Callback",
+            name="place_holder",
+            usage=UsageData(
+                node={
+                    "NodeSub1": CallbackNodeUsage(
+                        direct=[DirectCallbackUsageItem(io_name="subport", iport_name="in")],
+                        indirect=[],
+                    ),
+                    "NodeSub2": CallbackNodeUsage(
+                        direct=[DirectCallbackUsageItem(io_name="subport", iport_name="in")],
+                        indirect=[],
+                    ),
+                    "UnusedNode": CallbackNodeUsage(
+                        direct=[DirectCallbackUsageItem(io_name="subport", iport_name="in")],
+                        indirect=[],
+                    ),
+                }
+            ),
+        )
+        assert result.model_dump() == expected_result.model_dump()
+
+    def test_callback_get_usage_info_with_indirect(self, setup_test_data):
+        """
+        Test Callback.get_usage_info() with recursive=True (includes indirect usages via flows).
+
+        Test scenario:
+        - place_holder is used in NodeSub1 and NodeSub2
+        - NodeSub1 appears in multiple flows with various instances
+        - NodeSub2 appears in flow_with_four_nodes
+        - UnusedNode is not used in any flow
+        - Should show both direct (node/port) and indirect (flow/node_instance) usages
+        """
+
+        callback = get_scope_instance("callback", "place_holder")
+        result: UsageSearchResult = callback.get_usage_info(recursive=True)
+
+        expected_result = UsageSearchResult(
+            scope="Callback",
+            name="place_holder",
+            usage=UsageData(
+                node={
+                    "NodeSub1": CallbackNodeUsage(
+                        direct=[DirectCallbackUsageItem(io_name="subport", iport_name="in")],
+                        indirect=[
+                            IndirectCallbackUsageItem(
+                                flow_name="flow_not_used_as_subflow", node_instance_name="sub"
+                            ),
+                            IndirectCallbackUsageItem(
+                                flow_name="flow_with_duplicated_subflow", node_instance_name="sub1"
+                            ),
+                            IndirectCallbackUsageItem(
+                                flow_name="flow_with_duplicated_subflow", node_instance_name="sub2"
+                            ),
+                            IndirectCallbackUsageItem(
+                                flow_name="flow_with_four_nodes", node_instance_name="nodesub1"
+                            ),
+                            IndirectCallbackUsageItem(
+                                flow_name="flow_with_nodes_and_subflow", node_instance_name="sub"
+                            ),
+                        ],
+                    ),
+                    "NodeSub2": CallbackNodeUsage(
+                        direct=[DirectCallbackUsageItem(io_name="subport", iport_name="in")],
+                        indirect=[
+                            IndirectCallbackUsageItem(
+                                flow_name="flow_with_four_nodes", node_instance_name="nodesub2"
+                            ),
+                        ],
+                    ),
+                    "UnusedNode": CallbackNodeUsage(
+                        direct=[DirectCallbackUsageItem(io_name="subport", iport_name="in")],
+                        indirect=[],
+                    ),
+                }
+            ),
+        )
+        assert result.model_dump() == expected_result.model_dump()
+
+    def test_unused_callback_get_usage_info(self, setup_test_data):
+        """Test Callback.get_usage_info() for a callback that is not used in any node."""
+
+        callback = get_scope_instance("callback", "unused_callback")
+        result: UsageSearchResult = callback.get_usage_info(recursive=True)
+
+        expected_result = UsageSearchResult(
+            scope="Callback", name="unused_callback", usage=UsageData(node={})
+        )
+        assert result.model_dump() == expected_result.model_dump()
+
+    def test_callback_get_usage_info_multiple_calls(self, setup_test_data):
+        """
+        Test that Callback.get_usage_info() can be called multiple times independently.
+
+        Test scenario:
+        - place_holder is used in 3 nodes (NodeSub1, NodeSub2, UnusedNode)
+        - NodeSub1 has 5 flow instances, NodeSub2 has 1, UnusedNode has 0
+        - unused_callback is not used anywhere
+        """
+
+        # Call multiple times for different callbacks
+        callback1 = get_scope_instance("callback", "place_holder")
+        callback2 = get_scope_instance("callback", "unused_callback")
+
+        result1 = callback1.get_usage_info(recursive=True)
+        result2 = callback2.get_usage_info(recursive=False)
+
+        # Count total usages
+        def count_usages(result):
+            total_direct = 0
+            total_indirect = 0
+            if result.usage.node:
+                for node_usage in result.usage.node.values():
+                    total_direct += len(node_usage.direct)
+                    total_indirect += len(node_usage.indirect)
+            return total_direct, total_indirect
+
+        direct1, indirect1 = count_usages(result1)
+        direct2, indirect2 = count_usages(result2)
+
+        # place_holder: 3 direct usages (3 nodes with callback)
+        #               6 indirect usages (5 from NodeSub1 + 1 from NodeSub2)
+        # unused_callback: 0 direct, 0 indirect
+        assert direct1 == 3
+        assert indirect1 == 6
+        assert direct2 == 0
+        assert indirect2 == 0
+
+    def test_callback_parameter_validation(self, setup_test_data):
+        """Test that recursive parameter properly controls indirect usage retrieval."""
+
+        callback = get_scope_instance("callback", "place_holder")
+
+        # With recursive=False, should have no indirect usages
+        result_no_indirect = callback.get_usage_info(recursive=False)
+        for node_name, node_usage in result_no_indirect.usage.node.items():
+            assert (
+                len(node_usage.indirect) == 0
+            ), f"Node {node_name} should have no indirect usages with recursive=False"
+
+        # With recursive=True, should have indirect usages for nodes used in flows
+        result_with_indirect = callback.get_usage_info(recursive=True)
+
+        # NodeSub1 and NodeSub2 are in flows, so should have indirect usages
+        assert len(result_with_indirect.usage.node["NodeSub1"].indirect) > 0
+        assert len(result_with_indirect.usage.node["NodeSub2"].indirect) > 0
+
+        # UnusedNode is not in any flow, so should have no indirect usages
+        assert len(result_with_indirect.usage.node["UnusedNode"].indirect) == 0

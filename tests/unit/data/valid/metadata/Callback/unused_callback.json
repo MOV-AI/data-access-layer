@@ -1,0 +1,22 @@
+{
+    "Callback": {
+        "unused_callback": {
+            "Info": "A callback that is not used by any node",
+            "Label": "unused_callback",
+            "LastUpdate": {
+                "date": "25/08/2026 at 12:00:00",
+                "user": "test@movai"
+            },
+            "Message": "",
+            "Py3Lib": {
+                "Unused": {
+                    "Class": "UnusedClass",
+                    "Module": "unused.module"
+                }
+            },
+            "User": "",
+            "Version": "1.0",
+            "VersionDelta": {}
+        }
+    }
+}
