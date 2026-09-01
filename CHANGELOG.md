@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.30.0
 - [BP-1800](https://movai.atlassian.net/browse/BP-1800): Add usage search support for Callbacks
 
 ## v3.29.0
