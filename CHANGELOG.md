@@ -1,5 +1,8 @@
 # Changelog
 
+## vTBD
+- [BP-1800](https://movai.atlassian.net/browse/BP-1800): Add usage search support for Callbacks
+
 ## v3.29.0
 - Branch out for EE 3.0.1
 

@@ -60,22 +60,34 @@ class Searcher:
                         instance = direct_item["flow_instance_name"]
                         print(f"  [Direct] {parent_scope}: {parent_name}")
                         print(f"           Flow Instance (Container): {instance}")
+                    elif scope_type == "Callback":
+                        io_name = direct_item["io_name"]
+                        iport_name = direct_item["iport_name"]
+                        print(f"  [Direct] {parent_scope}: {parent_name}")
+                        print(f"           IO Name: {io_name}, IPort Name: {iport_name}")
 
                 # Handle indirect usages
                 indirect_items = details["indirect"]
                 for indirect_item in indirect_items:
-                    child_template = indirect_item["flow_template_name"]
-                    child_instance = indirect_item["flow_instance_name"]
-                    print(f"  [Indirect] {parent_scope}: {parent_name}")
-                    print(f"           As Sub Flow: {child_template} (instance: {child_instance})")
-
+                    if scope_type == "Node" or scope_type == "Flow":
+                        child_template = indirect_item["flow_template_name"]
+                        child_instance = indirect_item["flow_instance_name"]
+                        print(f"  [Indirect] {parent_scope}: {parent_name}")
+                        print(
+                            f"           As Sub Flow: {child_template} (instance: {child_instance})"
+                        )
+                    elif scope_type == "Callback":
+                        flow_name = indirect_item["flow_name"]
+                        node_instance = indirect_item["node_instance_name"]
+                        print(f"  [Indirect] {parent_scope}: {parent_name}")
+                        print(f"           In Flow: {flow_name}, Node Instance: {node_instance}")
         print()
 
         if self.debug:
             print("\nFull JSON result:")
             print(json.dumps(result, indent=2, default=str))
 
-    def search_usage(self, search_type: str, name: str) -> int:
+    def search_usage(self, search_type: str, name: str, recursive: bool = True) -> int:
         """Search for usage of a node or flow.
 
         Args:
@@ -98,7 +110,7 @@ class Searcher:
             print(f"{search_type.capitalize()} '{name}' does not exist.")
             return 1
 
-        result = obj.get_usage_info()
+        result = obj.get_usage_info(recursive=recursive)
 
         self.print_results(result)
 

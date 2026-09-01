@@ -896,9 +896,12 @@ class Flow(Scope):
         except AttributeError as error:
             LOGGER.error(error)
 
-    def get_usage_info(self) -> UsageSearchResult:
+    def get_usage_info(self, recursive: bool = True) -> UsageSearchResult:
         """Search Flows for Container instances that use this flow as a subflow,
         including indirect usages through other Containers.
+
+        Args:
+            recursive: If True, will search for indirect usages through other Containers.
 
         Returns:
             UsageSearchResult: Dictionary with structure:
@@ -960,10 +963,11 @@ class Flow(Scope):
             )
 
         # Find all indirect usages through the flow hierarchy
-        self._find_all_indirect_usages(
-            all_flows=flows,
-            usage=usage,
-        )
+        if recursive:
+            self._find_all_indirect_usages(
+                all_flows=flows,
+                usage=usage,
+            )
 
         return UsageSearchResult(scope="Flow", name=self.name, usage=usage)
 

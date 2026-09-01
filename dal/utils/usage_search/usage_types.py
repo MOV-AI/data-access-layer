@@ -35,6 +35,20 @@ class IndirectFlowUsageItem(BaseModel):
     flow_instance_name: str
 
 
+class DirectCallbackUsageItem(BaseModel):
+    """Single direct usage item for a Callback."""
+
+    io_name: str
+    iport_name: str
+
+
+class IndirectCallbackUsageItem(BaseModel):
+    """Single indirect usage item for a Callback."""
+
+    flow_name: str
+    node_instance_name: str
+
+
 class NodeFlowUsage(BaseModel):
     """Usage details for a Node in a specific Flow.
 
@@ -55,11 +69,23 @@ class FlowFlowUsage(BaseModel):
     indirect: List[IndirectFlowUsageItem] = Field(default_factory=list)
 
 
+class CallbackNodeUsage(BaseModel):
+    """Usage details for a Callback in a specific Node.
+
+    Indirect usages may be applicable if the Callback is used in a Node that is part of a Flow.
+    """
+
+    direct: List[DirectCallbackUsageItem] = Field(default_factory=list)
+    indirect: List[IndirectCallbackUsageItem] = Field(default_factory=list)
+
+
 class UsageData(BaseModel):
     """Usage data that can represent both Node and Flow usage."""
 
     flow: Dict[str, Union[NodeFlowUsage, FlowFlowUsage]] = Field(default_factory=dict)
-    node: Dict[str, Union[NodeFlowUsage, FlowFlowUsage]] = Field(default_factory=dict)
+    node: Dict[str, Union[NodeFlowUsage, FlowFlowUsage, CallbackNodeUsage]] = Field(
+        default_factory=dict
+    )
 
 
 class UsageSearchResult(BaseModel):
@@ -67,7 +93,7 @@ class UsageSearchResult(BaseModel):
 
     Format:
     {
-        "scope": "Node" | "Flow",
+        "scope": "Node" | "Flow" | "Callback",
         "name": "object_name",
         "usage": {
             "flow": {
@@ -75,11 +101,20 @@ class UsageSearchResult(BaseModel):
                     "direct": [...],
                     "indirect": [...]
                 }
+            },
+            "node": {
+                "node_name": {
+                    "direct": [...],
+                    "indirect": [...]
+                },
+                "callback_name": {
+                    "direct": [...],
+                }
             }
         }
     }
     """
 
-    scope: str  # "Node" or "Flow"
+    scope: str  # "Node" or "Flow" or "Callback"
     name: str  # Name of the object being searched
     usage: UsageData  # Can contain both flow and node usage
