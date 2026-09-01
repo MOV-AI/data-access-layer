@@ -317,6 +317,23 @@ Proprietary and confidential</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.callback.Callback.get_usage_info">
+<span class="sig-name descname"><span class="pre">get_usage_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">UsageSearchResult</span></span></span><a class="headerlink" href="#dal.scopes.callback.Callback.get_usage_info" title="Permalink to this definition"></a></dt>
+<dd><p>Get usage information for this callback.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>recursive</strong> (<em>bool</em>) – If True, also retrieves indirect usage in Flows.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The usage information for this callback.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>UsageSearchResult</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.callback.Callback.is_valid">
 <span class="sig-name descname"><span class="pre">is_valid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.callback.Callback.is_valid" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
@@ -1013,12 +1030,15 @@ in current_ports from the previous_ports</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.flow.Flow.get_usage_info">
-<span class="sig-name descname"><span class="pre">get_usage_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">UsageSearchResult</span></span></span><a class="headerlink" href="#dal.scopes.flow.Flow.get_usage_info" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_usage_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">UsageSearchResult</span></span></span><a class="headerlink" href="#dal.scopes.flow.Flow.get_usage_info" title="Permalink to this definition"></a></dt>
 <dd><p>Search Flows for Container instances that use this flow as a subflow,
 including indirect usages through other Containers.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><dl>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>recursive</strong> – If True, will search for indirect usages through other Containers.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl>
 <dt>Dictionary with structure:</dt><dd><dl>
 <dt>{</dt><dd><p>“scope”: “Flow”,
 “name”: “&lt;flow_name&gt;”,
@@ -1070,8 +1090,8 @@ including indirect usages through other Containers.</p>
 </dl>
 </p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>UsageSearchResult</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>UsageSearchResult</p>
 </dd>
 </dl>
 </dd></dl>
