@@ -112,7 +112,7 @@ def setup_test_data(global_db, metadata_folder):
     # Ensure package tracking does not leak between tests.
     Package.clear_packagedata()
 
-    # Import all nodes and flows for testing
+    # Import all callbacks, nodes and flows for testing
     importer = Importer(
         metadata_folder,
         force=True,
@@ -122,7 +122,13 @@ def setup_test_data(global_db, metadata_folder):
         clean_old_data=True,
     )
 
-    # Import nodes first, then flows (flows depend on nodes)
+    # Import callbacks first (nodes depend on callbacks)
+    objects = {
+        "Callback": ["place_holder", "unused_callback"],
+    }
+    importer.run(objects)
+
+    # Import nodes (flows depend on nodes)
     objects = {
         "Node": ["NodePub1", "NodePub2", "NodeSub1", "NodeSub2", "UnusedNode"],
     }
@@ -144,15 +150,9 @@ def setup_test_data(global_db, metadata_folder):
     # Cleanup after test
     from dal.scopes.node import Node
     from dal.scopes.flow import Flow
+    from dal.scopes.callback import Callback
 
-    # Delete all test data
-    for node_name in ["NodePub1", "NodePub2", "NodeSub1", "NodeSub2"]:
-        try:
-            node = Node(node_name)
-            node.remove(force=True)
-        except Exception:
-            print(f"Failed to remove node {node_name} during cleanup.")
-
+    # Delete all test data (in reverse order of creation)
     for flow_name in [
         "flow_with_four_nodes",
         "flow_not_used_as_subflow",
@@ -164,6 +164,20 @@ def setup_test_data(global_db, metadata_folder):
             flow.remove(force=True)
         except Exception:
             print(f"Failed to remove flow {flow_name} during cleanup.")
+
+    for node_name in ["NodePub1", "NodePub2", "NodeSub1", "NodeSub2", "UnusedNode"]:
+        try:
+            node = Node(node_name)
+            node.remove(force=True)
+        except Exception:
+            print(f"Failed to remove node {node_name} during cleanup.")
+
+    for callback_name in ["place_holder", "unused_callback"]:
+        try:
+            callback = Callback(callback_name)
+            callback.remove(force=True)
+        except Exception:
+            print(f"Failed to remove callback {callback_name} during cleanup.")
 
     Package.clear_packagedata()
 

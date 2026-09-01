@@ -1,0 +1,22 @@
+{
+    "Callback": {
+        "place_holder": {
+            "Info": "A placeholder callback for testing",
+            "Label": "place_holder",
+            "LastUpdate": {
+                "date": "25/08/2026 at 12:00:00",
+                "user": "test@movai"
+            },
+            "Message": "",
+            "Py3Lib": {
+                "Placeholder": {
+                    "Class": "PlaceholderClass",
+                    "Module": "placeholder.module"
+                }
+            },
+            "User": "",
+            "Version": "1.0",
+            "VersionDelta": {}
+        }
+    }
+}
