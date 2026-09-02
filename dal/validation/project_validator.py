@@ -327,6 +327,10 @@ class ProjectValidator:
                                 continue
                             raise
                         except UndefinedParameterError as error:
+                            if isinstance(error, UndefinedVarParameterError):
+                                # Flow vars are runtime-scoped and can be created by nodes during execution;
+                                # they cannot be statically checked before runtime, but should raise an error during runtime parsing.
+                                continue
                             line_num = _find_json_path_line(
                                 flow_data,
                                 [
@@ -379,6 +383,8 @@ class ProjectValidator:
                                 continue
                             raise
                         except UndefinedParameterError as error:
+                            if isinstance(error, UndefinedVarParameterError):
+                                continue
                             is_template_param = param_key in params_defined_in_template
                             source_data = node_data if is_template_param else flow_data
                             source_path = (
@@ -428,6 +434,8 @@ class ProjectValidator:
                         continue
                     raise
                 except UndefinedParameterError as error:
+                    if isinstance(error, UndefinedVarParameterError):
+                        continue
                     line_num = _find_json_path_line(
                         flow_data, ["Flow", flow_ref, "Parameter", param_key, "Value"]
                     )
@@ -1014,8 +1022,11 @@ class LinkValidator:
             if src_pkg == dst_pkg:
                 # Message match
                 if src_msg == dst_msg:
-                    # ROS1 pub/sub
-                    if src_template == "ROS1/Publisher" and dst_template == "ROS1/Subscriber":
+                    # Topic pair: publisher/subscriber, regardless of ROS1 or ROS2 implementation
+                    if src_template in {"ROS1/Publisher", "ROS2/Publisher"} and dst_template in {
+                        "ROS1/Subscriber",
+                        "ROS2/Subscriber",
+                    }:
                         return True
 
                     # ROS1 service
