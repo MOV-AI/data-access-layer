@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.30.1
 - [BP-1774](https://movai.atlassian.net/browse/BP-1774): Cleanup logs for parser errors with a traceback for clearer understanding of nested reference failures.
 - [BP-1785](https://movai.atlassian.net/browse/BP-1785): Flow validation also checks all subflows for validation issues, and returns a comprehensive list of all issues found in the flow and its subflows.
 
