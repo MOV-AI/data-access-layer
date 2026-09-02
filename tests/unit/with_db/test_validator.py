@@ -366,6 +366,28 @@ class TestProjectValidator:
                 ],
             )
 
+    def test_missing_referenced_parameter_from_node_template_line(
+        self, isolated_database, folder_invalid_data
+    ):
+        """Tests that template-only node parameters point to the node metadata line."""
+
+        with setup_test_data_from_path(
+            folder_invalid_data / "proj-node-template-missing-referenced-param"
+        ):
+            validator_output: ProjectValidationResult = ProjectValidator().validate()
+
+            assert validator_output.summary.total_issues == 1
+            issue = validator_output.issues[0]
+            assert issue.msg == (
+                "Node instance 'template_node' parameter 'use_task_manager' has an "
+                "undefined flow reference in Flow "
+                "'test_node_template_missing_referenced_param'"
+            )
+            assert issue.json_path == "NodeTemplateMissingParam.json"
+            assert issue.document_type == "Node"
+            assert issue.document_name == "NodeTemplateMissingParam"
+            assert issue.line_start == 17
+
 
 class TestFlowValidator:
     def test_validate_non_existing_flow(self, global_db, setup_test_data):
@@ -567,6 +589,32 @@ class TestFlowValidator:
                         json_path="test_missing_referenced_parameters.json",
                         msg="Flow 'test_missing_referenced_parameters' parameter 'missing_config_parameter' has an undefined config reference in Flow 'test_missing_referenced_parameters'",
                         line_start=52,
+                    ),
+                ],
+            )
+
+    def test_flow_with_missing_referenced_parameters_in_subflow(
+        self, global_db, folder_invalid_data
+    ):
+        """Tests that validating a flow also validates nested subflows."""
+
+        from dal.validation.issues import MissingReferencedParameter
+        from dal.validation.flow_validator import FlowValidator
+
+        with setup_test_data_from_path(
+            folder_invalid_data / "proj-subflow-missing-referenced-params"
+        ):
+            validator_output: ProjectValidationResult = FlowValidator(
+                "test_parent_with_invalid_subflow"
+            ).validate_flow()
+
+            execute_and_assert_same_type_issues(
+                validator_output,
+                [
+                    MissingReferencedParameter(
+                        json_path="test_invalid_parameter_subflow.json",
+                        msg="Flow 'test_invalid_parameter_subflow' parameter 'missing_config_parameter' has an undefined config reference in Flow 'test_invalid_parameter_subflow'",
+                        line_start=19,
                     ),
                 ],
             )

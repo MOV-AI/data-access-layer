@@ -10,14 +10,17 @@
 import ast
 import re
 import os
+from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, Optional, Protocol, Union, cast, List, Tuple
 
 from movai_core_shared.logger import Log
+
 from movai_core_shared.envvars import RAISE_FLOW_VALIDATION_ERRORS
 from dal.models.scopestree import scopes
 from dal.models.var import Var
 from dal.movaidb import MovaiDB
 from dal.exceptions import (
+    UndefinedParameterError,
     UndefinedFlowParameterError,
     UndefinedConfigParameterError,
     UndefinedVarParameterError,
@@ -44,6 +47,8 @@ class ParamParser:
     """
 
     logger = Log.get_logger("ParamParser.mov.ai")
+    _validation_disabled_warning_suppression_count = 0
+    _validation_disabled_warning_logs = None
 
     __REGEX__ = r"\$\((param|config|var|flow)[^$)]+\)"
 
@@ -59,6 +64,45 @@ class ParamParser:
         # context is required in order to the parse the expression $(flow varA) correctly
         # context is used to go up from a subflow instance to the main flow
         self.context = None
+
+    @classmethod
+    @contextmanager
+    def suppress_validation_disabled_warnings(cls):
+        """Temporarily suppress validation-disabled warnings from all parser instances."""
+
+        cls._validation_disabled_warning_suppression_count += 1
+        try:
+            yield
+        finally:
+            cls._validation_disabled_warning_suppression_count -= 1
+
+    @classmethod
+    @contextmanager
+    def dedupe_validation_disabled_warnings(cls):
+        """Dedupe validation-disabled warnings during one validation run."""
+
+        cls._validation_disabled_warning_logs = set()
+        try:
+            yield
+        finally:
+            cls._validation_disabled_warning_logs = None
+
+    def _log_validation_disabled_warning(self, message: str) -> None:
+        if self._validation_disabled_warning_suppression_count:
+            return
+
+        warning_logs = (
+            self._validation_disabled_warning_logs
+            if self._validation_disabled_warning_logs is not None
+            else set()
+        )
+
+        if message in warning_logs:
+            return
+
+        if self._validation_disabled_warning_logs is not None:
+            self._validation_disabled_warning_logs.add(message)
+        self.logger.warning("VALIDATION ERRORS DISABLED: %s", message)
 
     def parse(
         self,
@@ -89,14 +133,23 @@ class ParamParser:
         # assign a different context if needed
         self.context = context or self.flow.ref
 
+        resolution_history = []
+
         while 1:
             temp_param = expression
 
-            expression = re.sub(
-                self.__REGEX__,
-                lambda m: self.eval_reference(key, m.group(), instance, node_name),
-                expression,
-            )
+            try:
+                expression = re.sub(
+                    self.__REGEX__,
+                    lambda m: self.eval_reference(key, m.group(), instance, node_name),
+                    expression,
+                )
+            except UndefinedParameterError as error:
+                for previous, current in reversed(resolution_history):
+                    error.add_resolution_step(
+                        self._format_parse_step(key, previous, current, instance, node_name)
+                    )
+                raise
 
             if expression == temp_param:
                 try:
@@ -106,7 +159,38 @@ class ParamParser:
                 except (ValueError, SyntaxError):
                     return expression
 
+            resolution_history.append((temp_param, expression))
+
         return expression
+
+    def _format_owner(self, key: str, instance: ObjectWithName, node_name: str) -> str:
+        """Format the parameter owner for parser error messages."""
+
+        from dal.models.flow import Flow
+
+        if isinstance(instance, Flow):
+            return f'Flow "{instance.ref}" parameter "{key}"'
+
+        return f'Flow "{self.flow.ref}" node "{node_name}" parameter "{key}"'
+
+    def _format_reference_step(
+        self, key: str, expression: str, instance: ObjectWithName, node_name: str
+    ) -> str:
+        """Format a reference lookup step for parser error messages."""
+
+        return f'{self._format_owner(key, instance, node_name)} references "{expression}"'
+
+    def _format_parse_step(
+        self,
+        key: str,
+        previous: str,
+        current: str,
+        instance: ObjectWithName,
+        node_name: str,
+    ) -> str:
+        """Format a parser replacement step for parser error messages."""
+
+        return f'{self._format_owner(key, instance, node_name)} parsed "{previous}" to "{current}"'
 
     def eval_reference(
         self, key: str, expression: str, instance: ObjectWithName, node_name: str
@@ -140,6 +224,12 @@ class ParamParser:
 
             # call
             output = func(result.group(2), expression, instance, node_name)
+
+        except UndefinedParameterError as error:
+            error.add_resolution_step(
+                self._format_reference_step(key, expression, instance, node_name)
+            )
+            raise
 
         except ValueError as error:
             extra_info = f'in flow "{self.flow.ref}"'
@@ -191,10 +281,10 @@ class ParamParser:
                     f"Configuration {_config_name} does not exist"
                 ) from exc
             else:
-                self.logger.error(
-                    "VALIDATION ERRORS DISABLED: Configuration "
-                    f'"{_config_name}" does not exist. Using default value.'
+                self._log_validation_disabled_warning(
+                    f'Configuration "{_config_name}" does not exist. Using None.'
                 )
+
                 return None
 
         output = obj.get_param(_config_param)
@@ -230,10 +320,9 @@ class ParamParser:
                         f'Parameter "{param_name}" is not defined in flow "{instance.ref}"'
                     )
                 else:
-                    self.logger.error(
-                        "VALIDATION ERRORS DISABLED: Parameter "
-                        f'"{param_name}" is not defined in flow "{instance.ref}". '
-                        "Using default value."
+                    self._log_validation_disabled_warning(
+                        f'Parameter "{param_name}" is not defined in flow "{instance.ref}". '
+                        f"Using default value."
                     )
                     return default
             instance = cast("Flow", instance)
@@ -246,9 +335,8 @@ class ParamParser:
                         f'"{node_name}" of flow "{instance.flow.ref}"'
                     )
                 else:
-                    self.logger.error(
-                        "VALIDATION ERRORS DISABLED: Parameter "
-                        f'"{param_name}" is not defined in "{node_name}" '
+                    self._log_validation_disabled_warning(
+                        f'Parameter "{param_name}" is not defined in "{node_name}" '
                         f'of flow "{instance.flow.ref}". Using default value.'
                     )
                     return default
@@ -284,10 +372,8 @@ class ParamParser:
                     f'"{param_name}" does not exist in Var "{context}"'
                 )
             else:
-                self.logger.error(
-                    "VALIDATION ERRORS DISABLED: "
-                    f'"{param_name}" does not exist in Var "{context}". '
-                    "Using default value."
+                self._log_validation_disabled_warning(
+                    f'"{param_name}" does not exist in Var "{context}". Using None.'
                 )
                 return None
 
@@ -352,12 +438,7 @@ class ParamParser:
                     raise UndefinedFlowParameterError(
                         f'Flow parameter "{param_name}" is not defined in flow "{flow.ref}"'
                     )
-                else:
-                    self.logger.error(
-                        "VALIDATION ERRORS DISABLED: Flow parameter "
-                        f'"{param_name}" is not defined in flow "{flow.ref}". '
-                        "Continuing with default value."
-                    )
+
             value = default
         else:
             value = flow.get_param(param_name, context=self.context, is_subflow=is_subflow)
@@ -396,10 +477,8 @@ class ParamParser:
                     f'Flow parameter "{param_name}" is not defined in flow "{flow.ref}"'
                 )
             else:
-                self.logger.error(
-                    "VALIDATION ERRORS DISABLED: Flow parameter "
-                    f'"{param_name}" is not defined in flow "{flow.ref}". '
-                    "Returning unresolved value."
+                self._log_validation_disabled_warning(
+                    f'Flow parameter "{param_name}" is not defined in flow "{flow.ref}". Returning unresolved value.'
                 )
                 return value
 

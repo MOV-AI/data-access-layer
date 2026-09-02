@@ -1,0 +1,35 @@
+{
+    "Flow": {
+        "test_node_template_missing_referenced_param": {
+            "Description": "",
+            "ExposedPorts": {},
+            "Info": "",
+            "Label": "test_node_template_missing_referenced_param",
+            "LastUpdate": {
+                "date": "25/08/2026 at 00:00:00",
+                "user": "movai@internal"
+            },
+            "Layers": {},
+            "Links": {},
+            "NodeInst": {
+                "template_node": {
+                    "NodeLabel": "template_node",
+                    "Parameter": {},
+                    "Template": "NodeTemplateMissingParam",
+                    "Visualization": {
+                        "x": {
+                            "Value": 0
+                        },
+                        "y": {
+                            "Value": 0
+                        }
+                    }
+                }
+            },
+            "Parameter": {},
+            "User": "",
+            "Version": "",
+            "VersionDelta": {}
+        }
+    }
+}

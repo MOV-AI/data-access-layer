@@ -1,0 +1,28 @@
+{
+    "Flow": {
+        "test_parent_with_invalid_subflow": {
+            "Container": {
+                "middle_subflow": {
+                    "ContainerFlow": "test_middle_invalid_subflow",
+                    "ContainerLabel": "Middle invalid subflow"
+                }
+            },
+            "Description": "",
+            "ExposedPorts": {},
+            "Info": "",
+            "InstallPath": "",
+            "Label": "test_parent_with_invalid_subflow",
+            "LastUpdate": {
+                "date": "21/08/2026 at 14:00:00",
+                "user": "movai@internal"
+            },
+            "Layers": {},
+            "Links": {},
+            "NodeInst": {},
+            "Parameter": {},
+            "User": "",
+            "Version": "",
+            "VersionDelta": {}
+        }
+    }
+}

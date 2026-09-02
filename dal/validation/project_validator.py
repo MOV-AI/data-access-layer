@@ -6,6 +6,7 @@ Proprietary and confidential
 
 import time
 
+from dal.helpers.parsers import ParamParser
 from dal.models.scopestree import scopes
 from dal.scopes.package import Package
 from dal.scopes.flow import Flow, Node
@@ -151,6 +152,9 @@ class ProjectValidator:
         self._objects_by_scope: Dict[str, Set[str]] = {}
         # Cache loaded Flow dictionaries to avoid repeated DAL fetches.
         self._flow_dict_cache: Dict[str, dict] = {}
+        # Cache loaded Node dictionaries to locate template parameter lines.
+        self._node_dict_cache: Dict[str, dict] = {}
+        self._link_validator: Optional["LinkValidator"] = None
 
         # Build cache of all objects first
         self._build_object_cache()
@@ -161,6 +165,23 @@ class ProjectValidator:
             self._flow_dict_cache[flow_ref] = Flow(flow_ref).get_dict()
         return self._flow_dict_cache[flow_ref]
 
+    def _get_node_dict(self, node_ref: str) -> dict:
+        """Get node dict with in-memory cache."""
+        if node_ref not in self._node_dict_cache:
+            self._node_dict_cache[node_ref] = Node(node_ref).get_dict()
+        return self._node_dict_cache[node_ref]
+
+    def _get_link_validator(self) -> "LinkValidator":
+        """Get a reusable link validator for this validation run."""
+
+        if self._link_validator is None:
+            self._link_validator = LinkValidator(
+                objects_by_scope=self._objects_by_scope,
+                node_dict_cache=self._node_dict_cache,
+                logger=LOGGER,
+            )
+        return self._link_validator
+
     def validate(self) -> ProjectValidationResult:
         """
         Validate the project data.
@@ -170,14 +191,16 @@ class ProjectValidator:
         """
         LOGGER.info("Starting project validation")
         start_time = time.perf_counter()
+        self._link_validator = None
 
         # Run validations
         self._check_duplicates()
 
         flow_refs = self._objects_by_scope.get("Flow", set())
 
-        for flow_ref in flow_refs:
-            self.issues.extend(self.check_flow(flow_ref))
+        with ParamParser.suppress_validation_disabled_warnings():
+            for flow_ref in flow_refs:
+                self.issues.extend(self.check_flow(flow_ref))
 
         # Build summary
         error_count = sum(1 for issue in self.issues if issue.severity == Severity.ERROR)
@@ -275,8 +298,6 @@ class ProjectValidator:
         """
         Check parameter expressions in a specific flow using the runtime parser.
         """
-        LOGGER.info(f"Checking Flow parameters in flow '{flow_ref}'")
-
         flow_issues = []
 
         try:
@@ -293,15 +314,18 @@ class ProjectValidator:
                     try:
                         container = flow.get_container(container_name, flow_ref)
                     except Exception as error:
-                        LOGGER.debug(
-                            f"Skipping parameters for container '{container_name}' "
-                            f"in flow '{flow_ref}': {error}"
-                        )
+                        # Container does not exist, which is caught in _check_nodes_flows_ref_in_flow,
+                        # so we skip parameter checks for this container
                         continue
 
                     for param_key in container_data.get("Parameter", {}):
                         try:
                             container.get_param(param_key, container_name, flow_ref)
+                        except AttributeError as error:
+                            if self._is_no_attribute_flow_error(error):
+                                # Known false positive from parser context, ignore it
+                                continue
+                            raise
                         except UndefinedParameterError as error:
                             line_num = _find_json_path_line(
                                 flow_data,
@@ -332,39 +356,41 @@ class ProjectValidator:
                     try:
                         node_inst = flow.get_node_inst(node_inst_name)
                         param_names = set(node_inst.Parameter.keys())
-                        param_names.update(node_inst.node_template.Parameter.keys())
-                    except Exception as error:
-                        LOGGER.debug(
-                            f"Skipping parameters for node '{node_inst_name}' "
-                            f"in flow '{flow_ref}': {error}"
+                        template_params = set(node_inst.node_template.Parameter.keys())
+
+                        # Params only in template (not defined in node instance)
+                        params_defined_in_template = template_params - param_names
+
+                        param_names.update(template_params)
+                        node_data = (
+                            self._get_node_dict(node_inst.Template)
+                            if params_defined_in_template
+                            else None
                         )
+                    except Exception as error:
                         continue
 
-                    LOGGER.info(
-                        "Checking parameters for node instance '%s' in flow '%s'",
-                        node_inst_name,
-                        flow_ref,
-                    )
-
-                    for param_key in param_names:
-                        LOGGER.info(
-                            "Checking parameter '%s' for node instance '%s' in flow '%s'",
-                            param_key,
-                            node_inst_name,
-                            flow_ref,
-                        )
+                    for param_key in sorted(param_names):
                         try:
                             node_inst.get_param(param_key, node_inst_name, flow_ref)
-                            LOGGER.info(
-                                "Parameter '%s' for node instance '%s' in flow '%s' is valid",
-                                param_key,
-                                node_inst_name,
-                                flow_ref,
-                            )
+                        except AttributeError as error:
+                            if self._is_no_attribute_flow_error(error):
+                                # Known false positive from parser context, ignore it
+                                continue
+                            raise
                         except UndefinedParameterError as error:
-                            line_num = _find_json_path_line(
-                                flow_data,
+                            is_template_param = param_key in params_defined_in_template
+                            source_data = node_data if is_template_param else flow_data
+                            source_path = (
                                 [
+                                    "Node",
+                                    node_inst.Template,
+                                    "Parameter",
+                                    param_key,
+                                    "Value",
+                                ]
+                                if is_template_param
+                                else [
                                     "Flow",
                                     flow_ref,
                                     "NodeInst",
@@ -372,8 +398,12 @@ class ProjectValidator:
                                     "Parameter",
                                     param_key,
                                     "Value",
-                                ],
+                                ]
                             )
+                            document_type = "Node" if is_template_param else "Flow"
+                            document_name = node_inst.Template if is_template_param else flow_ref
+                            json_path = f"{document_name}.json"
+                            line_num = _find_json_path_line(source_data, source_path)
                             flow_issues.append(
                                 self._make_missing_parameter_issue(
                                     flow_ref=flow_ref,
@@ -382,14 +412,21 @@ class ProjectValidator:
                                     param_key=param_key,
                                     error=error,
                                     line_start=line_num,
+                                    json_path=json_path,
+                                    document_type=document_type,
+                                    document_name=document_name,
                                 )
                             )
 
             # Check Flow parameters
             for param_key in flow_content.get("Parameter", {}):
-                LOGGER.error("Checking parameter '%s' for flow '%s'", param_key, flow_ref)
                 try:
                     flow.get_param(param_key, flow_ref)
+                except AttributeError as error:
+                    if self._is_no_attribute_flow_error(error):
+                        # Known false positive from parser context, ignore it
+                        continue
+                    raise
                 except UndefinedParameterError as error:
                     line_num = _find_json_path_line(
                         flow_data, ["Flow", flow_ref, "Parameter", param_key, "Value"]
@@ -418,6 +455,9 @@ class ProjectValidator:
         param_key: str,
         error: UndefinedParameterError,
         line_start: Optional[int],
+        json_path: Optional[str] = None,
+        document_type: str = "Flow",
+        document_name: Optional[str] = None,
     ) -> ProjIssue:
         """Convert a parser undefined-parameter error into a project issue."""
 
@@ -429,14 +469,14 @@ class ProjectValidator:
         }.get(type(error), "parameter")
 
         return MissingReferencedParameter(
-            json_path=f"{flow_ref}.json",
+            json_path=json_path or f"{flow_ref}.json",
             msg=(
                 f"{owner_type} '{owner_name}' parameter '{param_key}' has an "
                 f"undefined {reference_type} reference in Flow '{flow_ref}'"
             ),
             line_start=line_start,
-            document_type="Flow",
-            document_name=flow_ref,
+            document_type=document_type,
+            document_name=document_name or flow_ref,
         )
 
     def check_flow(self, flow_ref) -> List[ProjIssue]:
@@ -457,8 +497,6 @@ class ProjectValidator:
         """
         Check that all nodes and flows referenced in a specific flow exist in the project.
         """
-        LOGGER.info(f"Checking Flow/Node template references in flow '{flow_ref}'")
-
         flow_issues = []
 
         try:
@@ -511,12 +549,21 @@ class ProjectValidator:
             LOGGER.error(f"Error checking flow {flow_ref}: {e}")
         return flow_issues
 
+    @staticmethod
+    def _is_no_attribute_flow_error(error: AttributeError) -> bool:
+        """Return whether this is the known Flow parser context issue.
+
+        These issues occur when analyzing a flow independently that is only used as a subflow
+        This could cause parameters that are intended to reference the parent flow to be flagged as invalid,
+        even though they are valid in the context of the parent flow.
+        """
+
+        return str(error) == "No attribute flow"
+
     def _check_flow_links(self, flow_ref: str) -> List[ProjIssue]:
         """
         Check that all links in a specific flow have valid instances and compatible ports.
         """
-        LOGGER.info(f"Checking link port compatibility in flow '{flow_ref}'")
-
         flow_issues = []
 
         try:
@@ -526,6 +573,7 @@ class ProjectValidator:
                 return flow_issues  # Flow not found, no issues to report
 
             flow_content = flow_data["Flow"][flow_ref]
+            link_validator = self._get_link_validator()
 
             # Check all links
             if "Links" in flow_content:
@@ -535,9 +583,7 @@ class ProjectValidator:
 
                     # Validate link endpoints
                     flow_issues.extend(
-                        LinkValidator(
-                            objects_by_scope=self._objects_by_scope, logger=LOGGER
-                        ).validate_link(
+                        link_validator.validate_link(
                             flow_ref, flow_data, flow_content, link_id, from_path, to_path
                         )
                     )
@@ -554,12 +600,12 @@ class ProjectValidator:
 class LinkValidator:
     """Link validator class."""
 
-    def __init__(self, objects_by_scope: Dict, logger):
+    def __init__(self, objects_by_scope: Dict, node_dict_cache: Dict, logger):
         self._objects_by_scope = objects_by_scope
         self.logger = logger
         # Caches to reduce repeated DAL access during link validation.
         self._flow_content_cache: Dict[str, dict] = {}
-        self._node_dict_cache: Dict[str, dict] = {}
+        self._node_dict_cache: Dict[str, dict] = node_dict_cache
         # Map of (node_template, port_name) to port type dict.
         self._port_type_cache: Dict[Tuple[str, str], dict] = {}
 

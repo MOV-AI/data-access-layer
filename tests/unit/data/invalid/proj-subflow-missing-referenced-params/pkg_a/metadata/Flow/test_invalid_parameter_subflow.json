@@ -1,0 +1,28 @@
+{
+    "Flow": {
+        "test_invalid_parameter_subflow": {
+            "Description": "",
+            "ExposedPorts": {},
+            "Info": "",
+            "InstallPath": "",
+            "Label": "test_invalid_parameter_subflow",
+            "LastUpdate": {
+                "date": "21/08/2026 at 14:00:00",
+                "user": "movai@internal"
+            },
+            "Layers": {},
+            "Links": {},
+            "NodeInst": {},
+            "Parameter": {
+                "missing_config_parameter": {
+                    "Description": "",
+                    "Type": "any",
+                    "Value": "$(config missing_parameter.value)"
+                }
+            },
+            "User": "",
+            "Version": "",
+            "VersionDelta": {}
+        }
+    }
+}
