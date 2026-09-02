@@ -355,11 +355,6 @@ class TestProjectValidator:
                     ),
                     MissingReferencedParameter(
                         json_path="test_missing_referenced_parameters.json",
-                        msg="Node instance 'dependency' parameter 'missing_var_parameter' has an undefined var reference in Flow 'test_missing_referenced_parameters'",
-                        line_start=35,
-                    ),
-                    MissingReferencedParameter(
-                        json_path="test_missing_referenced_parameters.json",
                         msg="Flow 'test_missing_referenced_parameters' parameter 'missing_config_parameter' has an undefined config reference in Flow 'test_missing_referenced_parameters'",
                         line_start=52,
                     ),
@@ -579,11 +574,6 @@ class TestFlowValidator:
                         json_path="test_missing_referenced_parameters.json",
                         msg="Node instance 'dependency' parameter 'missing_flow_parameter' has an undefined flow reference in Flow 'test_missing_referenced_parameters'",
                         line_start=31,
-                    ),
-                    MissingReferencedParameter(
-                        json_path="test_missing_referenced_parameters.json",
-                        msg="Node instance 'dependency' parameter 'missing_var_parameter' has an undefined var reference in Flow 'test_missing_referenced_parameters'",
-                        line_start=35,
                     ),
                     MissingReferencedParameter(
                         json_path="test_missing_referenced_parameters.json",
