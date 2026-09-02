@@ -6,6 +6,7 @@ Proprietary and confidential
 
 import time
 
+from dal.helpers.parsers import ParamParser
 from dal.models.scopestree import scopes
 from dal.scopes.package import Package
 from dal.scopes.flow import Flow, Node
@@ -197,8 +198,9 @@ class ProjectValidator:
 
         flow_refs = self._objects_by_scope.get("Flow", set())
 
-        for flow_ref in flow_refs:
-            self.issues.extend(self.check_flow(flow_ref))
+        with ParamParser.suppress_validation_disabled_warnings():
+            for flow_ref in flow_refs:
+                self.issues.extend(self.check_flow(flow_ref))
 
         # Build summary
         error_count = sum(1 for issue in self.issues if issue.severity == Severity.ERROR)

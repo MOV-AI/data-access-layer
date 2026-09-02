@@ -10,6 +10,7 @@
 import ast
 import re
 import os
+from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, Optional, Protocol, Union, cast, List, Tuple
 
 from movai_core_shared.logger import Log
@@ -46,6 +47,8 @@ class ParamParser:
     """
 
     logger = Log.get_logger("ParamParser.mov.ai")
+    _validation_disabled_warning_suppression_count = 0
+    _validation_disabled_warning_logs = None
 
     __REGEX__ = r"\$\((param|config|var|flow)[^$)]+\)"
 
@@ -61,13 +64,44 @@ class ParamParser:
         # context is required in order to the parse the expression $(flow varA) correctly
         # context is used to go up from a subflow instance to the main flow
         self.context = None
-        self._validation_disabled_logs = set()
+
+    @classmethod
+    @contextmanager
+    def suppress_validation_disabled_warnings(cls):
+        """Temporarily suppress validation-disabled warnings from all parser instances."""
+
+        cls._validation_disabled_warning_suppression_count += 1
+        try:
+            yield
+        finally:
+            cls._validation_disabled_warning_suppression_count -= 1
+
+    @classmethod
+    @contextmanager
+    def dedupe_validation_disabled_warnings(cls):
+        """Dedupe validation-disabled warnings during one validation run."""
+
+        cls._validation_disabled_warning_logs = set()
+        try:
+            yield
+        finally:
+            cls._validation_disabled_warning_logs = None
 
     def _log_validation_disabled_warning(self, message: str) -> None:
-        if message in self._validation_disabled_logs:
+        if self._validation_disabled_warning_suppression_count:
             return
 
-        self._validation_disabled_logs.add(message)
+        warning_logs = (
+            self._validation_disabled_warning_logs
+            if self._validation_disabled_warning_logs is not None
+            else set()
+        )
+
+        if message in warning_logs:
+            return
+
+        if self._validation_disabled_warning_logs is not None:
+            self._validation_disabled_warning_logs.add(message)
         self.logger.warning("VALIDATION ERRORS DISABLED: %s", message)
 
     def parse(
