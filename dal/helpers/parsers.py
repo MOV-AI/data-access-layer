@@ -16,9 +16,6 @@ from typing import TYPE_CHECKING, Any, Optional, Protocol, Union, cast, List, Tu
 from movai_core_shared.logger import Log
 
 from movai_core_shared.envvars import RAISE_FLOW_VALIDATION_ERRORS
-from dal.models.scopestree import scopes
-from dal.models.var import Var
-from dal.movaidb import MovaiDB
 from dal.exceptions import (
     UndefinedParameterError,
     UndefinedFlowParameterError,
@@ -271,6 +268,8 @@ class ParamParser:
             output (any): the expression evaluated
         """
 
+        from dal.models.scopestree import scopes
+
         _config_name, _config_param = _config.split(".", 1)
         try:
             obj = cast("Configuration", scopes.from_path(_config_name, scope="Configuration"))
@@ -358,6 +357,9 @@ class ParamParser:
             Returns:
                 output (any): the expression evaluated
         """
+
+        from dal.models.var import Var
+        from dal.movaidb import MovaiDB
 
         context, param_name, *__ = reference.split(".")
         robot_name = ""
@@ -492,6 +494,8 @@ def get_string_from_template(template: str, task_entry: object) -> str:
         return ""
 
     def _replacer(match):
+        from dal.models.scopestree import scopes
+
         try:
             template, enum = match[1].split(".")
             return str(
