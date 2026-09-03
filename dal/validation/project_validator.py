@@ -6,7 +6,6 @@ Proprietary and confidential
 
 import time
 
-from dal.helpers.parsers import ParamParser
 from dal.models.scopestree import scopes
 from dal.scopes.package import Package
 from dal.scopes.flow import Flow, Node
@@ -189,6 +188,8 @@ class ProjectValidator:
         Returns:
             ProjectValidationResult: The result of the project validation, including issues found.
         """
+        from dal.helpers.parsers import ParamParser
+
         LOGGER.info("Starting project validation")
         start_time = time.perf_counter()
         self._link_validator = None
