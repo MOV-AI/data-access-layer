@@ -12,6 +12,17 @@
             "Path": "",
             "Persistent": false,
             "PortsInst": {
+                "begin": {
+                    "In": {
+                        "in": {
+                            "Callback": "place_holder",
+                            "Message": "movai_msgs/Transition"
+                        }
+                    },
+                    "Message": "Transition",
+                    "Package": "movai_msgs",
+                    "Template": "MovAI/TransitionTo"
+                },
                 "bool": {
                     "In": {
                         "in": {
@@ -32,17 +43,6 @@
                     },
                     "Package": "movai_msgs",
                     "Template": "MovAI/TransitionFor"
-                },
-                "start": {
-                    "In": {
-                        "in": {
-                            "Callback": "place_holder",
-                            "Message": "movai_msgs/Transition"
-                        }
-                    },
-                    "Message": "Transition",
-                    "Package": "movai_msgs",
-                    "Template": "MovAI/TransitionTo"
                 },
                 "true": {
                     "Message": "Transition",

@@ -14,7 +14,7 @@
             "Links": {
                 "20893b58-911b-470d-9306-1e4ac32b76d1": {
                     "From": "start/start/start",
-                    "To": "dep/dependency/in"
+                    "To": "dep/requirement/in"
                 }
             },
             "NodeInst": {

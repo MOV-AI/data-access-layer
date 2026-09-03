@@ -699,7 +699,30 @@ class Node(Scope):
         return flow_container_link_keys
 
     @classmethod
-    def _validate_content(cls, data: dict):
+    def validate_name(cls, name):
+        forbidden_words = ["start"]
+
+        for word in forbidden_words:
+            if word.lower() in name.lower():
+                raise ValueError(
+                    f"'{name}' is not valid for type Node because it contains '{word}'"
+                )
+
+    @classmethod
+    def validate_ports(cls, data: dict, node_name):
+        forbidden_words = ["start", "end"]
+
+        ports_inst_dict = data.get("PortsInst", {})
+
+        for key in ports_inst_dict:
+            for word in forbidden_words:
+                if word.lower() in key.lower():
+                    raise ValueError(
+                        f"In {node_name}, '{key}' is not valid because it contains '{word}'"
+                    )
+
+    @classmethod
+    def _validate_content(cls, data: dict, name=""):
         """Node specific validations.
 
         Validations:
@@ -719,6 +742,8 @@ class Node(Scope):
             ValueError: If any of the validations fail.
 
         """
+        cls.validate_name(name)
+
         node_type = data.get("Type")
 
         if node_type not in NODE_TYPES:
@@ -785,3 +810,5 @@ class Node(Scope):
             # no MOV.AI http ports allowed
             if AIOHTTP_IO_TEMPLATES & port_templates:
                 raise ValueError(f"{node_type} nodes cannot have http ports")
+
+        cls.validate_ports(data, name)

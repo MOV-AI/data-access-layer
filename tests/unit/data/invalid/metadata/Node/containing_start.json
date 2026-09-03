@@ -1,0 +1,70 @@
+{
+    "Node": {
+        "containing_start": {
+            "Info": "Node that depends on Configurations to test configuration file sending",
+            "Label": "containing_start",
+            "LastUpdate": {
+                "date": "04/09/2026 at 12:30:00",
+                "user": "movai@internal"
+            },
+            "Launch": true,
+            "PackageDepends": [
+                "Configurations"
+            ],
+            "Parameter": {
+                "log_action": {
+                    "Description": "Log to inform the user to perform an action",
+                    "Type": "string",
+                    "Value": ""
+                },
+                "log_description": {
+                    "Description": "Description of the log",
+                    "Type": "string",
+                    "Value": "This node has Configurations in PackageDepends"
+                },
+                "log_to_fleetboard": {
+                    "Description": "Enable/Disable publishing value to FleetDashboard",
+                    "Type": "boolean",
+                    "Value": "True"
+                },
+                "log_type": {
+                    "Description": "Type of the log",
+                    "Type": "string",
+                    "Value": "info"
+                }
+            },
+            "Path": "",
+            "Persistent": false,
+            "PortsInst": {
+                "begin": {
+                    "In": {
+                        "in": {
+                            "Callback": "create_log",
+                            "Message": "movai_msgs/Transition"
+                        }
+                    },
+                    "Info": "",
+                    "Message": "Transition",
+                    "Package": "movai_msgs",
+                    "Template": "MovAI/TransitionTo"
+                },
+                "finish": {
+                    "Info": "",
+                    "Message": "Transition",
+                    "Out": {
+                        "out": {
+                            "Message": "movai_msgs/Transition"
+                        }
+                    },
+                    "Package": "movai_msgs",
+                    "Template": "MovAI/TransitionFor"
+                }
+            },
+            "Remappable": true,
+            "Type": "MovAI/State",
+            "User": "",
+            "Version": "",
+            "VersionDelta": {}
+        }
+    }
+}

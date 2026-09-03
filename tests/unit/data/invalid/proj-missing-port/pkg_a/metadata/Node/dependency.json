@@ -9,7 +9,7 @@
             "Path": "",
             "Persistent": false,
             "PortsInst": {
-                "dependency": {
+                "requirement": {
                     "In": {
                         "in": {
                             "Message": "movai_msgs/Dependency"
@@ -19,7 +19,7 @@
                     "Package": "movai_msgs",
                     "Template": "MovAI/Dependency"
                 },
-                "depends": {
+                "requires": {
                     "Message": "Dependency",
                     "Out": {
                         "out": {
@@ -28,6 +28,17 @@
                     },
                     "Package": "movai_msgs",
                     "Template": "MovAI/Depends"
+                },
+                "transition_in": {
+                    "In": {
+                        "in": {
+                            "Callback": "global/Callback/place_holder",
+                            "Message": "movai_msgs/Transition"
+                        }
+                    },
+                    "Message": "Transition",
+                    "Package": "movai_msgs",
+                    "Template": "MovAI/TransitionTo"
                 }
             },
             "Remappable": true,
