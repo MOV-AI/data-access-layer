@@ -1,5 +1,5 @@
 from dal.validation.project_validator import ProjectValidationResult, ProjectValidator
-from dal.validation.issues import ProjIssue
+from dal.validation.issues import ProjIssue, Severity
 import pytest
 from pathlib import Path
 from contextlib import contextmanager
@@ -216,11 +216,6 @@ class TestProjectValidator:
                             line_start=15,
                         ),
                         NonMatchingLinkPorts(
-                            json_path="test_pub_ros_to_sub_ros.json",
-                            msg="The ports of link ca35667e-8e58-4c71-8973-245da65dbe0b in Flow test_pub_ros_to_sub_ros do not match | From: ros/pub_empty/out | To: ros/sub/in",
-                            line_start=15,
-                        ),
-                        NonMatchingLinkPorts(
                             json_path="test_transition_to_dependency.json",
                             msg="The ports of link 20893b58-911b-470d-9306-1e4ac32b76d1 in Flow test_transition_to_dependency do not match | From: start/start/start | To: dep/dependency/in",
                             line_start=15,
@@ -252,6 +247,38 @@ class TestProjectValidator:
                     ),
                 ],
             )
+
+    def test_unreachable_node_issues_are_warnings(self, isolated_database, folder_invalid_data):
+        """Tests that issues in unreachable nodes are warnings instead of errors."""
+
+        with setup_test_data_from_path(folder_invalid_data / "proj-unreachable-node-issues"):
+            validator_output: ProjectValidationResult = ProjectValidator().validate()
+
+            issues_by_msg = {issue.msg: issue for issue in validator_output.issues}
+
+            reachable_msg = (
+                "Node 'missing_node' missing, required by Flow "
+                "'test_unreachable_node_issue' (instance 'reachable')"
+            )
+            exposed_msg = (
+                "Node 'missing_node' missing, required by Flow "
+                "'test_unreachable_node_issue' (instance 'exposed')"
+            )
+            exposed_out_msg = (
+                "Node 'missing_node' missing, required by Flow "
+                "'test_unreachable_node_issue' (instance 'exposed_out')"
+            )
+            unreachable_msg = (
+                "Node 'missing_node' missing, required by Flow "
+                "'test_unreachable_node_issue' (instance 'unreachable')"
+            )
+
+            assert issues_by_msg[reachable_msg].severity == Severity.ERROR
+            assert issues_by_msg[exposed_msg].severity == Severity.ERROR
+            assert issues_by_msg[exposed_out_msg].severity == Severity.NORMAL
+            assert issues_by_msg[unreachable_msg].severity == Severity.NORMAL
+            assert validator_output.summary.error_count == 2
+            assert validator_output.summary.warning_count == 2
 
     def test_missing_flow(self, isolated_database, folder_invalid_data):
         """Tests that missing flow issue is found."""

@@ -198,10 +198,26 @@ class ProjectValidator:
         self._check_duplicates()
 
         flow_refs = self._objects_by_scope.get("Flow", set())
+        runnable_flow_refs = [
+            flow_ref for flow_ref in sorted(flow_refs) if self._flow_has_start_connection(flow_ref)
+        ]
+        checked_contexts = set()
 
         with ParamParser.suppress_validation_disabled_warnings():
-            for flow_ref in flow_refs:
-                self.issues.extend(self.check_flow(flow_ref))
+            for root_flow_ref in runnable_flow_refs:
+                for flow_ref, flow_path in self._collect_flow_contexts(root_flow_ref):
+                    context_key = (root_flow_ref, flow_ref, flow_path)
+                    if context_key in checked_contexts:
+                        continue
+
+                    checked_contexts.add(context_key)
+                    self.issues.extend(
+                        self.check_flow(
+                            flow_ref,
+                            context=root_flow_ref,
+                            node_prefix=flow_path,
+                        )
+                    )
 
         # Build summary
         error_count = sum(1 for issue in self.issues if issue.severity == Severity.ERROR)
@@ -300,6 +316,258 @@ class ProjectValidator:
         """Join a subflow container path and local node/container name."""
 
         return f"{prefix}__{name}" if prefix else name
+
+    @staticmethod
+    def _link_path_root_instance(path: str) -> Optional[str]:
+        """Return the local flow instance referenced by a link path."""
+
+        if not path or path == "start/start/start":
+            return None
+
+        return path.split("/", 1)[0].split("__", 1)[0]
+
+    @staticmethod
+    def _local_flow_instances(flow_content: dict) -> Set[str]:
+        """Return node and container instance names in a flow."""
+
+        return set(flow_content.get("NodeInst", {})) | set(flow_content.get("Container", {}))
+
+    @staticmethod
+    def _has_reachable_exposed_port(ports: object) -> bool:
+        """Return whether exposed ports can act as flow entry points."""
+
+        if not isinstance(ports, list):
+            return False
+
+        return any(isinstance(port, str) and port.rsplit("/", 1)[-1] == "in" for port in ports)
+
+    @classmethod
+    def _exposed_port_roots(cls, flow_content: dict) -> Set[str]:
+        """Return local instances that should be considered reachable via exposed ports."""
+
+        roots = set()
+        node_insts = flow_content.get("NodeInst", {})
+        containers = flow_content.get("Container", {})
+
+        for template_name, exposed_ports in flow_content.get("ExposedPorts", {}).items():
+            if not isinstance(exposed_ports, dict):
+                continue
+
+            exposed_names = set(exposed_ports)
+
+            for instance_name, ports in exposed_ports.items():
+                if instance_name in node_insts or instance_name in containers:
+                    if cls._has_reachable_exposed_port(ports):
+                        roots.add(instance_name)
+
+            for container_name, container_data in containers.items():
+                if (
+                    container_data.get("ContainerFlow") == template_name
+                    or container_data.get("ContainerLabel") == template_name
+                    or container_data.get("ContainerFlow") in exposed_names
+                    or container_data.get("ContainerLabel") in exposed_names
+                ):
+                    exposed_ports_for_container = exposed_ports.get(
+                        container_name,
+                        exposed_ports.get(
+                            container_data.get("ContainerFlow"),
+                            exposed_ports.get(container_data.get("ContainerLabel"), []),
+                        ),
+                    )
+                    if cls._has_reachable_exposed_port(exposed_ports_for_container):
+                        roots.add(container_name)
+
+        return roots
+
+    def _reachable_flow_instances(self, flow_content: dict) -> Set[str]:
+        """Return instances reachable from start or from exposed ports."""
+
+        instances = self._local_flow_instances(flow_content)
+        reachable = set()
+        roots = self._exposed_port_roots(flow_content)
+        links = flow_content.get("Links", {})
+        adjacency = {instance: set() for instance in instances}
+
+        for link_data in links.values():
+            from_path = link_data.get("From", "")
+            to_path = link_data.get("To", "")
+            from_instance = self._link_path_root_instance(from_path)
+            to_instance = self._link_path_root_instance(to_path)
+
+            if from_path == "start/start/start":
+                if to_instance in instances:
+                    roots.add(to_instance)
+                continue
+
+            if from_instance in instances and to_instance in instances:
+                adjacency[from_instance].add(to_instance)
+
+        pending = [root for root in roots if root in instances]
+        while pending:
+            instance = pending.pop()
+            if instance in reachable:
+                continue
+
+            reachable.add(instance)
+            pending.extend(adjacency.get(instance, set()) - reachable)
+
+        return reachable
+
+    def _flow_has_start_connection(self, flow_ref: str) -> bool:
+        """Return whether a flow has a launchable start node, matching FlowMonitor."""
+
+        try:
+            flow = Flow(flow_ref)
+            start_nodes = flow.get_start_nodes()
+        except Exception as e:
+            LOGGER.debug(f"Error loading flow {flow_ref} to check start connection: {e}")
+            return self._flow_has_structural_start_connection(flow_ref)
+
+        for node in start_nodes:
+            try:
+                if flow.full.NodeInst[node].is_node_to_launch:
+                    return True
+            except Exception as e:
+                LOGGER.debug(
+                    f"Could not determine launch status for start node {node} in flow {flow_ref}: {e}"
+                )
+                return True
+
+        return False
+
+    def _flow_has_structural_start_connection(self, flow_ref: str) -> bool:
+        """Return whether flow metadata declares at least one start link target."""
+
+        try:
+            flow_data = self._get_flow_dict(flow_ref)
+        except Exception as e:
+            LOGGER.debug(f"Error loading flow {flow_ref} to check structural start link: {e}")
+            return False
+
+        flow_content = flow_data.get("Flow", {}).get(flow_ref, {})
+        return any(
+            link_data.get("From") == "start/start/start"
+            and self._link_path_root_instance(link_data.get("To", ""))
+            for link_data in flow_content.get("Links", {}).values()
+        )
+
+    @staticmethod
+    def _join_flow_path(parent_path: str, container_name: str) -> str:
+        """Join a parent container path and child container name."""
+
+        return f"{parent_path}__{container_name}" if parent_path else container_name
+
+    def _collect_flow_contexts(
+        self, flow_ref: str, flow_path: str = "", ancestors: Optional[Set[str]] = None
+    ) -> List[Tuple[str, str]]:
+        """
+        Collect a flow and all subflows referenced by its containers with their mount paths.
+        """
+
+        ancestors = ancestors or set()
+        if flow_ref in ancestors:
+            return []
+
+        ancestors.add(flow_ref)
+        flow_contexts = [(flow_ref, flow_path)]
+
+        try:
+            flow_data = self._get_flow_dict(flow_ref)
+        except Exception as e:
+            LOGGER.error(f"Error loading flow {flow_ref}: {e}")
+            return flow_contexts
+
+        flow_content = flow_data.get("Flow", {}).get(flow_ref, {})
+        for container_name, container_data in flow_content.get("Container", {}).items():
+            subflow_ref = container_data.get("ContainerFlow")
+            if not subflow_ref or subflow_ref in ancestors:
+                continue
+
+            if not self._object_exists("Flow", subflow_ref):
+                continue
+
+            flow_contexts.extend(
+                self._collect_flow_contexts(
+                    subflow_ref,
+                    self._join_flow_path(flow_path, container_name),
+                    set(ancestors),
+                )
+            )
+
+        return flow_contexts
+
+    @staticmethod
+    def _issue_instance_name(issue: ProjIssue) -> Optional[str]:
+        """Extract the flow-local instance name from node/container issue messages."""
+
+        match = re.search(r"(?:Node instance|Container|instance) '([^']+)'", issue.msg)
+        if not match:
+            return None
+
+        return match.group(1).split("__", 1)[0]
+
+    @staticmethod
+    def _issue_link_id(issue: ProjIssue) -> Optional[str]:
+        """Extract a link id from link validation issue messages."""
+
+        match = re.search(r"\blink ([^\s]+)", issue.msg, flags=re.IGNORECASE)
+        return match.group(1) if match else None
+
+    def _link_issue_is_unreachable(
+        self,
+        issue: ProjIssue,
+        flow_ref: str,
+        flow_data: dict,
+        flow_content: dict,
+        reachable: Set[str],
+    ) -> bool:
+        """Return whether a link issue belongs to an unreachable path."""
+
+        if issue.iss_type not in {
+            "Missing flow instance referenced by link",
+            "Missing node instance referenced by link",
+            "Missing Node port",
+            "Non matching link ports",
+        }:
+            return False
+
+        link_id = self._issue_link_id(issue)
+        link_data = flow_content.get("Links", {}).get(link_id)
+        if not link_data:
+            return False
+
+        from_path = link_data.get("From", "")
+        if from_path == "start/start/start":
+            return False
+
+        local_instances = self._local_flow_instances(flow_content)
+        from_instance = self._link_path_root_instance(from_path)
+        if from_instance in local_instances:
+            return from_instance not in reachable
+
+        from_line = _find_json_path_line(flow_data, ["Flow", flow_ref, "Links", link_id, "From"])
+        return issue.line_start == from_line
+
+    def _downgrade_unreachable_issues(
+        self,
+        flow_ref: str,
+        flow_data: dict,
+        flow_content: dict,
+        flow_issues: List[ProjIssue],
+    ) -> None:
+        """Mark issues in unreachable node/container paths as warnings."""
+
+        reachable = self._reachable_flow_instances(flow_content)
+        local_instances = self._local_flow_instances(flow_content)
+
+        for issue in flow_issues:
+            issue_instance = self._issue_instance_name(issue)
+            if issue_instance in local_instances and issue_instance not in reachable:
+                issue.severity = Severity.NORMAL
+                continue
+
+            if self._link_issue_is_unreachable(issue, flow_ref, flow_data, flow_content, reachable):
+                issue.severity = Severity.NORMAL
 
     def _check_flow_parameters(
         self, flow_ref: str, context: Optional[str] = None, node_prefix: str = ""
@@ -521,6 +789,14 @@ class ProjectValidator:
         flow_issues.extend(self._check_nodes_flows_ref_in_flow(flow_ref))
         flow_issues.extend(self._check_flow_parameters(flow_ref, context, node_prefix))
         flow_issues.extend(self._check_flow_links(flow_ref))
+
+        try:
+            flow_data = self._get_flow_dict(flow_ref)
+            flow_content = flow_data.get("Flow", {}).get(flow_ref, {})
+            self._downgrade_unreachable_issues(flow_ref, flow_data, flow_content, flow_issues)
+        except Exception as e:
+            LOGGER.debug(f"Error downgrading unreachable issues in flow {flow_ref}: {e}")
+
         return flow_issues
 
     def _check_nodes_flows_ref_in_flow(self, flow_ref: str) -> List[ProjIssue]:
