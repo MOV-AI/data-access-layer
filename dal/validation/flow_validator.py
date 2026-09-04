@@ -47,8 +47,11 @@ class FlowValidator:
                             flow_ref,
                             context=self.flow_ref,
                             node_prefix=flow_path,
+                            check_parameters=True,
                         )
                     )
+
+                self.issues = self.project._deduplicate_issues(self.issues)
 
         except Exception as e:
             LOGGER.error(f"Error validating flow {self.flow_ref}: {e}")

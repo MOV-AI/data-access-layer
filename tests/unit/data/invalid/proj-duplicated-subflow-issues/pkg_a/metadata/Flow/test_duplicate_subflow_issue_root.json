@@ -1,0 +1,42 @@
+{
+    "Flow": {
+        "test_duplicate_subflow_issue_root": {
+            "Container": {
+                "child_a": {
+                    "ContainerFlow": "test_duplicate_subflow_issue_child",
+                    "ContainerLabel": "Child A"
+                },
+                "child_b": {
+                    "ContainerFlow": "test_duplicate_subflow_issue_child",
+                    "ContainerLabel": "Child B"
+                }
+            },
+            "Description": "",
+            "ExposedPorts": {},
+            "Info": "",
+            "Label": "test_duplicate_subflow_issue_root",
+            "LastUpdate": {
+                "date": "04/09/2026 at 14:00:00",
+                "user": "movai@internal"
+            },
+            "Layers": {},
+            "Links": {
+                "start-to-root-node": {
+                    "From": "start/start/start",
+                    "To": "root_node/in/in"
+                }
+            },
+            "NodeInst": {
+                "root_node": {
+                    "NodeLabel": "root_node",
+                    "Parameter": {},
+                    "Template": "FlowParamTestNode"
+                }
+            },
+            "Parameter": {},
+            "User": "",
+            "Version": "",
+            "VersionDelta": {}
+        }
+    }
+}
