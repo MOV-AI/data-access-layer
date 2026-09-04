@@ -295,11 +295,20 @@ class ProjectValidator:
                         )
                         self.issues.append(issue)
 
-    def _check_flow_parameters(self, flow_ref: str) -> List[ProjIssue]:
+    @staticmethod
+    def _join_node_path(prefix: str, name: str) -> str:
+        """Join a subflow container path and local node/container name."""
+
+        return f"{prefix}__{name}" if prefix else name
+
+    def _check_flow_parameters(
+        self, flow_ref: str, context: Optional[str] = None, node_prefix: str = ""
+    ) -> List[ProjIssue]:
         """
         Check parameter expressions in a specific flow using the runtime parser.
         """
         flow_issues = []
+        parser_context = context or flow_ref
 
         try:
             flow_data = self._get_flow_dict(flow_ref)
@@ -321,7 +330,11 @@ class ProjectValidator:
 
                     for param_key in container_data.get("Parameter", {}):
                         try:
-                            container.get_param(param_key, container_name, flow_ref)
+                            container.get_param(
+                                param_key,
+                                self._join_node_path(node_prefix, container_name),
+                                parser_context,
+                            )
                         except AttributeError as error:
                             if self._is_no_attribute_flow_error(error):
                                 # Known false positive from parser context, ignore it
@@ -377,7 +390,11 @@ class ProjectValidator:
 
                     for param_key in sorted(param_names):
                         try:
-                            node_inst.get_param(param_key, node_inst_name, flow_ref)
+                            node_inst.get_param(
+                                param_key,
+                                self._join_node_path(node_prefix, node_inst_name),
+                                parser_context,
+                            )
                         except AttributeError as error:
                             if self._is_no_attribute_flow_error(error):
                                 # Known false positive from parser context, ignore it
@@ -428,7 +445,7 @@ class ProjectValidator:
             # Check Flow parameters
             for param_key in flow_content.get("Parameter", {}):
                 try:
-                    flow.get_param(param_key, flow_ref)
+                    flow.get_param(param_key, parser_context, is_subflow=bool(node_prefix))
                 except AttributeError as error:
                     if self._is_no_attribute_flow_error(error):
                         # Known false positive from parser context, ignore it
@@ -488,17 +505,21 @@ class ProjectValidator:
             document_name=document_name or flow_ref,
         )
 
-    def check_flow(self, flow_ref) -> List[ProjIssue]:
+    def check_flow(
+        self, flow_ref: str, context: Optional[str] = None, node_prefix: str = ""
+    ) -> List[ProjIssue]:
         """
         Check a specific flow for issues.
 
         Args:
             flow_ref: Reference of the flow to check.
+            context: Flow context used for runtime-style parameter resolution.
+            node_prefix: Container path from the context flow to this flow.
         """
 
         flow_issues = []
         flow_issues.extend(self._check_nodes_flows_ref_in_flow(flow_ref))
-        flow_issues.extend(self._check_flow_parameters(flow_ref))
+        flow_issues.extend(self._check_flow_parameters(flow_ref, context, node_prefix))
         flow_issues.extend(self._check_flow_links(flow_ref))
         return flow_issues
 
