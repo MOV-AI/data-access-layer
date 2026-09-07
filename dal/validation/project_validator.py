@@ -188,6 +188,8 @@ class ProjectValidator:
         Returns:
             ProjectValidationResult: The result of the project validation, including issues found.
         """
+        from dal.helpers.parsers import ParamParser
+
         LOGGER.info("Starting project validation")
         start_time = time.perf_counter()
         self._link_validator = None
@@ -196,11 +198,26 @@ class ProjectValidator:
         self._check_duplicates()
 
         flow_refs = self._objects_by_scope.get("Flow", set())
+        runnable_flow_refs = [
+            flow_ref for flow_ref in sorted(flow_refs) if self._flow_has_start_connection(flow_ref)
+        ]
+        checked_contexts = set()
 
-        for flow_ref in sorted(flow_refs):
-            self.issues.extend(self.check_flow(flow_ref, check_parameters=False))
+        with ParamParser.suppress_validation_disabled_warnings():
+            for root_flow_ref in runnable_flow_refs:
+                for flow_ref, flow_path in self._collect_flow_contexts(root_flow_ref):
+                    context_key = (root_flow_ref, flow_ref, flow_path)
+                    if context_key in checked_contexts:
+                        continue
 
-        self.issues = self._deduplicate_issues(self.issues)
+                    checked_contexts.add(context_key)
+                    self.issues.extend(
+                        self.check_flow(
+                            flow_ref,
+                            context=root_flow_ref,
+                            node_prefix=flow_path,
+                        )
+                    )
 
         # Build summary
         error_count = sum(1 for issue in self.issues if issue.severity == Severity.ERROR)
@@ -396,6 +413,44 @@ class ProjectValidator:
 
         return reachable
 
+    def _flow_has_start_connection(self, flow_ref: str) -> bool:
+        """Return whether a flow has a launchable start node, matching FlowMonitor."""
+
+        try:
+            flow = Flow(flow_ref)
+            start_nodes = flow.get_start_nodes()
+        except Exception as e:
+            LOGGER.debug(f"Error loading flow {flow_ref} to check start connection: {e}")
+            return self._flow_has_structural_start_connection(flow_ref)
+
+        for node in start_nodes:
+            try:
+                if flow.full.NodeInst[node].is_node_to_launch:
+                    return True
+            except Exception as e:
+                LOGGER.debug(
+                    f"Could not determine launch status for start node {node} in flow {flow_ref}: {e}"
+                )
+                return True
+
+        return False
+
+    def _flow_has_structural_start_connection(self, flow_ref: str) -> bool:
+        """Return whether flow metadata declares at least one start link target."""
+
+        try:
+            flow_data = self._get_flow_dict(flow_ref)
+        except Exception as e:
+            LOGGER.debug(f"Error loading flow {flow_ref} to check structural start link: {e}")
+            return False
+
+        flow_content = flow_data.get("Flow", {}).get(flow_ref, {})
+        return any(
+            link_data.get("From") == "start/start/start"
+            and self._link_path_root_instance(link_data.get("To", ""))
+            for link_data in flow_content.get("Links", {}).values()
+        )
+
     @staticmethod
     def _join_flow_path(parent_path: str, container_name: str) -> str:
         """Join a parent container path and child container name."""
@@ -440,45 +495,6 @@ class ProjectValidator:
             )
 
         return flow_contexts
-
-    @staticmethod
-    def _issue_key(issue: ProjIssue) -> Tuple:
-        """Return the stable identity of a project issue."""
-
-        return (
-            issue.category,
-            issue.iss_type,
-            issue.msg,
-            str(getattr(issue, "json_path", "")),
-            getattr(issue, "line_start", None),
-            getattr(issue, "document_type", None),
-            getattr(issue, "document_name", None),
-        )
-
-    @staticmethod
-    def _severity_rank(severity: Severity) -> int:
-        """Return severity ordering for duplicate issue merging."""
-
-        return {
-            Severity.LOW: 0,
-            Severity.NORMAL: 1,
-            Severity.HIGH: 2,
-            Severity.ERROR: 3,
-        }.get(severity, 0)
-
-    def _deduplicate_issues(self, issues: List[ProjIssue]) -> List[ProjIssue]:
-        """Remove duplicate issues, preserving the highest severity for each issue."""
-
-        issues_by_key = {}
-        for issue in issues:
-            key = self._issue_key(issue)
-            existing = issues_by_key.get(key)
-            if existing is None or self._severity_rank(issue.severity) > self._severity_rank(
-                existing.severity
-            ):
-                issues_by_key[key] = issue
-
-        return list(issues_by_key.values())
 
     @staticmethod
     def _issue_instance_name(issue: ProjIssue) -> Optional[str]:
@@ -758,11 +774,7 @@ class ProjectValidator:
         )
 
     def check_flow(
-        self,
-        flow_ref: str,
-        context: Optional[str] = None,
-        node_prefix: str = "",
-        check_parameters: bool = True,
+        self, flow_ref: str, context: Optional[str] = None, node_prefix: str = ""
     ) -> List[ProjIssue]:
         """
         Check a specific flow for issues.
@@ -771,13 +783,11 @@ class ProjectValidator:
             flow_ref: Reference of the flow to check.
             context: Flow context used for runtime-style parameter resolution.
             node_prefix: Container path from the context flow to this flow.
-            check_parameters: Whether to run context-sensitive parameter validation.
         """
 
         flow_issues = []
         flow_issues.extend(self._check_nodes_flows_ref_in_flow(flow_ref))
-        if check_parameters:
-            flow_issues.extend(self._check_flow_parameters(flow_ref, context, node_prefix))
+        flow_issues.extend(self._check_flow_parameters(flow_ref, context, node_prefix))
         flow_issues.extend(self._check_flow_links(flow_ref))
 
         try:

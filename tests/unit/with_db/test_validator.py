@@ -200,16 +200,6 @@ class TestProjectValidator:
             issue_order = {
                 issue.json_path: index for index, issue in enumerate(validator_output.issues)
             }
-            unreachable_link_issue = NonMatchingLinkPorts(
-                json_path="test_pub_ros_to_sub_ros.json",
-                msg=(
-                    "The ports of link ca35667e-8e58-4c71-8973-245da65dbe0b in "
-                    "Flow test_pub_ros_to_sub_ros do not match | "
-                    "From: ros/pub_empty/out | To: ros/sub/in"
-                ),
-                line_start=15,
-            )
-            unreachable_link_issue.severity = Severity.NORMAL
 
             execute_and_assert_same_type_issues(
                 validator_output,
@@ -225,7 +215,6 @@ class TestProjectValidator:
                             msg="The ports of link 8395d1a2-af21-4b12-a1a3-e2dfbf7c198f in Flow test_transition_to_any do not match | From: start/start/start | To: test_any/sub/in",
                             line_start=15,
                         ),
-                        unreachable_link_issue,
                         NonMatchingLinkPorts(
                             json_path="test_transition_to_dependency.json",
                             msg="The ports of link 20893b58-911b-470d-9306-1e4ac32b76d1 in Flow test_transition_to_dependency do not match | From: start/start/start | To: dep/dependency/in",
@@ -369,36 +358,57 @@ class TestProjectValidator:
             )
 
     def test_missing_referenced_parameters(self, isolated_database, folder_invalid_data):
-        """Tests that project validation skips context-sensitive parameter checks."""
+        """Tests that missing flow parameters are found."""
+
+        from dal.validation.issues import MissingReferencedParameter
 
         with setup_test_data_from_path(folder_invalid_data / "proj-missing-referenced-params"):
             validator_output: ProjectValidationResult = ProjectValidator().validate()
+            validator_output.issues.sort(key=lambda issue: issue.line_start)
+            print(f"Validator output: {validator_output}")
 
-            assert validator_output.summary.total_issues == 0
-            assert validator_output.summary.error_count == 0
-            assert validator_output.summary.warning_count == 0
+            execute_and_assert_same_type_issues(
+                validator_output,
+                [
+                    MissingReferencedParameter(
+                        json_path="test_missing_referenced_parameters.json",
+                        msg="Node instance 'dependency' parameter 'missing_compound_param' has an undefined param reference in Flow 'test_missing_referenced_parameters'",
+                        line_start=27,
+                    ),
+                    MissingReferencedParameter(
+                        json_path="test_missing_referenced_parameters.json",
+                        msg="Node instance 'dependency' parameter 'missing_flow_parameter' has an undefined flow reference in Flow 'test_missing_referenced_parameters'",
+                        line_start=31,
+                    ),
+                    MissingReferencedParameter(
+                        json_path="test_missing_referenced_parameters.json",
+                        msg="Flow 'test_missing_referenced_parameters' parameter 'missing_config_parameter' has an undefined config reference in Flow 'test_missing_referenced_parameters'",
+                        line_start=52,
+                    ),
+                ],
+            )
 
     def test_missing_referenced_parameter_from_node_template_line(
         self, isolated_database, folder_invalid_data
     ):
-        """Tests that project validation skips template parameter references."""
+        """Tests that template-only node parameters point to the node metadata line."""
 
         with setup_test_data_from_path(
             folder_invalid_data / "proj-node-template-missing-referenced-param"
         ):
             validator_output: ProjectValidationResult = ProjectValidator().validate()
 
-            assert validator_output.summary.total_issues == 0
-
-    def test_duplicate_subflow_issues_are_reported_once(
-        self, isolated_database, folder_invalid_data
-    ):
-        """Tests that project validation skips duplicated context-sensitive parameter issues."""
-
-        with setup_test_data_from_path(folder_invalid_data / "proj-duplicated-subflow-issues"):
-            validator_output: ProjectValidationResult = ProjectValidator().validate()
-
-            assert validator_output.summary.total_issues == 0
+            assert validator_output.summary.total_issues == 1
+            issue = validator_output.issues[0]
+            assert issue.msg == (
+                "Node instance 'template_node' parameter 'use_task_manager' has an "
+                "undefined flow reference in Flow "
+                "'test_node_template_missing_referenced_param'"
+            )
+            assert issue.json_path == "NodeTemplateMissingParam.json"
+            assert issue.document_type == "Node"
+            assert issue.document_name == "NodeTemplateMissingParam"
+            assert issue.line_start == 17
 
 
 class TestFlowValidator:
@@ -600,32 +610,6 @@ class TestFlowValidator:
                 ],
             )
 
-    def test_flow_missing_referenced_parameter_from_node_template_line(
-        self, global_db, folder_invalid_data
-    ):
-        """Tests that flow validation reports template parameter references."""
-
-        from dal.validation.flow_validator import FlowValidator
-
-        with setup_test_data_from_path(
-            folder_invalid_data / "proj-node-template-missing-referenced-param"
-        ):
-            validator_output: ProjectValidationResult = FlowValidator(
-                "test_node_template_missing_referenced_param"
-            ).validate_flow()
-
-            assert validator_output.summary.total_issues == 1
-            issue = validator_output.issues[0]
-            assert issue.msg == (
-                "Node instance 'template_node' parameter 'use_task_manager' has an "
-                "undefined flow reference in Flow "
-                "'test_node_template_missing_referenced_param'"
-            )
-            assert issue.json_path == "NodeTemplateMissingParam.json"
-            assert issue.document_type == "Node"
-            assert issue.document_name == "NodeTemplateMissingParam"
-            assert issue.line_start == 17
-
     def test_flow_with_missing_referenced_parameters_in_subflow(
         self, global_db, folder_invalid_data
     ):
@@ -650,21 +634,4 @@ class TestFlowValidator:
                         line_start=19,
                     ),
                 ],
-            )
-
-    def test_flow_with_duplicate_subflow_issues_reports_once(self, global_db, folder_invalid_data):
-        """Tests that flow validation deduplicates repeated subflow issues."""
-
-        from dal.validation.flow_validator import FlowValidator
-
-        with setup_test_data_from_path(folder_invalid_data / "proj-duplicated-subflow-issues"):
-            validator_output: ProjectValidationResult = FlowValidator(
-                "test_duplicate_subflow_issue_root"
-            ).validate_flow()
-
-            assert validator_output.summary.total_issues == 1
-            assert validator_output.issues[0].msg == (
-                "Flow 'test_duplicate_subflow_issue_child' parameter "
-                "'missing_config_parameter' has an undefined config reference in Flow "
-                "'test_duplicate_subflow_issue_child'"
             )
