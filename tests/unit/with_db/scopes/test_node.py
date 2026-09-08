@@ -52,6 +52,6 @@ class TestNode:
         data = {"Node": ["containing_forbidden_words"]}
         with pytest.raises(
             ImportException,
-            match="Aborted import: In containing_forbidden_words, 'end' is not valid because it contains 'end'",
+            match="Aborted import: In containing_forbidden_words, 'a_topic_with_the_word_end' is not valid because it contains 'end'",
         ):
             tool.run(data)

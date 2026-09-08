@@ -9,7 +9,7 @@
             "Path": "",
             "Persistent": false,
             "PortsInst": {
-                "requirement": {
+                "dependency": {
                     "In": {
                         "in": {
                             "Message": "movai_msgs/Dependency"
@@ -19,7 +19,7 @@
                     "Package": "movai_msgs",
                     "Template": "MovAI/Dependency"
                 },
-                "requires": {
+                "depends": {
                     "Message": "Dependency",
                     "Out": {
                         "out": {

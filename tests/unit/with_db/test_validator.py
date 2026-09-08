@@ -222,7 +222,7 @@ class TestProjectValidator:
                         ),
                         NonMatchingLinkPorts(
                             json_path="test_transition_to_dependency.json",
-                            msg="The ports of link 20893b58-911b-470d-9306-1e4ac32b76d1 in Flow test_transition_to_dependency do not match | From: start/start/start | To: dep/requirement/in",
+                            msg="The ports of link 20893b58-911b-470d-9306-1e4ac32b76d1 in Flow test_transition_to_dependency do not match | From: start/start/start | To: dep/dependency/in",
                             line_start=15,
                         ),
                     ],

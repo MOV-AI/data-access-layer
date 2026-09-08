@@ -699,7 +699,7 @@ class Node(Scope):
         return flow_container_link_keys
 
     @classmethod
-    def validate_name(cls, name):
+    def _validate_name(cls, name):
         forbidden_words = ["start"]
 
         for word in forbidden_words:
@@ -709,12 +709,15 @@ class Node(Scope):
                 )
 
     @classmethod
-    def validate_ports(cls, data: dict, node_name):
+    def _validate_ports(cls, data: dict, node_name):
         forbidden_words = ["start", "end"]
 
         ports_inst_dict = data.get("PortsInst", {})
 
         for key in ports_inst_dict:
+            if "publisher" not in ports_inst_dict[key]["Template"].lower():
+                continue
+
             for word in forbidden_words:
                 if word.lower() in key.lower():
                     raise ValueError(
@@ -742,7 +745,7 @@ class Node(Scope):
             ValueError: If any of the validations fail.
 
         """
-        cls.validate_name(name)
+        cls._validate_name(name)
 
         node_type = data.get("Type")
 
@@ -811,4 +814,4 @@ class Node(Scope):
             if AIOHTTP_IO_TEMPLATES & port_templates:
                 raise ValueError(f"{node_type} nodes cannot have http ports")
 
-        cls.validate_ports(data, name)
+        cls._validate_ports(data, name)

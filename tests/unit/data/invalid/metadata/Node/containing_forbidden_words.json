@@ -36,32 +36,39 @@
             "Path": "",
             "Persistent": false,
             "PortsInst": {
-                "end": {
+                "a_topic_with_the_word_end": {
                     "Info": "",
-                    "Message": "Transition",
+                    "Message": "Bool",
                     "Out": {
                         "out": {
-                            "Message": "movai_msgs/Transition"
+                            "Message": "std_msgs/Bool",
+                            "Parameter": {
+                                "latch": false,
+                                "queue_size": 1
+                            }
                         }
                     },
-                    "Package": "movai_msgs",
-                    "Template": "MovAI/TransitionFor"
+                    "Package": "std_msgs",
+                    "Template": "ROS1/Publisher"
                 },
-                "start": {
-                    "In": {
-                        "in": {
-                            "Callback": "create_log",
-                            "Message": "movai_msgs/Transition"
+                "a_topic_without_the_word": {
+                    "Info": "",
+                    "Message": "Bool",
+                    "Out": {
+                        "out": {
+                            "Message": "std_msgs/Bool",
+                            "Parameter": {
+                                "latch": false,
+                                "queue_size": 1
+                            }
                         }
                     },
-                    "Info": "",
-                    "Message": "Transition",
-                    "Package": "movai_msgs",
-                    "Template": "MovAI/TransitionTo"
+                    "Package": "std_msgs",
+                    "Template": "ROS1/Publisher"
                 }
             },
             "Remappable": true,
-            "Type": "MovAI/State",
+            "Type": "MovAI/Node",
             "User": "",
             "Version": "",
             "VersionDelta": {}
