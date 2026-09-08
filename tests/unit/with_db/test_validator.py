@@ -315,17 +315,17 @@ class TestProjectValidator:
     def test_missing_port(self, isolated_database, folder_invalid_data):
         """Tests that missing node port issue is found."""
 
-        from dal.validation.issues import MissingMob
+        from dal.validation.issues import MissingNodePort
 
         with setup_test_data_from_path(folder_invalid_data / "proj-missing-port"):
             validator_output: ProjectValidationResult = ProjectValidator().validate()
             execute_and_assert_same_type_issues(
                 validator_output,
                 [
-                    MissingMob(
+                    MissingNodePort(
                         json_path="test_missing_port.json",
-                        msg="Node 'dependency' missing, required by Flow 'test_missing_port' (instance 'dependency')",
-                        line_start=24,
+                        msg="Destination port of link a42d10cf-32c4-40a4-a95d-812649d56810 does not exist | From: start/start/start | To: dependency/entry/in",
+                        line_start=18,
                     ),
                 ],
             )
@@ -463,7 +463,7 @@ class TestFlowValidator:
     def test_flow_with_missing_port(self, global_db, folder_invalid_data):
         """Tests that a flow with invalid links has issues."""
 
-        from dal.validation.issues import MissingMob
+        from dal.validation.issues import MissingNodePort
         from dal.validation.flow_validator import FlowValidator
 
         with setup_test_data_from_path(folder_invalid_data / "proj-missing-port"):
@@ -473,10 +473,10 @@ class TestFlowValidator:
             execute_and_assert_same_type_issues(
                 validator_output,
                 [
-                    MissingMob(
+                    MissingNodePort(
                         json_path="test_missing_port.json",
-                        msg="Node 'dependency' missing, required by Flow 'test_missing_port' (instance 'dependency')",
-                        line_start=24,
+                        msg="Destination port of link a42d10cf-32c4-40a4-a95d-812649d56810 does not exist | From: start/start/start | To: dependency/entry/in",
+                        line_start=18,
                     ),
                 ],
             )

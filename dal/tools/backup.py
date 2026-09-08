@@ -23,6 +23,7 @@ from abc import ABC, abstractmethod
 from typing import Iterator, List, Tuple, Optional
 import xml.etree.ElementTree as ET
 
+from dal.scopes.node import Node
 from dal.movaidb import MovaiDB
 from dal.scopes.package import Package
 
@@ -466,6 +467,18 @@ class Importer(Backup):
         """
         return [None]
 
+    def validate_nodes(self, names):
+        files = self.get_files("Node", names)
+
+        for name, file_path in files:
+            data = self._read_json(file_path)
+            try:
+                Node.validate_format("Node", data["Node"][name], name)
+            except ValueError as e:
+                error_message = f"Aborted import: {e}"
+                LOGGER.error(error_message)
+                raise ImportException(error_message)
+
     def run(self, objects: dict = {}):
         """Imports the objects defined in the manifest."""
 
@@ -478,6 +491,11 @@ class Importer(Backup):
             if len(objects) == 0:
                 return None
             return None if None in objects[scope] else objects[scope]
+
+        if should_import("Node"):
+            object_names = get_objects("Node")
+            if object_names is not None:
+                self.validate_nodes(object_names)
 
         for scope_name in Backup.SCOPES:
             if not should_import(scope_name):

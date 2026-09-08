@@ -143,7 +143,6 @@ class UserFunctions:
                     "print": self.user_print,
                     "Scene": LazyInstantiation(UserCallback.scene),
                     "NodeInst": NodeInst,
-                    "Container": LazyModule("dal.scopes.container", "Container"),
                     "Configuration": LazyModule("dal.scopes.configuration", "Configuration"),
                 }
             )
