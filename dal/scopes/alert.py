@@ -10,7 +10,7 @@ from movai_core_shared.logger import Log
 from movai_core_shared.consts import DeactivationType
 
 try:
-    from movai_core_enterprise.message_client_handlers._alert_metrics import AlertMetricsFactory
+    from movai_core_enterprise.telemetry_client.alerts_telemetry_client import AlertsTelemetryClient
 
     enterprise = True
 except ImportError:
@@ -98,7 +98,7 @@ class Alert(Scope):
             return
 
         if enterprise:
-            Alert.get_alert_metrics_handler().add("alert_events", **alert_metric.model_dump())
+            Alert.get_alert_metrics_handler().add(**alert_metric.model_dump())
 
     @classmethod
     def clear_alerts(cls, deactivation_type: str = DeactivationType.REQUESTED):
@@ -111,7 +111,7 @@ class Alert(Scope):
         alert_metrics = Robot().clear_alerts(deactivation_type=deactivation_type)
         if enterprise:
             for alert_metric in alert_metrics:
-                Alert.get_alert_metrics_handler().add("alert_events", **alert_metric.model_dump())
+                Alert.get_alert_metrics_handler().add(**alert_metric.model_dump())
 
     @classmethod
     def get_active(cls) -> List[str]:
@@ -138,6 +138,6 @@ class Alert(Scope):
     def get_alert_metrics_handler(cls):
         with Alert._lock:
             if enterprise and Alert.alert_metrics is None:
-                Alert.alert_metrics = AlertMetricsFactory.create()
+                Alert.alert_metrics = AlertsTelemetryClient()
 
         return Alert.alert_metrics

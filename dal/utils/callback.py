@@ -161,7 +161,7 @@ class UserFunctions:
                         "Layout": LazyModule("movai_core_enterprise.models.layout", "Layout"),
                         "metrics": LazyInstantiation(
                             LazyModule(
-                                "movai_core_enterprise.message_client_handlers.metrics", "Metrics"
+                                "movai_core_enterprise.telemetry_client", "MetricsTelemetryClient"
                             )
                         ),
                         "Task": LazyModule("movai_core_enterprise.scopes.task", "Task"),
