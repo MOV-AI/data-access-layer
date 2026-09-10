@@ -2,6 +2,7 @@
 
 ## vTBD
 - [BP-1795](https://movai.atlassian.net/browse/BP-1795): Send alert deactivation data to Loki.
+- [BP-1734](https://movai.atlassian.net/browse/BP-1734): Expose new metrics API to callbacks.
 
 ## v3.30.2
 - [BP-1785](https://movai.atlassian.net/browse/BP-1785): Links should allow connection of combinations of ROS1/ROS2 Publisher/Subscriber.
