@@ -15,6 +15,10 @@
                 "ca35667e-8e58-4c71-8973-245da65dbe0b": {
                     "From": "ros/pub_empty/out",
                     "To": "ros/sub/in"
+                },
+                "zz-start-to-ros": {
+                    "From": "start/start/start",
+                    "To": "ros/sub/in"
                 }
             },
             "NodeInst": {

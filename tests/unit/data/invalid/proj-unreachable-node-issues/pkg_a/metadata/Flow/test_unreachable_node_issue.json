@@ -1,0 +1,52 @@
+{
+    "Flow": {
+        "test_unreachable_node_issue": {
+            "Description": "",
+            "ExposedPorts": {
+                "missing_node": {
+                    "exposed": [
+                        "sub/in"
+                    ],
+                    "exposed_out": [
+                        "pub/out"
+                    ]
+                }
+            },
+            "Info": "",
+            "InstallPath": "",
+            "Label": "test_unreachable_node_issue",
+            "LastUpdate": {
+                "date": "04/09/2026 at 14:00:00",
+                "user": "movai@internal"
+            },
+            "Layers": {},
+            "Links": {
+                "start-to-reachable": {
+                    "From": "start/start/start",
+                    "To": "reachable/sub/in"
+                }
+            },
+            "NodeInst": {
+                "exposed": {
+                    "NodeLabel": "missing_node",
+                    "Template": "missing_node"
+                },
+                "exposed_out": {
+                    "NodeLabel": "missing_node",
+                    "Template": "missing_node"
+                },
+                "reachable": {
+                    "NodeLabel": "missing_node",
+                    "Template": "missing_node"
+                },
+                "unreachable": {
+                    "NodeLabel": "missing_node",
+                    "Template": "missing_node"
+                }
+            },
+            "User": "",
+            "Version": "",
+            "VersionDelta": {}
+        }
+    }
+}

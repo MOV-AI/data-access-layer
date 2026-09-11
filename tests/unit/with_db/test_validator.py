@@ -1,5 +1,5 @@
 from dal.validation.project_validator import ProjectValidationResult, ProjectValidator
-from dal.validation.issues import ProjIssue
+from dal.validation.issues import ProjIssue, Severity
 import pytest
 from pathlib import Path
 from contextlib import contextmanager
@@ -221,6 +221,11 @@ class TestProjectValidator:
                             line_start=15,
                         ),
                         NonMatchingLinkPorts(
+                            json_path="test_pub_ros_to_sub_ros.json",
+                            msg="The ports of link zz-start-to-ros in Flow test_pub_ros_to_sub_ros do not match | From: start/start/start | To: ros/sub/in",
+                            line_start=19,
+                        ),
+                        NonMatchingLinkPorts(
                             json_path="test_transition_to_dependency.json",
                             msg="The ports of link 20893b58-911b-470d-9306-1e4ac32b76d1 in Flow test_transition_to_dependency do not match | From: start/start/start | To: dep/dependency/in",
                             line_start=15,
@@ -274,6 +279,23 @@ class TestProjectValidator:
                         line_start=18,
                     ),
                 ],
+            )
+
+    def test_unreachable_flow_issues_are_warnings(self, isolated_database, folder_invalid_data):
+        """Tests that issues in flows unreachable from runnable contexts are warnings."""
+
+        with setup_test_data_from_path(folder_invalid_data / "proj-unreachable-flow-issues"):
+            validator_output: ProjectValidationResult = ProjectValidator().validate()
+
+            assert validator_output.summary.total_issues == 1
+            assert validator_output.summary.error_count == 0
+            assert validator_output.summary.warning_count == 1
+
+            issue = validator_output.issues[0]
+            assert issue.severity == Severity.NORMAL
+            assert issue.msg == (
+                "Node 'missing_node' missing, required by Flow "
+                "'test_unreachable_flow_issue' (instance 'isolated_node')"
             )
 
     def test_missing_flow_instance(self, isolated_database, folder_invalid_data):
