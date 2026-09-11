@@ -201,6 +201,7 @@ class ProjectValidator:
         runnable_flow_refs = [
             flow_ref for flow_ref in sorted(flow_refs) if self._flow_has_start_connection(flow_ref)
         ]
+        checked_flows = []
         checked_contexts = set()
 
         with ParamParser.suppress_validation_disabled_warnings():
@@ -218,6 +219,17 @@ class ProjectValidator:
                             node_prefix=flow_path,
                         )
                     )
+                    checked_flows.append(flow_ref)
+
+            unreachable_flows = set(flow_refs) - set(checked_flows)
+            for flow_ref in unreachable_flows:
+                unreachable_flow_issues = self.check_flow(flow_ref, validate_parameters=False)
+
+                # Do not cause blocking errors for unreachable flows
+                for issue in unreachable_flow_issues:
+                    issue.severity = Severity.NORMAL
+
+                self.issues.extend(unreachable_flow_issues)
 
         # Build summary
         error_count = sum(1 for issue in self.issues if issue.severity == Severity.ERROR)
@@ -774,7 +786,11 @@ class ProjectValidator:
         )
 
     def check_flow(
-        self, flow_ref: str, context: Optional[str] = None, node_prefix: str = ""
+        self,
+        flow_ref: str,
+        context: Optional[str] = None,
+        node_prefix: str = "",
+        validate_parameters: bool = True,
     ) -> List[ProjIssue]:
         """
         Check a specific flow for issues.
@@ -787,7 +803,8 @@ class ProjectValidator:
 
         flow_issues = []
         flow_issues.extend(self._check_nodes_flows_ref_in_flow(flow_ref))
-        flow_issues.extend(self._check_flow_parameters(flow_ref, context, node_prefix))
+        if validate_parameters:
+            flow_issues.extend(self._check_flow_parameters(flow_ref, context, node_prefix))
         flow_issues.extend(self._check_flow_links(flow_ref))
 
         try:
