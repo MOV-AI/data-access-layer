@@ -9,6 +9,7 @@ The Data Service provides:
 1. Validation of user permissions before accessing the data
 2. Enforcing the appropriate JSON schema when writing data
 3. Validating compatibility between a document versions
+4. Static analysis of the metadata installed in a project - see [dal/validation/README.md](./dal/validation/README.md) for documentation of every issue that can be reported, its severity and when it is triggered.
 
 ## Usage
 

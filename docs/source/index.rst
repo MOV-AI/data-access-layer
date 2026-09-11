@@ -14,6 +14,7 @@ Welcome to data-access-layer's documentation!
    readme
    modules
    schemas
+   validations
    scopes
    backup
    permissions
