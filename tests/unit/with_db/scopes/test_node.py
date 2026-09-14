@@ -35,7 +35,7 @@ class TestNode:
 
         tool = Importer(
             metadata_folder_invalid_data,
-            force=True,
+            force=False,
             dry=False,
             debug=False,
             recursive=False,
@@ -45,13 +45,13 @@ class TestNode:
         data = {"Node": ["containing_start"]}
         with pytest.raises(
             ImportException,
-            match="Aborted import: 'containing_start' is not valid for type Node because it contains 'start'",
+            match="Failed to import Node:containing_start - 'containing_start' is not a valid name for type Node because it contains 'start'",
         ):
             tool.run(data)
 
         data = {"Node": ["containing_forbidden_words"]}
         with pytest.raises(
             ImportException,
-            match="Aborted import: In containing_forbidden_words, 'a_topic_with_the_word_end' is not valid because it contains 'end'",
+            match="Failed to import Node:containing_forbidden_words - In 'containing_forbidden_words', port 'a_topic_with_the_word_end' is not valid because it contains 'end'",
         ):
             tool.run(data)

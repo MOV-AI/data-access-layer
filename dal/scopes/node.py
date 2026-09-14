@@ -705,7 +705,7 @@ class Node(Scope):
         for word in forbidden_words:
             if word.lower() in name.lower():
                 raise ValueError(
-                    f"'{name}' is not valid for type Node because it contains '{word}'"
+                    f"'{name}' is not a valid name for type Node because it contains '{word}'"
                 )
 
     @classmethod
@@ -721,7 +721,7 @@ class Node(Scope):
             for word in forbidden_words:
                 if word.lower() in key.lower():
                     raise ValueError(
-                        f"In {node_name}, '{key}' is not valid because it contains '{word}'"
+                        f"In '{node_name}', port '{key}' is not valid because it contains '{word}'"
                     )
 
     @classmethod
