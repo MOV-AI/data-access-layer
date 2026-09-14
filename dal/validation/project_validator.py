@@ -225,10 +225,6 @@ class ProjectValidator:
             for flow_ref in unreachable_flows:
                 unreachable_flow_issues = self.check_flow(flow_ref, validate_parameters=False)
 
-                # Do not cause blocking errors for unreachable flows
-                for issue in unreachable_flow_issues:
-                    issue.severity = Severity.NORMAL
-
                 self.issues.extend(unreachable_flow_issues)
 
         # Build summary
