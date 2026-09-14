@@ -361,6 +361,33 @@ class Flow(Model):
 
         return transition_nodes
 
+    def is_node_transitionable(self, node_inst: str) -> bool:
+        # get the node_inst instance ref
+        node_inst_ref = self.get_node_inst(node_inst)
+
+        # get the node_inst node template
+        node_tpl = node_inst_ref.node_template
+
+        # get all the links of the node_inst
+        links = self.Links.get_node_links(node_inst)
+        #self.logger.critical(f"node_inst {node_inst} and links {links}")
+        for link in links:
+
+            _type = link["Type"]
+            if _type == "To":
+                continue
+
+            _plink = getattr(link["ref"], _type)
+
+            _port_type = "In" if _type == "To" else "Out"
+
+            port_tpl = node_tpl.get_port(_plink.port_name)
+
+            if port_tpl.is_transition(_port_type, _plink.port_type):
+                return True
+
+        return False
+
     def get_nodelet_manager(self, node_inst: str) -> str:
         """Returns nodelet manager name"""
         output = None
