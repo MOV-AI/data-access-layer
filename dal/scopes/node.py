@@ -702,11 +702,8 @@ class Node(Scope):
     def _validate_name(cls, name):
         forbidden_words = ["start"]
 
-        for word in forbidden_words:
-            if word.lower() in name.lower():
-                raise ValueError(
-                    f"'{name}' is not a valid name for type Node because it contains '{word}'"
-                )
+        if name.lower() in forbidden_words:
+            raise ValueError(f"Node cannot be named '{name}'")
 
     @classmethod
     def _validate_ports(cls, data: dict, node_name):

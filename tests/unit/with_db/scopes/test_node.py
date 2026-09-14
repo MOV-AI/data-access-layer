@@ -42,10 +42,10 @@ class TestNode:
             clean_old_data=True,
         )
 
-        data = {"Node": ["containing_start"]}
+        data = {"Node": ["start"]}
         with pytest.raises(
             ImportException,
-            match="Failed to import Node:containing_start - 'containing_start' is not a valid name for type Node because it contains 'start'",
+            match="Failed to import Node:start - Node cannot be named 'start'",
         ):
             tool.run(data)
 
