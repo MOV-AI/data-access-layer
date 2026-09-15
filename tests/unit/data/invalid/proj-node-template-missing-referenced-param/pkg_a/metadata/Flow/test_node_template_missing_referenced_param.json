@@ -10,7 +10,12 @@
                 "user": "movai@internal"
             },
             "Layers": {},
-            "Links": {},
+            "Links": {
+                "start-to-template-node": {
+                    "From": "start/start/start",
+                    "To": "template_node/in/in"
+                }
+            },
             "NodeInst": {
                 "template_node": {
                     "NodeLabel": "template_node",

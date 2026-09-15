@@ -172,6 +172,18 @@ class TestFlowParameters:
 
         assert params["log_description"] == "Parameter is nested parent value"
 
+    def test_flow_validator_uses_parent_context_for_recursive_subflows(
+        self, flow_parameter_test_data
+    ):
+        """
+        Test that recursive flow validation parses subflow parameters in the parent context.
+        """
+        from dal.validation.flow_validator import FlowValidator
+
+        validator_output = FlowValidator(NESTED_PARENT_FLOW).validate_flow()
+
+        assert validator_output.summary.total_issues == 0
+
     def test_flow_parameter_can_be_bound_by_ancestor_container_through_pass_through_chain(
         self, flow_parameter_test_data
     ):

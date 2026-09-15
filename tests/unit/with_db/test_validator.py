@@ -184,7 +184,7 @@ class TestProjectValidator:
                 [
                     DuplicatedMob(
                         json_path="check_bool.json",
-                        msg="Duplicate MOB name 'check_bool' found in packages: pkg_a, pkg_b installed in workspace 'unknown'",
+                        msg="Duplicate MOB name 'check_bool' found in packages: unknown/pkg_a, unknown/pkg_b",
                     ),
                 ],
             )
@@ -219,6 +219,11 @@ class TestProjectValidator:
                             json_path="test_pub_ros_to_sub_ros.json",
                             msg="The ports of link ca35667e-8e58-4c71-8973-245da65dbe0b in Flow test_pub_ros_to_sub_ros do not match | From: ros/pub_empty/out | To: ros/sub/in",
                             line_start=15,
+                        ),
+                        NonMatchingLinkPorts(
+                            json_path="test_pub_ros_to_sub_ros.json",
+                            msg="The ports of link zz-start-to-ros in Flow test_pub_ros_to_sub_ros do not match | From: start/start/start | To: ros/sub/in",
+                            line_start=19,
                         ),
                         NonMatchingLinkPorts(
                             json_path="test_transition_to_dependency.json",
