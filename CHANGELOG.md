@@ -1,5 +1,8 @@
 # Changelog
 
+## vTBD
+- [BP-1785](https://movai.atlassian.net/browse/BP-1785): Project and Flow validations carry recursive context for parameter parsing validations.
+
 ## v3.30.2
 - [BP-1785](https://movai.atlassian.net/browse/BP-1785): Links should allow connection of combinations of ROS1/ROS2 Publisher/Subscriber.
   - Static parsing should not declare an undefined var parameter reference as an error as these can be created and altered at runtime.
