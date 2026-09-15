@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.31.1
 - [BP-1794](https://movai.atlassian.net/browse/BP-1794): Start Node can be broken by creating a node called start
 
 ## v3.31.0
