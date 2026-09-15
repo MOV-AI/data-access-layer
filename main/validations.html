@@ -1,0 +1,345 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Static validations &mdash; data-access-layer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+
+  
+    <link rel="shortcut icon" href="_static/cropped-Mov.ai-favicon2-32x32.png"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="_static/versions.js?v=6808f9ef"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Scopes" href="scopes.html" />
+    <link rel="prev" title="Schemas and validation" href="schemas.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            data-access-layer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Data Access Layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">data-access-layer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schemas.html">Schemas and validation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Static validations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#running-the-validations">Running the validations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#result-format">Result format</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#validations">Validations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#formating-duplicated-metadata">Formating - Duplicated metadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#formating-missing-flow-or-node">Formating - Missing Flow or Node</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#formating-missing-flow-instance-referenced-by-link">Formating - Missing flow instance referenced by link</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#formating-missing-node-instance-referenced-by-link">Formating - Missing node instance referenced by link</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#formating-missing-node-port">Formating - Missing Node port</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#formating-non-matching-link-ports">Formating - Non matching link ports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#formating-missing-referenced-parameter">Formating - Missing referenced parameter</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#reachability">Reachability</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="scopes.html">Scopes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backup.html">Mobdata CLI Tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="permissions.html">Resource permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="robot_parameters.html">Robot Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">data-access-layer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Static validations</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/MOV-AI/data-access-layer/blob/main/docs/source/validations.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="static-validations">
+<h1>Static validations<a class="headerlink" href="#static-validations" title="Permalink to this heading"></a></h1>
+<p>Static validation inspects the metadata installed in a workspace and reports the issues found, without running the project.
+It analyses the project as it is actually deployed, so the platform can run it at any point after installation.</p>
+<section id="running-the-validations">
+<h2>Running the validations<a class="headerlink" href="#running-the-validations" title="Permalink to this heading"></a></h2>
+<p>Two entry points are available:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Validator</p></th>
+<th class="head"><p>Scope</p></th>
+<th class="head"><p>Entry point</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ProjectValidator</span></code></p></td>
+<td><p>Every object installed in the workspace</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dal.validation.project_validator.ProjectValidator().validate()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">FlowValidator</span></code></p></td>
+<td><p>A single Flow and every subflow it contains</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dal.validation.flow_validator.FlowValidator(flow_ref).validate_flow()</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dal.validation.project_validator</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProjectValidator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dal.validation.flow_validator</span><span class="w"> </span><span class="kn">import</span> <span class="n">FlowValidator</span>
+
+<span class="n">project_result</span> <span class="o">=</span> <span class="n">ProjectValidator</span><span class="p">()</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+<span class="n">flow_result</span> <span class="o">=</span> <span class="n">FlowValidator</span><span class="p">(</span><span class="s2">&quot;my_flow&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">validate_flow</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Both are also exposed by the backend REST API:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GET</span> <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">v2</span><span class="o">/</span><span class="n">validate</span><span class="o">/</span><span class="n">project</span>
+<span class="n">GET</span> <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">v2</span><span class="o">/</span><span class="n">validate</span><span class="o">/</span><span class="n">flow</span><span class="o">/</span><span class="p">{</span><span class="n">flow</span><span class="p">}</span>
+</pre></div>
+</div>
+<section id="result-format">
+<h3>Result format<a class="headerlink" href="#result-format" title="Permalink to this heading"></a></h3>
+<p>Both entry points return a <code class="docutils literal notranslate"><span class="pre">ProjectValidationResult</span></code>:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;summary&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;total_issues&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;error_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;warning_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;scopes_checked&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Annotation&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Callback&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;issues&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;category&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Formating&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;iss_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Missing Flow or Node&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;severity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;msg&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Node &#39;test_any&#39; missing, required by Flow &#39;test_missing_node&#39; (instance &#39;test_any&#39;)&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;json_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;test_missing_node.json&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;document_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Flow&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;document_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;test_missing_node&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;line_start&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">27</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">line_start</span></code> refers to the document rendered with the MOV.AI standard JSON formatting (<code class="docutils literal notranslate"><span class="pre">indent=4</span></code>, <code class="docutils literal notranslate"><span class="pre">sort_keys=True</span></code>), which is how documents are exported from Redis.
+<code class="docutils literal notranslate"><span class="pre">json_path</span></code>, <code class="docutils literal notranslate"><span class="pre">document_type</span></code> and <code class="docutils literal notranslate"><span class="pre">document_name</span></code> identify the document the issue should be reported on, which is not always the Flow being validated: a parameter defined in a Node template, for example, is reported on the Node metadata.</p>
+</section>
+</section>
+<section id="validations">
+<h2>Validations<a class="headerlink" href="#validations" title="Permalink to this heading"></a></h2>
+<p>The following table describes each issue, its category, its default severity and the data it applies to.
+The severity is the one reported when the issue is found on a reachable path; see <a class="reference internal" href="#reachability"><span class="std std-ref">Reachability</span></a> for when it is downgraded.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Issue category</p></th>
+<th class="head"><p>Issue type</p></th>
+<th class="head"><p>Issue severity</p></th>
+<th class="head"><p>Applicable to</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Formating</p></td>
+<td><p>Duplicated metadata</p></td>
+<td><p>Error</p></td>
+<td><p>All scopes</p></td>
+</tr>
+<tr class="row-odd"><td><p>Formating</p></td>
+<td><p>Missing Flow or Node</p></td>
+<td><p>Error</p></td>
+<td><p>Flow</p></td>
+</tr>
+<tr class="row-even"><td><p>Formating</p></td>
+<td><p>Missing flow instance referenced by link</p></td>
+<td><p>Error</p></td>
+<td><p>Flow links</p></td>
+</tr>
+<tr class="row-odd"><td><p>Formating</p></td>
+<td><p>Missing node instance referenced by link</p></td>
+<td><p>Error</p></td>
+<td><p>Flow links</p></td>
+</tr>
+<tr class="row-even"><td><p>Formating</p></td>
+<td><p>Missing Node port</p></td>
+<td><p>Error</p></td>
+<td><p>Flow links</p></td>
+</tr>
+<tr class="row-odd"><td><p>Formating</p></td>
+<td><p>Non matching link ports</p></td>
+<td><p>Error</p></td>
+<td><p>Flow links</p></td>
+</tr>
+<tr class="row-even"><td><p>Formating</p></td>
+<td><p>Missing referenced parameter</p></td>
+<td><p>Error</p></td>
+<td><p>Flow, Node</p></td>
+</tr>
+</tbody>
+</table>
+<section id="formating-duplicated-metadata">
+<h3>Formating - Duplicated metadata<a class="headerlink" href="#formating-duplicated-metadata" title="Permalink to this heading"></a></h3>
+<p>Issue triggered when the same metadata name is found in more than one package installed across all workspaces.
+Duplicated names are ambiguous: which of the documents is used depends on installation order.</p>
+<p>See example <a class="reference external" href="../../tests/unit/data/invalid/proj-duplicated-metadata/">proj-duplicated-metadata</a>.</p>
+</section>
+<section id="formating-missing-flow-or-node">
+<h3>Formating - Missing Flow or Node<a class="headerlink" href="#formating-missing-flow-or-node" title="Permalink to this heading"></a></h3>
+<p>Issue triggered when a Flow declares a container or a node instance whose template (a Flow or a Node) does not exist in the project.</p>
+<p>See examples <a class="reference external" href="../../tests/unit/data/invalid/proj-missing-flow/">proj-missing-flow</a> and <a class="reference external" href="../../tests/unit/data/invalid/proj-missing-node/">proj-missing-node</a>.</p>
+</section>
+<section id="formating-missing-flow-instance-referenced-by-link">
+<h3>Formating - Missing flow instance referenced by link<a class="headerlink" href="#formating-missing-flow-instance-referenced-by-link" title="Permalink to this heading"></a></h3>
+<p>Issue triggered when a link path mentions a container (subflow instance) that no longer exists in the Flow.</p>
+<p>See example <a class="reference external" href="../../tests/unit/data/invalid/proj-missing-flow-instance/">proj-missing-flow-instance</a>.</p>
+</section>
+<section id="formating-missing-node-instance-referenced-by-link">
+<h3>Formating - Missing node instance referenced by link<a class="headerlink" href="#formating-missing-node-instance-referenced-by-link" title="Permalink to this heading"></a></h3>
+<p>Issue triggered when a link path mentions a node instance that no longer exists in the Flow.</p>
+<p>See example <a class="reference external" href="../../tests/unit/data/invalid/proj-missing-node-instance/">proj-missing-node-instance</a>.</p>
+</section>
+<section id="formating-missing-node-port">
+<h3>Formating - Missing Node port<a class="headerlink" href="#formating-missing-node-port" title="Permalink to this heading"></a></h3>
+<p>Issue triggered when a link connects to a port that does not exist on the referenced Node template.
+Reported separately for the source and the destination of the link.</p>
+<p>See example <a class="reference external" href="../../tests/unit/data/invalid/proj-missing-port/">proj-missing-port</a>.</p>
+</section>
+<section id="formating-non-matching-link-ports">
+<h3>Formating - Non matching link ports<a class="headerlink" href="#formating-non-matching-link-ports" title="Permalink to this heading"></a></h3>
+<p>Issue triggered when both ports of a link exist but are not compatible, and therefore should not be connected.</p>
+<p>Compatible combinations are:</p>
+<ul class="simple">
+<li><p>A <code class="docutils literal notranslate"><span class="pre">movai_msgs/Any</span></code> publisher to any subscriber, and any publisher to a <code class="docutils literal notranslate"><span class="pre">movai_msgs/Any</span></code> subscriber, except transitions.</p></li>
+<li><p>Publisher to subscriber of the same package and message, in any combination of ROS1 and ROS2 implementations.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MovAI/Depends</span></code> to <code class="docutils literal notranslate"><span class="pre">MovAI/Dependency</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MovAI/TransitionFor</span></code> to <code class="docutils literal notranslate"><span class="pre">MovAI/TransitionTo</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ROS1/NodeletClient</span></code> to <code class="docutils literal notranslate"><span class="pre">ROS1/NodeletServer</span></code>, <code class="docutils literal notranslate"><span class="pre">ROS1/PluginClient</span></code> to <code class="docutils literal notranslate"><span class="pre">ROS1/PluginServer</span></code>, <code class="docutils literal notranslate"><span class="pre">ROS1/ReconfigureClient</span></code> to <code class="docutils literal notranslate"><span class="pre">ROS1/ReconfigureServer</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ROS1/ServiceClient</span></code> to <code class="docutils literal notranslate"><span class="pre">ROS1/ServiceServer</span></code> of the same package and message.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ROS1/ActionClient</span></code> and <code class="docutils literal notranslate"><span class="pre">ROS1/ActionServer</span></code>, in both directions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ROS1/Publisher</span></code> to <code class="docutils literal notranslate"><span class="pre">ROS1/TopicHz</span></code>.</p></li>
+</ul>
+<p>See example <a class="reference external" href="../../tests/unit/data/invalid/proj-non-matching-ports/">proj-non-matching-ports</a>.</p>
+</section>
+<section id="formating-missing-referenced-parameter">
+<h3>Formating - Missing referenced parameter<a class="headerlink" href="#formating-missing-referenced-parameter" title="Permalink to this heading"></a></h3>
+<p>Issue triggered when a parameter expression references a value that cannot be resolved by the runtime parameter parser.
+The message names the kind of reference that could not be resolved:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Reference</p></th>
+<th class="head"><p>Expression</p></th>
+<th class="head"><p>Resolved from</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">flow</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">$(flow</span> <span class="pre">&lt;name&gt;)</span></code></p></td>
+<td><p>Parameters of the Flow the instance belongs to</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">config</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">$(config</span> <span class="pre">&lt;name&gt;)</span></code></p></td>
+<td><p>A Configuration document</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">param</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">$(param</span> <span class="pre">&lt;name&gt;)</span></code></p></td>
+<td><p>Parameters of the node instance itself</p></td>
+</tr>
+</tbody>
+</table>
+<p>Parameters are parsed the same way the runtime parses them: each Flow is validated in the context of the runnable Flow that contains it, with the full container path of the instance, so that a subflow parameter bound by an ancestor container resolves exactly as it will at runtime.
+This means the same subflow can be reported as valid in one parent Flow and invalid in another.</p>
+<p><code class="docutils literal notranslate"><span class="pre">$(var</span> <span class="pre">...)</span></code> references are not reported, since fleet and robot variables can be created by nodes during execution and therefore cannot be checked statically. They still raise an error when parsed at runtime.</p>
+<p>See examples <a class="reference external" href="../../tests/unit/data/invalid/proj-missing-referenced-params/">proj-missing-referenced-params</a>, <a class="reference external" href="../../tests/unit/data/invalid/proj-subflow-missing-referenced-params/">proj-subflow-missing-referenced-params</a> and <a class="reference external" href="../../tests/unit/data/invalid/proj-node-template-missing-referenced-param/">proj-node-template-missing-referenced-param</a>.</p>
+</section>
+</section>
+<section id="reachability">
+<h2>Reachability<a class="headerlink" href="#reachability" title="Permalink to this heading"></a></h2>
+<p>Metadata that cannot be reached when the project runs cannot break it, so issues found on unreachable paths are reported as warnings (<code class="docutils literal notranslate"><span class="pre">NORMAL</span></code>) instead of errors.
+They are still reported, because they usually indicate leftovers from an incomplete edit and could cause errors if the unreachable paths become reachable in the future.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="schemas.html" class="btn btn-neutral float-left" title="Schemas and validation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="scopes.html" class="btn btn-neutral float-right" title="Scopes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Backend.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Read the Docs</span>
+        v: main
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dt>Versions</dt>
+        <dl id="docs-versions"></dl>
+        <hr />
+        <a href="https://tech.michaelaltfield.net/2020/07/18/sphinx-rtd-github-pages-1/">Continuous
+            Documentation</a> hosting provided by <a href="https://pages.github.com/">GitHub Pages</a>.
+    </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
