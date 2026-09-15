@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.31.0
 - [BP-1785](https://movai.atlassian.net/browse/BP-1785): Project and Flow validations carry recursive context for parameter parsing validations.
 
 ## v3.30.2
