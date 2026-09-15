@@ -4,6 +4,12 @@
 - [BP-1795](https://movai.atlassian.net/browse/BP-1795): Send alert deactivation data to Loki.
 - [BP-1734](https://movai.atlassian.net/browse/BP-1734): Expose new metrics API to callbacks.
 
+## v3.31.1
+- [BP-1794](https://movai.atlassian.net/browse/BP-1794): Start Node can be broken by creating a node called start
+
+## v3.31.0
+- [BP-1785](https://movai.atlassian.net/browse/BP-1785): Project and Flow validations carry recursive context for parameter parsing validations.
+
 ## v3.30.2
 - [BP-1785](https://movai.atlassian.net/browse/BP-1785): Links should allow connection of combinations of ROS1/ROS2 Publisher/Subscriber.
   - Static parsing should not declare an undefined var parameter reference as an error as these can be created and altered at runtime.

@@ -184,7 +184,7 @@ class TestProjectValidator:
                 [
                     DuplicatedMob(
                         json_path="check_bool.json",
-                        msg="Duplicate MOB name 'check_bool' found in packages: pkg_a, pkg_b installed in workspace 'unknown'",
+                        msg="Duplicate MOB name 'check_bool' found in packages: unknown/pkg_a, unknown/pkg_b",
                     ),
                 ],
             )
@@ -219,6 +219,11 @@ class TestProjectValidator:
                             json_path="test_pub_ros_to_sub_ros.json",
                             msg="The ports of link ca35667e-8e58-4c71-8973-245da65dbe0b in Flow test_pub_ros_to_sub_ros do not match | From: ros/pub_empty/out | To: ros/sub/in",
                             line_start=15,
+                        ),
+                        NonMatchingLinkPorts(
+                            json_path="test_pub_ros_to_sub_ros.json",
+                            msg="The ports of link zz-start-to-ros in Flow test_pub_ros_to_sub_ros do not match | From: start/start/start | To: ros/sub/in",
+                            line_start=19,
                         ),
                         NonMatchingLinkPorts(
                             json_path="test_transition_to_dependency.json",
@@ -315,17 +320,17 @@ class TestProjectValidator:
     def test_missing_port(self, isolated_database, folder_invalid_data):
         """Tests that missing node port issue is found."""
 
-        from dal.validation.issues import MissingMob
+        from dal.validation.issues import MissingNodePort
 
         with setup_test_data_from_path(folder_invalid_data / "proj-missing-port"):
             validator_output: ProjectValidationResult = ProjectValidator().validate()
             execute_and_assert_same_type_issues(
                 validator_output,
                 [
-                    MissingMob(
+                    MissingNodePort(
                         json_path="test_missing_port.json",
-                        msg="Node 'dependency' missing, required by Flow 'test_missing_port' (instance 'dependency')",
-                        line_start=24,
+                        msg="Destination port of link a42d10cf-32c4-40a4-a95d-812649d56810 does not exist | From: start/start/start | To: dependency/entry/in",
+                        line_start=18,
                     ),
                 ],
             )
@@ -463,7 +468,7 @@ class TestFlowValidator:
     def test_flow_with_missing_port(self, global_db, folder_invalid_data):
         """Tests that a flow with invalid links has issues."""
 
-        from dal.validation.issues import MissingMob
+        from dal.validation.issues import MissingNodePort
         from dal.validation.flow_validator import FlowValidator
 
         with setup_test_data_from_path(folder_invalid_data / "proj-missing-port"):
@@ -473,10 +478,10 @@ class TestFlowValidator:
             execute_and_assert_same_type_issues(
                 validator_output,
                 [
-                    MissingMob(
+                    MissingNodePort(
                         json_path="test_missing_port.json",
-                        msg="Node 'dependency' missing, required by Flow 'test_missing_port' (instance 'dependency')",
-                        line_start=24,
+                        msg="Destination port of link a42d10cf-32c4-40a4-a95d-812649d56810 does not exist | From: start/start/start | To: dependency/entry/in",
+                        line_start=18,
                     ),
                 ],
             )

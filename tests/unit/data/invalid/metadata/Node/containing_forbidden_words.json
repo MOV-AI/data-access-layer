@@ -1,0 +1,77 @@
+{
+    "Node": {
+        "containing_forbidden_words": {
+            "Info": "Node that depends on Configurations to test configuration file sending",
+            "Label": "containing_forbidden_words",
+            "LastUpdate": {
+                "date": "04/09/2026 at 12:30:00",
+                "user": "movai@internal"
+            },
+            "Launch": true,
+            "PackageDepends": [
+                "Configurations"
+            ],
+            "Parameter": {
+                "log_action": {
+                    "Description": "Log to inform the user to perform an action",
+                    "Type": "string",
+                    "Value": ""
+                },
+                "log_description": {
+                    "Description": "Description of the log",
+                    "Type": "string",
+                    "Value": "This node has Configurations in PackageDepends"
+                },
+                "log_to_fleetboard": {
+                    "Description": "Enable/Disable publishing value to FleetDashboard",
+                    "Type": "boolean",
+                    "Value": "True"
+                },
+                "log_type": {
+                    "Description": "Type of the log",
+                    "Type": "string",
+                    "Value": "info"
+                }
+            },
+            "Path": "",
+            "Persistent": false,
+            "PortsInst": {
+                "a_topic_with_the_word_end": {
+                    "Info": "",
+                    "Message": "Bool",
+                    "Out": {
+                        "out": {
+                            "Message": "std_msgs/Bool",
+                            "Parameter": {
+                                "latch": false,
+                                "queue_size": 1
+                            }
+                        }
+                    },
+                    "Package": "std_msgs",
+                    "Template": "ROS1/Publisher"
+                },
+                "a_topic_without_the_word": {
+                    "Info": "",
+                    "Message": "Bool",
+                    "Out": {
+                        "out": {
+                            "Message": "std_msgs/Bool",
+                            "Parameter": {
+                                "latch": false,
+                                "queue_size": 1
+                            }
+                        }
+                    },
+                    "Package": "std_msgs",
+                    "Template": "ROS1/Publisher"
+                }
+            },
+            "Remappable": true,
+            "Type": "MovAI/Node",
+            "User": "",
+            "Version": "",
+            "VersionDelta": {}
+        }
+    }
+}
