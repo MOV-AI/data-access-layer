@@ -1,5 +1,8 @@
 # Changelog
 
+## vTBD
+- [BP-1794](https://movai.atlassian.net/browse/BP-1794): Start Node can be broken by creating a node called start
+
 ## v3.31.0
 - [BP-1785](https://movai.atlassian.net/browse/BP-1785): Project and Flow validations carry recursive context for parameter parsing validations.
 

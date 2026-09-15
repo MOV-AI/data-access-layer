@@ -65,7 +65,7 @@ class Schema:
             self.validator.validate(data)
         except ValidationError as e:
             status = False
-            message = f"Data schema violation: {e.message}"
+            message = f"Data schema violation: {e}"
         except Exception as e:
             status = False
             message = str(e)

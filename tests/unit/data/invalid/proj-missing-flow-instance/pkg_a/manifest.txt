@@ -1,1 +1,1 @@
-Flow:test_missing_flow
+Flow:test_missing_flow_instance

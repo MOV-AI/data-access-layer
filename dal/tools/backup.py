@@ -687,12 +687,12 @@ class Importer(Backup):
 
         try:
             ScopeClass = Factory.get_class(scope)
-            ScopeClass.validate_format(scope, data[scope][name])
+            ScopeClass.validate_format(scope, data[scope][name], name)
         except ValueError as exc:
             _msg = f"Failed to import {scope}:{name} - {exc}"
             if self.validate:
                 self.log(_msg)
-                raise ImportException(exc) from exc
+                raise ImportException(_msg) from exc
             else:
                 # force print
                 print(_msg)

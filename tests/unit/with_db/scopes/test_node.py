@@ -26,3 +26,32 @@ class TestNode:
         assert node.Label == "delete_me"
         assert node.User == ""
         assert hasattr(node, "LastUpdate")
+
+    def test_import_forbidden_words(self, global_db, metadata_folder_invalid_data):
+        """Test node import with forbidden words."""
+        import pytest
+
+        from dal.tools.backup import Importer, ImportException
+
+        tool = Importer(
+            metadata_folder_invalid_data,
+            force=False,
+            dry=False,
+            debug=False,
+            recursive=False,
+            clean_old_data=True,
+        )
+
+        data = {"Node": ["start"]}
+        with pytest.raises(
+            ImportException,
+            match="Failed to import Node:start - Node cannot be named 'start'",
+        ):
+            tool.run(data)
+
+        data = {"Node": ["containing_forbidden_words"]}
+        with pytest.raises(
+            ImportException,
+            match="Failed to import Node:containing_forbidden_words - In 'containing_forbidden_words', port 'a_topic_with_the_word_end' is not valid because it contains 'end'",
+        ):
+            tool.run(data)
