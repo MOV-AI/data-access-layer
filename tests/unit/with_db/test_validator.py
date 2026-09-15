@@ -184,7 +184,7 @@ class TestProjectValidator:
                 [
                     DuplicatedMob(
                         json_path="check_bool.json",
-                        msg="Duplicate MOB name 'check_bool' found in packages: pkg_a, pkg_b installed in workspace 'unknown'",
+                        msg="Duplicate MOB name 'check_bool' found in packages: unknown/pkg_a, unknown/pkg_b",
                     ),
                 ],
             )

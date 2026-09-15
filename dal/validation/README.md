@@ -74,7 +74,7 @@ The severity is the one reported when the issue is found on a reachable path; se
 
 ### Formating - Duplicated metadata
 
-Issue triggered when the same metadata name is found in more than one package installed in the same workspace.
+Issue triggered when the same metadata name is found in more than one package installed across all workspaces.
 Duplicated names are ambiguous: which of the documents is used depends on installation order.
 
 See example [proj-duplicated-metadata](../../tests/unit/data/invalid/proj-duplicated-metadata/).

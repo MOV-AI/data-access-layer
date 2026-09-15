@@ -272,7 +272,7 @@ class ProjectValidator:
         """
         Check for duplicate names across workspace.
 
-        In Redis/DAL, duplicates within a workspace shouldn't exist
+        In Redis/DAL, duplicates within any workspace shouldn't exist
         We check for duplicates in the packages information stored in the local db
         """
         LOGGER.info("Checking for duplicate names across workspace")
@@ -280,12 +280,11 @@ class ProjectValidator:
         # Get all objects from the package data
         all_packages_sys = Package.get_packagedata()
 
-        # Check for duplicates per workspace
+        # Track objects by scope and name to find duplicates
+        # Structure: {scope: {object_name: [(workspace1, package1), (workspace2, package2), ...]}}
+        objects_by_scope_and_name: Dict[str, Dict[str, List[Tuple[str, str]]]] = {}
+        # Extract objects from each workspace and organize them by scope and name
         for workspace_name, workspace_struct in all_packages_sys.Workspaces.items():
-            # Track objects by scope and name to find duplicates
-            # Structure: {scope: {object_name: [package1, package2, ...]}}
-            objects_by_scope_and_name: Dict[str, Dict[str, List[str]]] = {}
-
             packages_dict = (
                 workspace_struct.Packages if hasattr(workspace_struct, "Packages") else {}
             )
@@ -305,19 +304,21 @@ class ProjectValidator:
                     for obj_name in objects_list:
                         if obj_name not in objects_by_scope_and_name[scope]:
                             objects_by_scope_and_name[scope][obj_name] = []
-                        objects_by_scope_and_name[scope][obj_name].append(package_name)
-
-            # Check for duplicates within each scope
-            for scope, objects_dict in objects_by_scope_and_name.items():
-                for obj_name, packages_list in objects_dict.items():
-                    if len(packages_list) > 1:
-                        issue = DuplicatedMob(
-                            json_path=f"{obj_name}.json",
-                            msg=f"Duplicate MOB name '{obj_name}' found in packages: {', '.join(sorted(packages_list))} installed in workspace '{workspace_name}'",
-                            document_type=scope,
-                            document_name=obj_name,
+                        objects_by_scope_and_name[scope][obj_name].append(
+                            (workspace_name, package_name)
                         )
-                        self.issues.append(issue)
+
+        # Check for duplicates within each scope across all workspaces
+        for scope, objects_dict in objects_by_scope_and_name.items():
+            for obj_name, packages_list in objects_dict.items():
+                if len(packages_list) > 1:
+                    issue = DuplicatedMob(
+                        json_path=f"{obj_name}.json",
+                        msg=f"Duplicate MOB name '{obj_name}' found in packages: {', '.join(sorted([f'{ws}/{pkg}' for ws, pkg in packages_list]))}",
+                        document_type=scope,
+                        document_name=obj_name,
+                    )
+                    self.issues.append(issue)
 
     @staticmethod
     def _join_node_path(prefix: str, name: str) -> str:
