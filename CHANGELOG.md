@@ -1,5 +1,9 @@
 # Changelog
 
+## vTBD
+- [BP-1795](https://movai.atlassian.net/browse/BP-1795): Send alert deactivation data to Loki.
+- [BP-1734](https://movai.atlassian.net/browse/BP-1734): Expose new metrics API to callbacks.
+
 ## v3.31.1
 - [BP-1794](https://movai.atlassian.net/browse/BP-1794): Start Node can be broken by creating a node called start
 
