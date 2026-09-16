@@ -422,6 +422,7 @@ class Importer(Backup):
 
         self.force = force
         self.dry_run = dry
+
         self.validate = not force
         self._delete = clean_old_data
 
@@ -690,13 +691,8 @@ class Importer(Backup):
             ScopeClass.validate_format(scope, data[scope][name], name)
         except ValueError as exc:
             _msg = f"Failed to import {scope}:{name} - {exc}"
-            if self.validate:
-                self.log(_msg)
-                raise ImportException(_msg) from exc
-            else:
-                # force print
-                print(_msg)
-            return
+            self.log(_msg)
+            raise ImportException(_msg) from exc
 
         # remove unwanted keys
         if self._delete and scope not in self.SKIP_SCOPE_DELETE:
