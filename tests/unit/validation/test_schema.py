@@ -187,14 +187,7 @@ class TestNodeSchema:
 
         data = {
             "Type": "ROS1/Plugin",
-            "PortsInst": {
-                "pubport": {
-                    "Message": "Float32",
-                    "Out": {"out": {"Message": "std_msgs/Float32"}},
-                    "Package": "std_msgs",
-                    "Template": "ROS1/Publisher",
-                }
-            },
+            "PortsInst": {},
         }
 
         with pytest.raises(ValueError, match="ROS1/Plugin nodes must have"):
