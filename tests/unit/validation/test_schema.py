@@ -296,3 +296,146 @@ class TestNodeSchema:
 
         with pytest.raises(ValueError, match="ROS1/Node nodes cannot have"):
             Node.validate_format("Node", data)
+
+    def test_validate_invalid_node_type(self):
+        """Test that an unrecognized node type fails validation."""
+        from dal.scopes.node import Node
+
+        data = {"Type": "Invalid/NodeType", "PortsInst": {}}
+
+        with pytest.raises(ValueError, match="is not a valid node type"):
+            Node.validate_format("Node", data)
+
+    def test_validate_ros1_nodelet_valid(self):
+        """Test that a valid ROS1/Nodelet node with a mandatory nodelet port passes validation."""
+        from dal.scopes.node import Node
+
+        data = {
+            "Type": "ROS1/Nodelet",
+            "PortsInst": {
+                "nodelet_server": {
+                    "In": {"in": {"Message": "movai_msgs/Nodelet"}},
+                    "Info": "",
+                    "Message": "Nodelet",
+                    "Package": "movai_msgs",
+                    "Template": "ROS1/NodeletServer",
+                }
+            },
+        }
+        Node.validate_format("Node", data)
+
+    def test_validate_ros1_plugin_valid(self):
+        """Test that a valid ROS1/Plugin node passes validation."""
+        from dal.scopes.node import Node
+
+        data = {
+            "Type": "ROS1/Plugin",
+            "PortsInst": {
+                "plugin_client": {
+                    "Info": "",
+                    "Message": "Plugin",
+                    "Out": {"out": {"Message": "movai_msgs/Plugin"}},
+                    "Package": "movai_msgs",
+                    "Template": "ROS1/PluginClient",
+                }
+            },
+        }
+        Node.validate_format("Node", data)
+
+    def test_validate_movai_state_valid(self):
+        """Test that a valid MovAI/State node with a transition port passes validation."""
+        from dal.scopes.node import Node
+
+        data = {
+            "Type": "MovAI/State",
+            "PortsInst": {
+                "trans_to": {
+                    "In": {
+                        "in": {"Callback": "create_log_start", "Message": "movai_msgs/Transition"}
+                    },
+                    "Message": "Transition",
+                    "Package": "movai_msgs",
+                    "Template": "MovAI/TransitionTo",
+                }
+            },
+        }
+        Node.validate_format("Node", data)
+
+    def test_validate_movai_server_valid_websocket(self):
+        """Test that a valid MovAI/Server node using AioHttp/Websocket passes validation."""
+        from dal.scopes.node import Node
+
+        data = {
+            "Type": "MovAI/Server",
+            "PortsInst": {
+                "ws_port": {
+                    "Message": "Websocket",
+                    "Package": "movai_msgs",
+                    "Template": "AioHttp/Websocket",
+                }
+            },
+        }
+        Node.validate_format("Node", data)
+
+    def test_validate_ros2_launch_valid(self):
+        """Test that a valid ROS2/Launch node with allowed dependency ports passes validation."""
+        from dal.scopes.node import Node
+
+        data = {
+            "Type": "ROS2/Launch",
+            "PortsInst": {
+                "dependency": {
+                    "Message": "Dependency",
+                    "Package": "movai_msgs",
+                    "Template": "MovAI/Dependency",
+                }
+            },
+        }
+        Node.validate_format("Node", data)
+
+    def test_validate_ros2_launch_unallowed_port(self):
+        """Test that a ROS2/Launch node with an unallowed ROS2/Publisher port fails validation."""
+        from dal.scopes.node import Node
+
+        data = {
+            "Type": "ROS2/Launch",
+            "PortsInst": {
+                "pub_port": {
+                    "Message": "Float32",
+                    "Out": {"out": {"Message": "std_msgs/Float32"}},
+                    "Package": "std_msgs",
+                    "Template": "ROS2/Publisher",
+                }
+            },
+        }
+
+        with pytest.raises(
+            ValueError, match="ROS2/Launch nodes cannot have template ports: ROS2/Publisher"
+        ):
+            Node.validate_format("Node", data)
+
+    def test_validate_ros1_plugin_extra_unallowed_port(self):
+        """Test that a ROS1/Plugin node with a forbidden extra port fails validation."""
+        from dal.scopes.node import Node
+
+        data = {
+            "Type": "ROS1/Plugin",
+            "PortsInst": {
+                "plugin_client": {
+                    "Message": "Dependency",
+                    "Package": "movai_msgs",
+                    "Template": "ROS1/PluginClient",
+                },
+                "extra_pub": {
+                    "Message": "Float32",
+                    "Out": {"out": {"Message": "std_msgs/Float32"}},
+                    "Package": "std_msgs",
+                    "Template": "ROS1/Publisher",
+                },
+            },
+        }
+
+        with pytest.raises(
+            ValueError, match="ROS1/Plugin nodes cannot have template ports: ROS1/Publisher"
+        ):
+            Node.validate_format("Node", data)
