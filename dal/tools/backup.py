@@ -2130,8 +2130,8 @@ def main() -> int:
 
     ret_code = backup(args)
 
-    sys.exit(ret_code)
+    return ret_code
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

@@ -117,8 +117,8 @@ def main() -> int:
         parser.print_help()
         ret_code = 0
 
-    sys.exit(ret_code)
+    return ret_code
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())
