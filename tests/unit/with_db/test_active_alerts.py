@@ -165,7 +165,7 @@ class TestAlerts:
 
         # Check the logs for the expected error message
         assert (
-            f"[alerts:True|user_log:True] Failed to activate alert {alert_id} due to missing key: 'placeholder' for Info text: Random info with placeholder {{placeholder}}"
+            f"Failed to activate alert {alert_id} due to missing key: 'placeholder' for Info text: Random info with placeholder {{placeholder}}"
             in caplog.text
         )
 
