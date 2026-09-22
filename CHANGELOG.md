@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.32.0
 - [BP-1798](https://movai.atlassian.net/browse/BP-1798): Package installation failed silently during project-hik pipeline.
 - [BP-1828](https://movai.atlassian.net/browse/BP-1828): Add featureflag to scope validations
 
