@@ -587,7 +587,7 @@ class TestToolsBackup:
         source_type,
     ):
         """Test import validates and reports invalid data."""
-        from dal.tools.backup import Importer
+        from dal.tools.backup import Importer, ImportException
 
         tool = Importer(
             metadata_folder_invalid_data,
@@ -603,10 +603,8 @@ class TestToolsBackup:
 
         objects = tool.read_manifest(manifest_file_invalid_data)
 
-        tool.run(objects)
-
-        captured = capsys.readouterr()
-        assert (
-            "Failed to import Translation:delete_me - Invalid data for scope Translation"
-            in captured.out
-        )
+        with pytest.raises(
+            ImportException,
+            match="Failed to import Translation:delete_me - Invalid data for scope Translation: Data schema violation:",
+        ):
+            tool.run(objects)

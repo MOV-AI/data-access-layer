@@ -1,5 +1,9 @@
 # Changelog
 
+## vTBD
+- [BP-1798](https://movai.atlassian.net/browse/BP-1798): Package installation failed silently during project-hik pipeline.
+- [BP-1828](https://movai.atlassian.net/browse/BP-1828): Add featureflag to scope validations
+
 ## v3.31.2
 - [BP-1795](https://movai.atlassian.net/browse/BP-1795): Send alert deactivation data to Loki.
 - [BP-1734](https://movai.atlassian.net/browse/BP-1734): Expose new metrics API to callbacks.

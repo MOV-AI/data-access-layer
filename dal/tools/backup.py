@@ -26,6 +26,7 @@ import xml.etree.ElementTree as ET
 from dal.movaidb import MovaiDB
 from dal.scopes.package import Package
 
+from movai_core_shared.envvars import RAISE_FLOW_VALIDATION_ERRORS
 from movai_core_shared.logger import Log
 
 LOGGER = Log.get_logger(__name__)
@@ -422,6 +423,7 @@ class Importer(Backup):
 
         self.force = force
         self.dry_run = dry
+
         self.validate = not force
         self._delete = clean_old_data
 
@@ -690,13 +692,9 @@ class Importer(Backup):
             ScopeClass.validate_format(scope, data[scope][name], name)
         except ValueError as exc:
             _msg = f"Failed to import {scope}:{name} - {exc}"
-            if self.validate:
-                self.log(_msg)
+            LOGGER.warning(_msg)
+            if RAISE_FLOW_VALIDATION_ERRORS:
                 raise ImportException(_msg) from exc
-            else:
-                # force print
-                print(_msg)
-            return
 
         # remove unwanted keys
         if self._delete and scope not in self.SKIP_SCOPE_DELETE:
@@ -2136,4 +2134,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())
