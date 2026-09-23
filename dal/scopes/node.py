@@ -12,6 +12,7 @@
 
 import re
 from movai_core_shared.consts import (
+    MOVAI_EXIT,
     MOVAI_NODE,
     ROS1_NODE,
     ROS1_NODELET,
@@ -121,6 +122,7 @@ IO_TEMPLATES_MOVAI_NODE = {
     MOVAI_CONTEXTSERVER,
     MOVAI_DEPENDENCY,
     MOVAI_DEPENDS,
+    MOVAI_EXIT,
     MOVAI_INIT,
     ROS1_ACTIONCLIENT,
     ROS1_BAG,
