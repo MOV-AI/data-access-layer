@@ -26,7 +26,7 @@ import xml.etree.ElementTree as ET
 from dal.movaidb import MovaiDB
 from dal.scopes.package import Package
 
-from movai_core_shared.envvars import RAISE_FLOW_VALIDATION_ERRORS
+from movai_core_shared.envvars import RAISE_METADATA_VALIDATION_ERRORS
 from movai_core_shared.logger import Log
 
 LOGGER = Log.get_logger(__name__)
@@ -693,7 +693,7 @@ class Importer(Backup):
         except ValueError as exc:
             _msg = f"Failed to import {scope}:{name} - {exc}"
             LOGGER.warning(_msg)
-            if RAISE_FLOW_VALIDATION_ERRORS:
+            if RAISE_METADATA_VALIDATION_ERRORS:
                 raise ImportException(_msg) from exc
 
         # remove unwanted keys
