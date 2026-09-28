@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.32.1
 - [BP-1785](https://movai.atlassian.net/browse/BP-1785): Add more detailed error message for undefined parameter references in flows
 
 ## v3.32.0
