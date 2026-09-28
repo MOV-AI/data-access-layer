@@ -1,6 +1,7 @@
 """Tool to import, export and remove data."""
 
 import argparse
+import sys
 
 from dal.utils.usage_search.scope_map import get_usage_search_scope_map
 from dal.tools.usage_search import Searcher
@@ -120,4 +121,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())

@@ -1,6 +1,9 @@
 """Tests for Translation scope."""
 
 
+import pytest
+
+
 class TestTranslation:
     def test_translation(self, global_db, metadata_folder):
         from dal.tools.backup import Importer
@@ -27,7 +30,7 @@ class TestTranslation:
         assert "Bonjour le monde." in trans.Translations["fr"].po
 
     def test_translation_invalid_po(self, global_db, metadata_folder_invalid_data, capsys):
-        from dal.tools.backup import Importer
+        from dal.tools.backup import Importer, ImportException
 
         tool = Importer(
             metadata_folder_invalid_data,
@@ -40,7 +43,8 @@ class TestTranslation:
 
         data = {"Translation": ["invalid_po"]}
 
-        tool.run(data)
-
-        captured = capsys.readouterr()
-        assert "Invalid PO file format for language pt" in captured.out
+        with pytest.raises(
+            ImportException,
+            match="Failed to import Translation:invalid_po - Invalid PO file format for language pt",
+        ):
+            tool.run(data)

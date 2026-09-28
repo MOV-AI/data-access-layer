@@ -107,6 +107,7 @@ The following I/O templates are allowed for each node type:
   - `MovAI/ContextServer`
   - `MovAI/Dependency`
   - `MovAI/Depends`
+  - `MovAI/Exit`
   - `MovAI/Init`
   - `ROS1/ActionClient`
   - `ROS1/Bag`
