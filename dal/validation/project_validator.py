@@ -772,7 +772,7 @@ class ProjectValidator:
         }.get(type(error), "parameter")
 
         details = (
-            f": \nResolution path:\n{str(error)}"
+            f" : \nResolution path:\n{str(error)}"
             if error.resolution_path and len(error.resolution_path) > 2
             else ""
         )
@@ -781,7 +781,7 @@ class ProjectValidator:
             json_path=json_path or f"{flow_ref}.json",
             msg=(
                 f"{owner_type} '{owner_name}' parameter '{param_key}' has an "
-                f"undefined {reference_type} reference in Flow '{flow_ref}' {details}"
+                f"undefined {reference_type} reference in Flow '{flow_ref}'{details}"
             ),
             line_start=line_start,
             document_type=document_type,
