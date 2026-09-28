@@ -1,5 +1,8 @@
 # Changelog
 
+## vTBD
+- [BP-1785](https://movai.atlassian.net/browse/BP-1785): Add more detailed error message for undefined parameter references in flows
+
 ## v3.32.0
 - [BP-1798](https://movai.atlassian.net/browse/BP-1798): Package installation failed silently during project-hik pipeline.
 - [BP-1828](https://movai.atlassian.net/browse/BP-1828): Add featureflag to scope validations
