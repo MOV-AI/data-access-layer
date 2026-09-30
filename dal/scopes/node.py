@@ -725,22 +725,6 @@ class Node(Scope):
             raise ValueError(f"Node cannot be named '{name}'")
 
     @classmethod
-    def _validate_ports(cls, data: dict, node_name):
-        forbidden_words = ["start", "end"]
-
-        ports_inst_dict = data.get("PortsInst", {})
-
-        for key in ports_inst_dict:
-            if "publisher" not in ports_inst_dict[key]["Template"].lower():
-                continue
-
-            for word in forbidden_words:
-                if word.lower() in key.lower():
-                    raise ValueError(
-                        f"In '{node_name}', port '{key}' is not valid because it contains '{word}'"
-                    )
-
-    @classmethod
     def _validate_content(cls, data: dict, name=""):
         """Node specific validations.
 
@@ -773,5 +757,3 @@ class Node(Scope):
         if required and not port_templates & required:
             req_list = " or ".join(sorted(required))
             raise ValueError(f"{node_type} nodes must have at least one {req_list} port")
-
-        cls._validate_ports(data, name)
