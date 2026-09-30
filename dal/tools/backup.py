@@ -500,6 +500,57 @@ class Importer(Backup):
             object_names = get_objects(scope_name)
             importer(*args(scope_name, object_names))
 
+    def run_with_report(self, objects: dict = {}):
+        """Import manifest objects independently and collect per-object failures."""
+        report = {"imported": [], "failed": []}
+
+        def add_failure(scope, name, exc):
+            report["failed"].append(
+                {
+                    "scope": scope,
+                    "name": name,
+                    "error": str(exc),
+                    "error_type": type(exc).__name__,
+                }
+            )
+
+        def listed_names(scope):
+            return [name for name, _ in self.get_files(scope, None)]
+
+        for scope_name, names in objects.items():
+            if scope_name not in Backup.SCOPES:
+                for name in names or [None]:
+                    add_failure(scope_name, name, ImportException(f"Unknown scope: {scope_name}"))
+
+        for scope_name in Backup.SCOPES:
+            if objects and scope_name not in objects:
+                continue
+
+            try:
+                names = listed_names(scope_name) if not objects else objects[scope_name]
+                if names is None or None in names:
+                    names = listed_names(scope_name)
+            except Exception as exc:
+                add_failure(scope_name, None, exc)
+                continue
+
+            for name in names:
+                normalized_name = _from_path(name)
+                try:
+                    self.run({scope_name: [name]})
+                    if self.imported(scope_name, normalized_name):
+                        report["imported"].append({"scope": scope_name, "name": normalized_name})
+                    else:
+                        add_failure(
+                            scope_name,
+                            normalized_name,
+                            ImportException(f"{scope_name}:{normalized_name} was not imported"),
+                        )
+                except Exception as exc:
+                    add_failure(scope_name, normalized_name, exc)
+
+        return report
+
     def imported(self, scope, name) -> bool:
         """Wrapper to check if a scope:name pair is already imported."""
         return scope in self._imported and name in self._imported[scope]
@@ -718,11 +769,11 @@ class Importer(Backup):
             self.set_imported(scope, name)
             # Update package data structure for duplicate detection
             self._update_package_tracking(scope, name, tracked_names=tracked_names)
-        except Exception:
-            _msg = f"Failed to import '{scope}:{name}'"
+        except Exception as exc:
+            _msg = f"Failed to import '{scope}:{name}' - {exc}"
             if self.validate:
                 self.log(_msg)
-                raise ImportException(_msg)
+                raise ImportException(_msg) from exc
             else:
                 # force print
                 print(_msg)
