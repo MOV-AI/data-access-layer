@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.32.2
 - [BP-1794](https://movai.atlassian.net/browse/BP-1794): Start Node can be broken by creating a node called start
   - Revert node's port name validation
 
