@@ -1,5 +1,9 @@
 # Changelog
 
+## vTBD
+- [BP-1794](https://movai.atlassian.net/browse/BP-1794): Start Node can be broken by creating a node called start
+  - Revert node's port name validation
+
 ## v3.32.1
 - [BP-1785](https://movai.atlassian.net/browse/BP-1785): Add more detailed error message for undefined parameter references in flows
 
