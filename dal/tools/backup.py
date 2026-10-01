@@ -500,6 +500,9 @@ class Importer(Backup):
             object_names = get_objects(scope_name)
             importer(*args(scope_name, object_names))
 
+    def _listed_names(self, scope):
+        return [name for name, _ in self.get_files(scope, None)]
+
     def run_with_report(self, objects: dict = {}):
         """Import manifest objects independently and collect per-object failures."""
         report = {"imported": [], "failed": []}
@@ -514,9 +517,6 @@ class Importer(Backup):
                 }
             )
 
-        def listed_names(scope):
-            return [name for name, _ in self.get_files(scope, None)]
-
         for scope_name, names in objects.items():
             if scope_name not in Backup.SCOPES:
                 for name in names or [None]:
@@ -527,9 +527,9 @@ class Importer(Backup):
                 continue
 
             try:
-                names = listed_names(scope_name) if not objects else objects[scope_name]
+                names = self._listed_names(scope_name) if not objects else objects[scope_name]
                 if names is None or None in names:
-                    names = listed_names(scope_name)
+                    names = self._listed_names(scope_name)
             except Exception as exc:
                 add_failure(scope_name, None, exc)
                 continue
