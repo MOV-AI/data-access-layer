@@ -9,7 +9,7 @@
 import re
 from abc import ABC
 from importlib import import_module
-from typing import Iterable, Optional, cast
+from typing import Iterable, List, Optional, cast
 from dal.data.tree import TreeNode, ObjectNode, PropertyNode, CallableNode, DictNode
 from dal.data.serialization import (
     ObjectDeserializer,
@@ -780,6 +780,17 @@ class ScopeWorkspace(WorkspaceNode):
             self._children[scope]._children[ref].remove_child(version)
         except KeyError as e:
             raise ValueError("Scope not loaded") from e
+
+    def loaded_refs(self, scope: str, version: str = "__UNVERSIONED__") -> List[str]:
+        """
+        Return the refs of the documents of a scope loaded in this workspace
+        """
+        try:
+            instances = self._children[scope]._children
+        except KeyError:
+            return []
+
+        return [ref for ref, instance in instances.items() if version in instance._children]
 
     def unload_all(self, keep_scopes: Iterable[str] = ()):
         """

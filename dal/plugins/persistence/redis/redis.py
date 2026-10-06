@@ -89,6 +89,8 @@ class RedisPlugin(PersistencePlugin):
         )
         # True while batch_reads() is active
         self._batch_reads = ContextVar(f"redis_plugin_batch_reads_{id(self)}", default=False)
+        # Compiled key patterns relative to a document, shared by all documents
+        self._relative_patterns: Dict[str, "re.Pattern"] = {}
 
     def decode_value(self, _value):
         """Decodes a value from redis"""
@@ -412,6 +414,61 @@ class RedisPlugin(PersistencePlugin):
             pending = retry
 
         return PrefetchedValues(values)
+
+    def _filter_keys(self, keys: List[str], pattern: str, document: str) -> List[str]:
+        """
+        Same as fnmatch.filter(keys, pattern), for the keys of a document.
+
+        fnmatch only caches 256 compiled patterns, and the patterns of load_keys
+        include the document name, so they are compiled again for every document.
+        Matching the part of the key after the document name reuses them instead.
+        """
+        if not pattern.startswith(document) or any(char in document for char in "*?["):
+            return fnmatch.filter(keys, pattern)
+
+        relative = pattern[len(document) :]
+        try:
+            compiled = self._relative_patterns[relative]
+        except KeyError:
+            compiled = self._relative_patterns[relative] = re.compile(fnmatch.translate(relative))
+
+        start = len(document)
+        return [key for key in keys if key.startswith(document) and compiled.match(key, start)]
+
+    def _load_keys_batched(
+        self, schema: TreeNode, base: str, keys: list, conn, out: dict, document: str
+    ):
+        """
+        Same as load_keys, matching the keys with _filter_keys
+        """
+        try:
+            # if we are on a property node, store it on the database
+            if isinstance(schema, SchemaPropertyNode):
+                key = f"{base},{schema.name}:"
+                value_on_key = schema.attributes.get("value_on_key", False)
+
+                if value_on_key:
+                    key = f"{key}*"
+
+                for match_key in self._filter_keys(keys, key, document):
+                    self.key_to_dict(schema, match_key, conn, out)
+
+                return
+
+            # it's not a terminal element, compose the next
+            # base key and process this node children
+            base += f",{schema.name}:"
+
+            if schema.attributes.get("is_hash", True):
+                base = f"{base}*"
+
+            for child in schema.children:
+                self._load_keys_batched(child, base, keys, conn, out, document)
+
+        except (KeyError, AttributeError):
+            # No schema! check in this node children if any
+            for child in schema.children:
+                self._load_keys_batched(child, base, keys, conn, out, document)
 
     def schema_to_key(self, schema: TreeNode):
         """
@@ -847,8 +904,11 @@ class RedisPlugin(PersistencePlugin):
         if not self._batch_reads.get():
             self.load_keys(schema, f"{scope}:{ref}", self.fetch_keys(conn, scope, ref), conn, data)
         else:
+            document = f"{scope}:{ref}"
             keys = self.fetch_keys(conn, scope, ref)
-            self.load_keys(schema, f"{scope}:{ref}", keys, self._prefetch_values(conn, keys), data)
+            self._load_keys_batched(
+                schema, document, keys, self._prefetch_values(conn, keys), data, document
+            )
 
         return data
 

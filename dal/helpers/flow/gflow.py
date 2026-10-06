@@ -47,6 +47,15 @@ class GFlow:
         self.flow: "Flow" = flow
         self.graph = {}
         self.remaps = {}
+        # is_remappable of the node instances, by name, during one graph calculation
+        self._remappable = {}
+
+    def _is_remappable(self, node_inst: str) -> bool:
+        """is_remappable of a node instance, which resolves its _remappable parameter"""
+
+        if node_inst not in self._remappable:
+            self._remappable[node_inst] = self.flow.get_node_inst(node_inst).is_remappable
+        return self._remappable[node_inst]
 
     def get_vertex(self, key: str, _type: str = "From") -> dict:
         """Get or create a new vertex"""
@@ -77,7 +86,7 @@ class GFlow:
             # get the node instance
             node_inst = self.flow.get_node_inst(name)
 
-            remappable = node_inst.is_remappable
+            remappable = self._is_remappable(name)
             dummy = node_inst.is_dummy
 
             namespace = self.flow.get_node_inst_param(name, "_namespace")
@@ -116,6 +125,7 @@ class GFlow:
 
         # initialize the graph
         self.graph = {}
+        self._remappable = {}
 
         # iterate over all th links in the main flow and subflows
         for link_id in self.flow.Links.full.keys():
@@ -165,8 +175,8 @@ class GFlow:
                 from_port = self.flow.Links[link_id].From
                 to_port = self.flow.Links[link_id].To
 
-                remap_from = self.flow.get_node_inst(from_port.node_inst).is_remappable
-                remap_to = self.flow.get_node_inst(to_port.node_inst).is_remappable
+                remap_from = self._is_remappable(from_port.node_inst)
+                remap_to = self._is_remappable(to_port.node_inst)
 
                 if not remap_from:
                     unremappable_nodes.add(from_port.node_inst)
@@ -183,8 +193,8 @@ class GFlow:
                 from_port = self.flow.Links[link_id].From
                 to_port = self.flow.Links[link_id].To
 
-                remap_from = self.flow.get_node_inst(from_port.node_inst).is_remappable
-                remap_to = self.flow.get_node_inst(to_port.node_inst).is_remappable
+                remap_from = self._is_remappable(from_port.node_inst)
+                remap_to = self._is_remappable(to_port.node_inst)
 
                 if not remap_from:
                     port_name = from_port.port_name
@@ -229,10 +239,8 @@ class GFlow:
                 full_port_name = "/".join(port_name_fragments[1:-1])
 
                 if (
-                    not self.flow.get_node_inst(self.flow.Links[link].From.node_inst).is_remappable
-                    and not self.flow.get_node_inst(
-                        self.flow.Links[link].To.node_inst
-                    ).is_remappable
+                    not self._is_remappable(self.flow.Links[link].From.node_inst)
+                    and not self._is_remappable(self.flow.Links[link].To.node_inst)
                     and self.check_ros_port(self.flow.Links[link].To.node_inst, full_port_name)
                 ):
                     raise RemapValidationError(

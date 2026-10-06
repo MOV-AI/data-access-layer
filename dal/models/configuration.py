@@ -33,6 +33,11 @@ class ConfigurationCache(metaclass=Singleton):
         with self.__class__._lock:
             self._map = {}
 
+    def clean_config(self, config_name: str):
+        """Clear the cached value of one configuration"""
+        with self.__class__._lock:
+            self._map.pop(config_name, None)
+
 
 class Configuration(Model):
     """
