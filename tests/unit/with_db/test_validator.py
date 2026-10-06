@@ -172,6 +172,28 @@ class TestProjectValidator:
         ), f"Expected 0 issues, but got {validator_output.summary.total_issues}: {validator_output.issues}"
         assert len(validator_output.issues) == 0
 
+    def test_metadata_reader_matches_scopes(self, setup_test_data):
+        """Tests that documents read by the validator are the same as read through dal.scopes."""
+
+        from dal.models.scopestree import scopes
+        from dal.scopes.flow import Flow
+        from dal.scopes.node import Node
+        from dal.validation.metadata_reader import MetadataReader
+        from movai_core_shared.exceptions import DoesNotExist
+
+        reader = MetadataReader()
+        for scope, scope_class in (("Flow", Flow), ("Node", Node)):
+            reader.index(scope)
+            refs = {obj["ref"] for obj in scopes().list_scopes(scope=scope)}
+            assert refs, f"Expected test data for scope {scope}"
+            assert reader.refs(scope) == refs
+
+            for ref in refs:
+                assert reader.get_dict(scope, ref) == scope_class(ref).get_dict(), f"{scope} {ref}"
+
+        with pytest.raises(DoesNotExist):
+            reader.get_dict("Flow", "non_existing_flow")
+
     def test_duplicated_metadata(self, isolated_database, folder_invalid_data):
         """Tests that duplicated metadata is found."""
 

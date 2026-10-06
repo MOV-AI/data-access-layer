@@ -6,10 +6,10 @@ Proprietary and confidential
 
 import time
 
-from dal.models.scopestree import scopes
 from dal.scopes.package import Package
-from dal.scopes.flow import Flow, Node
+from dal.scopes.flow import Flow
 from dal.models.flow import Flow as ModelFlow
+from dal.validation.metadata_reader import MetadataReader
 from dal.exceptions import (
     UndefinedConfigParameterError,
     UndefinedFlowParameterError,
@@ -49,6 +49,9 @@ VALIDATED_SCOPES = [
     "SharedDataTemplate",
     "TaskTemplate",
 ]
+
+# Scopes whose documents are read or checked for existence during validation
+INDEXED_SCOPES = ["Flow", "Node"]
 
 
 class Summary(BaseModel):
@@ -159,6 +162,8 @@ class ProjectValidator:
         # Cache JSON path line indexes by loaded document object.
         self._json_path_line_cache: Dict[int, Dict[Tuple[str, ...], int]] = {}
         self._link_validator: Optional["LinkValidator"] = None
+        # Reads Flow and Node documents scanning Redis once per scope instead of per document
+        self._metadata = MetadataReader()
 
         # Build cache of all objects first
         self._build_object_cache()
@@ -166,13 +171,13 @@ class ProjectValidator:
     def _get_flow_dict(self, flow_ref: str) -> dict:
         """Get flow dict with in-memory cache."""
         if flow_ref not in self._flow_dict_cache:
-            self._flow_dict_cache[flow_ref] = Flow(flow_ref).get_dict()
+            self._flow_dict_cache[flow_ref] = self._metadata.get_dict("Flow", flow_ref)
         return self._flow_dict_cache[flow_ref]
 
     def _get_node_dict(self, node_ref: str) -> dict:
         """Get node dict with in-memory cache."""
         if node_ref not in self._node_dict_cache:
-            self._node_dict_cache[node_ref] = Node(node_ref).get_dict()
+            self._node_dict_cache[node_ref] = self._metadata.get_dict("Node", node_ref)
         return self._node_dict_cache[node_ref]
 
     def _get_link_validator(self) -> "LinkValidator":
@@ -181,7 +186,8 @@ class ProjectValidator:
         if self._link_validator is None:
             self._link_validator = LinkValidator(
                 objects_by_scope=self._objects_by_scope,
-                node_dict_cache=self._node_dict_cache,
+                get_flow_dict=self._get_flow_dict,
+                get_node_dict=self._get_node_dict,
                 line_lookup=self._find_json_path_line,
                 logger=LOGGER,
             )
@@ -268,14 +274,12 @@ class ProjectValidator:
 
     def _build_object_cache(self):
         """Build a cache of all objects in workspace by scope."""
-        for scope_name in VALIDATED_SCOPES:
-            self._objects_by_scope[scope_name] = set()
+        for scope_name in INDEXED_SCOPES:
             try:
-                objects = scopes().list_scopes(scope=scope_name)
-                for obj in objects:
-                    self._objects_by_scope[scope_name].add(obj["ref"])
+                self._metadata.index(scope_name)
             except Exception as e:
                 LOGGER.warning(f"Error listing scope {scope_name}: {e}")
+            self._objects_by_scope[scope_name] = self._metadata.refs(scope_name)
 
     def _check_duplicates(self):
         """
@@ -992,40 +996,33 @@ class LinkValidator:
     def __init__(
         self,
         objects_by_scope: Dict,
-        node_dict_cache: Dict,
+        get_flow_dict: Callable[[str], dict],
+        get_node_dict: Callable[[str], dict],
         line_lookup: Callable[[dict, List[str]], Optional[int]],
         logger,
     ):
         self._objects_by_scope = objects_by_scope
         self.logger = logger
         self._line_lookup = line_lookup
-        # Caches to reduce repeated DAL access during link validation.
+        # Documents are read and cached by the project validator
+        self._get_flow_dict = get_flow_dict
+        self._get_node_dict = get_node_dict
         self._flow_content_cache: Dict[str, dict] = {}
-        self._node_dict_cache: Dict[str, dict] = node_dict_cache
         # Map of (node_template, port_name) to port type dict.
         self._port_type_cache: Dict[Tuple[str, str], dict] = {}
 
     def _get_flow_content(self, flow_template: str) -> dict:
-        """Load a flow template content from DAL once and reuse it."""
+        """Get the content of a flow template."""
         if flow_template and not self._object_exists("Flow", flow_template):
             raise MissingFlowTemplateExc(flow_template)
 
         if flow_template not in self._flow_content_cache:
-            template_flow = Flow(flow_template)
-            template_flow_data = template_flow.get_dict()
+            template_flow_data = self._get_flow_dict(flow_template)
             if "Flow" not in template_flow_data or flow_template not in template_flow_data["Flow"]:
                 raise MissingFlowTemplateExc(flow_template)
             self._flow_content_cache[flow_template] = template_flow_data["Flow"][flow_template]
 
         return self._flow_content_cache[flow_template]
-
-    def _get_node_dict(self, node_template: str) -> dict:
-        """Load a node template dict from DAL once and reuse it."""
-        if node_template not in self._node_dict_cache:
-            node = Node(node_template)
-            self._node_dict_cache[node_template] = node.get_dict()
-
-        return self._node_dict_cache[node_template]
 
     def validate_link(
         self,

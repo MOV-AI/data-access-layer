@@ -1,7 +1,6 @@
 from movai_core_shared import Log
 import time
 from movai_core_shared.exceptions import DoesNotExist
-from dal.scopes.flow import Flow
 from dal.validation.issues import Severity
 from dal.validation.project_validator import (
     ProjectIssue,
@@ -19,13 +18,12 @@ class FlowValidator:
     """
 
     def __init__(self, flow_ref: str):
-        try:
-            self.flow = Flow(flow_ref)
-        except Exception as e:
-            LOGGER.error(f"Error initializing FlowValidator for flow {flow_ref}: {e}")
-            raise DoesNotExist(f"Error initializing FlowValidator for flow {flow_ref}: {e}")
-
         self.project = ProjectValidator()
+        if not self.project._object_exists("Flow", flow_ref):
+            message = f"Error initializing FlowValidator: Flow {flow_ref} does not exist"
+            LOGGER.error(message)
+            raise DoesNotExist(message)
+
         self.flow_ref = flow_ref
         self.issues = []
 

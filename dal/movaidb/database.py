@@ -479,6 +479,15 @@ class MovaiDB:
         except:
             keys = self.search_wild(_input)
 
+        return self.get_from_keys(keys)
+
+    def get_from_keys(self, keys: List[str]) -> Dict[str, Any]:
+        """
+        Returns the values of keys that were already found, in the same format as get
+
+        Returns:
+            dict
+        """
         kv = list()
         for idx, value in enumerate(self.db_read.mget(keys)):
             if value:
