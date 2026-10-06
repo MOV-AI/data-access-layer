@@ -43,7 +43,7 @@ class FlowValidator:
 
             from dal.helpers.parsers import ParamParser
 
-            with ParamParser.dedupe_validation_disabled_warnings():
+            with ParamParser.dedupe_validation_disabled_warnings(), ParamParser.memoize_flow_resolution():
                 for flow_ref, flow_path in self.project._collect_flow_contexts(self.flow_ref):
                     self.issues.extend(
                         self.project.check_flow(

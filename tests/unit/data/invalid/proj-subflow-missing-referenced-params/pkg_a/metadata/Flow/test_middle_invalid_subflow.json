@@ -4,7 +4,12 @@
             "Container": {
                 "invalid_subflow": {
                     "ContainerFlow": "test_invalid_parameter_subflow",
-                    "ContainerLabel": "Invalid parameter subflow"
+                    "ContainerLabel": "Invalid parameter subflow",
+                    "Parameter": {
+                        "parent_param": {
+                            "Value": "$(flow parent_param)"
+                        }
+                    }
                 }
             },
             "Description": "",
@@ -19,7 +24,13 @@
             "Layers": {},
             "Links": {},
             "NodeInst": {},
-            "Parameter": {},
+            "Parameter": {
+                "parent_param": {
+                    "Description": "",
+                    "Type": "any",
+                    "Value": "$(flow parent_param)"
+                }
+            },
             "User": "",
             "Version": "",
             "VersionDelta": {}

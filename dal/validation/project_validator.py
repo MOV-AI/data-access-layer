@@ -211,7 +211,7 @@ class ProjectValidator:
         checked_flows = []
         checked_contexts = set()
 
-        with ParamParser.suppress_validation_disabled_warnings():
+        with ParamParser.suppress_validation_disabled_warnings(), ParamParser.memoize_flow_resolution():
             for root_flow_ref in runnable_flow_refs:
                 for flow_ref, flow_path in self._collect_flow_contexts(root_flow_ref):
                     context_key = (root_flow_ref, flow_ref, flow_path)
@@ -515,6 +515,19 @@ class ProjectValidator:
         return flow_contexts
 
     @staticmethod
+    def _is_dynamic_param(value: object) -> bool:
+        """Check if a parameter value has references, the only values that can fail to resolve."""
+        return value is not None and "$(" in str(value)
+
+    @staticmethod
+    def _get_param_value(params: object, param_key: str) -> object:
+        """Return the Value of a parameter in a model Parameter dict, or None if undefined."""
+        try:
+            return params[param_key].Value
+        except KeyError:
+            return None
+
+    @staticmethod
     def _issue_instance_name(issue: ProjIssue) -> Optional[str]:
         """Extract the flow-local instance name from node/container issue messages."""
 
@@ -617,6 +630,11 @@ class ProjectValidator:
                         continue
 
                     for param_key in container_data.get("Parameter", {}):
+                        # Only dynamic parameters containing "$(" need to be checked
+                        if not self._is_dynamic_param(
+                            self._get_param_value(container.Parameter, param_key)
+                        ):
+                            continue
                         try:
                             container.get_param(
                                 param_key,
@@ -660,23 +678,30 @@ class ProjectValidator:
             if "NodeInst" in flow_content:
                 for node_inst_name in flow_content["NodeInst"]:
                     try:
-                        node_inst = flow.get_node_inst(node_inst_name)
+                        # Only local instances are checked, so there is no need to build flow.full
+                        node_inst = flow.NodeInst[node_inst_name]
+                        node_template = node_inst.node_template
                         param_names = set(node_inst.Parameter.keys())
-                        template_params = set(node_inst.node_template.Parameter.keys())
+                        template_params = set(node_template.Parameter.keys())
 
                         # Params only in template (not defined in node instance)
                         params_defined_in_template = template_params - param_names
 
                         param_names.update(template_params)
-                        node_data = (
-                            self._get_node_dict(node_inst.Template)
-                            if params_defined_in_template
-                            else None
-                        )
                     except Exception as error:
                         continue
 
                     for param_key in sorted(param_names):
+                        # The instance value falls back to the template value, so check both
+                        if not (
+                            self._is_dynamic_param(
+                                self._get_param_value(node_inst.Parameter, param_key)
+                            )
+                            or self._is_dynamic_param(
+                                self._get_param_value(node_template.Parameter, param_key)
+                            )
+                        ):
+                            continue
                         try:
                             node_inst.get_param(
                                 param_key,
@@ -692,30 +717,25 @@ class ProjectValidator:
                             if isinstance(error, UndefinedVarParameterError):
                                 continue
                             is_template_param = param_key in params_defined_in_template
-                            source_data = node_data if is_template_param else flow_data
-                            source_path = (
-                                [
-                                    "Node",
-                                    node_inst.Template,
-                                    "Parameter",
-                                    param_key,
-                                    "Value",
-                                ]
-                                if is_template_param
-                                else [
-                                    "Flow",
-                                    flow_ref,
-                                    "NodeInst",
-                                    node_inst_name,
-                                    "Parameter",
-                                    param_key,
-                                    "Value",
-                                ]
-                            )
                             document_type = "Node" if is_template_param else "Flow"
                             document_name = node_inst.Template if is_template_param else flow_ref
                             json_path = f"{document_name}.json"
-                            line_num = self._find_json_path_line(source_data, source_path)
+                            line_num = (
+                                self._find_template_param_line(node_inst.Template, param_key)
+                                if is_template_param
+                                else self._find_json_path_line(
+                                    flow_data,
+                                    [
+                                        "Flow",
+                                        flow_ref,
+                                        "NodeInst",
+                                        node_inst_name,
+                                        "Parameter",
+                                        param_key,
+                                        "Value",
+                                    ],
+                                )
+                            )
                             flow_issues.append(
                                 self._make_missing_parameter_issue(
                                     flow_ref=flow_ref,
@@ -732,6 +752,8 @@ class ProjectValidator:
 
             # Check Flow parameters
             for param_key in flow_content.get("Parameter", {}):
+                if not self._is_dynamic_param(self._get_param_value(flow.Parameter, param_key)):
+                    continue
                 try:
                     flow.get_param(param_key, parser_context, is_subflow=bool(node_prefix))
                 except AttributeError as error:
@@ -949,6 +971,19 @@ class ProjectValidator:
             LOGGER.debug("Could not find path %s in JSON line index.", path)
 
         return line_num
+
+    def _find_template_param_line(self, template: str, param_key: str) -> Optional[int]:
+        """Find a Node template parameter line, loading the template only when an issue needs it."""
+
+        try:
+            node_data = self._get_node_dict(template)
+        except Exception as e:
+            LOGGER.debug(f"Error loading node {template} to locate parameter {param_key}: {e}")
+            return None
+
+        return self._find_json_path_line(
+            node_data, ["Node", template, "Parameter", param_key, "Value"]
+        )
 
 
 class LinkValidator:

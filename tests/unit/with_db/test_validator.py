@@ -593,7 +593,7 @@ class TestFlowValidator:
     ):
         """Tests that validating a flow also validates nested subflows."""
 
-        from dal.validation.issues import MissingReferencedParameter
+        from dal.validation.issues import MissingReferencedParameter, Severity
         from dal.validation.flow_validator import FlowValidator
 
         with setup_test_data_from_path(
@@ -603,9 +603,19 @@ class TestFlowValidator:
                 "test_parent_with_invalid_subflow"
             ).validate_flow()
 
+            # Passed up through the middle flow to a parent container that does not define it.
+            # The container is not linked, so the issue is reported as a warning.
+            missing_container_parameter = MissingReferencedParameter(
+                json_path="test_middle_invalid_subflow.json",
+                msg="Container 'invalid_subflow' parameter 'parent_param' has an undefined flow reference in Flow 'test_middle_invalid_subflow'",
+                line_start=10,
+            )
+            missing_container_parameter.severity = Severity.NORMAL
+
             execute_and_assert_same_type_issues(
                 validator_output,
                 [
+                    missing_container_parameter,
                     MissingReferencedParameter(
                         json_path="test_invalid_parameter_subflow.json",
                         msg="Flow 'test_invalid_parameter_subflow' parameter 'missing_config_parameter' has an undefined config reference in Flow 'test_invalid_parameter_subflow'",
