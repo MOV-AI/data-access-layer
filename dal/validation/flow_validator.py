@@ -1,4 +1,5 @@
 from movai_core_shared import Log
+import time
 from movai_core_shared.exceptions import DoesNotExist
 from dal.scopes.flow import Flow
 from dal.validation.issues import Severity
@@ -35,6 +36,8 @@ class FlowValidator:
         Returns:
             ProjectValidationResult: The result of the flow validation, including issues found.
         """
+        start_time = time.time()
+
         try:
             self.issues = []
 
@@ -52,7 +55,16 @@ class FlowValidator:
 
         except Exception as e:
             LOGGER.error(f"Error validating flow {self.flow_ref}: {e}")
+            end_time = time.time()
+            LOGGER.info(
+                f"Flow {self.flow_ref} validation failed after {end_time - start_time:.2f} seconds."
+            )
             raise
+
+        end_time = time.time()
+        LOGGER.info(
+            f"Flow {self.flow_ref} validation completed in {end_time - start_time:.2f} seconds."
+        )
 
         return ProjectValidationResult(
             summary=Summary(
