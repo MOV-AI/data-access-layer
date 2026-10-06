@@ -18,8 +18,9 @@ class MetadataReader:
     Reads metadata documents during one validation run.
 
     Each attribute of a document is stored in its own Redis key, so finding the keys of one
-    document takes a SCAN of the whole keyspace. dal.scopes does two of those per document:
-    one to check that it exists and one to read it. This reader scans each scope once,
+    document takes a SCAN of the whole keyspace.
+
+    This reader scans each scope once,
     indexes the keys by document, and then reads each document with a single MGET.
     """
 

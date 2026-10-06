@@ -10,6 +10,9 @@ import pickle
 import re
 import json
 import fnmatch
+from contextlib import contextmanager
+from contextvars import ContextVar
+from typing import Dict, List
 from redis.client import ConnectionPool, Redis
 from redis.exceptions import ResponseError
 from redis.connection import Connection
@@ -19,10 +22,38 @@ from dal.data import SchemaPropertyNode, SchemaNode, schemas, TreeNode
 from dal.models.scopestree import ScopesTree, ScopeInstanceVersionNode
 from dal.models.model import Model
 from dal.movaidb import MovaiDB
+from dal.plugins.persistence.redis.document_changes import DocumentChangeTracker
 
 
 __DRIVER_NAME__ = "Mov.ai Redis Plugin"
 __DRIVER_VERSION__ = "0.0.2"
+
+
+class PrefetchedValues:
+    """
+    Serves values read beforehand to load_keys, in place of the
+    connection it would otherwise read them from one by one
+    """
+
+    def __init__(self, values: Dict[str, Dict[str, object]]):
+        # {key: {command: result}}
+        self._values = values
+
+    def get(self, key: str):
+        return self._result("get", key)
+
+    def hgetall(self, key: str):
+        return self._result("hgetall", key)
+
+    def lrange(self, key: str, start: int, end: int):
+        # key_to_dict always reads the whole list, which is what was prefetched
+        return self._result("lrange", key)
+
+    def _result(self, command: str, key: str):
+        result = self._values[key][command]
+        if isinstance(result, ResponseError):
+            raise result
+        return result
 
 
 class RedisPlugin(PersistencePlugin):
@@ -56,6 +87,8 @@ class RedisPlugin(PersistencePlugin):
             db=0,
             connection_class=Connection,
         )
+        # True while batch_reads() is active
+        self._batch_reads = ContextVar(f"redis_plugin_batch_reads_{id(self)}", default=False)
 
     def decode_value(self, _value):
         """Decodes a value from redis"""
@@ -335,6 +368,50 @@ class RedisPlugin(PersistencePlugin):
     def fetch_keys(self, conn, scope: str, ref: str) -> list:
         """Get keys using KEYS command"""
         return [s.decode() for s in conn.keys(f"{scope}:{ref},*")]
+
+    def track_changes(self, scopes: List[str]) -> DocumentChangeTracker:
+        """Track the documents of some scopes that change in the database read by this plugin"""
+        return DocumentChangeTracker(self._REDIS_SLAVE_POOL, scopes)
+
+    @contextmanager
+    def batch_reads(self):
+        """
+        While this is active, read the values of a document with one pipeline per
+        command instead of one request per key.
+
+        Keys are still found with KEYS, so their order, and with it the order of the
+        objects loaded from them (for instance node instances and links), is the same.
+        """
+        token = self._batch_reads.set(True)
+        try:
+            yield
+        finally:
+            self._batch_reads.reset(token)
+
+    def _prefetch_values(self, conn, keys: List[str]) -> PrefetchedValues:
+        """
+        Read the values of keys the way key_to_dict does, but with one
+        pipeline per command instead of one request per key
+        """
+        values: Dict[str, Dict[str, object]] = {key: {} for key in keys}
+        pending = keys
+        for command, args in (("get", ()), ("hgetall", ()), ("lrange", (0, -1))):
+            if not pending:
+                break
+
+            pipe = conn.pipeline(transaction=False)
+            for key in pending:
+                getattr(pipe, command)(key, *args)
+
+            retry = []
+            for key, result in zip(pending, pipe.execute(raise_on_error=False)):
+                values[key][command] = result
+                if isinstance(result, ResponseError):
+                    # wrong type for this command, key_to_dict tries the next one
+                    retry.append(key)
+            pending = retry
+
+        return PrefetchedValues(values)
 
     def schema_to_key(self, schema: TreeNode):
         """
@@ -767,7 +844,11 @@ class RedisPlugin(PersistencePlugin):
 
         schema = schemas(scope, schema_version)
         data = {"schema_version": schema_version}
-        self.load_keys(schema, f"{scope}:{ref}", self.fetch_keys(conn, scope, ref), conn, data)
+        if not self._batch_reads.get():
+            self.load_keys(schema, f"{scope}:{ref}", self.fetch_keys(conn, scope, ref), conn, data)
+        else:
+            keys = self.fetch_keys(conn, scope, ref)
+            self.load_keys(schema, f"{scope}:{ref}", keys, self._prefetch_values(conn, keys), data)
 
         return data
 
