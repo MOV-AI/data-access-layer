@@ -815,8 +815,6 @@ class RedisPlugin(PersistencePlugin):
 
         schema = schemas(scope, schema_version)
         data = {"schema_version": schema_version}
-        # keys found with KEYS keep their order, which is the order of the objects
-        # loaded from them, like node instances and links
         self.load_keys(schema, f"{scope}:{ref}", self.fetch_keys(conn, scope, ref), conn, data)
 
         return data
