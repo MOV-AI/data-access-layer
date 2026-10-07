@@ -12,7 +12,7 @@ import json
 import fnmatch
 from contextlib import contextmanager
 from contextvars import ContextVar
-from typing import Dict, List
+from typing import Dict, List, Optional, Tuple
 from redis.client import ConnectionPool, Redis
 from redis.exceptions import ResponseError
 from redis.connection import Connection
@@ -22,7 +22,6 @@ from dal.data import SchemaPropertyNode, SchemaNode, schemas, TreeNode
 from dal.models.scopestree import ScopesTree, ScopeInstanceVersionNode
 from dal.models.model import Model
 from dal.movaidb import MovaiDB
-from dal.plugins.persistence.redis.document_changes import DocumentChangeTracker
 
 
 __DRIVER_NAME__ = "Mov.ai Redis Plugin"
@@ -31,12 +30,12 @@ __DRIVER_VERSION__ = "0.0.2"
 
 class PrefetchedValues:
     """
-    Serves values read beforehand to load_keys, in place of the
-    connection it would otherwise read them from one by one
+    Serves the values read beforehand by MovaiDB.read_keys to load_keys, in place
+    of the connection it would otherwise read them from one by one
     """
 
-    def __init__(self, values: Dict[str, Dict[str, object]]):
-        # {key: {command: result}}
+    def __init__(self, values: Dict[str, Tuple[Optional[str], object]]):
+        # {key: (command that read it, result)}
         self._values = values
 
     def get(self, key: str):
@@ -46,13 +45,14 @@ class PrefetchedValues:
         return self._result("hgetall", key)
 
     def lrange(self, key: str, start: int, end: int):
-        # key_to_dict always reads the whole list, which is what was prefetched
+        # key_to_dict always reads the whole list, which is what was read
         return self._result("lrange", key)
 
     def _result(self, command: str, key: str):
-        result = self._values[key][command]
-        if isinstance(result, ResponseError):
-            raise result
+        read_by, result = self._values[key]
+        if read_by != command:
+            # key_to_dict then tries the next command, as MovaiDB.read_keys did
+            raise ResponseError(f"WRONGTYPE {key} was not read with {command.upper()}")
         return result
 
 
@@ -89,6 +89,8 @@ class RedisPlugin(PersistencePlugin):
         )
         # True while batch_reads() is active
         self._batch_reads = ContextVar(f"redis_plugin_batch_reads_{id(self)}", default=False)
+        # reads the values of the documents in batch_reads()
+        self._movaidb = MovaiDB()
         # Compiled key patterns relative to a document, shared by all documents
         self._relative_patterns: Dict[str, "re.Pattern"] = {}
 
@@ -371,11 +373,6 @@ class RedisPlugin(PersistencePlugin):
         """Get keys using KEYS command"""
         return [s.decode() for s in conn.keys(f"{scope}:{ref},*")]
 
-    def track_changes(self, scopes: List[str]) -> DocumentChangeTracker:
-        """Track the documents of some scopes that change in the database read by this plugin"""
-        # changes are taken from the master, documents may be read from a replica of it
-        return DocumentChangeTracker(self._REDIS_MASTER_POOL, scopes, self._REDIS_SLAVE_POOL)
-
     @contextmanager
     def batch_reads(self):
         """
@@ -390,31 +387,6 @@ class RedisPlugin(PersistencePlugin):
             yield
         finally:
             self._batch_reads.reset(token)
-
-    def _prefetch_values(self, conn, keys: List[str]) -> PrefetchedValues:
-        """
-        Read the values of keys the way key_to_dict does, but with one
-        pipeline per command instead of one request per key
-        """
-        values: Dict[str, Dict[str, object]] = {key: {} for key in keys}
-        pending = keys
-        for command, args in (("get", ()), ("hgetall", ()), ("lrange", (0, -1))):
-            if not pending:
-                break
-
-            pipe = conn.pipeline(transaction=False)
-            for key in pending:
-                getattr(pipe, command)(key, *args)
-
-            retry = []
-            for key, result in zip(pending, pipe.execute(raise_on_error=False)):
-                values[key][command] = result
-                if isinstance(result, ResponseError):
-                    # wrong type for this command, key_to_dict tries the next one
-                    retry.append(key)
-            pending = retry
-
-        return PrefetchedValues(values)
 
     def _filter_keys(self, keys: List[str], pattern: str, document: str) -> List[str]:
         """
@@ -908,7 +880,12 @@ class RedisPlugin(PersistencePlugin):
             document = f"{scope}:{ref}"
             keys = self.fetch_keys(conn, scope, ref)
             self._load_keys_batched(
-                schema, document, keys, self._prefetch_values(conn, keys), data, document
+                schema,
+                document,
+                keys,
+                PrefetchedValues(self._movaidb.read_keys(keys)),
+                data,
+                document,
             )
 
         return data

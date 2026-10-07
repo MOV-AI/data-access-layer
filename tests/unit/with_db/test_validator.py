@@ -172,27 +172,58 @@ class TestProjectValidator:
         ), f"Expected 0 issues, but got {validator_output.summary.total_issues}: {validator_output.issues}"
         assert len(validator_output.issues) == 0
 
-    def test_metadata_reader_matches_scopes(self, setup_test_data):
-        """Tests that documents read by the validator are the same as read through dal.scopes."""
+    def test_scope_batch_reads_match_reads(self, setup_test_data):
+        """Tests that documents read in Scope.batch_reads() are the same as read without it."""
 
         from dal.models.scopestree import scopes
         from dal.scopes.flow import Flow
         from dal.scopes.node import Node
-        from dal.validation.metadata_reader import MetadataReader
+        from dal.scopes.scope import Scope
         from movai_core_shared.exceptions import DoesNotExist
 
-        reader = MetadataReader()
         for scope, scope_class in (("Flow", Flow), ("Node", Node)):
-            reader.index(scope)
             refs = {obj["ref"] for obj in scopes().list_scopes(scope=scope)}
             assert refs, f"Expected test data for scope {scope}"
-            assert reader.refs(scope) == refs
+            assert Scope.names(scope) == refs
+            expected = {ref: scope_class(ref).get_dict() for ref in refs}
 
-            for ref in refs:
-                assert reader.get_dict(scope, ref) == scope_class(ref).get_dict(), f"{scope} {ref}"
+            with Scope.batch_reads():
+                assert Scope.names(scope) == refs
+                for ref in refs:
+                    assert scope_class(ref).get_dict() == expected[ref], f"{scope} {ref}"
 
-        with pytest.raises(DoesNotExist):
-            reader.get_dict("Flow", "non_existing_flow")
+                with pytest.raises(DoesNotExist):
+                    scope_class("non_existing_document")
+
+    def test_scope_batch_reads_scan_once_per_scope(self, global_db, setup_test_data):
+        """Tests that Scope.batch_reads() scans each scope once, and still finds new documents."""
+
+        from unittest import mock
+        from dal.scopes.flow import Flow
+        from dal.scopes.scope import Scope
+
+        index = {}
+        with mock.patch.object(Scope, "_read_scope_keys", wraps=Scope._read_scope_keys) as scans:
+            with Scope.batch_reads(index):
+                names = Scope.names("Flow")
+                for name in names:
+                    Flow(name).get_dict()
+            with Scope.batch_reads(index):
+                Flow(next(iter(names))).get_dict()
+
+            global_db.set({"Flow": {"created_after_index": {"Label": "created_after_index"}}})
+            try:
+                with Scope.batch_reads(index):
+                    assert (
+                        Flow("created_after_index").get_dict()["Flow"]["created_after_index"][
+                            "Label"
+                        ]
+                        == "created_after_index"
+                    )
+            finally:
+                global_db.unsafe_delete({"Flow": {"created_after_index": "**"}})
+
+        assert scans.call_count == 1
 
     def test_duplicated_metadata(self, isolated_database, folder_invalid_data):
         """Tests that duplicated metadata is found."""

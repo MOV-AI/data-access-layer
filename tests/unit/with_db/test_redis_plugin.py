@@ -52,10 +52,10 @@ class TestRedisPlugin:
     def test_track_changes(self, global_db):
         """Tests that changed documents of the tracked scopes are reported."""
 
-        from dal.models.scopestree import scopes
+        from dal.movaidb.document_changes import DocumentChangeTracker
 
         global_db.db_write.config_set("notify-keyspace-events", "AKE")
-        tracker = scopes().plugin.track_changes(["Node"])
+        tracker = DocumentChangeTracker(["Node"])
         tracker.RETRY_INTERVAL = 0.1
         try:
             # nothing to compare with yet
@@ -85,10 +85,10 @@ class TestRedisPlugin:
     def test_track_changes_without_notifications(self, global_db):
         """Tests that changes are reported as unknown when Redis does not notify them."""
 
-        from dal.models.scopestree import scopes
+        from dal.movaidb.document_changes import DocumentChangeTracker
 
         global_db.db_write.config_set("notify-keyspace-events", "")
-        tracker = scopes().plugin.track_changes(["Node"])
+        tracker = DocumentChangeTracker(["Node"])
         try:
             assert tracker.take_changes() is None
             assert tracker.take_changes() is None
@@ -158,13 +158,13 @@ class TestDocumentChangesFromReplica:
         """Tests that changes taken from the master are already in the replica read."""
 
         from redis import Redis
-        from dal.models.scopestree import scopes
-        from dal.plugins.persistence.redis.document_changes import DocumentChangeTracker
+        from dal.movaidb import Redis as RedisPools
+        from dal.movaidb.document_changes import DocumentChangeTracker
 
         global_db.db_write.config_set("notify-keyspace-events", "AKE")
-        master_pool = scopes().plugin._REDIS_MASTER_POOL
+        master_pool = RedisPools().master_pool
         replica = Redis(connection_pool=replica_pool)
-        tracker = DocumentChangeTracker(master_pool, ["Node"], replica_pool)
+        tracker = DocumentChangeTracker(["Node"], master_pool, replica_pool)
         try:
             assert tracker.take_changes() is None
             assert tracker.take_changes() == set()
@@ -182,12 +182,12 @@ class TestDocumentChangesFromReplica:
         """Tests that changes are not lost while the replica read does not follow the master."""
 
         from redis import Redis
-        from dal.models.scopestree import scopes
-        from dal.plugins.persistence.redis.document_changes import DocumentChangeTracker
+        from dal.movaidb import Redis as RedisPools
+        from dal.movaidb.document_changes import DocumentChangeTracker
 
         global_db.db_write.config_set("notify-keyspace-events", "AKE")
         replica = Redis(connection_pool=replica_pool)
-        tracker = DocumentChangeTracker(scopes().plugin._REDIS_MASTER_POOL, ["Node"], replica_pool)
+        tracker = DocumentChangeTracker(["Node"], RedisPools().master_pool, replica_pool)
         tracker.REPLICA_TIMEOUT = 0.2
         try:
             tracker.take_changes()
@@ -207,13 +207,13 @@ class TestDocumentChangesFromReplica:
     def test_subscription_is_kept_alive(self, global_db):
         """Tests that the subscription is pinged, so proxies do not close it when idle."""
 
-        from dal.models.scopestree import scopes
-        from dal.plugins.persistence.redis.document_changes import DocumentChangeTracker
+        from dal.movaidb import Redis
+        from dal.movaidb.document_changes import DocumentChangeTracker
 
         global_db.db_write.config_set("notify-keyspace-events", "AKE")
         tracker = DocumentChangeTracker.__new__(DocumentChangeTracker)
         tracker.PING_INTERVAL = 0.2
-        tracker.__init__(scopes().plugin._REDIS_MASTER_POOL, ["Node"])
+        tracker.__init__(["Node"], Redis().master_pool)
         try:
             _wait_subscribed(tracker)
             generation = tracker._generation
