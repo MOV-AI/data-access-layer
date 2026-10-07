@@ -373,7 +373,8 @@ class RedisPlugin(PersistencePlugin):
 
     def track_changes(self, scopes: List[str]) -> DocumentChangeTracker:
         """Track the documents of some scopes that change in the database read by this plugin"""
-        return DocumentChangeTracker(self._REDIS_SLAVE_POOL, scopes)
+        # changes are taken from the master, documents may be read from a replica of it
+        return DocumentChangeTracker(self._REDIS_MASTER_POOL, scopes, self._REDIS_SLAVE_POOL)
 
     @contextmanager
     def batch_reads(self):

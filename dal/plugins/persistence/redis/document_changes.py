@@ -5,6 +5,7 @@ Proprietary and confidential
 """
 
 import threading
+import time
 import uuid
 from typing import Dict, Iterable, Optional, Set, Tuple
 
@@ -23,18 +24,37 @@ class DocumentChangeTracker:
     notifications and records the documents that changed until take_changes() is called.
 
     Notifications sent while the thread is not subscribed are lost, and a replica that
-    resynchronizes with its master loads data without notifying it. take_changes() only
-    returns the changes when it can tell none were missed since its previous call, and
-    None otherwise, in which case any document may have changed.
+    resynchronizes with its master loads data without notifying it, so the notifications
+    are taken from the master, where documents are written. take_changes() only returns
+    the changes when it can tell none were missed since its previous call, and None
+    otherwise, in which case any document may have changed.
+
+    Documents may be read from a replica of that master, like fleet members do, through
+    read_pool. take_changes() then also waits for the replica to have the changes it
+    returns, so the documents read afterwards are not older than them.
     """
 
     # Seconds to wait for the notifications sent before take_changes() to be received
     SYNC_TIMEOUT = 2.0
+    # Seconds to wait for the replica documents are read from to have the changes
+    REPLICA_TIMEOUT = 2.0
     # Seconds between attempts to subscribe after a failure
     RETRY_INTERVAL = 5.0
+    # Seconds between pings on the subscription, which keep proxies from closing it when
+    # idle, and seconds without their reply before subscribing again
+    PING_INTERVAL = 30.0
+    PING_TIMEOUT = 10.0
 
-    def __init__(self, connection_pool: ConnectionPool, scopes: Iterable[str]):
+    def __init__(
+        self,
+        connection_pool: ConnectionPool,
+        scopes: Iterable[str],
+        read_pool: Optional[ConnectionPool] = None,
+    ):
+        # the master, where documents are written
         self._pool = connection_pool
+        # where documents are read from, if not the master itself
+        self._read_pool = read_pool
         self._db = connection_pool.connection_kwargs.get("db", 0)
         self._patterns = [f"__keyspace@{self._db}__:{scope}:*" for scope in scopes]
         # Messages published here are received after every notification sent before them
@@ -68,12 +88,18 @@ class DocumentChangeTracker:
 
         with self._lock:
             complete = generation is not None and generation == self._complete_generation
-            changes = self._changes if complete else None
-            self._changes = set()
+            changes, self._changes = self._changes, set()
             # after a None the caller reloads everything, so from now on nothing was missed
             self._complete_generation = generation
 
-        return changes
+        if generation is not None and not self._wait_for_reads():
+            # documents read now may still be older than these changes, keep them for the
+            # next call so they are reloaded again then
+            with self._lock:
+                self._changes |= changes
+            return None
+
+        return changes if complete else None
 
     def close(self):
         """Stop tracking changes."""
@@ -120,6 +146,46 @@ class DocumentChangeTracker:
                 return generation
         return None
 
+    def _wait_for_reads(self) -> bool:
+        """
+        Wait until the documents read have every change written to the master so far,
+        returning whether they do. Only after the changes to return were taken, so their
+        writes are part of what is waited for.
+        """
+        if self._read_pool is None:
+            return True
+
+        try:
+            master = Redis(connection_pool=self._pool)
+            reads = Redis(connection_pool=self._read_pool)
+            if reads.info("server")["run_id"] == master.info("server")["run_id"]:
+                # documents are read from the master itself
+                return True
+
+            master_replication = master.info("replication")
+            deadline = time.monotonic() + self.REPLICA_TIMEOUT
+            while True:
+                replica = reads.info("replication")
+                if (
+                    replica.get("role") != "slave"
+                    or replica.get("master_link_status") != "up"
+                    or replica.get("master_replid") != master_replication.get("master_replid")
+                ):
+                    LOGGER.warning("Documents are not read from a replica of the master in sync")
+                    return False
+
+                if replica.get("slave_repl_offset", -1) >= master_replication["master_repl_offset"]:
+                    return True
+
+                if time.monotonic() >= deadline:
+                    LOGGER.warning("Timed out waiting for the replica documents are read from")
+                    return False
+
+                time.sleep(0.01)
+        except Exception as error:  # pylint: disable=broad-except
+            LOGGER.warning(f"Could not check the replica documents are read from: {error}")
+            return False
+
     def _run(self):
         """Keep a subscription to the notifications, subscribing again when it fails."""
         while not self._closed.is_set():
@@ -149,10 +215,20 @@ class DocumentChangeTracker:
             pubsub.psubscribe(*self._patterns)
             pubsub.subscribe(self._sync_channel)
             confirmations = len(self._patterns) + 1
+            next_ping = time.monotonic() + self.PING_INTERVAL
+            ping_sent: Optional[float] = None
 
             while not self._closed.is_set():
                 if self._reconnect.is_set():
                     raise ConnectionError("sync message not received")
+
+                now = time.monotonic()
+                if ping_sent is not None and now - ping_sent > self.PING_TIMEOUT:
+                    raise ConnectionError("no reply to ping")
+                if now >= next_ping:
+                    pubsub.ping()
+                    ping_sent = ping_sent or now
+                    next_ping = now + self.PING_INTERVAL
 
                 message = pubsub.get_message(timeout=1.0)
                 if message is None:
@@ -173,6 +249,8 @@ class DocumentChangeTracker:
                     self._record(message["channel"])
                 elif message["type"] == "message":
                     self._release_sync(message["data"])
+                elif message["type"] == "pong":
+                    ping_sent = None
         finally:
             pubsub.close()
 
