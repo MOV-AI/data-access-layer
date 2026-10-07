@@ -12,6 +12,8 @@ from typing import Dict, Iterable, Optional, Set, Tuple
 from movai_core_shared.logger import Log
 from redis.client import ConnectionPool, Redis
 
+from dal.movaidb.database import Redis as RedisPools
+
 LOGGER = Log.get_logger(__name__)
 
 
@@ -47,13 +49,24 @@ class DocumentChangeTracker:
 
     def __init__(
         self,
-        connection_pool: ConnectionPool,
         scopes: Iterable[str],
+        connection_pool: Optional[ConnectionPool] = None,
         read_pool: Optional[ConnectionPool] = None,
     ):
-        # the master, where documents are written
+        """
+        Args:
+            scopes: the scopes of the documents to track.
+            connection_pool: the master, where documents are written. By default the master
+                of the global database, with read_pool defaulting to the connection MovaiDB
+                reads it from, which may be a replica of it.
+            read_pool: where documents are read from, if not the master itself.
+        """
+        if connection_pool is None:
+            pools = RedisPools()
+            connection_pool = pools.master_pool
+            read_pool = pools.slave_pool if read_pool is None else read_pool
+
         self._pool = connection_pool
-        # where documents are read from, if not the master itself
         self._read_pool = read_pool
         self._db = connection_pool.connection_kwargs.get("db", 0)
         self._patterns = [f"__keyspace@{self._db}__:{scope}:*" for scope in scopes]

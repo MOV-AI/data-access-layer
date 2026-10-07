@@ -8,8 +8,9 @@ import time
 
 from dal.scopes.package import Package
 from dal.scopes.flow import Flow
+from dal.scopes.node import Node
+from dal.scopes.scope import Scope
 from dal.models.flow import Flow as ModelFlow
-from dal.validation.metadata_reader import MetadataReader
 from dal.exceptions import (
     UndefinedConfigParameterError,
     UndefinedFlowParameterError,
@@ -162,22 +163,23 @@ class ProjectValidator:
         # Cache JSON path line indexes by loaded document object.
         self._json_path_line_cache: Dict[int, Dict[Tuple[str, ...], int]] = {}
         self._link_validator: Optional["LinkValidator"] = None
-        # Reads Flow and Node documents scanning Redis once per scope instead of per document
-        self._metadata = MetadataReader()
+        # Keys of the documents read, indexed once per scope, shared by all reads of the validator
+        self.keys_index: dict = {}
 
         # Build cache of all objects first
-        self._build_object_cache()
+        with Scope.batch_reads(self.keys_index):
+            self._build_object_cache()
 
     def _get_flow_dict(self, flow_ref: str) -> dict:
         """Get flow dict with in-memory cache."""
         if flow_ref not in self._flow_dict_cache:
-            self._flow_dict_cache[flow_ref] = self._metadata.get_dict("Flow", flow_ref)
+            self._flow_dict_cache[flow_ref] = Flow(flow_ref).get_dict()
         return self._flow_dict_cache[flow_ref]
 
     def _get_node_dict(self, node_ref: str) -> dict:
         """Get node dict with in-memory cache."""
         if node_ref not in self._node_dict_cache:
-            self._node_dict_cache[node_ref] = self._metadata.get_dict("Node", node_ref)
+            self._node_dict_cache[node_ref] = Node(node_ref).get_dict()
         return self._node_dict_cache[node_ref]
 
     def _get_link_validator(self) -> "LinkValidator":
@@ -200,6 +202,11 @@ class ProjectValidator:
         Returns:
             ProjectValidationResult: The result of the project validation, including issues found.
         """
+        with Scope.batch_reads(self.keys_index):
+            return self._validate()
+
+    def _validate(self) -> ProjectValidationResult:
+        """Validate the project data, see validate."""
         from dal.helpers.parsers import ParamParser
 
         LOGGER.info("Starting project validation")
@@ -276,10 +283,10 @@ class ProjectValidator:
         """Build a cache of all objects in workspace by scope."""
         for scope_name in INDEXED_SCOPES:
             try:
-                self._metadata.index(scope_name)
+                self._objects_by_scope[scope_name] = Scope.names(scope_name)
             except Exception as e:
                 LOGGER.warning(f"Error listing scope {scope_name}: {e}")
-            self._objects_by_scope[scope_name] = self._metadata.refs(scope_name)
+                self._objects_by_scope[scope_name] = set()
 
     def _check_duplicates(self):
         """

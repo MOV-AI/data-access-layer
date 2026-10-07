@@ -286,18 +286,28 @@ class Redis(metaclass=Singleton):
         )
 
         self.thread = None
+        # clients are thread safe and share the pools, so one of each is created
+        self._db_global: Optional[redis.Redis] = None
+        self._db_slave: Optional[redis.Redis] = None
+        self._db_local: Optional[redis.Redis] = None
 
     @property
     def db_global(self) -> redis.Redis:
-        return redis.Redis(connection_pool=self.master_pool, decode_responses=False)
+        if self._db_global is None:
+            self._db_global = redis.Redis(connection_pool=self.master_pool, decode_responses=False)
+        return self._db_global
 
     @property
     def db_slave(self) -> redis.Redis:
-        return redis.Redis(connection_pool=self.slave_pool, decode_responses=False)
+        if self._db_slave is None:
+            self._db_slave = redis.Redis(connection_pool=self.slave_pool, decode_responses=False)
+        return self._db_slave
 
     @property
     def db_local(self) -> redis.Redis:
-        return redis.Redis(connection_pool=self.local_pool, decode_responses=False)
+        if self._db_local is None:
+            self._db_local = redis.Redis(connection_pool=self.local_pool, decode_responses=False)
+        return self._db_local
 
     @property
     def slave_pubsub(self) -> redis.client.PubSub:
@@ -317,6 +327,7 @@ class MovaiDB:
     REDIS_LOCAL_PORT = int(getenv("REDIS_LOCAL_PORT", 6379))
     REDIS_SLAVE_HOST = getenv("REDIS_SLAVE_HOST", REDIS_MASTER_HOST)
     DB_SCHEMA = DBSchema()
+    _API_STAR = None
 
     def __init__(
         self,
@@ -330,30 +341,55 @@ class MovaiDB:
         # some from redis, some from aioredis - which is deprecated
         self.movaidb = databases or Redis()
 
+        self._db = db
         if db == "global":
             self.db_read: redis.Redis = self.movaidb.db_slave
             self.db_write: redis.Redis = self.movaidb.db_global
-            self.pubsub: redis.client.PubSub = self.movaidb.slave_pubsub
         else:
             self.db_read: redis.Redis = self.movaidb.db_local
             self.db_write: redis.Redis = self.movaidb.db_local
-            self.pubsub: redis.client.PubSub = self.movaidb.local_pubsub
+        self._pubsub = None
 
         if _api_version == "latest":
             self.api_struct = self.DB_SCHEMA.get_api()
         else:
             # we then need to get this from database!!!!
             self.api_struct = self.DB_SCHEMA.get_api()
-        self.api_star = self.template_to_star(self.api_struct)
+        # derived from the schema, which does not change, so computed once
+        if MovaiDB._API_STAR is None:
+            MovaiDB._API_STAR = self.template_to_star(self.api_struct)
+        self.api_star = MovaiDB._API_STAR
 
-        self.loop = loop
-        if not self.loop:
+        self._loop = loop
+        if not self._loop:
             try:
-                self.loop = asyncio.get_event_loop()
+                self._loop = asyncio.get_event_loop()
             except Exception:
-                self.loop = asyncio.new_event_loop()
+                # no event loop in this thread, one is created when first needed, see loop
+                self._loop = None
 
         self._background_tasks = set()
+
+    @property
+    def pubsub(self) -> redis.client.PubSub:
+        """Created when first needed"""
+        if self._pubsub is None:
+            if self._db == "global":
+                self._pubsub = self.movaidb.slave_pubsub
+            else:
+                self._pubsub = self.movaidb.local_pubsub
+        return self._pubsub
+
+    @property
+    def loop(self) -> asyncio.AbstractEventLoop:
+        """The event loop of the asynchronous operations"""
+        if self._loop is None:
+            self._loop = asyncio.new_event_loop()
+        return self._loop
+
+    @loop.setter
+    def loop(self, loop: asyncio.AbstractEventLoop):
+        self._loop = loop
 
     def validate_file_write(self, key, value):
         payload_size = redis_value_size(value)
@@ -488,22 +524,62 @@ class MovaiDB:
         Returns:
             dict
         """
+        values = self.read_keys(self.db_read, keys)
         kv = list()
-        for idx, value in enumerate(self.db_read.mget(keys)):
-            if value:
-                kv.append((keys[idx], self.decode_value(value)))
-            else:  # no value
-                try:  # Is it a hash?
-                    get_hash = self.db_read.hgetall(keys[idx])
-                    kv.append((keys[idx], self.sort_dict(self.decode_hash(get_hash))))
-                except:
-                    try:  # Is it a list?
-                        get_list = self.db_read.lrange(keys[idx], 0, -1)
-                        kv.append((keys[idx], self.decode_list(get_list)))
-                    except:  # is just a None...
-                        pass
+        for key in keys:
+            command, value = values[key]
+            if command == "get":
+                if value:
+                    kv.append((key, self.decode_value(value)))
+                elif value is None:
+                    # a key that does not exist reads as an empty hash
+                    kv.append((key, {}))
+                # an empty string is not read
+            elif command == "hgetall":
+                try:
+                    kv.append((key, self.sort_dict(self.decode_hash(value))))
+                except Exception:
+                    pass
+            elif command == "lrange":
+                try:
+                    kv.append((key, self.decode_list(value)))
+                except Exception:
+                    pass
 
         return self.keys_to_dict(kv)
+
+    @staticmethod
+    def read_keys(conn: redis.Redis, keys: List[str]) -> Dict[str, Tuple[Optional[str], Any]]:
+        """
+        Read the values of keys of any type with a connection, with one pipeline per command.
+
+        Returns:
+            dict: for each key, the command that read it ("get", "hgetall" or "lrange")
+                and its result, or (None, None) if none of them could read it.
+        """
+        values: Dict[str, Tuple[Optional[str], Any]] = {}
+        pending = list(keys)
+        for command, args in (("get", ()), ("hgetall", ()), ("lrange", (0, -1))):
+            if not pending:
+                break
+
+            pipe = conn.pipeline(transaction=False)
+            for key in pending:
+                getattr(pipe, command)(key, *args)
+
+            retry = []
+            for key, result in zip(pending, pipe.execute(raise_on_error=False)):
+                if isinstance(result, redis.exceptions.ResponseError):
+                    # the key holds another type, read it with the next command
+                    retry.append(key)
+                else:
+                    values[key] = (command, result)
+            pending = retry
+
+        for key in pending:
+            values[key] = (None, None)
+
+        return values
 
     def set(
         self,

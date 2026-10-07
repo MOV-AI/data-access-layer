@@ -10,9 +10,7 @@ import pickle
 import re
 import json
 import fnmatch
-from contextlib import contextmanager
-from contextvars import ContextVar
-from typing import Dict, List
+from typing import Dict, List, Optional, Tuple
 from redis.client import ConnectionPool, Redis
 from redis.exceptions import ResponseError
 from redis.connection import Connection
@@ -22,38 +20,10 @@ from dal.data import SchemaPropertyNode, SchemaNode, schemas, TreeNode
 from dal.models.scopestree import ScopesTree, ScopeInstanceVersionNode
 from dal.models.model import Model
 from dal.movaidb import MovaiDB
-from dal.plugins.persistence.redis.document_changes import DocumentChangeTracker
 
 
 __DRIVER_NAME__ = "Mov.ai Redis Plugin"
 __DRIVER_VERSION__ = "0.0.2"
-
-
-class PrefetchedValues:
-    """
-    Serves values read beforehand to load_keys, in place of the
-    connection it would otherwise read them from one by one
-    """
-
-    def __init__(self, values: Dict[str, Dict[str, object]]):
-        # {key: {command: result}}
-        self._values = values
-
-    def get(self, key: str):
-        return self._result("get", key)
-
-    def hgetall(self, key: str):
-        return self._result("hgetall", key)
-
-    def lrange(self, key: str, start: int, end: int):
-        # key_to_dict always reads the whole list, which is what was prefetched
-        return self._result("lrange", key)
-
-    def _result(self, command: str, key: str):
-        result = self._values[key][command]
-        if isinstance(result, ResponseError):
-            raise result
-        return result
 
 
 class RedisPlugin(PersistencePlugin):
@@ -87,8 +57,6 @@ class RedisPlugin(PersistencePlugin):
             db=0,
             connection_class=Connection,
         )
-        # True while batch_reads() is active
-        self._batch_reads = ContextVar(f"redis_plugin_batch_reads_{id(self)}", default=False)
         # Compiled key patterns relative to a document, shared by all documents
         self._relative_patterns: Dict[str, "re.Pattern"] = {}
 
@@ -117,10 +85,12 @@ class RedisPlugin(PersistencePlugin):
             decoded_list = [pickle.loads(elem) for elem in _list]
         return decoded_list
 
-    def key_to_dict(self, schema: TreeNode, key: str, conn, data):
+    def key_to_dict(
+        self, schema: TreeNode, key: str, values: Dict[str, Tuple[Optional[str], object]], data
+    ):
         """
-        convert a key in the V1 specfication to a dictonary, also
-        loads the value from the Redis database
+        convert a key in the V1 specfication to a dictonary, with
+        its value from the values read by MovaiDB.read_keys
         """
 
         keys = re.split("[:,]", key)
@@ -146,24 +116,15 @@ class RedisPlugin(PersistencePlugin):
             current_ptr[attr] = keys[idx + 1]
             return
 
-        # A simple value?
-        try:
-            current_ptr[attr] = self.decode_value(conn.get(key))
-            return
-        except ResponseError:
-            pass
-
-        # A hash?
-        try:
-            current_ptr[attr] = self.decode_hash(conn.hgetall(key))
-            return
-        except ResponseError:
-            pass
-
-        # A list?
-        try:
-            current_ptr[attr] = self.decode_list(conn.lrange(key, 0, -1))
-        except ResponseError:
+        command, value = values[key]
+        if command == "get":
+            # A simple value, a key deleted after being listed raises AttributeError
+            current_ptr[attr] = self.decode_value(value)
+        elif command == "hgetall":
+            current_ptr[attr] = self.decode_hash(value)
+        elif command == "lrange":
+            current_ptr[attr] = self.decode_list(value)
+        else:
             current_ptr[attr] = None
 
     def save_keys(self, schema: TreeNode, base: str, keys: list, conn: Redis, data: dict):
@@ -330,10 +291,44 @@ class RedisPlugin(PersistencePlugin):
 
     def load_keys(self, schema: TreeNode, base: str, keys: list, conn: Redis, out: dict):
         """
-        Save the object in the redis, according the V1 specifications
+        Load the object from the keys of a document, according the V1 specifications
+        """
+        # the keys of each property in the schema, in the order they are loaded
+        matches: List[Tuple[TreeNode, List[str]]] = []
+        self._match_keys(schema, base, keys, matches, base)
+
+        # the values of the keys loaded, read at once
+        values = MovaiDB.read_keys(
+            conn,
+            [
+                key
+                for key_schema, key_matches in matches
+                if not key_schema.attributes.get("value_on_key", False)
+                for key in key_matches
+            ],
+        )
+
+        for key_schema, key_matches in matches:
+            try:
+                for key in key_matches:
+                    self.key_to_dict(key_schema, key, values, out)
+            except (KeyError, AttributeError):
+                # property nodes have no children, so there is nothing else to load
+                continue
+
+    def _match_keys(
+        self,
+        schema: TreeNode,
+        base: str,
+        keys: list,
+        matches: List[Tuple[TreeNode, List[str]]],
+        document: str,
+    ):
+        """
+        Collect, for each property in the schema, the keys of the document that store it
         """
         try:
-            # if we are on a property node, store it on the database
+            # if we are on a property node, collect its keys
             if isinstance(schema, SchemaPropertyNode):
                 key = f"{base},{schema.name}:"
                 value_on_key = schema.attributes.get("value_on_key", False)
@@ -341,9 +336,7 @@ class RedisPlugin(PersistencePlugin):
                 if value_on_key:
                     key = f"{key}*"
 
-                for match_key in fnmatch.filter(keys, key):
-                    self.key_to_dict(schema, match_key, conn, out)
-
+                matches.append((schema, self._filter_keys(keys, key, document)))
                 return
 
             # it's not a terminal element, compose the next
@@ -354,12 +347,12 @@ class RedisPlugin(PersistencePlugin):
                 base = f"{base}*"
 
             for child in schema.children:
-                self.load_keys(child, base, keys, conn, out)
+                self._match_keys(child, base, keys, matches, document)
 
         except (KeyError, AttributeError):
             # No schema! check in this node children if any
             for child in schema.children:
-                self.load_keys(child, base, keys, conn, out)
+                self._match_keys(child, base, keys, matches, document)
 
     def fetch_keys_iter(self, conn, scope: str, ref: str) -> list:
         """Get keys using SCAN ITER command"""
@@ -370,51 +363,6 @@ class RedisPlugin(PersistencePlugin):
     def fetch_keys(self, conn, scope: str, ref: str) -> list:
         """Get keys using KEYS command"""
         return [s.decode() for s in conn.keys(f"{scope}:{ref},*")]
-
-    def track_changes(self, scopes: List[str]) -> DocumentChangeTracker:
-        """Track the documents of some scopes that change in the database read by this plugin"""
-        # changes are taken from the master, documents may be read from a replica of it
-        return DocumentChangeTracker(self._REDIS_MASTER_POOL, scopes, self._REDIS_SLAVE_POOL)
-
-    @contextmanager
-    def batch_reads(self):
-        """
-        While this is active, read the values of a document with one pipeline per
-        command instead of one request per key.
-
-        Keys are still found with KEYS, so their order, and with it the order of the
-        objects loaded from them (for instance node instances and links), is the same.
-        """
-        token = self._batch_reads.set(True)
-        try:
-            yield
-        finally:
-            self._batch_reads.reset(token)
-
-    def _prefetch_values(self, conn, keys: List[str]) -> PrefetchedValues:
-        """
-        Read the values of keys the way key_to_dict does, but with one
-        pipeline per command instead of one request per key
-        """
-        values: Dict[str, Dict[str, object]] = {key: {} for key in keys}
-        pending = keys
-        for command, args in (("get", ()), ("hgetall", ()), ("lrange", (0, -1))):
-            if not pending:
-                break
-
-            pipe = conn.pipeline(transaction=False)
-            for key in pending:
-                getattr(pipe, command)(key, *args)
-
-            retry = []
-            for key, result in zip(pending, pipe.execute(raise_on_error=False)):
-                values[key][command] = result
-                if isinstance(result, ResponseError):
-                    # wrong type for this command, key_to_dict tries the next one
-                    retry.append(key)
-            pending = retry
-
-        return PrefetchedValues(values)
 
     def _filter_keys(self, keys: List[str], pattern: str, document: str) -> List[str]:
         """
@@ -435,41 +383,6 @@ class RedisPlugin(PersistencePlugin):
 
         start = len(document)
         return [key for key in keys if key.startswith(document) and compiled.match(key, start)]
-
-    def _load_keys_batched(
-        self, schema: TreeNode, base: str, keys: list, conn, out: dict, document: str
-    ):
-        """
-        Same as load_keys, matching the keys with _filter_keys
-        """
-        try:
-            # if we are on a property node, store it on the database
-            if isinstance(schema, SchemaPropertyNode):
-                key = f"{base},{schema.name}:"
-                value_on_key = schema.attributes.get("value_on_key", False)
-
-                if value_on_key:
-                    key = f"{key}*"
-
-                for match_key in self._filter_keys(keys, key, document):
-                    self.key_to_dict(schema, match_key, conn, out)
-
-                return
-
-            # it's not a terminal element, compose the next
-            # base key and process this node children
-            base += f",{schema.name}:"
-
-            if schema.attributes.get("is_hash", True):
-                base = f"{base}*"
-
-            for child in schema.children:
-                self._load_keys_batched(child, base, keys, conn, out, document)
-
-        except (KeyError, AttributeError):
-            # No schema! check in this node children if any
-            for child in schema.children:
-                self._load_keys_batched(child, base, keys, conn, out, document)
 
     def schema_to_key(self, schema: TreeNode):
         """
@@ -902,14 +815,9 @@ class RedisPlugin(PersistencePlugin):
 
         schema = schemas(scope, schema_version)
         data = {"schema_version": schema_version}
-        if not self._batch_reads.get():
-            self.load_keys(schema, f"{scope}:{ref}", self.fetch_keys(conn, scope, ref), conn, data)
-        else:
-            document = f"{scope}:{ref}"
-            keys = self.fetch_keys(conn, scope, ref)
-            self._load_keys_batched(
-                schema, document, keys, self._prefetch_values(conn, keys), data, document
-            )
+        # keys found with KEYS keep their order, which is the order of the objects
+        # loaded from them, like node instances and links
+        self.load_keys(schema, f"{scope}:{ref}", self.fetch_keys(conn, scope, ref), conn, data)
 
         return data
 

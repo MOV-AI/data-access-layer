@@ -34,6 +34,8 @@ class _fake_redis(_patch):
 
             __responses = {}
             __last_out: List[Optional[str]] = [None]
+            # commands sent together by a pipeline, whose responses are read in order
+            __pipeline_outs: List[str] = []
 
             def __init__(self, host, port, db=0, **kwargs):
                 if not RECORD:
@@ -80,7 +82,19 @@ class _fake_redis(_patch):
                                 msg,
                             )
 
+            def pack_commands(self, commands):
+                # recorded the same way as the commands sent one by one by send_command
+                FakeConnection.__pipeline_outs.extend(f"({tuple(args)}, {{}})" for args in commands)
+                return super().pack_commands(commands)
+
+            def send_packed_command(self, *args, **kwargs) -> None:
+                if RECORD:
+                    super().send_packed_command(*args, **kwargs)
+
             def read_response(self, *a, **kw):
+                if FakeConnection.__pipeline_outs:
+                    FakeConnection.__last_out[0] = FakeConnection.__pipeline_outs.pop(0)
+
                 if RECORD:
                     try:
                         value = super().read_response(*a, **kw)

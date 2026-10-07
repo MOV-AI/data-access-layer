@@ -1,6 +1,7 @@
 from movai_core_shared import Log
 import time
 from movai_core_shared.exceptions import DoesNotExist
+from dal.scopes.scope import Scope
 from dal.validation.issues import Severity
 from dal.validation.project_validator import (
     ProjectIssue,
@@ -41,15 +42,16 @@ class FlowValidator:
 
             from dal.helpers.parsers import ParamParser
 
-            with ParamParser.dedupe_validation_disabled_warnings(), ParamParser.memoize_flow_resolution():
-                for flow_ref, flow_path in self.project._collect_flow_contexts(self.flow_ref):
-                    self.issues.extend(
-                        self.project.check_flow(
-                            flow_ref,
-                            context=self.flow_ref,
-                            node_prefix=flow_path,
+            with Scope.batch_reads(self.project.keys_index):
+                with ParamParser.dedupe_validation_disabled_warnings(), ParamParser.memoize_flow_resolution():
+                    for flow_ref, flow_path in self.project._collect_flow_contexts(self.flow_ref):
+                        self.issues.extend(
+                            self.project.check_flow(
+                                flow_ref,
+                                context=self.flow_ref,
+                                node_prefix=flow_path,
+                            )
                         )
-                    )
 
         except Exception as e:
             LOGGER.error(f"Error validating flow {self.flow_ref}: {e}")
