@@ -52,6 +52,12 @@ def redis_value_size(value: Any) -> int:
         return 0
 
 
+def is_exact_key(pattern: str) -> bool:
+    """Return True if a key pattern only matches the key with the same name."""
+    # special characters of the Redis and fnmatch glob patterns
+    return not any(char in pattern for char in "*?[\\")
+
+
 def longest_common_prefix(strings: List[str]) -> str:
     """
     Finds the longest common prefix string amongst an array of strings.
@@ -415,13 +421,22 @@ class MovaiDB:
         if not patterns:
             return []
 
+        if all(is_exact_key(pattern) for pattern in patterns):
+            # the keys are known, so check which exist instead of scanning the whole database
+            pipe = self.db_read.pipeline(transaction=False)
+            for pattern in patterns:
+                pipe.exists(pattern)
+            keys = [key for key, exists in zip(patterns, pipe.execute()) if exists]
+            keys.sort(key=str.lower)
+            return keys
+
         # often patterns are very similar, looking for different keys
-        # of the same object. Instead of scanning Redis for each pattern,
-        # we can optimize the search by scanning once for a common prefix,
+        # of the same object. Instead of searching Redis for each pattern,
+        # we can optimize the search by searching once for a common prefix,
         # and then filtering the results in Python.
         prefix = longest_common_prefix(patterns) + "*"
         keys = list()
-        found = [elem.decode("utf-8") for elem in self.db_read.scan_iter(prefix, count=1000)]
+        found = self.find_keys(prefix)
         for pattern in patterns:
             keys.extend(fnmatch.filter(found, pattern))
         keys.sort(key=str.lower)
@@ -467,9 +482,18 @@ class MovaiDB:
             return scan_key
 
         # get db keys that match scan_key
-        keys = [elem.decode("utf-8") for elem in self.db_read.scan_iter(scan_key, count=1000)]
+        keys = self.find_keys(scan_key)
         keys.sort(key=str.lower)
         return keys
+
+    def find_keys(self, pattern: str) -> List[str]:
+        """
+        Return the keys that match a pattern, in no particular order.
+
+        Redis has to go through every key of the database to find them, which KEYS
+        does in one request, while SCAN needs one request for every 1000 keys.
+        """
+        return [key.decode("utf-8") for key in self.db_read.keys(pattern)]
 
     def get2(self, _input: dict) -> Dict[str, Any]:
         keys = self.search_wild(_input)
@@ -1033,10 +1057,18 @@ class MovaiDB:
         """Check if some key exists in redis giving arguments"""
         search_dict = self.get_search_dict(scope, **kwargs)
         patterns = list()
+        exact_keys = list()
         for k, v, s in self.dict_to_keys(search_dict):
             patterns.append(k + "*")
+            if is_exact_key(k):
+                exact_keys.append(k)
+
+        # any of these keys matches the patterns, and can be found without scanning
+        if exact_keys and self.db_read.exists(*exact_keys):
+            return True
+
         prefix = longest_common_prefix(patterns) + "*"
-        found = [elem.decode("utf-8") for elem in self.db_read.scan_iter(prefix, count=1000)]
+        found = self.find_keys(prefix)
         for pattern in patterns:
             if any(fnmatch.fnmatch(elem, pattern) for elem in found):
                 return True

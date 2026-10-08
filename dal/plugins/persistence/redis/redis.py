@@ -459,7 +459,7 @@ class RedisPlugin(PersistencePlugin):
         except KeyError as e:
             raise ValueError("missing workspace") from e
 
-        for key in conn.scan_iter(f"{scope}:*", count=50):
+        for key in conn.scan_iter(f"{scope}:*", count=1000):
             tokens = re.split("[:,]", key.decode("utf-8"))
             try:
                 scope = tokens[0]
@@ -540,8 +540,7 @@ class RedisPlugin(PersistencePlugin):
         except KeyError as e:
             raise ValueError("missing workspace, scope, or ref") from e
 
-        conn.keys
-        if len(list(conn.scan_iter(f"{scope}:{ref}*", count=50))) == 0:
+        if not conn.keys(f"{scope}:{ref}*"):
             return []
 
         return [{"url": f"{workspace}/{scope}/{ref}", "tag": "__UNVERSIONED__", "date": ""}]
@@ -625,8 +624,8 @@ class RedisPlugin(PersistencePlugin):
 
             # we iterate over all keys found with the constructed
             # pattern, and process it in other to get the
-            # object it references to
-            for key in conn.scan_iter(pattern, count=50):
+            # object it references to (KEYS finds them in one request)
+            for key in conn.keys(pattern):
                 # If the value is on key we get the value from the
                 # last token of the string, otherwise we read
                 # the value from the database
