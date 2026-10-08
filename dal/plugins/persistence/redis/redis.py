@@ -10,6 +10,7 @@ import pickle
 import re
 import json
 import fnmatch
+from typing import Dict, List, Optional, Tuple
 from redis.client import ConnectionPool, Redis
 from redis.exceptions import ResponseError
 from redis.connection import Connection
@@ -56,6 +57,8 @@ class RedisPlugin(PersistencePlugin):
             db=0,
             connection_class=Connection,
         )
+        # Compiled key patterns relative to a document, shared by all documents
+        self._relative_patterns: Dict[str, "re.Pattern"] = {}
 
     def decode_value(self, _value):
         """Decodes a value from redis"""
@@ -82,10 +85,12 @@ class RedisPlugin(PersistencePlugin):
             decoded_list = [pickle.loads(elem) for elem in _list]
         return decoded_list
 
-    def key_to_dict(self, schema: TreeNode, key: str, conn, data):
+    def key_to_dict(
+        self, schema: TreeNode, key: str, values: Dict[str, Tuple[Optional[str], object]], data
+    ):
         """
-        convert a key in the V1 specfication to a dictonary, also
-        loads the value from the Redis database
+        convert a key in the V1 specfication to a dictonary, with
+        its value from the values read by MovaiDB.read_keys
         """
 
         keys = re.split("[:,]", key)
@@ -111,24 +116,15 @@ class RedisPlugin(PersistencePlugin):
             current_ptr[attr] = keys[idx + 1]
             return
 
-        # A simple value?
-        try:
-            current_ptr[attr] = self.decode_value(conn.get(key))
-            return
-        except ResponseError:
-            pass
-
-        # A hash?
-        try:
-            current_ptr[attr] = self.decode_hash(conn.hgetall(key))
-            return
-        except ResponseError:
-            pass
-
-        # A list?
-        try:
-            current_ptr[attr] = self.decode_list(conn.lrange(key, 0, -1))
-        except ResponseError:
+        command, value = values[key]
+        if command == "get":
+            # A simple value, a key deleted after being listed raises AttributeError
+            current_ptr[attr] = self.decode_value(value)
+        elif command == "hgetall":
+            current_ptr[attr] = self.decode_hash(value)
+        elif command == "lrange":
+            current_ptr[attr] = self.decode_list(value)
+        else:
             current_ptr[attr] = None
 
     def save_keys(self, schema: TreeNode, base: str, keys: list, conn: Redis, data: dict):
@@ -295,10 +291,44 @@ class RedisPlugin(PersistencePlugin):
 
     def load_keys(self, schema: TreeNode, base: str, keys: list, conn: Redis, out: dict):
         """
-        Save the object in the redis, according the V1 specifications
+        Load the object from the keys of a document, according the V1 specifications
+        """
+        # the keys of each property in the schema, in the order they are loaded
+        matches: List[Tuple[TreeNode, List[str]]] = []
+        self._match_keys(schema, base, keys, matches, base)
+
+        # the values of the keys loaded, read at once
+        values = MovaiDB.read_keys(
+            conn,
+            [
+                key
+                for key_schema, key_matches in matches
+                if not key_schema.attributes.get("value_on_key", False)
+                for key in key_matches
+            ],
+        )
+
+        for key_schema, key_matches in matches:
+            try:
+                for key in key_matches:
+                    self.key_to_dict(key_schema, key, values, out)
+            except (KeyError, AttributeError):
+                # property nodes have no children, so there is nothing else to load
+                continue
+
+    def _match_keys(
+        self,
+        schema: TreeNode,
+        base: str,
+        keys: list,
+        matches: List[Tuple[TreeNode, List[str]]],
+        document: str,
+    ):
+        """
+        Collect, for each property in the schema, the keys of the document that store it
         """
         try:
-            # if we are on a property node, store it on the database
+            # if we are on a property node, collect its keys
             if isinstance(schema, SchemaPropertyNode):
                 key = f"{base},{schema.name}:"
                 value_on_key = schema.attributes.get("value_on_key", False)
@@ -306,9 +336,7 @@ class RedisPlugin(PersistencePlugin):
                 if value_on_key:
                     key = f"{key}*"
 
-                for match_key in fnmatch.filter(keys, key):
-                    self.key_to_dict(schema, match_key, conn, out)
-
+                matches.append((schema, self._filter_keys(keys, key, document)))
                 return
 
             # it's not a terminal element, compose the next
@@ -319,12 +347,12 @@ class RedisPlugin(PersistencePlugin):
                 base = f"{base}*"
 
             for child in schema.children:
-                self.load_keys(child, base, keys, conn, out)
+                self._match_keys(child, base, keys, matches, document)
 
         except (KeyError, AttributeError):
             # No schema! check in this node children if any
             for child in schema.children:
-                self.load_keys(child, base, keys, conn, out)
+                self._match_keys(child, base, keys, matches, document)
 
     def fetch_keys_iter(self, conn, scope: str, ref: str) -> list:
         """Get keys using SCAN ITER command"""
@@ -335,6 +363,26 @@ class RedisPlugin(PersistencePlugin):
     def fetch_keys(self, conn, scope: str, ref: str) -> list:
         """Get keys using KEYS command"""
         return [s.decode() for s in conn.keys(f"{scope}:{ref},*")]
+
+    def _filter_keys(self, keys: List[str], pattern: str, document: str) -> List[str]:
+        """
+        Same as fnmatch.filter(keys, pattern), for the keys of a document.
+
+        fnmatch only caches 256 compiled patterns, and the patterns of load_keys
+        include the document name, so they are compiled again for every document.
+        Matching the part of the key after the document name reuses them instead.
+        """
+        if not pattern.startswith(document) or any(char in document for char in "*?["):
+            return fnmatch.filter(keys, pattern)
+
+        relative = pattern[len(document) :]
+        try:
+            compiled = self._relative_patterns[relative]
+        except KeyError:
+            compiled = self._relative_patterns[relative] = re.compile(fnmatch.translate(relative))
+
+        start = len(document)
+        return [key for key in keys if key.startswith(document) and compiled.match(key, start)]
 
     def schema_to_key(self, schema: TreeNode):
         """
@@ -411,7 +459,7 @@ class RedisPlugin(PersistencePlugin):
         except KeyError as e:
             raise ValueError("missing workspace") from e
 
-        for key in conn.scan_iter(f"{scope}:*", count=50):
+        for key in conn.scan_iter(f"{scope}:*", count=1000):
             tokens = re.split("[:,]", key.decode("utf-8"))
             try:
                 scope = tokens[0]
@@ -492,8 +540,7 @@ class RedisPlugin(PersistencePlugin):
         except KeyError as e:
             raise ValueError("missing workspace, scope, or ref") from e
 
-        conn.keys
-        if len(list(conn.scan_iter(f"{scope}:{ref}*", count=50))) == 0:
+        if not conn.keys(f"{scope}:{ref}*"):
             return []
 
         return [{"url": f"{workspace}/{scope}/{ref}", "tag": "__UNVERSIONED__", "date": ""}]
@@ -577,8 +624,8 @@ class RedisPlugin(PersistencePlugin):
 
             # we iterate over all keys found with the constructed
             # pattern, and process it in other to get the
-            # object it references to
-            for key in conn.scan_iter(pattern, count=50):
+            # object it references to (KEYS finds them in one request)
+            for key in conn.keys(pattern):
                 # If the value is on key we get the value from the
                 # last token of the string, otherwise we read
                 # the value from the database

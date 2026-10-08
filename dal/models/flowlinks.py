@@ -188,20 +188,21 @@ class FlowLinks(ScopePropertyNode):
 
     def get_node_links(self, node_name: str) -> list:
         """Returns the node instance links in the flow and subflows"""
-        if node_name in self.cache:
-            return self.cache[node_name]
-        links = []
+        if not self.cache:
+            # index the links of every node at once, parsing each link only once
+            for key in self.full:
+                link = self.flow.Links[key]
+                from_node, to_node = link.From.node_inst, link.To.node_inst
 
-        for key in self.full:
-            link = self.flow.Links[key]
+                self.cache.setdefault(from_node, []).append(
+                    {"Type": "From", "ref": link, "id": key}
+                )
+                if to_node != from_node:
+                    self.cache.setdefault(to_node, []).append(
+                        {"Type": "To", "ref": link, "id": key}
+                    )
 
-            if node_name in [link.From.node_inst, link.To.node_inst]:
-                _type = "From" if node_name == link.From.node_inst else "To"
-                _link = {"Type": _type, "ref": link, "id": key}
-
-                links.append(_link)
-        self.cache[node_name] = links
-        return links
+        return self.cache.get(node_name, [])
 
 
 ScopeNode.register_scope_property("schemas/1.0/Flow/Links", FlowLinks)

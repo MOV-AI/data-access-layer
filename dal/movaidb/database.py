@@ -52,6 +52,12 @@ def redis_value_size(value: Any) -> int:
         return 0
 
 
+def is_exact_key(pattern: str) -> bool:
+    """Return True if a key pattern only matches the key with the same name."""
+    # special characters of the Redis and fnmatch glob patterns
+    return not any(char in pattern for char in "*?[\\")
+
+
 def longest_common_prefix(strings: List[str]) -> str:
     """
     Finds the longest common prefix string amongst an array of strings.
@@ -286,18 +292,28 @@ class Redis(metaclass=Singleton):
         )
 
         self.thread = None
+        # clients are thread safe and share the pools, so one of each is created
+        self._db_global: Optional[redis.Redis] = None
+        self._db_slave: Optional[redis.Redis] = None
+        self._db_local: Optional[redis.Redis] = None
 
     @property
     def db_global(self) -> redis.Redis:
-        return redis.Redis(connection_pool=self.master_pool, decode_responses=False)
+        if self._db_global is None:
+            self._db_global = redis.Redis(connection_pool=self.master_pool, decode_responses=False)
+        return self._db_global
 
     @property
     def db_slave(self) -> redis.Redis:
-        return redis.Redis(connection_pool=self.slave_pool, decode_responses=False)
+        if self._db_slave is None:
+            self._db_slave = redis.Redis(connection_pool=self.slave_pool, decode_responses=False)
+        return self._db_slave
 
     @property
     def db_local(self) -> redis.Redis:
-        return redis.Redis(connection_pool=self.local_pool, decode_responses=False)
+        if self._db_local is None:
+            self._db_local = redis.Redis(connection_pool=self.local_pool, decode_responses=False)
+        return self._db_local
 
     @property
     def slave_pubsub(self) -> redis.client.PubSub:
@@ -317,6 +333,7 @@ class MovaiDB:
     REDIS_LOCAL_PORT = int(getenv("REDIS_LOCAL_PORT", 6379))
     REDIS_SLAVE_HOST = getenv("REDIS_SLAVE_HOST", REDIS_MASTER_HOST)
     DB_SCHEMA = DBSchema()
+    _API_STAR = None
 
     def __init__(
         self,
@@ -330,30 +347,55 @@ class MovaiDB:
         # some from redis, some from aioredis - which is deprecated
         self.movaidb = databases or Redis()
 
+        self._db = db
         if db == "global":
             self.db_read: redis.Redis = self.movaidb.db_slave
             self.db_write: redis.Redis = self.movaidb.db_global
-            self.pubsub: redis.client.PubSub = self.movaidb.slave_pubsub
         else:
             self.db_read: redis.Redis = self.movaidb.db_local
             self.db_write: redis.Redis = self.movaidb.db_local
-            self.pubsub: redis.client.PubSub = self.movaidb.local_pubsub
+        self._pubsub = None
 
         if _api_version == "latest":
             self.api_struct = self.DB_SCHEMA.get_api()
         else:
             # we then need to get this from database!!!!
             self.api_struct = self.DB_SCHEMA.get_api()
-        self.api_star = self.template_to_star(self.api_struct)
+        # derived from the schema, which does not change, so computed once
+        if MovaiDB._API_STAR is None:
+            MovaiDB._API_STAR = self.template_to_star(self.api_struct)
+        self.api_star = MovaiDB._API_STAR
 
-        self.loop = loop
-        if not self.loop:
+        self._loop = loop
+        if not self._loop:
             try:
-                self.loop = asyncio.get_event_loop()
+                self._loop = asyncio.get_event_loop()
             except Exception:
-                self.loop = asyncio.new_event_loop()
+                # no event loop in this thread, one is created when first needed, see loop
+                self._loop = None
 
         self._background_tasks = set()
+
+    @property
+    def pubsub(self) -> redis.client.PubSub:
+        """Created when first needed"""
+        if self._pubsub is None:
+            if self._db == "global":
+                self._pubsub = self.movaidb.slave_pubsub
+            else:
+                self._pubsub = self.movaidb.local_pubsub
+        return self._pubsub
+
+    @property
+    def loop(self) -> asyncio.AbstractEventLoop:
+        """The event loop of the asynchronous operations"""
+        if self._loop is None:
+            self._loop = asyncio.new_event_loop()
+        return self._loop
+
+    @loop.setter
+    def loop(self, loop: asyncio.AbstractEventLoop):
+        self._loop = loop
 
     def validate_file_write(self, key, value):
         payload_size = redis_value_size(value)
@@ -379,13 +421,22 @@ class MovaiDB:
         if not patterns:
             return []
 
+        if all(is_exact_key(pattern) for pattern in patterns):
+            # the keys are known, so check which exist instead of scanning the whole database
+            pipe = self.db_read.pipeline(transaction=False)
+            for pattern in patterns:
+                pipe.exists(pattern)
+            keys = [key for key, exists in zip(patterns, pipe.execute()) if exists]
+            keys.sort(key=str.lower)
+            return keys
+
         # often patterns are very similar, looking for different keys
-        # of the same object. Instead of scanning Redis for each pattern,
-        # we can optimize the search by scanning once for a common prefix,
+        # of the same object. Instead of searching Redis for each pattern,
+        # we can optimize the search by searching once for a common prefix,
         # and then filtering the results in Python.
         prefix = longest_common_prefix(patterns) + "*"
         keys = list()
-        found = [elem.decode("utf-8") for elem in self.db_read.scan_iter(prefix, count=1000)]
+        found = self.find_keys(prefix)
         for pattern in patterns:
             keys.extend(fnmatch.filter(found, pattern))
         keys.sort(key=str.lower)
@@ -431,9 +482,18 @@ class MovaiDB:
             return scan_key
 
         # get db keys that match scan_key
-        keys = [elem.decode("utf-8") for elem in self.db_read.scan_iter(scan_key, count=1000)]
+        keys = self.find_keys(scan_key)
         keys.sort(key=str.lower)
         return keys
+
+    def find_keys(self, pattern: str) -> List[str]:
+        """
+        Return the keys that match a pattern, in no particular order.
+
+        Redis has to go through every key of the database to find them, which KEYS
+        does in one request, while SCAN needs one request for every 1000 keys.
+        """
+        return [key.decode("utf-8") for key in self.db_read.keys(pattern)]
 
     def get2(self, _input: dict) -> Dict[str, Any]:
         keys = self.search_wild(_input)
@@ -479,22 +539,71 @@ class MovaiDB:
         except:
             keys = self.search_wild(_input)
 
+        return self.get_from_keys(keys)
+
+    def get_from_keys(self, keys: List[str]) -> Dict[str, Any]:
+        """
+        Returns the values of keys that were already found, in the same format as get
+
+        Returns:
+            dict
+        """
+        values = self.read_keys(self.db_read, keys)
         kv = list()
-        for idx, value in enumerate(self.db_read.mget(keys)):
-            if value:
-                kv.append((keys[idx], self.decode_value(value)))
-            else:  # no value
-                try:  # Is it a hash?
-                    get_hash = self.db_read.hgetall(keys[idx])
-                    kv.append((keys[idx], self.sort_dict(self.decode_hash(get_hash))))
-                except:
-                    try:  # Is it a list?
-                        get_list = self.db_read.lrange(keys[idx], 0, -1)
-                        kv.append((keys[idx], self.decode_list(get_list)))
-                    except:  # is just a None...
-                        pass
+        for key in keys:
+            command, value = values[key]
+            if command == "get":
+                if value:
+                    kv.append((key, self.decode_value(value)))
+                elif value is None:
+                    # a key that does not exist reads as an empty hash
+                    kv.append((key, {}))
+                # an empty string is not read
+            elif command == "hgetall":
+                try:
+                    kv.append((key, self.sort_dict(self.decode_hash(value))))
+                except Exception:
+                    pass
+            elif command == "lrange":
+                try:
+                    kv.append((key, self.decode_list(value)))
+                except Exception:
+                    pass
 
         return self.keys_to_dict(kv)
+
+    @staticmethod
+    def read_keys(conn: redis.Redis, keys: List[str]) -> Dict[str, Tuple[Optional[str], Any]]:
+        """
+        Read the values of keys of any type with a connection, with one pipeline per command.
+
+        Returns:
+            dict: for each key, the command that read it ("get", "hgetall" or "lrange")
+                and its result, or (None, None) if none of them could read it.
+        """
+        values: Dict[str, Tuple[Optional[str], Any]] = {}
+        pending = list(keys)
+        for command, args in (("get", ()), ("hgetall", ()), ("lrange", (0, -1))):
+            if not pending:
+                break
+
+            pipe = conn.pipeline(transaction=False)
+            for key in pending:
+                getattr(pipe, command)(key, *args)
+
+            retry = []
+            for key, result in zip(pending, pipe.execute(raise_on_error=False)):
+                if isinstance(result, redis.exceptions.ResponseError):
+                    # the key holds another type, read it with the next command
+                    retry.append(key)
+                else:
+                    values[key] = (command, result)
+            pending = retry
+
+        for key in pending:
+            values[key] = (None, None)
+
+        return values
 
     def set(
         self,
@@ -948,10 +1057,18 @@ class MovaiDB:
         """Check if some key exists in redis giving arguments"""
         search_dict = self.get_search_dict(scope, **kwargs)
         patterns = list()
+        exact_keys = list()
         for k, v, s in self.dict_to_keys(search_dict):
             patterns.append(k + "*")
+            if is_exact_key(k):
+                exact_keys.append(k)
+
+        # any of these keys matches the patterns, and can be found without scanning
+        if exact_keys and self.db_read.exists(*exact_keys):
+            return True
+
         prefix = longest_common_prefix(patterns) + "*"
-        found = [elem.decode("utf-8") for elem in self.db_read.scan_iter(prefix, count=1000)]
+        found = self.find_keys(prefix)
         for pattern in patterns:
             if any(fnmatch.fnmatch(elem, pattern) for elem in found):
                 return True
