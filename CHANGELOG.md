@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.28.3
 - [BP-1854](https://movai.atlassian.net/browse/BP-1854): Fix robot logs appearing on wrong robot cards.
   - Use correct release of movai-core-shared (3.11.x.y)
 
