@@ -1,0 +1,1083 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dal.validation package &mdash; data-access-layer  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+
+  
+    <link rel="shortcut icon" href="_static/cropped-Mov.ai-favicon2-32x32.png"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="_static/versions.js?v=6808f9ef"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Schemas and validation" href="schemas.html" />
+    <link rel="prev" title="dal.utils package" href="dal.utils.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            data-access-layer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="readme.html">Data Access Layer</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">data-access-layer</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dal.html">dal package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="dal.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="dal.archive.html">dal.archive package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.backup.html">dal.backup package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.classes.html">dal.classes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.data.html">dal.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.db_handlers.html">dal.db_handlers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.exceptions.html">dal.exceptions package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.helpers.html">dal.helpers package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.models.html">dal.models package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.movaidb.html">dal.movaidb package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.plugins.html">dal.plugins package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.scopes.html">dal.scopes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.tools.html">dal.tools package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dal.utils.html">dal.utils package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">dal.validation package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dal.html#module-dal">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="schemas.html">Schemas and validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scopes.html">Scopes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="backup.html">Mobdata CLI Tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="permissions.html">Resource permissions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="robot_parameters.html">Robot Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">data-access-layer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">data-access-layer</a></li>
+          <li class="breadcrumb-item"><a href="dal.html">dal package</a></li>
+      <li class="breadcrumb-item active">dal.validation package</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/MOV-AI/data-access-layer/blob/3.28/docs/source/dal.validation.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dal-validation-package">
+<h1>dal.validation package<a class="headerlink" href="#dal-validation-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-dal.validation.constants">
+<span id="dal-validation-constants-module"></span><h2>dal.validation.constants module<a class="headerlink" href="#module-dal.validation.constants" title="Permalink to this heading"></a></h2>
+<p>Validation constants</p>
+</section>
+<section id="module-dal.validation.flow_validator">
+<span id="dal-validation-flow-validator-module"></span><h2>dal.validation.flow_validator module<a class="headerlink" href="#module-dal.validation.flow_validator" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.flow_validator.FlowValidator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.flow_validator.</span></span><span class="sig-name descname"><span class="pre">FlowValidator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.flow_validator.FlowValidator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Validates a specific flow within the project.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.validation.flow_validator.FlowValidator.validate_flow">
+<span class="sig-name descname"><span class="pre">validate_flow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#dal.validation.project_validator.ProjectValidationResult" title="dal.validation.project_validator.ProjectValidationResult"><span class="pre">ProjectValidationResult</span></a></span></span><a class="headerlink" href="#dal.validation.flow_validator.FlowValidator.validate_flow" title="Permalink to this definition"></a></dt>
+<dd><p>Validate a specific flow by its reference.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The result of the flow validation, including issues found.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#dal.validation.project_validator.ProjectValidationResult" title="dal.validation.project_validator.ProjectValidationResult">ProjectValidationResult</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dal.validation.issues">
+<span id="dal-validation-issues-module"></span><h2>dal.validation.issues module<a class="headerlink" href="#module-dal.validation.issues" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.issues.DuplicatedMob">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.issues.</span></span><span class="sig-name descname"><span class="pre">DuplicatedMob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Unknown'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Unknown'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.issues.DuplicatedMob" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.validation.issues.ProjIssue" title="dal.validation.issues.ProjIssue"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProjIssue</span></code></a></p>
+<p>Duplicated flow or node instance in multiple packages</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.DuplicatedMob.msg">
+<span class="sig-name descname"><span class="pre">msg</span></span><a class="headerlink" href="#dal.validation.issues.DuplicatedMob.msg" title="Permalink to this definition"></a></dt>
+<dd><p>Issue message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.issues.Issue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.issues.</span></span><span class="sig-name descname"><span class="pre">Issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iss_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">severity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dal.validation.issues.Severity" title="dal.validation.issues.Severity"><span class="pre">Severity</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_ranges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.issues.Issue" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base issue class.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.Issue.category">
+<span class="sig-name descname"><span class="pre">category</span></span><a class="headerlink" href="#dal.validation.issues.Issue.category" title="Permalink to this definition"></a></dt>
+<dd><p>Issue category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.Issue.iss_type">
+<span class="sig-name descname"><span class="pre">iss_type</span></span><a class="headerlink" href="#dal.validation.issues.Issue.iss_type" title="Permalink to this definition"></a></dt>
+<dd><p>Issue type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.Issue.severity">
+<span class="sig-name descname"><span class="pre">severity</span></span><a class="headerlink" href="#dal.validation.issues.Issue.severity" title="Permalink to this definition"></a></dt>
+<dd><p>Issue severity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#dal.validation.issues.Severity" title="dal.validation.issues.Severity">Severity</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.Issue.msg">
+<span class="sig-name descname"><span class="pre">msg</span></span><a class="headerlink" href="#dal.validation.issues.Issue.msg" title="Permalink to this definition"></a></dt>
+<dd><p>Issue message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.Issue.line_start">
+<span class="sig-name descname"><span class="pre">line_start</span></span><a class="headerlink" href="#dal.validation.issues.Issue.line_start" title="Permalink to this definition"></a></dt>
+<dd><p>Issue start line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.Issue.line_ranges">
+<span class="sig-name descname"><span class="pre">line_ranges</span></span><a class="headerlink" href="#dal.validation.issues.Issue.line_ranges" title="Permalink to this definition"></a></dt>
+<dd><p>Issue line range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.issues.MissingFlowInstance">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.issues.</span></span><span class="sig-name descname"><span class="pre">MissingFlowInstance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Unknown'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Unknown'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.issues.MissingFlowInstance" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.validation.issues.ProjIssue" title="dal.validation.issues.ProjIssue"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProjIssue</span></code></a></p>
+<p>Missing flow instance referenced by link.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.MissingFlowInstance.json_path">
+<span class="sig-name descname"><span class="pre">json_path</span></span><a class="headerlink" href="#dal.validation.issues.MissingFlowInstance.json_path" title="Permalink to this definition"></a></dt>
+<dd><p>Path to file with issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.MissingFlowInstance.msg">
+<span class="sig-name descname"><span class="pre">msg</span></span><a class="headerlink" href="#dal.validation.issues.MissingFlowInstance.msg" title="Permalink to this definition"></a></dt>
+<dd><p>Issue message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.issues.MissingMob">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.issues.</span></span><span class="sig-name descname"><span class="pre">MissingMob</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Unknown'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Unknown'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.issues.MissingMob" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.validation.issues.ProjIssue" title="dal.validation.issues.ProjIssue"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProjIssue</span></code></a></p>
+<p>Missing mob (node or flow).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.MissingMob.json_path">
+<span class="sig-name descname"><span class="pre">json_path</span></span><a class="headerlink" href="#dal.validation.issues.MissingMob.json_path" title="Permalink to this definition"></a></dt>
+<dd><p>Path to file with issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.MissingMob.msg">
+<span class="sig-name descname"><span class="pre">msg</span></span><a class="headerlink" href="#dal.validation.issues.MissingMob.msg" title="Permalink to this definition"></a></dt>
+<dd><p>Issue message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.issues.MissingNodeInstance">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.issues.</span></span><span class="sig-name descname"><span class="pre">MissingNodeInstance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Unknown'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Unknown'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.issues.MissingNodeInstance" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.validation.issues.ProjIssue" title="dal.validation.issues.ProjIssue"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProjIssue</span></code></a></p>
+<p>Missing node instance referenced by link.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.MissingNodeInstance.json_path">
+<span class="sig-name descname"><span class="pre">json_path</span></span><a class="headerlink" href="#dal.validation.issues.MissingNodeInstance.json_path" title="Permalink to this definition"></a></dt>
+<dd><p>Path to file with issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.MissingNodeInstance.msg">
+<span class="sig-name descname"><span class="pre">msg</span></span><a class="headerlink" href="#dal.validation.issues.MissingNodeInstance.msg" title="Permalink to this definition"></a></dt>
+<dd><p>Issue message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.issues.MissingNodePort">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.issues.</span></span><span class="sig-name descname"><span class="pre">MissingNodePort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Unknown'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Unknown'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.issues.MissingNodePort" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.validation.issues.ProjIssue" title="dal.validation.issues.ProjIssue"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProjIssue</span></code></a></p>
+<p>Missing node port.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.MissingNodePort.json_path">
+<span class="sig-name descname"><span class="pre">json_path</span></span><a class="headerlink" href="#dal.validation.issues.MissingNodePort.json_path" title="Permalink to this definition"></a></dt>
+<dd><p>Path to file with issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.MissingNodePort.msg">
+<span class="sig-name descname"><span class="pre">msg</span></span><a class="headerlink" href="#dal.validation.issues.MissingNodePort.msg" title="Permalink to this definition"></a></dt>
+<dd><p>Issue message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.issues.MissingReferencedParameter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.issues.</span></span><span class="sig-name descname"><span class="pre">MissingReferencedParameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Unknown'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Unknown'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.issues.MissingReferencedParameter" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.validation.issues.ProjIssue" title="dal.validation.issues.ProjIssue"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProjIssue</span></code></a></p>
+<p>Missing flow parameter referenced by node instance.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.MissingReferencedParameter.json_path">
+<span class="sig-name descname"><span class="pre">json_path</span></span><a class="headerlink" href="#dal.validation.issues.MissingReferencedParameter.json_path" title="Permalink to this definition"></a></dt>
+<dd><p>Path to file with issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.MissingReferencedParameter.msg">
+<span class="sig-name descname"><span class="pre">msg</span></span><a class="headerlink" href="#dal.validation.issues.MissingReferencedParameter.msg" title="Permalink to this definition"></a></dt>
+<dd><p>Issue message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.issues.NonMatchingLinkPorts">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.issues.</span></span><span class="sig-name descname"><span class="pre">NonMatchingLinkPorts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Unknown'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Unknown'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.issues.NonMatchingLinkPorts" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.validation.issues.ProjIssue" title="dal.validation.issues.ProjIssue"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProjIssue</span></code></a></p>
+<p>Link src and dst ports do not match (should not be connected).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.NonMatchingLinkPorts.json_path">
+<span class="sig-name descname"><span class="pre">json_path</span></span><a class="headerlink" href="#dal.validation.issues.NonMatchingLinkPorts.json_path" title="Permalink to this definition"></a></dt>
+<dd><p>Path to file with issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.NonMatchingLinkPorts.msg">
+<span class="sig-name descname"><span class="pre">msg</span></span><a class="headerlink" href="#dal.validation.issues.NonMatchingLinkPorts.msg" title="Permalink to this definition"></a></dt>
+<dd><p>Issue message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.issues.ProjIssue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.issues.</span></span><span class="sig-name descname"><span class="pre">ProjIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iss_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">severity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dal.validation.issues.Severity" title="dal.validation.issues.Severity"><span class="pre">Severity</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_ranges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Unknown'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Unknown'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.issues.ProjIssue" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.validation.issues.Issue" title="dal.validation.issues.Issue"><code class="xref py py-class docutils literal notranslate"><span class="pre">Issue</span></code></a></p>
+<p>Project base issue class.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.ProjIssue.json_path">
+<span class="sig-name descname"><span class="pre">json_path</span></span><a class="headerlink" href="#dal.validation.issues.ProjIssue.json_path" title="Permalink to this definition"></a></dt>
+<dd><p>Path to file with issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.ProjIssue.category">
+<span class="sig-name descname"><span class="pre">category</span></span><a class="headerlink" href="#dal.validation.issues.ProjIssue.category" title="Permalink to this definition"></a></dt>
+<dd><p>Issue category.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.ProjIssue.iss_type">
+<span class="sig-name descname"><span class="pre">iss_type</span></span><a class="headerlink" href="#dal.validation.issues.ProjIssue.iss_type" title="Permalink to this definition"></a></dt>
+<dd><p>Issue type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.ProjIssue.severity">
+<span class="sig-name descname"><span class="pre">severity</span></span><a class="headerlink" href="#dal.validation.issues.ProjIssue.severity" title="Permalink to this definition"></a></dt>
+<dd><p>Issue severity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#dal.validation.issues.Severity" title="dal.validation.issues.Severity">Severity</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.ProjIssue.msg">
+<span class="sig-name descname"><span class="pre">msg</span></span><a class="headerlink" href="#dal.validation.issues.ProjIssue.msg" title="Permalink to this definition"></a></dt>
+<dd><p>Issue message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.ProjIssue.line_start">
+<span class="sig-name descname"><span class="pre">line_start</span></span><a class="headerlink" href="#dal.validation.issues.ProjIssue.line_start" title="Permalink to this definition"></a></dt>
+<dd><p>Issue start line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.ProjIssue.line_ranges">
+<span class="sig-name descname"><span class="pre">line_ranges</span></span><a class="headerlink" href="#dal.validation.issues.ProjIssue.line_ranges" title="Permalink to this definition"></a></dt>
+<dd><p>Issue line range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.issues.Severity">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.issues.</span></span><span class="sig-name descname"><span class="pre">Severity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.issues.Severity" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Severity enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.Severity.ERROR">
+<span class="sig-name descname"><span class="pre">ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ERROR'</span></em><a class="headerlink" href="#dal.validation.issues.Severity.ERROR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.Severity.HIGH">
+<span class="sig-name descname"><span class="pre">HIGH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'HIGH'</span></em><a class="headerlink" href="#dal.validation.issues.Severity.HIGH" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.Severity.LOW">
+<span class="sig-name descname"><span class="pre">LOW</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'LOW'</span></em><a class="headerlink" href="#dal.validation.issues.Severity.LOW" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.issues.Severity.NORMAL">
+<span class="sig-name descname"><span class="pre">NORMAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'NORMAL'</span></em><a class="headerlink" href="#dal.validation.issues.Severity.NORMAL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dal.validation.project_validator">
+<span id="dal-validation-project-validator-module"></span><h2>dal.validation.project_validator module<a class="headerlink" href="#module-dal.validation.project_validator" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.project_validator.LinkValidator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.project_validator.</span></span><span class="sig-name descname"><span class="pre">LinkValidator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">objects_by_scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.project_validator.LinkValidator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Link validator class.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.validation.project_validator.LinkValidator.validate_link">
+<span class="sig-name descname"><span class="pre">validate_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow_content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#dal.validation.issues.ProjIssue" title="dal.validation.issues.ProjIssue"><span class="pre">ProjIssue</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.validation.project_validator.LinkValidator.validate_link" title="Permalink to this definition"></a></dt>
+<dd><p>Validate a single link.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>flow_ref</strong> – Name of the flow containing the link</p></li>
+<li><p><strong>flow_data</strong> – Full flow data dictionary (for line number lookup)</p></li>
+<li><p><strong>flow_content</strong> – Flow content dictionary</p></li>
+<li><p><strong>link_id</strong> – Link identifier</p></li>
+<li><p><strong>from_path</strong> – Link source path (format: “node__subnode/port/out”)</p></li>
+<li><p><strong>to_path</strong> – Link destination path (format: “node__subnode/port/in”)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.validation.project_validator.MissingFlowInstanceExc">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.project_validator.</span></span><span class="sig-name descname"><span class="pre">MissingFlowInstanceExc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.project_validator.MissingFlowInstanceExc" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when a flow instance is not found.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.MissingFlowInstanceExc.flow">
+<span class="sig-name descname"><span class="pre">flow</span></span><a class="headerlink" href="#dal.validation.project_validator.MissingFlowInstanceExc.flow" title="Permalink to this definition"></a></dt>
+<dd><p>Flow where the instance is missing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.MissingFlowInstanceExc.expected_instance">
+<span class="sig-name descname"><span class="pre">expected_instance</span></span><a class="headerlink" href="#dal.validation.project_validator.MissingFlowInstanceExc.expected_instance" title="Permalink to this definition"></a></dt>
+<dd><p>Instance missing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.validation.project_validator.MissingFlowTemplateExc">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.project_validator.</span></span><span class="sig-name descname"><span class="pre">MissingFlowTemplateExc</span></span><a class="headerlink" href="#dal.validation.project_validator.MissingFlowTemplateExc" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when a flow template is not found.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.validation.project_validator.MissingNodeInstanceExc">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.project_validator.</span></span><span class="sig-name descname"><span class="pre">MissingNodeInstanceExc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.project_validator.MissingNodeInstanceExc" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when a node instance is not found.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.MissingNodeInstanceExc.flow">
+<span class="sig-name descname"><span class="pre">flow</span></span><a class="headerlink" href="#dal.validation.project_validator.MissingNodeInstanceExc.flow" title="Permalink to this definition"></a></dt>
+<dd><p>Flow where the instance is missing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.MissingNodeInstanceExc.expected_instance">
+<span class="sig-name descname"><span class="pre">expected_instance</span></span><a class="headerlink" href="#dal.validation.project_validator.MissingNodeInstanceExc.expected_instance" title="Permalink to this definition"></a></dt>
+<dd><p>Instance missing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="dal.validation.project_validator.MissingNodeTemplateExc">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.project_validator.</span></span><span class="sig-name descname"><span class="pre">MissingNodeTemplateExc</span></span><a class="headerlink" href="#dal.validation.project_validator.MissingNodeTemplateExc" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raised when a node template is not found.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.project_validator.ProjectIssue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.project_validator.</span></span><span class="sig-name descname"><span class="pre">ProjectIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iss_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">severity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dal.validation.issues.Severity" title="dal.validation.issues.Severity"><span class="pre">Severity</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">document_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.project_validator.ProjectIssue" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Base class for project validation issues.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.ProjectIssue.category">
+<span class="sig-name descname"><span class="pre">category</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dal.validation.project_validator.ProjectIssue.category" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.ProjectIssue.document_name">
+<span class="sig-name descname"><span class="pre">document_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dal.validation.project_validator.ProjectIssue.document_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.ProjectIssue.document_type">
+<span class="sig-name descname"><span class="pre">document_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dal.validation.project_validator.ProjectIssue.document_type" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.ProjectIssue.iss_type">
+<span class="sig-name descname"><span class="pre">iss_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dal.validation.project_validator.ProjectIssue.iss_type" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.ProjectIssue.json_path">
+<span class="sig-name descname"><span class="pre">json_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dal.validation.project_validator.ProjectIssue.json_path" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.ProjectIssue.line_start">
+<span class="sig-name descname"><span class="pre">line_start</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#dal.validation.project_validator.ProjectIssue.line_start" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.ProjectIssue.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#dal.validation.project_validator.ProjectIssue.model_config" title="Permalink to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.ProjectIssue.model_fields">
+<span class="sig-name descname"><span class="pre">model_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">FieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'category':</span> <span class="pre">FieldInfo(annotation=str,</span> <span class="pre">required=True),</span> <span class="pre">'document_name':</span> <span class="pre">FieldInfo(annotation=str,</span> <span class="pre">required=True),</span> <span class="pre">'document_type':</span> <span class="pre">FieldInfo(annotation=str,</span> <span class="pre">required=True),</span> <span class="pre">'iss_type':</span> <span class="pre">FieldInfo(annotation=str,</span> <span class="pre">required=True),</span> <span class="pre">'json_path':</span> <span class="pre">FieldInfo(annotation=str,</span> <span class="pre">required=True),</span> <span class="pre">'line_start':</span> <span class="pre">FieldInfo(annotation=Union[int,</span> <span class="pre">NoneType],</span> <span class="pre">required=False),</span> <span class="pre">'msg':</span> <span class="pre">FieldInfo(annotation=str,</span> <span class="pre">required=True),</span> <span class="pre">'severity':</span> <span class="pre">FieldInfo(annotation=Severity,</span> <span class="pre">required=True)}</span></em><a class="headerlink" href="#dal.validation.project_validator.ProjectIssue.model_fields" title="Permalink to this definition"></a></dt>
+<dd><p>Metadata about the fields defined on the model,
+mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</p>
+<p>This replaces <cite>Model.__fields__</cite> from Pydantic V1.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.ProjectIssue.msg">
+<span class="sig-name descname"><span class="pre">msg</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dal.validation.project_validator.ProjectIssue.msg" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.ProjectIssue.severity">
+<span class="sig-name descname"><span class="pre">severity</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#dal.validation.issues.Severity" title="dal.validation.issues.Severity"><span class="pre">Severity</span></a></em><a class="headerlink" href="#dal.validation.project_validator.ProjectIssue.severity" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.project_validator.ProjectValidationResult">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.project_validator.</span></span><span class="sig-name descname"><span class="pre">ProjectValidationResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">summary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dal.validation.project_validator.Summary" title="dal.validation.project_validator.Summary"><span class="pre">Summary</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">issues</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#dal.validation.project_validator.ProjectIssue" title="dal.validation.project_validator.ProjectIssue"><span class="pre">ProjectIssue</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.project_validator.ProjectValidationResult" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Result structure for usage search.</p>
+<p>Format:
+{</p>
+<blockquote>
+<div><dl class="simple">
+<dt>“summary”: {</dt><dd><p>“total_issues”: int,
+“errors_count”: int,
+“warnings_count”: int,
+“scopes_checked”: List[str]</p>
+</dd>
+</dl>
+<p>},
+“issues”: List[ProjectIssue]</p>
+</div></blockquote>
+<p>}</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.ProjectValidationResult.issues">
+<span class="sig-name descname"><span class="pre">issues</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#dal.validation.project_validator.ProjectIssue" title="dal.validation.project_validator.ProjectIssue"><span class="pre">ProjectIssue</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#dal.validation.project_validator.ProjectValidationResult.issues" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.ProjectValidationResult.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'arbitrary_types_allowed':</span> <span class="pre">True}</span></em><a class="headerlink" href="#dal.validation.project_validator.ProjectValidationResult.model_config" title="Permalink to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.ProjectValidationResult.model_fields">
+<span class="sig-name descname"><span class="pre">model_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">FieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'issues':</span> <span class="pre">FieldInfo(annotation=List[dal.validation.project_validator.ProjectIssue],</span> <span class="pre">required=True),</span> <span class="pre">'summary':</span> <span class="pre">FieldInfo(annotation=Summary,</span> <span class="pre">required=True)}</span></em><a class="headerlink" href="#dal.validation.project_validator.ProjectValidationResult.model_fields" title="Permalink to this definition"></a></dt>
+<dd><p>Metadata about the fields defined on the model,
+mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</p>
+<p>This replaces <cite>Model.__fields__</cite> from Pydantic V1.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.ProjectValidationResult.summary">
+<span class="sig-name descname"><span class="pre">summary</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#dal.validation.project_validator.Summary" title="dal.validation.project_validator.Summary"><span class="pre">Summary</span></a></em><a class="headerlink" href="#dal.validation.project_validator.ProjectValidationResult.summary" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.project_validator.ProjectValidator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.project_validator.</span></span><span class="sig-name descname"><span class="pre">ProjectValidator</span></span><a class="headerlink" href="#dal.validation.project_validator.ProjectValidator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Validates all movai project data according to:
+- No duplicate MOB names across workspace
+- For each Flow, check that all referenced Flows/Nodes exist in the project
+- For each Link, validate instances exist and ports are compatible</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.validation.project_validator.ProjectValidator.check_flow">
+<span class="sig-name descname"><span class="pre">check_flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flow_ref</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#dal.validation.issues.ProjIssue" title="dal.validation.issues.ProjIssue"><span class="pre">ProjIssue</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.validation.project_validator.ProjectValidator.check_flow" title="Permalink to this definition"></a></dt>
+<dd><p>Check a specific flow for issues.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>flow_ref</strong> – Reference of the flow to check.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.validation.project_validator.ProjectValidator.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#dal.validation.project_validator.ProjectValidationResult" title="dal.validation.project_validator.ProjectValidationResult"><span class="pre">ProjectValidationResult</span></a></span></span><a class="headerlink" href="#dal.validation.project_validator.ProjectValidator.validate" title="Permalink to this definition"></a></dt>
+<dd><p>Validate the project data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The result of the project validation, including issues found.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#dal.validation.project_validator.ProjectValidationResult" title="dal.validation.project_validator.ProjectValidationResult">ProjectValidationResult</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.project_validator.Summary">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.project_validator.</span></span><span class="sig-name descname"><span class="pre">Summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_issues</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warning_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scopes_checked</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.project_validator.Summary" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Summary of validation results.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.Summary.error_count">
+<span class="sig-name descname"><span class="pre">error_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#dal.validation.project_validator.Summary.error_count" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.Summary.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#dal.validation.project_validator.Summary.model_config" title="Permalink to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.Summary.model_fields">
+<span class="sig-name descname"><span class="pre">model_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">FieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'error_count':</span> <span class="pre">FieldInfo(annotation=int,</span> <span class="pre">required=True),</span> <span class="pre">'scopes_checked':</span> <span class="pre">FieldInfo(annotation=List[str],</span> <span class="pre">required=True),</span> <span class="pre">'total_issues':</span> <span class="pre">FieldInfo(annotation=int,</span> <span class="pre">required=True),</span> <span class="pre">'warning_count':</span> <span class="pre">FieldInfo(annotation=int,</span> <span class="pre">required=True)}</span></em><a class="headerlink" href="#dal.validation.project_validator.Summary.model_fields" title="Permalink to this definition"></a></dt>
+<dd><p>Metadata about the fields defined on the model,
+mapping of field names to [<cite>FieldInfo</cite>][pydantic.fields.FieldInfo].</p>
+<p>This replaces <cite>Model.__fields__</cite> from Pydantic V1.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.Summary.scopes_checked">
+<span class="sig-name descname"><span class="pre">scopes_checked</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#dal.validation.project_validator.Summary.scopes_checked" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.Summary.total_issues">
+<span class="sig-name descname"><span class="pre">total_issues</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#dal.validation.project_validator.Summary.total_issues" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.project_validator.Summary.warning_count">
+<span class="sig-name descname"><span class="pre">warning_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#dal.validation.project_validator.Summary.warning_count" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dal.validation.schema">
+<span id="dal-validation-schema-module"></span><h2>dal.validation.schema module<a class="headerlink" href="#module-dal.validation.schema" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Moawiya Mograbi (<a class="reference external" href="mailto:moawiya&#37;&#52;&#48;mov&#46;ai">moawiya<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2022</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.schema.Schema">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.schema.</span></span><span class="sig-name descname"><span class="pre">Schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.schema.Schema" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.validation.schema.Schema.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#dal.validation.schema.ValidationResult" title="dal.validation.schema.ValidationResult"><span class="pre">ValidationResult</span></a></span></span><a class="headerlink" href="#dal.validation.schema.Schema.validate" title="Permalink to this definition"></a></dt>
+<dd><p>Validate data against the schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>dict</em>) – The data to be validated.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Validation results.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#dal.validation.schema.ValidationResult" title="dal.validation.schema.ValidationResult">ValidationResult</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.schema.ValidationResult">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.schema.</span></span><span class="sig-name descname"><span class="pre">ValidationResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.schema.ValidationResult" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.schema.ValidationResult.message">
+<span class="sig-name descname"><span class="pre">message</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#dal.validation.schema.ValidationResult.message" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.schema.ValidationResult.status">
+<span class="sig-name descname"><span class="pre">status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#dal.validation.schema.ValidationResult.status" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dal.validation.template">
+<span id="dal-validation-template-module"></span><h2>dal.validation.template module<a class="headerlink" href="#module-dal.validation.template" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Alexandre Pires  (<a class="reference external" href="mailto:alexandre&#46;pires&#37;&#52;&#48;mov&#46;ai">alexandre<span>&#46;</span>pires<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2020</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.template.Template">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.template.</span></span><span class="sig-name descname"><span class="pre">Template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.template.Template" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Loads a config file from json based on a given schema</p>
+<p class="rubric">Example</p>
+<dl class="simple">
+<dt>protocol_config = {</dt><dd><p>“name”: str,
+“parameters”: dict,</p>
+</dd>
+</dl>
+<p>}</p>
+<dl class="simple">
+<dt>callback_config = {</dt><dd><p>“name”: str,
+“libs”: dict,
+“file”: str</p>
+</dd>
+</dl>
+<p>}</p>
+<dl class="simple">
+<dt>port_config = {</dt><dd><p>“name”: str,
+“direction”: str,
+“protocol”: protocol_config,
+“callback”: callback_config</p>
+</dd>
+</dl>
+<p>}</p>
+<dl class="simple">
+<dt>node_config = {</dt><dd><p>“logfile”: str,
+“name”: str,
+“parameters”: dict,
+“ports”: [port_config]</p>
+</dd>
+</dl>
+<p>}</p>
+<p>c = Template.load(“node.json”, node_config, “./tests/configs”)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.validation.template.Template.load">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.template.Template.load" title="Permalink to this definition"></a></dt>
+<dd><p>Loads a configuration file, validate against config schema
+returns a Template object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.validation.template.Template.load_dict">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.template.Template.load_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a template from a dictionary</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dal.validation.validator">
+<span id="dal-validation-validator-module"></span><h2>dal.validation.validator module<a class="headerlink" href="#module-dal.validation.validator" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<p>Developers:
+- Moawiya Mograbi (<a class="reference external" href="mailto:moawiya&#37;&#52;&#48;mov&#46;ai">moawiya<span>&#64;</span>mov<span>&#46;</span>ai</a>) - 2022</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.validator.JsonValidator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.validator.</span></span><span class="sig-name descname"><span class="pre">JsonValidator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.validator.JsonValidator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Validator responsible to load schema json files and validate files according
+to it’s type.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.validation.validator.JsonValidator.VERSION">
+<span class="sig-name descname"><span class="pre">VERSION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'2.4'</span></em><a class="headerlink" href="#dal.validation.validator.JsonValidator.VERSION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.validation.validator.JsonValidator.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.validator.JsonValidator.validate" title="Permalink to this definition"></a></dt>
+<dd><p>Validate the content against the schema of the given scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope</strong> (<em>str</em>) – The type of the schema to validate against.</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – The data to validate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="dal.exceptions.html#dal.exceptions.exceptions.SchemaTypeNotKnown" title="dal.exceptions.exceptions.SchemaTypeNotKnown"><strong>SchemaTypeNotKnown</strong></a> – If the scope is not known to the validator.</p></li>
+<li><p><strong>ValueError</strong> – If the data does not conform to the schema.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.validator.POFileValidator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.validator.</span></span><span class="sig-name descname"><span class="pre">POFileValidator</span></span><a class="headerlink" href="#dal.validation.validator.POFileValidator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Confirm the PO file has a valid format</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.validation.validator.POFileValidator.validate">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.validator.POFileValidator.validate" title="Permalink to this definition"></a></dt>
+<dd><p>Validate the content against the schema of the given scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope</strong> (<em>str</em>) – The type of the schema to validate against.</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – The data to validate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="dal.exceptions.html#dal.exceptions.exceptions.SchemaTypeNotKnown" title="dal.exceptions.exceptions.SchemaTypeNotKnown"><strong>SchemaTypeNotKnown</strong></a> – If the scope is not known to the validator.</p></li>
+<li><p><strong>ValueError</strong> – If the data does not conform to the schema.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.validator.TranslationValidator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.validator.</span></span><span class="sig-name descname"><span class="pre">TranslationValidator</span></span><a class="headerlink" href="#dal.validation.validator.TranslationValidator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.validation.validator.TranslationValidator.validate">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.validator.TranslationValidator.validate" title="Permalink to this definition"></a></dt>
+<dd><p>Validate the content against the schema of the given scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope</strong> (<em>str</em>) – The type of the schema to validate against.</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – The data to validate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="dal.exceptions.html#dal.exceptions.exceptions.SchemaTypeNotKnown" title="dal.exceptions.exceptions.SchemaTypeNotKnown"><strong>SchemaTypeNotKnown</strong></a> – If the scope is not known to the validator.</p></li>
+<li><p><strong>ValueError</strong> – If the data does not conform to the schema.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.validation.validator.Validator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.validation.validator.</span></span><span class="sig-name descname"><span class="pre">Validator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.validation.validator.Validator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
+<p>Protocol for validators that validate data against a schema.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.validation.validator.Validator.validate">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dal.validation.validator.Validator.validate" title="Permalink to this definition"></a></dt>
+<dd><p>Validate the content against the schema of the given scope.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope</strong> (<em>str</em>) – The type of the schema to validate against.</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – The data to validate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="dal.exceptions.html#dal.exceptions.exceptions.SchemaTypeNotKnown" title="dal.exceptions.exceptions.SchemaTypeNotKnown"><strong>SchemaTypeNotKnown</strong></a> – If the scope is not known to the validator.</p></li>
+<li><p><strong>ValueError</strong> – If the data does not conform to the schema.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dal.validation">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dal.validation" title="Permalink to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dal.utils.html" class="btn btn-neutral float-left" title="dal.utils package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="schemas.html" class="btn btn-neutral float-right" title="Schemas and validation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Backend.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+        <span class="fa fa-book"> Read the Docs</span>
+        v: 3.28
+        <span class="fa fa-caret-down"></span>
+    </span>
+    <div class="rst-other-versions">
+        <dt>Versions</dt>
+        <dl id="docs-versions"></dl>
+        <hr />
+        <a href="https://tech.michaelaltfield.net/2020/07/18/sphinx-rtd-github-pages-1/">Continuous
+            Documentation</a> hosting provided by <a href="https://pages.github.com/">GitHub Pages</a>.
+    </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

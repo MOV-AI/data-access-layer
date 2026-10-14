@@ -1,0 +1,21 @@
+dal.plugins.persistence.filesystem package
+==========================================
+
+Submodules
+----------
+
+dal.plugins.persistence.filesystem.filesystem module
+----------------------------------------------------
+
+.. automodule:: dal.plugins.persistence.filesystem.filesystem
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: dal.plugins.persistence.filesystem
+   :members:
+   :undoc-members:
+   :show-inheritance:

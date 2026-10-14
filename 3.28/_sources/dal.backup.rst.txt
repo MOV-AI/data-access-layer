@@ -1,0 +1,29 @@
+dal.backup package
+==================
+
+Submodules
+----------
+
+dal.backup.backup module
+------------------------
+
+.. automodule:: dal.backup.backup
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.backup.restore module
+-------------------------
+
+.. automodule:: dal.backup.restore
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: dal.backup
+   :members:
+   :undoc-members:
+   :show-inheritance:

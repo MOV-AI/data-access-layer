@@ -1,0 +1,21 @@
+dal.data.shared package
+=======================
+
+Submodules
+----------
+
+dal.data.shared.vault module
+----------------------------
+
+.. automodule:: dal.data.shared.vault
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: dal.data.shared
+   :members:
+   :undoc-members:
+   :show-inheritance:

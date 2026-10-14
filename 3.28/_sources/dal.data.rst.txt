@@ -1,0 +1,77 @@
+dal.data package
+================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   dal.data.shared
+
+Submodules
+----------
+
+dal.data.archive module
+-----------------------
+
+.. automodule:: dal.data.archive
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.data.mixins module
+----------------------
+
+.. automodule:: dal.data.mixins
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.data.schema module
+----------------------
+
+.. automodule:: dal.data.schema
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.data.serialization module
+-----------------------------
+
+.. automodule:: dal.data.serialization
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.data.tree module
+--------------------
+
+.. automodule:: dal.data.tree
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.data.version module
+-----------------------
+
+.. automodule:: dal.data.version
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.data.workspace module
+-------------------------
+
+.. automodule:: dal.data.workspace
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: dal.data
+   :members:
+   :undoc-members:
+   :show-inheritance:

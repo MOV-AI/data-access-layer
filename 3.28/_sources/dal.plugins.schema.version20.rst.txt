@@ -1,0 +1,21 @@
+dal.plugins.schema.version20 package
+====================================
+
+Submodules
+----------
+
+dal.plugins.schema.version20.version20 module
+---------------------------------------------
+
+.. automodule:: dal.plugins.schema.version20.version20
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: dal.plugins.schema.version20
+   :members:
+   :undoc-members:
+   :show-inheritance:
