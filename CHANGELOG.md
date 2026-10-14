@@ -1,5 +1,9 @@
 # Changelog
 
+## vTBD
+- [BP-1854](https://movai.atlassian.net/browse/BP-1854): Fix robot logs appearing on wrong robot cards.
+  - Use correct release of movai-core-shared (3.11.x.y)
+
 ## v3.28.2
 - [BP-1680](https://movai.atlassian.net/browse/BP-1680): Fix eval_flow to allow for subflow to extract flow params from direct parent
 
