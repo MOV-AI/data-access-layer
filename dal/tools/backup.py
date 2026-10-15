@@ -500,7 +500,16 @@ class Importer(Backup):
             object_names = get_objects(scope_name)
             importer(*args(scope_name, object_names))
 
-    def _listed_names(self, scope):
+    def _listed_names(self, scope: str) -> List[str]:
+        """
+        List all file names for a given scope.
+
+        Args:
+            scope (str): The scope for which to list file names.
+
+        Returns:
+            List[str]: A list of file names for the given scope.
+        """
         return [name for name, _ in self.get_files(scope, None)]
 
     def run_with_report(self, objects: dict = {}):
