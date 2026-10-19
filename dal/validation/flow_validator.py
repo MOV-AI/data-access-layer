@@ -39,6 +39,7 @@ class FlowValidator:
 
         try:
             self.issues = []
+            self.project.checked_flows.clear()
 
             from dal.helpers.parsers import ParamParser
 

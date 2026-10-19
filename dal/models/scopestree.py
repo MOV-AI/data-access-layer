@@ -797,6 +797,7 @@ class ScopeWorkspace(WorkspaceNode):
         Unload all the cached data in this workspace,
         except for the scopes in keep_scopes
         """
+        keep_scopes = set(keep_scopes)
         for name, scope in self._children.items():
             if name not in keep_scopes:
                 scope._children.clear()

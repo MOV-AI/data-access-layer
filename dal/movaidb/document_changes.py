@@ -110,6 +110,8 @@ class DocumentChangeTracker:
             # next call so they are reloaded again then
             with self._lock:
                 self._changes |= changes
+                if not complete:
+                    self._complete_generation = None
             return None
 
         return changes if complete else None
@@ -212,6 +214,7 @@ class DocumentChangeTracker:
             finally:
                 with self._lock:
                     self._subscribed = False
+                    self._reconnect.clear()
 
             self._closed.wait(self.RETRY_INTERVAL)
 
@@ -220,7 +223,8 @@ class DocumentChangeTracker:
         conn = Redis(connection_pool=self._pool)
         flags = conn.config_get("notify-keyspace-events").get("notify-keyspace-events", "")
         # K: keyspace channels, A: all events, otherwise generic, string, hash and list events
-        if "K" not in flags or ("A" not in flags and not all(event in flags for event in "g$hl")):
+        # Catches key expiration (x) and eviction (e) events
+        if "K" not in flags or ("A" not in flags and not all(event in flags for event in "g$hlxe")):
             raise RuntimeError(f"Redis keyspace notifications are disabled ('{flags}')")
 
         pubsub = conn.pubsub()

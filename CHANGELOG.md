@@ -1,5 +1,12 @@
 # Changelog
 
+## vTBD
+- [BP-1842](https://movai.atlassian.net/browse/BP-1842): Optimize flow validation.
+  - Memoize flow resolution for each context.
+  - Serialize only necessary parameters from a template.
+  - Optimize Redis access by avoiding full SCAN operations.
+  - Add active invalidation of ScopesTree cache (DocumentChangeTracker).
+
 ## v3.32.2
 - [BP-1794](https://movai.atlassian.net/browse/BP-1794): Start Node can be broken by creating a node called start
   - Revert node's port name validation
