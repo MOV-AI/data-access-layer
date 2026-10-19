@@ -10,7 +10,9 @@
     Module that implements a Node scope class
 """
 
+import os
 import re
+from dal.utils.project_metadata import CONFIG_RE, ENV_RE, PLACEHOLDER_RE, ProjectSource
 from movai_core_shared.consts import (
     MOVAI_EXIT,
     MOVAI_NODE,
@@ -757,3 +759,89 @@ class Node(Scope):
         if required and not port_templates & required:
             req_list = " or ".join(sorted(required))
             raise ValueError(f"{node_type} nodes must have at least one {req_list} port")
+
+    @classmethod
+    def _import_dependencies(cls, data: dict, source: ProjectSource):
+        ret = []
+        for ports_inst in data.get("PortsInst", {}).values():
+            for port in ports_inst.get("In", {}).values():
+                callback_name = port.get("Callback")
+
+                if callback_name and not PLACEHOLDER_RE.search(callback_name):
+                    ret += cls.get_class("Callback").import_metadata([callback_name], source)
+
+                if ports_inst.get("Template") == "MovAI/StateMachine":
+                    state_machine_name = port.get("Parameter", {}).get("StateMachine")
+
+                    if state_machine_name:
+                        ret += cls.get_class("StateMachine").import_metadata(
+                            [state_machine_name], source
+                        )
+
+        for param in data.get("Parameter", {}).values():
+            value = param.get("Value")
+
+            if not isinstance(value, str):
+                continue
+
+            match = CONFIG_RE.match(value)
+            if not match:
+                continue
+
+            conf_name = match.group(1)
+            env_match = ENV_RE.match(conf_name)
+
+            if env_match:
+                env_name = env_match.group(1)
+                conf_name = os.getenv(env_name)
+
+                if conf_name is None:
+                    print(f"Could not find value for {env_name}")
+                    continue
+
+            files = source.get_files("Configuration", [conf_name])
+            ret += cls.get_class("Configuration").import_metadata(files, source)
+        return ret
+
+    @classmethod
+    def _export_dependencies(cls, scope):
+        ret = {}
+        for ports_inst in scope.PortsInst.values():
+            for port in ports_inst.In.values():
+                callback_name = port.Callback
+
+                if callback_name:
+                    ret.update(cls.get_class("Callback").export_metadata([callback_name]))
+
+                if ports_inst.Template == "MovAI/StateMachine":
+                    state_machine_name = port.Parameter["StateMachine"]
+
+                    if state_machine_name:
+                        ret.update(
+                            cls.get_class("StateMachine").export_metadata([state_machine_name])
+                        )
+
+        for param in scope.Parameter.values():
+            value = param.Value
+
+            if not isinstance(value, str):
+                continue
+
+            match = CONFIG_RE.match(value)
+            if not match:
+                continue
+
+            conf_name = match.group(1)
+            env_match = ENV_RE.match(conf_name)
+
+            if env_match:
+                env_name = env_match.group(1)
+                conf_name = os.getenv(env_name)
+
+                if conf_name is None:
+                    print(f"Could not find value for {env_name}")
+                    continue
+
+            ret.update(cls.get_class("Configuration").export_metadata([conf_name]))
+
+        return ret

@@ -8,9 +8,12 @@
    - Tiago Paulino (tiago@mov.ai) - 2020
 Module that implements Configuration scope class
 """
+import os
+from pathlib import Path
 import pickle
 
 from dal.helpers.cache import ThreadSafeCache
+from dal.utils.project_metadata import ProjectSource
 from .scope import Scope
 
 
@@ -70,3 +73,16 @@ class Configuration(Scope):
                 '"%s" is not a valid parameter in configuration "%s"' % (param, self.name)
             )
         return value
+
+    @classmethod
+    def _update_metadata(cls, data: dict, file_path: str, source: ProjectSource) -> dict:
+        yaml_path = str(Path(file_path).with_suffix(".yaml"))
+
+        if source.is_file(yaml_path):
+            data["Yaml"] = source.read_text(yaml_path)
+        return data
+
+    @classmethod
+    def _export_extra_files(cls, scope, name: str):
+        code_path = os.path.join("Configuration", f"{name}.yaml")
+        return {code_path: scope.Yaml}

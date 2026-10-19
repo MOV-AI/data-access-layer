@@ -14,6 +14,7 @@ import uuid
 from itertools import product
 
 from dal.helpers.helpers import flatten
+from dal.utils.project_metadata import ProjectSource
 from movai_core_shared.consts import (
     CONFIG_REGEX,
     LINK_REGEX,
@@ -1355,3 +1356,33 @@ class Flow(Scope):
             for c_name, c_value in flow.Container.items():
                 if c_value.ContainerFlow == flow_id:
                     flow.delete("Container", c_name)
+
+    @classmethod
+    def _import_dependencies(cls, data: dict, source: ProjectSource):
+        ret = []
+        for node in data.get("NodeInst", {}).values():
+            template = node.get("Template")
+
+            if template:
+                ret += cls.get_class("Node").import_metadata([template], source)
+
+        for container in data.get("Container", {}).values():
+            contained_flow = container.get("ContainerFlow")
+
+            if contained_flow:
+                ret += cls.import_metadata([contained_flow], source)
+        return ret
+
+    @classmethod
+    def _export_dependencies(cls, scope):
+        ret = {}
+        for node in scope.NodeInst:
+            template = scope.NodeInst[node].Template
+            if template:
+                ret.update(cls.get_class("Node").export_metadata([template]))
+        # inner flows
+        for container in scope.Container:
+            inner_flow = scope.Container[container].ContainerFlow
+            if inner_flow:
+                ret.update(cls.get_class("Flow").export_metadata([inner_flow]))
+        return ret

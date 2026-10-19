@@ -10,23 +10,21 @@
 """
 import argparse
 import datetime
-import hashlib
-import json
 import os
-import pickle
 import re
 import sys
 from pathlib import Path
-from importlib import import_module
 import warnings
-from abc import ABC, abstractmethod
-from typing import Iterator, List, Tuple, Optional
+from typing import List, Optional
 import xml.etree.ElementTree as ET
 
 from dal.movaidb import MovaiDB
 from dal.scopes.package import Package
 
+from dal.scopes.scope import Scope
+from dal.utils.project_metadata import ProjectSource, FilesystemProjectSource
 from movai_core_shared.envvars import RAISE_METADATA_VALIDATION_ERRORS
+from movai_core_shared.exceptions import ExportException, ImportException, RemoveException
 from movai_core_shared.logger import Log
 
 LOGGER = Log.get_logger(__name__)
@@ -50,245 +48,6 @@ def test_reachable(redis_url):
         return False
 
 
-def _from_path(name):
-    try:
-        from dal.models.scopestree import scopes
-
-        return scopes.extract_reference(name)[2]
-    except KeyError:
-        # not a path and `scope` wasn't passed
-        # we don't care
-        return name
-
-
-_re_config = re.compile(r"^\$\(\s*config\s+([${}a-zA-Z0-9_]+)\.?.*\)$")
-_re_envvar = re.compile(r"\$\{?(.+?)\}?$")
-_re_place_holder = re.compile(r"(/)?place_holder(?(1)(/|$)|)")
-
-
-class BackupException(Exception):
-    pass
-
-
-class ImportException(Exception):
-    pass
-
-
-class ExportException(Exception):
-    pass
-
-
-class RemoveException(Exception):
-    """Exception used when removing metadata."""
-
-
-class Factory:
-    CLASSES_CACHE = {}
-
-    @staticmethod
-    def get_class(scope):
-        """Get scope class."""
-        if scope not in Factory.CLASSES_CACHE:
-            mod = import_module("dal.scopes")
-
-            try:
-                Factory.CLASSES_CACHE[scope] = getattr(mod, scope)
-            except AttributeError as exc:
-                raise BackupException(f"Scope does not exists {scope}") from exc
-
-        return Factory.CLASSES_CACHE[scope]
-
-
-class ProjectSource(ABC):
-    """Project metadata source addressed by project-relative POSIX paths.
-
-    Importer historically reads from a project folder on disk. This interface
-    keeps the importer talking in relative paths like ``Callback/foo.json`` so
-    another source, such as a gRPC payload, can provide the same files without
-    recreating that folder on the filesystem.
-    """
-
-    @staticmethod
-    def normalize_path(relative_path: str) -> str:
-        """Normalize and validate a source-relative path."""
-        if relative_path is None:
-            raise ValueError("relative_path cannot be None")
-
-        path = str(relative_path).replace("\\", "/")
-        if os.path.isabs(path):
-            raise ValueError(f"absolute paths are not allowed: {relative_path}")
-
-        normalized = os.path.normpath(path).replace("\\", "/")
-        if normalized == ".":
-            return ""
-        if normalized == ".." or normalized.startswith("../"):
-            raise ValueError(f"path escapes project source: {relative_path}")
-
-        return normalized
-
-    @staticmethod
-    def join(*parts: str) -> str:
-        """Join path parts into a normalized source-relative path."""
-        return ProjectSource.normalize_path(
-            "/".join(str(part).strip("/") for part in parts if part)
-        )
-
-    @abstractmethod
-    def list_dir(self, relative_dir: str) -> List[str]:
-        """Return direct child names for a source-relative directory."""
-
-    @abstractmethod
-    def is_file(self, relative_path: str) -> bool:
-        """Return whether the source-relative path is a regular file."""
-
-    @abstractmethod
-    def is_dir(self, relative_path: str) -> bool:
-        """Return whether the source-relative path is a directory."""
-
-    @abstractmethod
-    def read_text(self, relative_path: str) -> str:
-        """Read a source-relative file as UTF-8 text."""
-
-    @abstractmethod
-    def read_bytes(self, relative_path: str) -> bytes:
-        """Read a source-relative file as bytes."""
-
-    @abstractmethod
-    def walk(self, relative_dir: str) -> Iterator[Tuple[str, List[str], List[str]]]:
-        """Yield ``(relative_root, dirs, files)`` for a source-relative directory."""
-
-    @abstractmethod
-    def display_path(self, relative_path: str) -> str:
-        """Return a human-readable path for logs and imported InstallPath."""
-
-
-class FilesystemProjectSource(ProjectSource):
-    """Filesystem-backed project source."""
-
-    def __init__(self, root: str):
-        self.root = os.path.abspath(root)
-
-    def _resolve(self, relative_path: str) -> str:
-        normalized = self.normalize_path(relative_path)
-        resolved = os.path.abspath(os.path.join(self.root, normalized))
-
-        try:
-            common_path = os.path.commonpath([self.root, resolved])
-        except ValueError as exc:
-            raise ValueError(f"path escapes project source: {relative_path}") from exc
-
-        if common_path != self.root:
-            raise ValueError(f"path escapes project source: {relative_path}")
-
-        return resolved
-
-    def list_dir(self, relative_dir: str) -> List[str]:
-        return os.listdir(self._resolve(relative_dir))
-
-    def is_file(self, relative_path: str) -> bool:
-        return os.path.isfile(self._resolve(relative_path))
-
-    def is_dir(self, relative_path: str) -> bool:
-        return os.path.isdir(self._resolve(relative_path))
-
-    def read_text(self, relative_path: str) -> str:
-        with open(self._resolve(relative_path), encoding="utf-8") as file:
-            return file.read()
-
-    def read_bytes(self, relative_path: str) -> bytes:
-        with open(self._resolve(relative_path), "rb") as file:
-            return file.read()
-
-    def walk(self, relative_dir: str) -> Iterator[Tuple[str, List[str], List[str]]]:
-        start = self._resolve(relative_dir)
-        for root, dirs, files in os.walk(start):
-            relative_root = os.path.relpath(root, self.root)
-            if relative_root == ".":
-                relative_root = ""
-            yield relative_root.replace("\\", "/"), dirs, files
-
-    def display_path(self, relative_path: str) -> str:
-        return self._resolve(relative_path)
-
-
-class InMemoryProjectSource(ProjectSource):
-    """In-memory project source for gRPC payloads."""
-
-    def __init__(self, files: dict):
-        self.files = {}
-        for path, content in files.items():
-            normalized = self.normalize_path(path)
-            if isinstance(content, str):
-                content = content.encode("utf-8")
-            self.files[normalized] = content
-
-    def list_dir(self, relative_dir: str) -> List[str]:
-        prefix = self.normalize_path(relative_dir)
-        if prefix and not prefix.endswith("/"):
-            prefix += "/"
-
-        children = set()
-        for path in self.files:
-            if not path.startswith(prefix):
-                continue
-            children.add(path[len(prefix) :].split("/", 1)[0])
-
-        return sorted(children)
-
-    def is_file(self, relative_path: str) -> bool:
-        normalized = self.normalize_path(relative_path)
-        return normalized in self.files
-
-    def is_dir(self, relative_path: str) -> bool:
-        prefix = self.normalize_path(relative_path)
-        if prefix and not prefix.endswith("/"):
-            prefix += "/"
-        return any(path.startswith(prefix) for path in self.files)
-
-    def read_text(self, relative_path: str) -> str:
-        normalized = self.normalize_path(relative_path)
-        if normalized not in self.files:
-            raise FileNotFoundError(f"File not found: {relative_path}")
-        return self.read_bytes(normalized).decode("utf-8")
-
-    def read_bytes(self, relative_path: str) -> bytes:
-        normalized = self.normalize_path(relative_path)
-        if normalized not in self.files:
-            raise FileNotFoundError(f"File not found: {relative_path}")
-        return self.files[normalized]
-
-    def walk(self, relative_dir: str):
-        """
-        Walk the in-memory file structure, yielding (relative_root, dirs, files).
-        """
-        root = self.normalize_path(relative_dir)
-        stack = [root]
-
-        while stack:
-            current = stack.pop()
-            dirs = []
-            files = []
-
-            for path in self.files:
-                if not path.startswith(current):
-                    continue
-                relative_path = path[len(current) :].lstrip("/")
-                if "/" in relative_path:
-                    dir_name = relative_path.split("/", 1)[0]
-                    if dir_name not in dirs:
-                        dirs.append(dir_name)
-                else:
-                    files.append(relative_path)
-
-            yield current, dirs, files
-
-            for dir_name in dirs:
-                stack.append(self.join(current, dir_name))
-
-    def display_path(self, relative_path: str) -> str:
-        return self.normalize_path(relative_path)
-
-
 class Backup:
     """Base class for Importer and Exporter."""
 
@@ -301,7 +60,6 @@ class Backup:
         "Annotation",
         "Package",
         "Ports",
-        "Message",
         "Layout",
         "Robot",
         "System",
@@ -422,7 +180,6 @@ class Importer(Backup):
         self.import_package_version = package_version or "N/A"
 
         self.force = force
-        self.dry_run = dry
 
         self.validate = not force
         self._delete = clean_old_data
@@ -432,13 +189,7 @@ class Importer(Backup):
 
         self._imported = {}
 
-        if self.dry_run:
-            # override import_data to not import data
-            self._import_data = lambda scope, name, _, __: self.set_imported(scope, name)
-            self.dry_print = lambda *paths: [print(path) for path in paths]
-        else:
-            self._db = MovaiDB()
-            self.dry_print = lambda *paths: None
+        self._db = MovaiDB()
 
     @staticmethod
     def _extract_import_container() -> str:
@@ -448,17 +199,6 @@ class Importer(Backup):
 
         hostname = os.getenv("HOSTNAME")
         return hostname if hostname else "unknown"
-
-    def _read_json(self, relative_path: str) -> dict:
-        """Read a JSON file from the configured project source."""
-        return json.loads(self.source.read_text(relative_path))
-
-    def _read_json_or_pickle(self, relative_path: str) -> dict:
-        """Read a JSON file, falling back to pickle for legacy metadata."""
-        try:
-            return self._read_json(relative_path)
-        except (json.JSONDecodeError, UnicodeError):
-            return pickle.loads(self.source.read_bytes(relative_path))
 
     def get_objs(self, scope):
         """Get all objects of a given scope.
@@ -470,107 +210,47 @@ class Importer(Backup):
 
     def run(self, objects: dict = {}):
         """Imports the objects defined in the manifest."""
-
-        def should_import(scope):
-            if len(objects) == 0:
-                return True
-            return scope in objects
-
-        def get_objects(scope):
-            if len(objects) == 0:
-                return None
-            return None if None in objects[scope] else objects[scope]
-
-        for scope_name in Backup.SCOPES:
-            if not should_import(scope_name):
-                continue
-
-            try:
-                importer = self.__getattribute__(f"import_{scope_name.lower()}")
-
-                def args(scope, names):
-                    return (names,)
-
-            except AttributeError:
-                importer = self.import_default
-
-                def args(scope, names):
-                    return (scope, names)
-
-            object_names = get_objects(scope_name)
-            importer(*args(scope_name, object_names))
-
-    def _listed_names(self, scope: str) -> List[str]:
-        """
-        List all file names for a given scope.
-
-        Args:
-            scope (str): The scope for which to list file names.
-
-        Returns:
-            List[str]: A list of file names for the given scope.
-        """
-        return [name for name, _ in self.get_files(scope, None)]
-
-    def run_with_report(self, objects: dict = {}):
-        """Import manifest objects independently and collect per-object failures."""
-        report = {"imported": [], "failed": []}
-
-        def add_failure(scope, name, exc):
-            report["failed"].append(
-                {
-                    "scope": scope,
-                    "name": name,
-                    "error": str(exc),
-                    "error_type": type(exc).__name__,
-                }
-            )
-
-        for scope_name, names in objects.items():
-            if scope_name not in Backup.SCOPES:
-                for name in names or [None]:
-                    add_failure(scope_name, name, ImportException(f"Unknown scope: {scope_name}"))
-
         for scope_name in Backup.SCOPES:
             if objects and scope_name not in objects:
                 continue
 
-            try:
-                names = self._listed_names(scope_name) if not objects else objects[scope_name]
-                if names is None or None in names:
-                    names = self._listed_names(scope_name)
-            except Exception as exc:
-                add_failure(scope_name, None, exc)
-                continue
+            object_names = objects.get(scope_name)
 
-            for name in names:
-                normalized_name = _from_path(name)
+            if object_names is not None and None in object_names:
+                object_names = None
+
+            scope = Scope.get_class(scope_name)
+
+            data = scope.import_metadata(object_names, self.source, self.recursive)
+
+            for name, data, file_path, tracked_names in data:
+                scope_name = next(iter(data))
+
+                if self._is_imported(scope_name, name):
+                    continue
+
+                # Validate format before importing
                 try:
-                    self.run({scope_name: [name]})
-                    if self.imported(scope_name, normalized_name):
-                        report["imported"].append({"scope": scope_name, "name": normalized_name})
-                    else:
-                        add_failure(
-                            scope_name,
-                            normalized_name,
-                            ImportException(f"{scope_name}:{normalized_name} was not imported"),
-                        )
-                except Exception as exc:
-                    add_failure(scope_name, normalized_name, exc)
+                    scope.validate_format(scope_name, data[scope_name][name], name)
+                except ValueError as exc:
+                    _msg = f"Failed to import {scope_name}:{name} - {exc}"
+                    LOGGER.warning(_msg)
+                    if RAISE_METADATA_VALIDATION_ERRORS:
+                        raise ImportException(_msg) from exc
 
-        return report
+                # Import data
+                self._import_data(scope_name, name, data, file_path, tracked_names)
 
-    def imported(self, scope, name) -> bool:
+    def _is_imported(self, scope, name) -> bool:
         """Wrapper to check if a scope:name pair is already imported."""
-        return scope in self._imported and name in self._imported[scope]
+        return name in self._imported.get(scope, set())
 
-    def set_imported(self, scope, name):
+    def _set_imported(self, scope, name):
         """Wrapper to set a scope:name pair as imported."""
-        if scope not in self._imported:
-            self._imported[scope] = []
-        if name not in self._imported[scope]:
-            self.log(f"Imported {scope}:{name}")
-            self._imported[scope].append(name)
+        names = self._imported.setdefault(scope, set())
+        if name not in names:
+            LOGGER.debug(f"Imported {scope}:{name}")
+            names.add(name)
 
     def _extract_package_version(self, package_path: Path) -> str:
         """
@@ -654,87 +334,7 @@ class Importer(Backup):
             # Don't fail imports due to tracking issues, just log
             LOGGER.warning(f"Failed to update package tracking for {scope}:{name}: {e}")
 
-    def _list_files(self, scope, extract=None, match=None):
-        """Lists files in the given scope."""
-
-        def default_extractor(file):
-            return file
-
-        extractor = default_extractor if extract is None else extract
-
-        matcher = match
-        if matcher is None:
-
-            def matcher(file):
-                return True
-
-        try:
-            return [
-                (extractor(file), ProjectSource.join(scope, file))
-                for file in self.source.list_dir(scope)
-                if matcher(file)
-            ]
-        except FileNotFoundError:
-            # "ignore" it
-            return []
-
-    def _get_files(self, scope, names, build=None, match=None):
-        """Get files from the given scope.
-
-        Raises:
-            ImportException: If the scope directory is not found or if the file does not match.
-
-        """
-        names = [_from_path(n) for n in names]
-
-        if len(names) == 0:
-            return []
-
-        builder = build
-        if builder is None:
-
-            def builder(name):
-                return name
-
-        matcher = self.source.is_file if match is None else match
-
-        if not self.source.is_dir(scope):
-            if self.validate:
-                raise ImportException(f"{scope} directory not found")
-            else:
-                print(f"{scope} directory not found")
-
-        files = []
-        for name in names:
-            file_path = ProjectSource.join(scope, builder(name))
-            if not matcher(file_path):
-                _msg = f"{scope}:{name} not found"
-                self.log(_msg)
-                if self.validate:
-                    raise ImportException(_msg)
-                else:
-                    print(_msg)
-                    continue
-            files.append((name, file_path))
-
-        return files
-
-    def get_files(
-        self,
-        scope,
-        names,
-        extract=lambda file: os.path.splitext(file)[0],
-        build=lambda name: f"{name}.json",
-        list_match=lambda file: file.endswith(".json"),
-        get_match=None,
-    ):
-        if names is None:
-            return self._list_files(scope, extract, list_match)
-        return self._get_files(scope, names, build, get_match)
-
-    def _import_data(
-        self, scope, name, data, path, tracked_names=None
-    ):  # pylint: disable=method-hidden
+    def _import_data(self, scope_name, name, data, path, tracked_names=None):
         """Imports data to the database.
 
         Args:
@@ -744,569 +344,52 @@ class Importer(Backup):
             path (str): Path of origin of the data.
 
         """
-        LOGGER.debug(f"Importing {scope}:{name} from {self.source.display_path(path)}")
-        data[scope][name]["InstallPath"] = self.source.display_path(path)
-
-        try:
-            ScopeClass = Factory.get_class(scope)
-            ScopeClass.validate_format(scope, data[scope][name], name)
-        except ValueError as exc:
-            _msg = f"Failed to import {scope}:{name} - {exc}"
-            LOGGER.warning(_msg)
-            if RAISE_METADATA_VALIDATION_ERRORS:
-                raise ImportException(_msg) from exc
+        LOGGER.debug(f"Importing {scope_name}:{name} from {self.source.display_path(path)}")
+        data[scope_name][name]["InstallPath"] = self.source.display_path(path)
 
         # remove unwanted keys
-        if self._delete and scope not in self.SKIP_SCOPE_DELETE:
+        if self._delete and scope_name not in self.SKIP_SCOPE_DELETE:
             try:
-                del data[scope][name]["_schema_version"]
+                del data[scope_name][name]["_schema_version"]
             except KeyError:
                 pass
             try:
-                del data[scope][name]["relations"]
+                del data[scope_name][name]["relations"]
             except KeyError:
                 pass
             # delete
             try:
-                obj = Factory.get_class(scope)(name)
-                self._db.delete_by_args(scope, Name=obj.name)
+                obj = Scope.get_class(scope_name)(name)
+                self._db.delete_by_args(scope_name, Name=obj.name)
             except Exception:
                 pass
 
         try:
             self._db.set(data)
-            self.set_imported(scope, name)
+            self._set_imported(scope_name, name)
             # Update package data structure for duplicate detection
-            self._update_package_tracking(scope, name, tracked_names=tracked_names)
+            self._update_package_tracking(scope_name, name, tracked_names=tracked_names)
         except Exception as exc:
-            _msg = f"Failed to import '{scope}:{name}' - {exc}"
-            if self.validate:
-                self.log(_msg)
-                raise ImportException(_msg) from exc
-            else:
-                # force print
-                print(_msg)
-
-    def import_default(self, scope, names=None):
-        """Default import function.
-
-        Imports the specified names to the database, if names is None (default), imports every file.
-
-        """
-        files = self.get_files(scope, names)
-
-        for name, file_path in files:
-            if self.imported(scope, name):
-                continue
-
-            self.dry_print(file_path)
-
-            data = self._read_json_or_pickle(file_path)
-
-            self._import_data(scope, name, data, file_path)
-
-    def import_configuration(self, names=None):
-        files = self.get_files("Configuration", names)
-
-        for name, file_path in files:
-            if self.imported("Configuration", name):
-                continue
-
-            yaml_path = re.sub(r"\.json$", r".yaml", file_path)
-
-            self.dry_print(file_path)
-            self.dry_print(yaml_path)
-
-            data = self._read_json_or_pickle(file_path)
-
-            # add yaml code
-            try:
-                data["Configuration"][name]["Yaml"] = self.source.read_text(yaml_path)
-            except:
-                # probably file not found
-                pass
-
-            self._import_data("Configuration", name, data, file_path)
-
-    def import_callback(self, names=None):
-        """Imports Callback, similar to import_default but also updates Callback's Code."""
-        # default lambdas
-        files = self.get_files("Callback", names)
-
-        for name, file_path in files:
-            if self.imported("Callback", name):
-                continue
-
-            # remove 'json', add 'py'
-            code_path = file_path[:-4] + "py"
-
-            # .json and .py
-            self.dry_print(file_path, code_path)
-
-            data = self._read_json_or_pickle(file_path)
-            if self.source.is_file(code_path):
-                data["Callback"][name]["Code"] = self.source.read_text(code_path)
-
-            self._import_data("Callback", name, data, file_path)
-
-    def import_package(self, names=None):
-        """Import Package, recursively look for files of the package"""
-        dirs = self.get_files(
-            "Package",
-            names,
-            extract=None,
-            build=None,
-            list_match=lambda file: self.source.is_dir(ProjectSource.join("Package", file)),
-            get_match=self.source.is_dir,
-        )
-
-        for name, dir_path in dirs:
-            if self.imported("Package", name):
-                continue
-
-            # base
-            file_dict = {}
-            data = {
-                "Package": {
-                    name: {
-                        # reference
-                        "File": file_dict
-                    }
-                }
-            }
-
-            package_path = dir_path
-            imported_file_path = package_path
-            tracked_files = []
-
-            for root, _, files in self.source.walk(dir_path):
-                for file in files:
-                    file_path = ProjectSource.join(root, file)
-                    imported_file_path = file_path
-                    self.dry_print(file_path)
-                    checksum = hashlib.md5()
-                    contents = self.source.read_bytes(file_path)
-                    checksum.update(contents)
-
-                    try:
-                        contents = contents.decode()
-                    except UnicodeError:
-                        pass
-
-                    relative_path = file_path.replace(package_path, "", 1)[1:]
-                    file_dict[relative_path] = {
-                        "Value": contents,
-                        "Checksum": checksum.hexdigest(),
-                        "FileLabel": file,
-                    }
-                    tracked_files.append(ProjectSource.join(name, relative_path))
-
-            # pylint: disable=unexpected-keyword-arg
-            self._import_data(
-                "Package", name, data, imported_file_path, tracked_names=tracked_files
-            )
-
-    def import_message(self, names=None):
-        files = self.get_files("Message", names)
-
-        for name, file_path in files:
-            if self.imported("Message", name):
-                continue
-
-            msg_dict = {"Msg": {}, "Srv": {}, "Action": {}}
-            data = {"Message": {name: msg_dict}}
-
-            self.dry_print(file_path)
-
-            json_dict = self._read_json(file_path)
-
-            messages = [(k, msg) for k in json_dict for msg in json_dict[k]]
-            base_path = ProjectSource.join("Message", name)
-            for pack in messages:
-                message_path = ProjectSource.join(base_path, pack[1])
-                this_dict = {}
-                cmp_path = f"{message_path}.compiled"
-                src_path = f"{message_path}.source"
-                self.dry_print(cmp_path, src_path)
-                this_dict["Compiled"] = self.source.read_text(cmp_path)
-                this_dict["Source"] = self.source.read_text(src_path)
-                msg_dict[pack[0]][pack[1]] = this_dict
-
-            # clean it
-            for _type in list(msg_dict.keys()):
-                if len(msg_dict[_type]) == 0:
-                    del msg_dict[_type]
-
-            self._import_data("Message", name, data, file_path)
-
-    def import_ports(self, names=None):
-        def to_import(ports):
-            """Check if the port is in the names or if the port's package is in the names."""
-            if names is None:
-                return True
-            return ports in names or ports.split("/")[0] in names
-
-        packages = None
-        if names is not None:
-            packages = []
-            for name in names:
-                package = name.split("/", 1)[0]
-                if package not in packages:
-                    packages.append(package)
-
-        files = self.get_files("Ports", packages)
-
-        for package, pkg_path in files:
-            pkg_json = self._read_json(pkg_path)
-
-            self.dry_print(pkg_path)
-
-            for name in pkg_json["Ports"]:
-                if self.imported("Ports", name) or not to_import(name):
-                    continue
-
-                data = {"Ports": {name: pkg_json["Ports"][name]}}
-
-                # imports dependencies
-                self.dependencies_ports(pkg_json["Ports"][name])
-
-                self._import_data("Ports", name, data, pkg_path)
-
-    def import_tasktemplate(self, names=None):
-        files = self.get_files("TaskTemplate", names)
-
-        for name, file_path in files:
-            if self.imported("TaskTemplate", name):
-                continue
-
-            self.dry_print(file_path)
-
-            data = self._read_json(file_path)
-
-            # dependencies
-            if self.recursive:
-                self.dependencies_tasktemplate(data["TaskTemplate"][name])
-
-            self._import_data("TaskTemplate", name, data, file_path)
-
-    def import_flow(self, names=None):
-        """Imports Flow, similar to import_default but imports dependencies."""
-        files = self.get_files("Flow", names)
-
-        for name, file_path in files:
-            if self.imported("Flow", name):
-                continue
-
-            self.dry_print(file_path)
-
-            data = self._read_json(file_path)
-
-            # dependencies
-            # nodes
-            if self.recursive:
-                node_inst_dict = data["Flow"][name].get("NodeInst", {})
-                for key in node_inst_dict:
-                    template = node_inst_dict[key].get("Template")
-                    if template:
-                        try:
-                            self.import_node([template])
-                        except AttributeError:
-                            self.import_default("Flow", [template])
-                # inner flows
-                container_dict = data["Flow"][name].get("Container", {})
-                for key in container_dict:
-                    contained_flow = container_dict[key].get("ContainerFlow")
-                    if contained_flow:
-                        try:
-                            self.import_flow([contained_flow])
-                        except AttributeError:
-                            self.import_default("Flow", [contained_flow])
-
-            self._import_data("Flow", name, data, file_path)
-
-    def import_node(self, names=None):
-        """Imports Node, similar to import_default but imports dependencies."""
-        files = self.get_files("Node", names)
-
-        for name, file_path in files:
-            if self.imported("Node", name):
-                continue
-
-            self.dry_print(file_path)
-
-            data = self._read_json(file_path)
-
-            # dependencies
-            if self.recursive:
-                self.dependencies_node(data["Node"][name])
-
-            self._import_data("Node", name, data, file_path)
-
-    def import_shareddataentry(self, names=None):
-        files = self.get_files("SharedDataEntry", names)
-
-        for name, file_path in files:
-            if self.imported("SharedDataEntry", name):
-                continue
-
-            self.dry_print(file_path)
-
-            data = self._read_json(file_path)
-
-            # dependencies
-            if self.recursive:
-                dep = data["SharedDataEntry"][name]["TemplateID"]
-                try:
-                    self.import_shareddatatemplate([dep])
-                except AttributeError:
-                    self.import_default("SharedDataTemplate", [dep])
-
-            self._import_data("SharedDataEntry", name, data, file_path)
-
-    def import_statemachine(self, names=None):
-        # all defaults
-        files = self.get_files("StateMachine", names)
-
-        for name, file_path in files:
-            if self.imported("StateMachine", name):
-                continue
-
-            self.dry_print(file_path)
-
-            data = self._read_json(file_path)
-
-            # dependencies
-            if self.recursive:
-                sm = data["StateMachine"][name]
-                for state in sm["State"]:
-                    callback = sm["State"][state].get("Callback")
-                    if callback and _re_place_holder.search(callback) is None:
-                        try:
-                            self.import_callback([callback])
-                        except AttributeError:
-                            self.import_default("Callback", [callback])
-
-            self._import_data("StateMachine", name, data, file_path)
-
-    def import_graphicscene(self, names=None):
-        # all defaults
-        files = self.get_files("GraphicScene", names)
-
-        for name, file_path in files:
-            if self.imported("GraphicScene", name):
-                continue
-
-            self.log(file_path)
-
-            data = self._read_json_or_pickle(file_path)
-
-            # dependencies
-            if self.recursive:
-                scene = data["GraphicScene"][name]
-                for asset_type in scene["AssetType"]:
-                    for asset in scene["AssetType"][asset_type]:
-                        annotations = list(
-                            scene["AssetType"][asset_type][asset].get("Annotation", {}).keys()
-                        )
-                        try:
-                            self.import_annotation(annotations)
-                        except AttributeError:
-                            self.import_default("Annotation", annotations)
-
-            self._import_data("GraphicScene", name, data, file_path)
-
-    def import_translation(self, names=None):
-        """Import translation, read all po files."""
-        files = self.get_files("Translation", names)
-
-        for name, file_path in files:
-            if self.imported("Translation", name):
-                continue
-
-            self.dry_print(file_path)
-
-            data = self._read_json(file_path)
-
-            data["Translation"][name]["Translations"] = {}
-
-            parent = os.path.dirname(file_path)
-            lang_pattern = re.compile(rf"^{re.escape(name)}\.([a-z]+)\.po$")
-
-            # look for po files
-            for file in self.source.list_dir(parent):
-                translation_path = ProjectSource.join(parent, file)
-                if not self.source.is_file(translation_path):
-                    continue
-
-                lang = lang_pattern.findall(file)
-                if not lang:
-                    continue
-
-                data["Translation"][name]["Translations"][lang[0]] = {
-                    "po": self.source.read_text(translation_path)
-                }
-
-            self._import_data("Translation", name, data, file_path)
-
-    def dependencies_ports(self, ports: dict):
-        if "Package" in ports["Data"]:
-            try:
-                self.import_message([ports["Data"]["Package"]])
-            except AttributeError:
-                self.import_default("Message", [ports["Data"]["Package"]])
-
-    def dependencies_tasktemplate(self, tasktemplate: dict):
-        # get importers
-        try:
-            sdt_importer = self.import_shareddatatemplate
-
-            def sdt_args(names):
-                return (names,)
-
-        except AttributeError:
-            sdt_importer = self.import_default
-
-            def sdt_args(names):
-                return ("SharedDataTemplate", names)
-
-        try:
-            cb_importer = self.import_callback
-
-            def cb_args(names):
-                return (names,)
-
-        except AttributeError:
-            cb_importer = self.import_default
-
-            def cb_args(names):
-                return ("Callback", names)
-
-        try:
-            self.import_flow
-
-            def flow_args(names):
-                return (names,)
-
-        except AttributeError:
-            self.import_default
-
-            def flow_args(names):
-                return ("Flow", names)
-
-        # now, the dependencies
-        callbacks = [
-            tasktemplate["ScoringFunction"],
-            tasktemplate["GenericScoringFunction"],
-            tasktemplate["TaskFilter"],
-        ]
-
-        shared_data = list(tasktemplate["SharedData"].keys())
-
-        if len(shared_data) > 0:
-            sdt_importer(*sdt_args(shared_data))
-
-        # remove place_holder
-        callbacks = [c for c in callbacks if _re_place_holder.search(c) is None]
-        cb_importer(*cb_args(callbacks))
-
-    def dependencies_node(self, node: dict):
-        try:
-            sm_importer = self.import_statemachine
-
-            def sm_args(names):
-                return (names,)
-
-        except AttributeError:
-            sm_importer = self.import_default
-
-            def sm_args(names):
-                return ("StateMachine", names)
-
-        try:
-            cb_importer = self.import_callback
-
-            def cb_args(names):
-                return (names,)
-
-        except AttributeError:
-            cb_importer = self.import_default
-
-            def cb_args(names):
-                return ("Callback", names)
-
-        try:
-            cf_importer = self.import_configuration
-
-            def cf_args(names):
-                return (names,)
-
-        except AttributeError:
-            cf_importer = self.import_default
-
-            def cf_args(names):
-                return ("Configuration", names)
-
-        ports_inst_dict = node.get("PortsInst", {})
-        for key in ports_inst_dict:
-            ports_inst = ports_inst_dict[key]
-            _in = ports_inst.get("In", [])
-            for iport in _in:
-                callback = _in[iport].get("Callback")
-                if callback and _re_place_holder.search(callback) is None:
-                    cb_importer(*cb_args([callback]))
-                if ports_inst.get("Template") == "MovAI/StateMachine":
-                    state_machine = _in[iport].get("Parameter", {}).get("StateMachine")
-                    if state_machine:
-                        sm_importer(*sm_args([state_machine]))
-
-        # configs
-        for param in node.get("Parameter", {}).values():
-            value = param.get("Value", None)
-            if not isinstance(value, str):
-                continue
-            m = _re_config.match(value)
-            if m is None:
-                continue
-            conf = m.group(1)
-            m = _re_envvar.match(conf)
-            if m:
-                conf_name = os.getenv(m.group(1), None)
-                if conf_name is None:
-                    print(f"Could not find value for {m.group(1)}")
-                    continue
-            else:
-                conf_name = conf
-
-            cf_importer(*cf_args([conf_name]))
+            _msg = f"Failed to import '{scope_name}:{name}'"
+            LOGGER.warning(_msg)
+            raise ImportException(_msg) from exc
 
 
 class Exporter(Backup):
     """Exports projects data from the database."""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # create base directory
-        if not os.path.exists(self.project_path):
-            os.makedirs(self.project_path)
-
-        # avoid multiple exports
-        self._exported = {
-            # don't export place_holder
-            "Callback": ["place_holder"]
-        }
+    def __init__(self, project, *args, write_files=True, **kwargs):
+        super().__init__(project, *args, **kwargs)
+        self.write_files = write_files
         # override state
         # 0 -> ask
         # 1 -> override all
         # 2 -> kell all
         self._override = 0
 
-    def read_manifest(self, manifest):
-        return Backup.read_manifest(manifest, self.get_objs)
-
     def get_objs(self, scope):
         """Get all objects of a given scope."""
-        return Factory.get_class(scope).get_all()
+        return [None]
 
     def override(self, path):
         if self._override != 0:
@@ -1335,560 +418,66 @@ class Exporter(Backup):
         self._override = "AK".index(choice) + 1
         return self._override == 1
 
-    def exported(self, scope, name):
-        return scope in self._exported and name in self._exported[scope]
+    def remove_place_holder(self, files: dict) -> dict:
+        """Remove placeholder callback files from the provided file dictionary.
 
-    def set_exported(self, scope, name):
-        if scope not in self._exported:
-            self._exported[scope] = []
-        if name not in self._exported[scope]:
-            self.log(f"Exported {scope}:{name}")
-            self._exported[scope].append(name)
+        Args:
+            files (dict): A dictionary mapping file paths to their contents.
+
+        Returns:
+            dict: A new dictionary excluding files whose paths match
+            ``Callback/place_holder.*``.
+        """
+        return {
+            key: value
+            for key, value in files.items()
+            if not re.search(r"Callback/place_holder\.", key)
+        }
+
+    def _write_files(self, files: dict):
+        """Write files to the project directory, creating parent directories as needed.
+
+        Only writes files that pass the override check.
+
+        Args:
+            files (dict): A dictionary mapping relative file paths to their
+                string contents.
+        """
+        project_path = os.path.abspath(self.project_path)
+
+        for path, data in files.items():
+            if not self.override(path):
+                continue
+            file_path = os.path.join(project_path, path)
+
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+            with open(file_path, "w", encoding="utf-8") as file:
+                file.write(data)
 
     def run(self, objects: dict = {}):
         """Exports the objects defined in the manifest."""
-        if len(objects) == 0:
-            raise ExportException("No objects to export")
-
+        ret = {}
         for scope_name in Backup.SCOPES:
-            if scope_name not in objects:
-                # not to export
+            if objects and scope_name not in objects:
                 continue
 
-            try:
-                exporter = self.__getattribute__(f"export_{scope_name.lower()}")
+            object_names = objects.get(scope_name)
 
-                def args(scope, name):
-                    return (name,)
+            scope = Scope.get_class(scope_name)
 
-            except AttributeError:
-                exporter = self.export_default
+            if object_names is None and None in object_names:
+                object_names = scope.get_all()
 
-                def args(scope, name):
-                    return (scope, name)
+            ret.update(scope.export_metadata(object_names, self.recursive))
 
-            for obj_id in objects[scope_name]:
-                self.log(f"Exporting {scope_name}:{obj_id}")
-                exporter(*args(scope_name, obj_id))
+        ret = self.remove_place_holder(ret)
 
-    def export_default(self, scope, name):
-        name = _from_path(name)
-        if self.exported(scope, name):
-            # not exporting again
-            return
+        # Write files to filesystem for retro compatibility
+        if self.write_files:
+            self._write_files(ret)
 
-        path = os.path.join(self.project_path, scope)
-
-        if not os.path.exists(path):
-            os.makedirs(path)
-
-        try:
-            obj = Factory.get_class(scope)(name)
-        except Exception as e:
-            raise ExportException(f"Can't find {scope}:{name} - (Exc: {e})")
-
-        json_path = os.path.join(scope, f"{name}.json")
-        self.dict2file(obj.get_dict(), json_path)
-
-        self.set_exported(scope, name)
-
-    def export_callback(self, name):
-        name = _from_path(name)
-
-        if self.exported("Callback", name):
-            return
-
-        Callback = Factory.get_class("Callback")
-
-        self.export_default("Callback", name)
-        # didn't blow before, so must exist
-        obj = Callback(name)
-
-        code_path = os.path.join(self.project_path, "Callback", f"{name}.py")
-        self.code2file(obj.Code, code_path)
-
-    def export_package(self, name):
-        name = _from_path(name)
-        if self.exported("Package", name):
-            return
-
-        Package = Factory.get_class("Package")
-
-        package_path = os.path.join(self.project_path, "Package", name)
-        if not os.path.exists(package_path):
-            os.makedirs(package_path)
-
-        try:
-            package = Package(name)
-        except:
-            raise ExportException(f"Can't find Package:{name}")
-
-        for key in package.File:
-            file_path = os.path.join(package_path, key)
-            file_dir = os.path.dirname(file_path)
-            if file_dir != "":
-                os.makedirs(file_dir, exist_ok=True)
-            self.dump2file(package.File[key].Value, file_path)
-
-        self.set_exported("Package", name)
-
-    def export_message(self, name):
-        """
-        Message/
-            <pack_name|obj_id>.json
-            <pack_name|obj_id>/
-                <Type>(<msg_1>.source
-                <Type>/<msg_1>.compiled
-                <Type>/<msg_2>.source
-                <Type>/<msg_2>.compiled
-                ...
-            ...
-        """
-
-        name = _from_path(name)
-
-        if self.exported("Message", name):
-            return
-
-        Message = Factory.get_class("Message")
-        try:
-            obj = Message(name)
-        except:
-            raise ExportException(f"Can't find Message:{name}")
-
-        message_path = os.path.join(self.project_path, "Message", name)
-        files = [("Msg", k) for k in obj.Msg.keys()]
-        files += [("Srv", k) for k in obj.Srv.keys()]
-        files += [("Action", k) for k in obj.Action.keys()]
-
-        json_dict = {
-            "Msg": list(obj.Msg.keys()),
-            "Srv": list(obj.Srv.keys()),
-            "Action": list(obj.Action.keys()),
-        }
-        self.dict2file(json_dict, message_path + ".json")
-
-        for pack in files:
-            msg_type_dict = obj.__getattribute__(pack[0])
-            msg = msg_type_dict[pack[1]]
-            base_path = os.path.join(message_path, pack[1])
-            self.dump2file(msg.Source, base_path + ".source")
-            self.dump2file(msg.Compiled, base_path + ".compiled")
-
-        self.set_exported("Message", name)
-
-    def export_flow(self, name):
-        name = _from_path(name)
-
-        if self.exported("Flow", name):
-            return
-
-        Flow = Factory.get_class("Flow")
-
-        try:
-            flow = Flow(name)
-        except:
-            raise ExportException(f"Can't find Flow:{name}")
-
-        # export dependencies
-        # nodes
-        if self.recursive:
-            for node in flow.NodeInst:
-                template = flow.NodeInst[node].Template
-                if template:
-                    try:
-                        self.export_node(template)
-                    except AttributeError:
-                        self.export_default("Node", template)
-            # inner flows
-            for container in flow.Container:
-                inner_flow = flow.Container[container].ContainerFlow
-                if inner_flow:
-                    try:
-                        self.export_flow(inner_flow)
-                    except AttributeError:
-                        self.export_default("Flow", inner_flow)
-
-        self.export_default("Flow", name)
-
-    def export_tasktemplate(self, name):
-        name = _from_path(name)
-
-        if self.exported("TaskTemplate", name):
-            return
-
-        TaskTemplate = Factory.get_class("TaskTemplate")
-
-        try:
-            tasktemplate = TaskTemplate(name)
-        except Exception:
-            raise ExportException(f"Can't find TaskTemplate:{name}")
-
-        if self.recursive:
-            self.dependencies_tasktemplate(tasktemplate)
-        self.export_default("TaskTemplate", name)
-
-    def export_shareddataentry(self, name):
-        name = _from_path(name)
-
-        if self.exported("SharedDataEntry", name):
-            return
-
-        SharedDataEntry = Factory.get_class("SharedDataEntry")
-
-        try:
-            sde = SharedDataEntry(name)
-        except Exception:
-            raise ExportException(f"Can't find SharedDataEntry:{name}")
-
-        # dependencies
-        if self.recursive:
-            try:
-                self.export_shareddatatemplate(sde.TemplateID)
-            except AttributeError:
-                self.export_default("SharedDataTemplate", sde.TemplateID)
-
-        self.export_default("SharedDataEntry", name)
-
-    def export_node(self, name):
-        name = _from_path(name)
-
-        if self.exported("Node", name):
-            return
-
-        Node = Factory.get_class("Node")
-
-        try:
-            node = Node(name)
-        except Exception:
-            raise ExportException(f"Can't find Node:{name}")
-
-        if self.recursive:
-            self.dependencies_node(node)
-
-        self.export_default("Node", name)
-
-    def export_statemachine(self, name):
-        name = _from_path(name)
-
-        if self.exported("StateMachine", name):
-            return
-
-        if self.recursive:
-            StateMachine = Factory.get_class("StateMachine")
-
-            try:
-                sm = StateMachine(name)
-            except:
-                raise ExportException(f"Can't find StateMachine:{name}")
-
-            for state in sm.State:
-                callback = sm.State[state].Callback
-                if callback:
-                    try:
-                        self.export_callback(callback)
-                    except AttributeError:
-                        self.export_default("Callback", callback)
-
-        self.export_default("StateMachine", name)
-
-    def export_ports(self, name):
-        name = _from_path(name)
-        if self.exported("Ports", name):
-            return
-
-        Ports = Factory.get_class("Ports")
-
-        try:
-            ports = Ports(name)
-        except:
-            raise ExportException(f"Can't find Ports:{name}")
-
-        if self.recursive:
-            if "Package" in ports.Data:
-                try:
-                    self.export_message(ports.Data["Package"])
-                except AttributeError:
-                    self.export_default("Message", ports.Data["Package"])
-
-        first_part = name.split("/", 1)[0]
-
-        # read from whatever exists
-        ports_path = os.path.join(self.project_path, "Ports", first_part + ".json")
-        if os.path.exists(ports_path):
-            with open(ports_path) as fd:
-                json_dict = json.load(fd)
-        else:
-            json_dict = {"Ports": {}}
-
-        data = ports.get_dict()
-        json_dict["Ports"][name] = data["Ports"][name]
-
-        self.dict2file(json_dict, ports_path)
-        self.set_exported("Ports", name)
-
-    def export_graphicscene(self, name):
-        name = _from_path(name)
-        if self.exported("GraphicScene", name):
-            return
-
-        if self.recursive:
-            GraphicScene = Factory.get_class("GraphicScene")
-
-            try:
-                scene = GraphicScene(name)
-            except:
-                raise ExportException(f"Can't find GraphicScene:{name}")
-
-            try:
-                self.export_package("maps")
-            except AttributeError:
-                self.export_default("Package", "maps")
-
-            try:
-                self.export_package("meshes")
-            except AttributeError:
-                self.export_default("Package", "meshes")
-
-            try:
-                self.export_package("point_clouds")
-            except AttributeError:
-                self.export_default("Package", "point_clouds")
-
-            for asset_type in scene.AssetType:
-                for asset in scene.AssetType[asset_type].AssetName:
-                    for key in scene.AssetType[asset_type].AssetName[asset].Annotation:
-                        try:
-                            self.export_annotation(key)
-                        except AttributeError:
-                            self.export_default("Annotation", key)
-
-        self.export_default("GraphicScene", name)
-
-    def export_translation(self, name):
-        name = _from_path(name)
-
-        if self.exported("Translation", name):
-            return
-
-        Translation = Factory.get_class("Translation")
-
-        self.export_default("Translation", name)
-        obj = Translation(name)
-
-        for lang, data in obj.Translations.items():
-            code_path = os.path.join(self.project_path, "Translation", f"{name}.{lang}.po")
-            self.code2file(data.po, code_path)
-
-    def export_configuration(self, name):
-        name = _from_path(name)
-        if self.exported("Configuration", name):
-            return
-
-        Configuration = Factory.get_class("Configuration")
-
-        try:
-            config = Configuration(name)
-        except:
-            raise ExportException(f"Can't find Configuration:{name}")
-
-        self.export_default("Configuration", name)
-
-        # export yaml as external file
-        path = os.path.join(self.project_path, "Configuration", f"{name}.yaml")
-        self.code2file(config.Yaml, path)
-
-    def dict2file(self, data, path):
-        real_path = os.path.join(self.project_path, path)
-        if not self.override(real_path):
-            return
-
-        b = data
-        for i in range(2):
-            b = b[next(iter(b.keys()))]
-        try:
-            del b["_schema_version"]
-        except KeyError:
-            pass
-        try:
-            del b["relations"]
-        except KeyError:
-            pass
-        # remove the path from json, path is only for internal use
-        try:
-            del b["InstallPath"]
-        except KeyError:
-            pass
-        # remove the code from json, code should only exists in .py
-        try:
-            del b["Code"]
-        except KeyError:
-            pass
-        # remove the yaml from configuration, yaml should only exists in .yaml
-        try:
-            del b["Yaml"]
-        except KeyError:
-            pass
-        # remove the translations from json, translations should only exists in .po
-        try:
-            del b["Translations"]
-        except KeyError:
-            pass
-        # the Dummy field is deprecated, to keep compatibility
-        # if Dummy is true, it must be replaced with
-        # Remappable = false and Launch = false
-        try:
-            if b["Dummy"] is True:
-                b["Remappable"] = False
-                b["Launch"] = False
-
-            del b["Dummy"]
-        except KeyError:
-            pass
-
-        try:
-            _data = json.dumps(data, sort_keys=True, indent=4)
-            mode = "w+"
-        except:
-            _data = pickle.dumps(data)
-            mode = "wb+"
-
-        os.makedirs(os.path.dirname(real_path), exist_ok=True)
-        with open(real_path, mode) as file:
-            file.write(_data)
-
-    def ports2file(self, data, path):
-        try:
-            with open(path) as file:
-                current = json.load(file)
-        except FileNotFoundError:
-            current = {"Ports": {}}
-
-        for obj in data:
-            current["Ports"].update(obj["Ports"])
-
-        self.dict2file(current, path)
-
-    def code2file(self, code, path):
-        if not self.override(path):
-            return
-
-        with open(path, "w+") as file:
-            file.write(code)
-
-    def dump2file(self, data, path):
-        if not self.override(path):
-            return
-
-        mode = "w+"
-        if isinstance(data, bytes):
-            mode = "wb+"
-        real_path = os.path.join(self.project_path, path)
-        os.makedirs(os.path.dirname(real_path), exist_ok=True)
-        with open(real_path, mode) as file:
-            file.write(data)
-
-    def dependencies_tasktemplate(self, tasktemplate):
-        try:
-            sdt_exporter = self.export_shareddatatemplate
-
-            def sdt_args(names):
-                return (names,)
-
-        except AttributeError:
-            sdt_exporter = self.export_default
-
-            def sdt_args(names):
-                return ("SharedDataTemplate", names)
-
-        try:
-            cb_exporter = self.export_callback
-
-            def cb_args(names):
-                return (names,)
-
-        except AttributeError:
-            cb_exporter = self.export_default
-
-            def cb_args(names):
-                return ("Callback", names)
-
-        for key in ("ScoringFunction", "GenericScoringFunction", "TaskFilter"):
-            cb_exporter(*cb_args(getattr(tasktemplate, key)))
-
-        for key in tasktemplate.SharedData.keys():
-            sdt_exporter(*sdt_args(key))
-
-    def dependencies_node(self, node):
-        try:
-            sm_exporter = self.export_statemachine
-
-            def sm_args(name):
-                return (name,)
-
-        except AttributeError:
-            sm_exporter = self.export_default
-
-            def sm_args(name):
-                return ("Callback", name)
-
-        try:
-            cb_exporter = self.export_callback
-
-            def cb_args(name):
-                return (name,)
-
-        except AttributeError:
-            cb_exporter = self.export_default
-
-            def cb_args(name):
-                return ("StateMachine", name)
-
-        try:
-            cf_exporter = self.export_configuration
-
-            def cf_args(name):
-                return (name,)
-
-        except AttributeError:
-            cf_exporter = self.export_default
-
-            def cf_args(name):
-                return ("Configuration", name)
-
-        for portsInst in node.PortsInst:
-            port = node.PortsInst[portsInst]
-            for iport in port.In:
-                callback = port.In[iport].Callback
-                if callback:
-                    cb_exporter(*cb_args(callback))
-                if port.Template == "MovAI/StateMachine":
-                    sm = port.In[iport].Parameter["StateMachine"]
-                    if sm:
-                        sm_exporter(*sm_args(sm))
-
-        # configs
-        for param in node.Parameter.values():
-            if not isinstance(param.Value, str):
-                # not a string
-                continue
-            m = _re_config.match(param.Value)
-            if m is None:
-                continue
-            conf = m.group(1)
-            m = _re_envvar.match(conf)
-            if m:
-                # TODO getting from envvars will probably be replaced
-                # by looking in the robot config
-                conf_name = os.getenv(m.group(1), None)
-                if conf_name is None:
-                    # error, print always
-                    print(f"Could not find value for {m.group(1)}")
-                    continue
-            else:
-                conf_name = conf
-
-            cf_exporter(*cf_args(conf_name))
+        return ret
 
 
 class Remover(Backup):
@@ -2001,7 +590,7 @@ class Remover(Backup):
 
         """
         try:
-            obj = Factory.get_class(scope)(name)
+            obj = Scope.get_class(scope)(name)
             # exists
             self._db.delete_by_args(scope, Name=obj.name)
             self.log(f"Removed {scope}:{name}")
@@ -2057,7 +646,7 @@ def backup(args) -> int:
                 debug=args.debug,
                 recursive=recursive,
             )
-            # so the action print is not 'Removeed'
+            # so the action print is not 'Removed'
         else:
             print("Skipping remover...")
             return 0

@@ -11,6 +11,7 @@
 """
 from dal.movaidb.database import MovaiDB
 from dal.scopes.scope import Scope
+from dal.utils.project_metadata import PLACEHOLDER_RE, ProjectSource
 
 
 class StateMachine(Scope):
@@ -100,6 +101,27 @@ class StateMachine(Scope):
 
         except Exception as error:
             return (False, repr(error))
+
+    @classmethod
+    def _import_dependencies(cls, data: dict, source: ProjectSource):
+        ret = []
+        for state in data["State"].values():
+            callback = state.get("Callback")
+
+            if callback and not PLACEHOLDER_RE.search(callback):
+                ret += cls.get_class("Callback").import_metadata([callback], source)
+        return ret
+
+    @classmethod
+    def _export_dependencies(cls, scope):
+        ret = {}
+
+        for state in scope.State:
+            callback_name = scope.State[state].Callback
+            if callback_name:
+                ret.update(cls.get_class("Callback").export_metadata([callback_name]))
+
+        return ret
 
 
 class SMVars:
