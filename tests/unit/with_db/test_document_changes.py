@@ -109,7 +109,7 @@ class TestDocumentChangesFromReplica:
             tracker.close()
             global_db.unsafe_delete({"Node": {"replicated_node": "**"}})
 
-    def test_changes_are_kept_while_the_replica_is_not_in_sync(self, global_db, replica_pool):
+    def test_everything_is_reloaded_after_the_replica_is_not_in_sync(self, global_db, replica_pool):
         """Tests that changes are not lost while the replica read does not follow the master."""
 
         from redis import Redis
@@ -130,7 +130,9 @@ class TestDocumentChangesFromReplica:
 
             replica.slaveof("redis-master", 6379)
             _wait_replica_link(replica)
-            assert ("Node", "unsynced_node") in tracker.take_changes()
+            # documents read while it was not in sync may be older than any change
+            assert tracker.take_changes() is None
+            assert tracker.take_changes() == set()
         finally:
             tracker.close()
             global_db.unsafe_delete({"Node": {"unsynced_node": "**"}})

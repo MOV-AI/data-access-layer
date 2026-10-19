@@ -52,6 +52,10 @@ def redis_value_size(value: Any) -> int:
         return 0
 
 
+# Keys Redis goes through in each SCAN request
+SCAN_COUNT = 10000
+
+
 def is_exact_key(pattern: str) -> bool:
     """Return True if a key pattern only matches the key with the same name."""
     # special characters of the Redis and fnmatch glob patterns
@@ -490,10 +494,11 @@ class MovaiDB:
         """
         Return the keys that match a pattern, in no particular order.
 
-        Redis has to go through every key of the database to find them, which KEYS
-        does in one request, while SCAN needs one request for every 1000 keys.
+        Redis has to go through every key of the database to find them. SCAN does it in
+        slices of SCAN_COUNT keys, so other clients are not blocked for the whole database
+        like with KEYS, with fewer requests than slices of 1000 keys.
         """
-        return [key.decode("utf-8") for key in self.db_read.keys(pattern)]
+        return [key.decode("utf-8") for key in self.db_read.scan_iter(pattern, count=SCAN_COUNT)]
 
     def get2(self, _input: dict) -> Dict[str, Any]:
         keys = self.search_wild(_input)

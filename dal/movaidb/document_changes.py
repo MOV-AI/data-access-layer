@@ -106,12 +106,11 @@ class DocumentChangeTracker:
             self._complete_generation = generation
 
         if generation is not None and not self._wait_for_reads():
-            # documents read now may still be older than these changes, keep them for the
-            # next call so they are reloaded again then
+            # documents read now may be older than any change, even ones already returned,
+            # like after the replica restarts from an older snapshot, so the next call
+            # returns None too and everything is read again once the replica is in sync
             with self._lock:
-                self._changes |= changes
-                if not complete:
-                    self._complete_generation = None
+                self._complete_generation = None
             return None
 
         return changes if complete else None

@@ -81,7 +81,7 @@ class TestMovaiDB(unittest.TestCase):
         )
 
     def test_search(self):
-        mock_keys = unittest.mock.MagicMock(
+        mock_scan_iter = unittest.mock.MagicMock(
             side_effect=[
                 [
                     b"SharedDataEntry:ps_group_1,Field:scan_areas,Value:ps_1",
@@ -103,7 +103,7 @@ class TestMovaiDB(unittest.TestCase):
         # Apply mocks using context managers for better readability and control
         with unittest.mock.patch.object(
             movaidb, "dict_to_keys", new=mock_dict_to_keys
-        ), unittest.mock.patch.object(movaidb.db_read, "keys", new=mock_keys):
+        ), unittest.mock.patch.object(movaidb.db_read, "scan_iter", new=mock_scan_iter):
             # Call the search method
             result = movaidb.search({})  # argument is irrelevant due to mock
             # Check the result
@@ -116,7 +116,7 @@ class TestMovaiDB(unittest.TestCase):
             )
 
     def test_exists_by_args(self):
-        mock_keys = unittest.mock.MagicMock(
+        mock_scan_iter = unittest.mock.MagicMock(
             side_effect=[
                 [
                     b"SharedDataEntry:ps_group_1,Field:scan_areas,Value:ps_1",
@@ -131,7 +131,7 @@ class TestMovaiDB(unittest.TestCase):
         movaidb = MovaiDB("local")
         # Apply mocks using context managers for better readability and control
         with unittest.mock.patch.object(
-            movaidb.db_read, "keys", new=mock_keys
+            movaidb.db_read, "scan_iter", new=mock_scan_iter
         ), unittest.mock.patch.object(movaidb.db_read, "exists", return_value=0) as mock_exists:
             # Call the search method
             self.assertTrue(movaidb.exists_by_args("SharedDataEntry", Name="ps_group_1"))
@@ -140,22 +140,22 @@ class TestMovaiDB(unittest.TestCase):
         checked = mock_exists.call_args[0]
         self.assertIn("SharedDataEntry:ps_group_1,TemplateID:", checked)
         self.assertTrue(all("*" not in key for key in checked))
-        mock_keys.assert_called_once()
+        mock_scan_iter.assert_called_once()
 
     def test_exists_by_args_exact_key(self):
-        mock_keys = unittest.mock.MagicMock()
+        mock_scan_iter = unittest.mock.MagicMock()
 
         movaidb = MovaiDB("local")
         with unittest.mock.patch.object(
-            movaidb.db_read, "keys", new=mock_keys
+            movaidb.db_read, "scan_iter", new=mock_scan_iter
         ), unittest.mock.patch.object(movaidb.db_read, "exists", return_value=1):
             self.assertTrue(movaidb.exists_by_args("SharedDataEntry", Name="ps_group_1"))
 
         # an existing key was found without scanning
-        mock_keys.assert_not_called()
+        mock_scan_iter.assert_not_called()
 
     def test_search_exact_keys(self):
-        mock_keys = unittest.mock.MagicMock()
+        mock_scan_iter = unittest.mock.MagicMock()
         mock_pipeline = unittest.mock.MagicMock()
         mock_pipeline.return_value.execute.return_value = [1, 0, 1]
 
@@ -170,7 +170,7 @@ class TestMovaiDB(unittest.TestCase):
         with unittest.mock.patch.object(
             movaidb, "dict_to_keys", new=mock_dict_to_keys
         ), unittest.mock.patch.object(
-            movaidb.db_read, "keys", new=mock_keys
+            movaidb.db_read, "scan_iter", new=mock_scan_iter
         ), unittest.mock.patch.object(
             movaidb.db_read, "pipeline", new=mock_pipeline
         ):
@@ -181,4 +181,4 @@ class TestMovaiDB(unittest.TestCase):
             result,
             ["SharedDataEntry:ps_group_1,Label:", "SharedDataEntry:ps_group_1,TemplateID:"],
         )
-        mock_keys.assert_not_called()
+        mock_scan_iter.assert_not_called()

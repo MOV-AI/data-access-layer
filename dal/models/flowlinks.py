@@ -190,17 +190,17 @@ class FlowLinks(ScopePropertyNode):
         """Returns the node instance links in the flow and subflows"""
         if not self.cache:
             # index the links of every node at once, parsing each link only once
+            index = {}
             for key in self.full:
                 link = self.flow.Links[key]
                 from_node, to_node = link.From.node_inst, link.To.node_inst
 
-                self.cache.setdefault(from_node, []).append(
-                    {"Type": "From", "ref": link, "id": key}
-                )
+                index.setdefault(from_node, []).append({"Type": "From", "ref": link, "id": key})
                 if to_node != from_node:
-                    self.cache.setdefault(to_node, []).append(
-                        {"Type": "To", "ref": link, "id": key}
-                    )
+                    index.setdefault(to_node, []).append({"Type": "To", "ref": link, "id": key})
+
+            # only once every link was parsed, so an invalid link raises on every call
+            self.cache = index
 
         return self.cache.get(node_name, [])
 

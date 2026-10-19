@@ -20,6 +20,7 @@ from dal.data import SchemaPropertyNode, SchemaNode, schemas, TreeNode
 from dal.models.scopestree import ScopesTree, ScopeInstanceVersionNode
 from dal.models.model import Model
 from dal.movaidb import MovaiDB
+from dal.movaidb.database import SCAN_COUNT
 
 
 __DRIVER_NAME__ = "Mov.ai Redis Plugin"
@@ -540,7 +541,8 @@ class RedisPlugin(PersistencePlugin):
         except KeyError as e:
             raise ValueError("missing workspace, scope, or ref") from e
 
-        if not conn.keys(f"{scope}:{ref}*"):
+        # one key is enough to know it exists
+        if next(conn.scan_iter(f"{scope}:{ref}*", count=SCAN_COUNT), None) is None:
             return []
 
         return [{"url": f"{workspace}/{scope}/{ref}", "tag": "__UNVERSIONED__", "date": ""}]
@@ -624,8 +626,8 @@ class RedisPlugin(PersistencePlugin):
 
             # we iterate over all keys found with the constructed
             # pattern, and process it in other to get the
-            # object it references to (KEYS finds them in one request)
-            for key in conn.keys(pattern):
+            # object it references to
+            for key in conn.scan_iter(pattern, count=SCAN_COUNT):
                 # If the value is on key we get the value from the
                 # last token of the string, otherwise we read
                 # the value from the database

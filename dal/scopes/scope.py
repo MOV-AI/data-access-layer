@@ -92,7 +92,7 @@ class Scope(Struct):
         Read documents with fewer requests to Redis while this is active.
 
         While this is active, the keys of each scope are indexed
-        with one KEYS when first needed: Scope then checks a document exists in that index,
+        with one scan when first needed: Scope then checks a document exists in that index,
         and get_dict() reads it with one MGET of its keys.
 
         Documents written while this is active may be read without their newest keys, so
@@ -136,6 +136,7 @@ class Scope(Struct):
         for key in movaidb.find_keys(f"{scope}:*"):
             # keys have the format <scope>:<name>,<attribute>...
             name = re.split("[:,]", key)[1]
+            # SCAN can return the same key more than once
             keys_by_name.setdefault(name, set()).add(key)
 
         # in the order MovaiDB.get reads them
