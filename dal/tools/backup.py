@@ -208,38 +208,80 @@ class Importer(Backup):
         """
         return [None]
 
-    def run(self, objects: dict = {}):
-        """Imports the objects defined in the manifest."""
-        for scope_name in Backup.SCOPES:
-            if objects and scope_name not in objects:
+    def run(self, objects: dict = {}) -> dict:
+        """Import objects defined in the manifest and return an import report."""
+        objects = objects or {}
+
+        report = {"imported": [], "failed": []}
+
+        def add_failure(scope: str, name: str, exc: Exception) -> None:
+            report["failed"].append(
+                {
+                    "scope": scope,
+                    "name": name,
+                    "error": str(exc),
+                    "error_type": type(exc).__name__,
+                }
+            )
+
+        for manifest_scope in Backup.SCOPES:
+            if objects and manifest_scope not in objects:
                 continue
 
-            object_names = objects.get(scope_name)
+            object_names = objects.get(manifest_scope)
 
+            # None in the list means import all objects in this scope.
             if object_names is not None and None in object_names:
                 object_names = None
 
-            scope = Scope.get_class(scope_name)
+            scope = Scope.get_class(manifest_scope)
 
-            data = scope.import_metadata(object_names, self.source, self.recursive)
+            imported_objects = scope.import_metadata(
+                object_names,
+                self.source,
+                self.recursive,
+            )
 
-            for name, data, file_path, tracked_names in data:
-                scope_name = next(iter(data))
+            for name, metadata, file_path, tracked_names in imported_objects:
+                metadata_scope = next(iter(metadata))
 
-                if self._is_imported(scope_name, name):
+                if self._is_imported(metadata_scope, name):
                     continue
 
-                # Validate format before importing
+                # Validate metadata before importing.
                 try:
-                    scope.validate_format(scope_name, data[scope_name][name], name)
+                    scope.validate_format(
+                        metadata_scope,
+                        metadata[metadata_scope][name],
+                        name,
+                    )
                 except ValueError as exc:
-                    _msg = f"Failed to import {scope_name}:{name} - {exc}"
-                    LOGGER.warning(_msg)
-                    if RAISE_METADATA_VALIDATION_ERRORS:
-                        raise ImportException(_msg) from exc
+                    message = f"Failed to import {metadata_scope}:{name} - {exc}"
+                    LOGGER.warning(message)
 
-                # Import data
-                self._import_data(scope_name, name, data, file_path, tracked_names)
+                    if RAISE_METADATA_VALIDATION_ERRORS:
+                        error = ImportException(message)
+                        add_failure(metadata_scope, name, error)
+                        raise error from exc
+
+                try:
+                    self._import_data(
+                        metadata_scope,
+                        name,
+                        metadata,
+                        file_path,
+                        tracked_names,
+                    )
+                    report["imported"].append({"scope": metadata_scope, "name": name})
+                except Exception as exc:
+                    LOGGER.exception(
+                        "Failed to import %s:%s",
+                        metadata_scope,
+                        name,
+                    )
+                    add_failure(metadata_scope, name, exc)
+
+        return report
 
     def _is_imported(self, scope, name) -> bool:
         """Wrapper to check if a scope:name pair is already imported."""
@@ -370,7 +412,7 @@ class Importer(Backup):
             # Update package data structure for duplicate detection
             self._update_package_tracking(scope_name, name, tracked_names=tracked_names)
         except Exception as exc:
-            _msg = f"Failed to import '{scope_name}:{name}'"
+            _msg = f"Failed to import '{scope_name}:{name}' - {exc}"
             LOGGER.warning(_msg)
             raise ImportException(_msg) from exc
 
@@ -666,7 +708,16 @@ def backup(args) -> int:
                 objects[args.type] = [args.name]
 
     try:
-        tool.run(objects)
+        report = tool.run(objects)
+        if args.action == "import" and report["failed"]:
+            for failure in report["failed"]:
+                print(
+                    f"error importing {failure['scope']}:{failure['name']}: " f"{failure['error']}",
+                    file=sys.stderr,
+                )
+
+            return 1
+
         print(args.action.capitalize() + "ed")
         return 0
     except ImportException as exc:
