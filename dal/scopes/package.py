@@ -19,6 +19,7 @@ from dal.scopes.scope import Scope
 from dal.scopes.system import System
 from dal.scopes.structures import Struct
 from dal.helpers.helpers import Helpers
+from dal.utils.project_metadata import ProjectSource
 from movai_core_shared.logger import Log
 
 
@@ -249,3 +250,53 @@ class Package(Scope):
                     db_data["data"][scope_name].append(obj_name)
 
         package_struct.Value = db_data
+
+    @classmethod
+    def import_metadata(cls, names, source: ProjectSource, recursive=False):
+        """Import Package, recursively look for files of the package"""
+        ret = []
+        scope_name = cls.__name__
+
+        files = source.get_files(scope_name, names, directories=True)
+        for name, dir_path in files:
+            file_dict = {}
+            tracked_files = []
+
+            for root, _, files in source.walk(dir_path):
+                for file in files:
+                    file_path = ProjectSource.join(root, file)
+
+                    contents = source.read_bytes(file_path)
+                    checksum = hashlib.md5(contents).hexdigest()
+
+                    try:
+                        contents = contents.decode()
+                    except UnicodeDecodeError:
+                        pass
+
+                    relative_path = file_path.replace(dir_path, "", 1).lstrip("/\\")
+
+                    file_dict[relative_path] = {
+                        "Value": contents,
+                        "Checksum": checksum,
+                        "FileLabel": file,
+                    }
+
+                    tracked_files.append(ProjectSource.join(name, relative_path))
+
+            data = {
+                "Package": {
+                    name: {
+                        "File": file_dict,
+                    }
+                }
+            }
+
+            ret.append((name, data, file_path, tracked_files))
+        return ret
+
+    @classmethod
+    def _export_extra_files(cls, scope, name: str):
+        package_path = os.path.join("Package", name)
+
+        return {os.path.join(package_path, key): file.Value for key, file in scope.File.items()}

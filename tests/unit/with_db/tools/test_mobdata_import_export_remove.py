@@ -23,7 +23,8 @@ class TestMobdataCommands:
         assert "Imported" in capsys.readouterr().out
 
         # Check that data has been imported into the database
-        from dal.tools.backup import Importer, Factory
+        from dal.tools.backup import Importer
+        from dal.scopes.scope import Scope
 
         importer = Importer(
             metadata_folder,
@@ -35,7 +36,7 @@ class TestMobdataCommands:
         )
         expected_objects = importer.read_manifest(manifest_file)
         for expected_scope, expected_names in expected_objects.items():
-            scope_class = Factory.get_class(expected_scope)
+            scope_class = Scope.get_class(expected_scope)
             existing_names = scope_class.get_all()
             for expected_name in expected_names:
                 assert (
@@ -68,7 +69,8 @@ class TestMobdataCommands:
                 ), f"{expected_scope}/{exported_name}.json should be exported"
 
     def test_remove_manifest_command(self, global_db, metadata_folder, manifest_file, capsys):
-        from dal.tools.backup import Importer, Factory
+        from dal.tools.backup import Importer
+        from dal.scopes.scope import Scope
 
         # Import data first to ensure there is something to remove
         self._run_mobdata("import", str(manifest_file), str(metadata_folder))
@@ -88,7 +90,7 @@ class TestMobdataCommands:
         )
         removed_objects = importer.read_manifest(manifest_file)
         for expected_scope, removed_names in removed_objects.items():
-            scope_class = Factory.get_class(expected_scope)
+            scope_class = Scope.get_class(expected_scope)
             all_names = scope_class.get_all()
             for removed_name in removed_names:
                 assert (

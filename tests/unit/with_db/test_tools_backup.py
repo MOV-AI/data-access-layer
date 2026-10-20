@@ -34,7 +34,7 @@ class TestToolsBackup:
     @staticmethod
     def get_source(manifest_file, metadata_folder, source_type):
         """Get the appropriate source based on the source_type."""
-        from dal.tools.backup import FilesystemProjectSource, InMemoryProjectSource
+        from dal.utils.project_metadata import FilesystemProjectSource, InMemoryProjectSource
 
         if source_type == "FilesystemProjectSource":
             return FilesystemProjectSource(metadata_folder)

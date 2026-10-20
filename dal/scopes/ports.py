@@ -7,7 +7,9 @@
    - Manuel Silva (manuel.silva@mov.ai) - 2020
    - Tiago Paulino (tiago@mov.ai) - 2020
 """
+
 from dal.scopes.scope import Scope
+from dal.utils.project_metadata import ProjectSource
 from movai_core_shared.consts import (
     TRANSITION_TYPE,
     ROS1_NODELETCLIENT,
@@ -45,3 +47,12 @@ class Ports(Scope):
     def is_nodelet_server(self) -> bool:
         """Returns True if the port is a nodelet server"""
         return self.Template == ROS1_NODELETSERVER
+
+    @classmethod
+    def _get_metadata(cls, json_data: dict, scope_name: str, name: str) -> dict:
+        return json_data[scope_name]
+
+    @classmethod
+    def _update_metadata(cls, data: dict, file_path: str, source: ProjectSource) -> dict:
+        for name in data:
+            data = {"Ports": {name: data[name]}}
