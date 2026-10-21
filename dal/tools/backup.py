@@ -1371,6 +1371,63 @@ class Exporter(Backup):
                 self.log(f"Exporting {scope_name}:{obj_id}")
                 exporter(*args(scope_name, obj_id))
 
+    def run_with_report(self, objects: dict = {}):
+        """
+        Exports the objects defined in the manifest independently
+        and collects errors in a report.
+
+        """
+        report = {"exported": [], "failed": []}
+
+        def add_failure(scope, name, exc):
+            report["failed"].append(
+                {"scope": scope, "name": name, "error": str(exc), "error_type": type(exc).__name__}
+            )
+
+        for scope_name, object_names in objects.items():
+            if scope_name not in Backup.SCOPES:
+                for name in object_names or []:
+                    LOGGER.error(
+                        f"Scope {scope_name} not supported, but was given for object {name}"
+                    )
+                    add_failure(
+                        scope_name, name, ExportException(f"Scope {scope_name} not supported")
+                    )
+
+        for scope_name in Backup.SCOPES:
+            if objects and scope_name not in objects:
+                continue
+
+            try:
+                names = self.get_objs(scope_name) if not objects else objects[scope_name]
+                if names is None or None in names:
+                    names = self.get_objs(scope_name)
+            except Exception as e:
+                LOGGER.error(f"Export exception for {scope_name}: {e}")
+                add_failure(scope_name, None, e)
+                continue
+
+            for name in names or []:
+                normalized_name = _from_path(name)
+                try:
+                    self.run({scope_name: [normalized_name]})
+                    if self.exported(scope_name, normalized_name):
+                        LOGGER.debug(f"Successfully exported {scope_name}:{normalized_name}")
+                        report["exported"].append({"scope": scope_name, "name": normalized_name})
+                    else:
+                        LOGGER.error(f"Failed to export {scope_name}:{normalized_name}")
+                        add_failure(
+                            scope_name,
+                            normalized_name,
+                            ExportException(f"Failed to export {scope_name}:{normalized_name}"),
+                        )
+
+                except ExportException as e:
+                    LOGGER.error(f"Export exception for {scope_name}:{normalized_name}: {e}")
+                    add_failure(scope_name, normalized_name, e)
+
+        return report
+
     def export_default(self, scope, name):
         name = _from_path(name)
         if self.exported(scope, name):

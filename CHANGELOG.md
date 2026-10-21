@@ -1,5 +1,8 @@
 # Changelog
 
+## vTBD
+- [BP-1870](https://movai.atlassian.net/browse/BP-1870): Metadata export endpoint -- allow for exporter to report failures and continue.
+
 ## v3.32.3
 - [BP-1705](https://movai.atlassian.net/browse/BP-1705): Metadata import endpoint -- allow for importer to report failures and continue.
 
