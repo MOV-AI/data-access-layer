@@ -608,3 +608,119 @@ class TestToolsBackup:
             match="Failed to import Translation:delete_me - Invalid data for scope Translation: Data schema violation:",
         ):
             tool.run(objects)
+
+    @pytest.mark.parametrize(
+        "source_type",
+        [
+            "FilesystemProjectSource",
+            "InMemoryProjectSource",
+        ],
+        ids=["FilesystemProjectSource", "InMemoryProjectSource"],
+    )
+    def test_import_with_report_invalid_data(
+        self,
+        global_db,
+        metadata_folder_invalid_data,
+        manifest_file_invalid_data,
+        capsys,
+        source_type,
+    ):
+        """Test import run_with_report validates and reports invalid data."""
+        from dal.tools.backup import Importer
+
+        tool = Importer(
+            metadata_folder_invalid_data,
+            source=self.get_source(
+                manifest_file_invalid_data, metadata_folder_invalid_data, source_type
+            ),
+            force=True,
+            dry=False,
+            debug=False,
+            recursive=False,
+            clean_old_data=True,
+        )
+
+        objects = tool.read_manifest(manifest_file_invalid_data)
+
+        report = tool.run_with_report(objects)
+
+        assert report is not None
+        assert len(report["imported"]) == 0
+        assert len(report["failed"]) > 0
+
+        failed = report["failed"][0]
+        assert failed["scope"] == "Translation"
+        assert failed["name"] == "delete_me"
+        assert "Invalid data for scope Translation: Data schema violation:" in failed["error"]
+
+    @pytest.mark.parametrize(
+        "source_type",
+        [
+            "FilesystemProjectSource",
+            "InMemoryProjectSource",
+        ],
+        ids=["FilesystemProjectSource", "InMemoryProjectSource"],
+    )
+    def test_import_with_report_valid_data(
+        self,
+        global_db,
+        metadata_folder,
+        manifest_file,
+        source_type,
+    ):
+        """Test import run_with_report with valid data."""
+        from dal.tools.backup import Importer
+
+        tool = Importer(
+            metadata_folder,
+            source=self.get_source(manifest_file, metadata_folder, source_type),
+            force=True,
+            dry=False,
+            debug=False,
+            recursive=False,
+            clean_old_data=True,
+        )
+
+        objects = tool.read_manifest(manifest_file)
+
+        report = tool.run_with_report(objects)
+
+        assert report is not None
+        assert len(report["imported"]) > 0
+        expected_scopes = ["Flow", "Node", "Callback", "Configuration", "Alert", "Translation"]
+        for scope in expected_scopes:
+            assert {"scope": scope, "name": "delete_me"} in report["imported"]
+        assert len(report["failed"]) == 0
+
+    def test_export_with_report(
+        self,
+        global_db,
+        manifest_file_invalid_data,
+        tmp_path,
+    ):
+        """Test export run_with_report validates and reports invalid data."""
+        from dal.tools.backup import Exporter
+
+        exporter = Exporter(
+            tmp_path,
+            debug=False,
+            recursive=False,
+        )
+
+        objects = exporter.read_manifest(manifest_file_invalid_data)
+
+        report = exporter.run_with_report(objects)
+
+        assert report is not None
+        assert len(report["exported"]) > 1
+
+        exported = report["exported"]
+        assert {"scope": "Translation", "name": "delete_me"} in exported
+        assert {"scope": "Alert", "name": "delete_me"} in exported
+
+        assert len(report["failed"]) > 0
+
+        failed = report["failed"][0]
+        assert failed["scope"] == "Translation"
+        assert failed["name"] == "invalid_po"
+        assert "Can't find Translation:invalid_po" in failed["error"]
