@@ -1,5 +1,8 @@
 # Changelog
 
+## vTBD
+- [BP-1882](https://movai.atlassian.net/browse/BP-1882): Remove dead code from migration from InfluxDB to Mimir/Loki
+
 ## v3.32.4
 - [BP-1870](https://movai.atlassian.net/browse/BP-1870): Metadata export endpoint -- allow for exporter to report failures and continue.
 
