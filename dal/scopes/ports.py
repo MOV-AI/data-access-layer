@@ -8,13 +8,18 @@
    - Tiago Paulino (tiago@mov.ai) - 2020
 """
 
+import json
+import os
+
 from dal.scopes.scope import Scope
-from dal.utils.project_metadata import ProjectSource
+from dal.utils.project_metadata import ProjectSource, from_path
 from movai_core_shared.consts import (
     TRANSITION_TYPE,
     ROS1_NODELETCLIENT,
     ROS1_NODELETSERVER,
 )
+
+from movai_core_shared.exceptions import ExportException
 
 
 class Ports(Scope):
@@ -49,10 +54,50 @@ class Ports(Scope):
         return self.Template == ROS1_NODELETSERVER
 
     @classmethod
-    def _get_metadata(cls, json_data: dict, scope_name: str, name: str) -> dict:
-        return json_data[scope_name]
+    def import_metadata(cls, names, source: ProjectSource, recursive=False):
+        ret = []
+        scope_name = cls.__name__
+
+        files = source.get_files(scope_name, names)
+        for name, file_path in files:
+            json_data = source._read_json(file_path)
+
+            for name in json_data[scope_name]:
+                data = {"Ports": {name: json_data["Ports"][name]}}
+                ret.append((name, data, file_path, None))
+
+        return ret
 
     @classmethod
-    def _update_metadata(cls, data: dict, file_path: str, source: ProjectSource) -> dict:
-        for name in data:
-            data = {"Ports": {name: data[name]}}
+    def export_metadata(cls, names, recursive=False):
+        ret = {}
+        scope_name = cls.__name__
+
+        for name in names:
+            name = from_path(name)
+
+            first_part = name.split("/", 1)[0]
+            json_path = os.path.join(scope_name, f"{first_part}.json")
+
+            try:
+                obj = cls(name)  # pylint: disable=no-value-for-parameter
+            except Exception as e:
+                raise ExportException(f"Can't find {scope_name}:{name} - (Exc: {e})") from e
+
+            data = json.loads(cls.clean_data(obj.get_dict()))
+
+            # Remove Info from each port.
+            for port in data.get("Ports", {}).values():
+                port.pop("Info", None)
+
+            if json_path not in ret:
+                ret[json_path] = {}
+
+            # Merge metadata entries into the existing structure.
+            for key, value in data.items():
+                if isinstance(value, dict):
+                    ret[json_path].setdefault(key, {}).update(value)
+                else:
+                    ret[json_path][key] = value
+
+        return {path: json.dumps(data, sort_keys=True, indent=4) for path, data in ret.items()}

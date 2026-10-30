@@ -149,6 +149,10 @@ class Backup:
         """
         return Backup.parse_manifest(manifest_content.splitlines(), all_default)
 
+    def get_objs(self, scope):
+        """Get all objects of a given scope."""
+        return [None]
+
     def run(self, objects: dict = {}):
         raise NotImplementedError
 
@@ -200,14 +204,6 @@ class Importer(Backup):
         hostname = os.getenv("HOSTNAME")
         return hostname if hostname else "unknown"
 
-    def get_objs(self, scope):
-        """Get all objects of a given scope.
-
-        For importer, this is always [None].
-
-        """
-        return [None]
-
     def run(self, objects: dict = {}) -> dict:
         """Import objects defined in the manifest and return an import report."""
         objects = objects or {}
@@ -231,7 +227,7 @@ class Importer(Backup):
             object_names = objects.get(manifest_scope)
 
             # None in the list means import all objects in this scope.
-            if object_names is not None and None in object_names:
+            if object_names is not None or None in object_names:
                 object_names = None
 
             scope = Scope.get_class(manifest_scope)
@@ -429,10 +425,6 @@ class Exporter(Backup):
         # 2 -> kell all
         self._override = 0
 
-    def get_objs(self, scope):
-        """Get all objects of a given scope."""
-        return [None]
-
     def override(self, path):
         if self._override != 0:
             return self._override == 1
@@ -508,7 +500,7 @@ class Exporter(Backup):
 
             scope = Scope.get_class(scope_name)
 
-            if object_names is None and None in object_names:
+            if object_names is None or None in object_names:
                 object_names = scope.get_all()
 
             ret.update(scope.export_metadata(object_names, self.recursive))

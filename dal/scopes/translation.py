@@ -26,13 +26,13 @@ class Translation(Scope):
 
         pattern = re.compile(rf"{re.escape(path.stem)}\.([a-z]+)\.po$")
         for file in source.list_dir(str(path.parent)):
-            match = pattern.match(file)
-            if not match:
+            language_code = pattern.match(file)
+            if not language_code:
                 continue
 
             po_path = str(path.parent / file)
             if source.is_file(po_path):
-                translations[match[1]] = {"po": source.read_text(po_path)}
+                translations[language_code[1]] = {"po": source.read_text(po_path)}
         return data
 
     @classmethod

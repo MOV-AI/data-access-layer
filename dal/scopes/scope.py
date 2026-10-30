@@ -222,23 +222,6 @@ class Scope(Struct):
         return []
 
     @classmethod
-    def _get_metadata(cls, json_data: dict, scope_name: str, name: str) -> dict:
-        """Retrieve metadata for a specific object from its JSON representation.
-
-        Args:
-            json_data (dict): Parsed JSON data containing scope metadata.
-            scope_name (str): Name of the scope containing the object.
-            name (str): Name of the object whose metadata is retrieved.
-
-        Returns:
-            dict: Metadata associated with the specified object.
-
-        Raises:
-            KeyError: If the scope or object name does not exist in the JSON data.
-        """
-        return json_data[scope_name][name]
-
-    @classmethod
     def _update_metadata(cls, data: dict, file_path: str, source: ProjectSource) -> dict:
         """Update metadata before importing it.
 
@@ -279,12 +262,12 @@ class Scope(Struct):
         files = source.get_files(scope_name, names)
         for name, file_path in files:
             json_data = source._read_json(file_path)
-            data = cls._get_metadata(json_data, scope_name, name)
+            data = json_data[scope_name][name]
 
             if recursive:
                 ret += cls._import_dependencies(data, source)
 
-            data = cls._update_metadata(data, file_path, source)
+            json_data[scope_name][name] = cls._update_metadata(data, file_path, source)
 
             ret.append((name, json_data, file_path, None))
         return ret

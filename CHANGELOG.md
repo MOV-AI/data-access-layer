@@ -2,6 +2,11 @@
 
 ## vTBD
 - [BP-1829](https://movai.atlassian.net/browse/BP-1829): Refactor tools/backup.py
+  - Moved scope specific code to corresponding scopes
+  - Created missing scopes
+  - Moved ProjectSource to it's own file
+  - Factored main import/export logic
+  - Updated tests
 
 ## v3.32.3
 - [BP-1705](https://movai.atlassian.net/browse/BP-1705): Metadata import endpoint -- allow for importer to report failures and continue.

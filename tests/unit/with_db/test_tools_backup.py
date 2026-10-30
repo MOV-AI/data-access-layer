@@ -15,6 +15,7 @@ class TestToolsBackup:
     - Flow (with recursive dependency imports)
     - Node (single and multiple imports)
     - Package (recursive file imports)
+    - Ports
     - StateMachine
     - Translation (with .po file import)
     - Alert
@@ -513,6 +514,52 @@ class TestToolsBackup:
             "delete_me2.png",
             "delete_me2.yaml",
         }
+
+    @pytest.mark.parametrize(
+        "source_type",
+        [
+            "FilesystemProjectSource",
+            "InMemoryProjectSource",
+        ],
+        ids=["FilesystemProjectSource", "InMemoryProjectSource"],
+    )
+    def test_import_export_ports(
+        self, global_db, metadata_folder, manifest_file, tmp_path, source_type
+    ):
+        """Test ports import and export."""
+        from dal.tools.backup import Importer, Exporter
+
+        # Import
+        importer = Importer(
+            metadata_folder,
+            source=self.get_source(manifest_file, metadata_folder, source_type),
+            force=True,
+            dry=False,
+            debug=False,
+            recursive=False,
+            clean_old_data=True,
+        )
+
+        data = {"Ports": ["ROS1"]}
+        importer.run(data)
+
+        # Export
+        exporter = Exporter(
+            tmp_path,
+            debug=False,
+            recursive=False,
+        )
+        data = {"Ports": None}
+        exporter.run(data)
+
+        # Compare files
+        imported_file = metadata_folder / "Ports" / "ROS1.json"
+        exported_file = tmp_path / "Ports" / "ROS1.json"
+
+        with open(imported_file, "r") as imported, open(exported_file, "r") as exported:
+            imported_content = json.load(imported)
+            exported_content = json.load(exported)
+            assert imported_content == exported_content
 
     @pytest.mark.parametrize(
         "source_type",
