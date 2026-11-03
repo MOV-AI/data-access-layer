@@ -19,7 +19,9 @@ from movai_core_shared.consts import (
     ROS1_NODELETSERVER,
 )
 
-from movai_core_shared.exceptions import ExportException
+from movai_core_shared.logger import Log
+
+LOGGER = Log.get_logger(__name__)
 
 
 class Ports(Scope):
@@ -70,7 +72,8 @@ class Ports(Scope):
 
     @classmethod
     def export_metadata(cls, names, recursive=False):
-        ret = {}
+        failed = []
+        exported = {}
         scope_name = cls.__name__
 
         for name in names:
@@ -82,7 +85,15 @@ class Ports(Scope):
             try:
                 obj = cls(name)  # pylint: disable=no-value-for-parameter
             except Exception as e:
-                raise ExportException(f"Can't find {scope_name}:{name} - (Exc: {e})") from e
+                LOGGER.error(f"Can't find {scope_name}:{name} - (Exc: {e})")
+                failed.append(
+                    {
+                        "scope": scope_name,
+                        "name": name,
+                        "error": str(e),
+                        "error_type": type(e).__name__,
+                    }
+                )
 
             data = json.loads(cls.clean_data(obj.get_dict()))
 
@@ -90,14 +101,16 @@ class Ports(Scope):
             for port in data.get("Ports", {}).values():
                 port.pop("Info", None)
 
-            if json_path not in ret:
-                ret[json_path] = {}
+            if json_path not in exported:
+                exported[json_path] = {}
 
             # Merge metadata entries into the existing structure.
             for key, value in data.items():
                 if isinstance(value, dict):
-                    ret[json_path].setdefault(key, {}).update(value)
+                    exported[json_path].setdefault(key, {}).update(value)
                 else:
-                    ret[json_path][key] = value
+                    exported[json_path][key] = value
 
-        return {path: json.dumps(data, sort_keys=True, indent=4) for path, data in ret.items()}
+        return {
+            path: json.dumps(data, sort_keys=True, indent=4) for path, data in exported.items()
+        }, failed

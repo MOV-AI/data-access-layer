@@ -650,8 +650,10 @@ class TestToolsBackup:
 
         objects = tool.read_manifest(manifest_file_invalid_data)
 
-        with pytest.raises(
-            ImportException,
-            match="Failed to import Translation:delete_me - Invalid data for scope Translation: Data schema violation:",
-        ):
-            tool.run(objects)
+        report = tool.run(objects)
+        assert any(
+            "Failed to import Translation:delete_me - Invalid data for scope Translation: Data schema violation:"
+            in failure["error"]
+            and failure["error_type"] == ImportException.__name__
+            for failure in report["failed"]
+        )

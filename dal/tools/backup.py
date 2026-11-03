@@ -205,7 +205,34 @@ class Importer(Backup):
         return hostname if hostname else "unknown"
 
     def run(self, objects: dict = {}) -> dict:
-        """Import objects defined in the manifest and return an import report."""
+        """Imports the objects defined in the manifest and returns an import report.
+
+        Returns: A dictionary containing the import results:
+
+        {
+            "failed": [
+                {
+                    "scope": "Flow",
+                    "name": "invalid_flow",
+                    "error_type": "ImportException",
+                    "error": "'Label' is a required property"
+                }
+            ],
+            "imported": [
+                {
+                    "scope": "Node",
+                    "name": "valid_node"
+                }
+            ]
+        }
+
+        Where:
+            - failed: List of objects that failed to import, including their
+              scope, name, exception type, and error message.
+            - imported: List of successfully imported objects, including
+              their scope and name.
+
+        """
         objects = objects or {}
 
         report = {"imported": [], "failed": []}
@@ -258,7 +285,6 @@ class Importer(Backup):
                     if RAISE_METADATA_VALIDATION_ERRORS:
                         error = ImportException(message)
                         add_failure(metadata_scope, name, error)
-                        raise error from exc
 
                 try:
                     self._import_data(
@@ -490,8 +516,34 @@ class Exporter(Backup):
                 file.write(data)
 
     def run(self, objects: dict = {}):
-        """Exports the objects defined in the manifest."""
-        ret = {}
+        """Exports the objects defined in the manifest.
+
+        Returns:
+            dict: A dictionary containing the export results, with the following
+                structure:
+
+                {
+                    "failed": [
+                        {
+                            "scope": "Flow",
+                            "name": "invalid_flow",
+                            "error_type": "ImportException",
+                            "error": "'Label' is a required property"
+                        }
+                    ],
+                    "exported": {
+                        "relative_path": "data"
+                    }
+                }
+
+            The dictionary contains:
+                - failed: A list of objects that failed to export, including
+                their scope, name, exception type, and error message.
+                - exported: A dictionary containing successfully exported
+                objects and their corresponding relative file paths.
+        """
+        report = {"exported": {}, "failed": []}
+
         for scope_name in Backup.SCOPES:
             if objects and scope_name not in objects:
                 continue
@@ -503,15 +555,18 @@ class Exporter(Backup):
             if object_names is None or None in object_names:
                 object_names = scope.get_all()
 
-            ret.update(scope.export_metadata(object_names, self.recursive))
+            exported, failed = scope.export_metadata(object_names, self.recursive)
 
-        ret = self.remove_place_holder(ret)
+            report["exported"].update(exported)
+            report["failed"].extend(failed)
+
+        report["exported"] = self.remove_place_holder(report["exported"])
 
         # Write files to filesystem for retro compatibility
         if self.write_files:
-            self._write_files(ret)
+            self._write_files(report["exported"])
 
-        return ret
+        return report
 
 
 class Remover(Backup):
@@ -680,7 +735,7 @@ def backup(args) -> int:
                 debug=args.debug,
                 recursive=recursive,
             )
-            # so the action print is not 'Removed'
+            # so the action print is not 'Removeed'
         else:
             print("Skipping remover...")
             return 0
@@ -701,10 +756,12 @@ def backup(args) -> int:
 
     try:
         report = tool.run(objects)
-        if args.action == "import" and report["failed"]:
+        LOGGER.warning(f"report: {report}")
+        if args.action in ("import", "export") and report["failed"]:
             for failure in report["failed"]:
                 print(
-                    f"error importing {failure['scope']}:{failure['name']}: " f"{failure['error']}",
+                    f"Error {args.action}ing {failure['scope']}:{failure['name']}: "
+                    f"{failure['error']}",
                     file=sys.stderr,
                 )
 

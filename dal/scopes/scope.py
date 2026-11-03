@@ -17,7 +17,7 @@ from typing import List
 from functools import cached_property
 from dal import scopes
 from dal.utils.project_metadata import ProjectSource, from_path
-from movai_core_shared.exceptions import DoesNotExist, AlreadyExist, ExportException
+from movai_core_shared.exceptions import DoesNotExist, AlreadyExist
 from .structures import Struct
 from dal.movaidb import MovaiDB
 from dal.movaidb.db_schema import DBSchema
@@ -363,27 +363,36 @@ class Scope(Struct):
             Object names are normalized using from_path() before export.
             Duplicate JSON paths are skipped.
         """
-        ret = {}
+        exported = {}
+        failed = []
         scope_name = cls.__name__
 
         for name in names:
             name = from_path(name)
 
             json_path = os.path.join(scope_name, f"{name}.json")
-            if json_path in ret:
+            if json_path in exported:
                 continue
 
             try:
                 obj = cls(name)  # pylint: disable=no-value-for-parameter
             except Exception as e:
-                raise ExportException(f"Can't find {scope_name}:{name} - (Exc: {e})")
+                LOGGER.error(f"Can't find {scope_name}:{name} - (Exc: {e})")
+                failed.append(
+                    {
+                        "scope": scope_name,
+                        "name": name,
+                        "error": str(e),
+                        "error_type": type(e).__name__,
+                    }
+                )
 
-            ret.update(cls._export_extra_files(obj, name))
+            exported.update(cls._export_extra_files(obj, name))
 
             if recursive:
-                ret.update(cls._export_dependencies(obj))
+                exported.update(cls._export_dependencies(obj))
 
             data = cls.clean_data(obj.get_dict())
 
-            ret[json_path] = data
-        return ret
+            exported[json_path] = data
+        return exported, failed
