@@ -85,15 +85,17 @@ class Ports(Scope):
             try:
                 obj = cls(name)  # pylint: disable=no-value-for-parameter
             except Exception as e:
-                LOGGER.error(f"Can't find {scope_name}:{name} - (Exc: {e})")
+                msg = f"Can't find {scope_name}:{name} - (Exc: {e})"
+                LOGGER.error(msg)
                 failed.append(
                     {
                         "scope": scope_name,
                         "name": name,
-                        "error": str(e),
+                        "error": msg,
                         "error_type": type(e).__name__,
                     }
                 )
+                continue
 
             data = json.loads(cls.clean_data(obj.get_dict()))
 

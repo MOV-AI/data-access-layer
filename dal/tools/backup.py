@@ -254,7 +254,7 @@ class Importer(Backup):
             object_names = objects.get(manifest_scope)
 
             # None in the list means import all objects in this scope.
-            if object_names is not None or None in object_names:
+            if object_names is None or None in object_names:
                 object_names = None
 
             scope = Scope.get_class(manifest_scope)
@@ -285,6 +285,7 @@ class Importer(Backup):
                     if RAISE_METADATA_VALIDATION_ERRORS:
                         error = ImportException(message)
                         add_failure(metadata_scope, name, error)
+                        continue
 
                 try:
                     self._import_data(

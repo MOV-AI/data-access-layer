@@ -741,35 +741,64 @@ class TestToolsBackup:
             assert {"scope": scope, "name": "delete_me"} in report["imported"]
         assert len(report["failed"]) == 0
 
+    @pytest.mark.parametrize(
+        "source_type",
+        [
+            "FilesystemProjectSource",
+            "InMemoryProjectSource",
+        ],
+        ids=["FilesystemProjectSource", "InMemoryProjectSource"],
+    )
     def test_export_with_report(
         self,
         global_db,
-        manifest_file_invalid_data,
-        tmp_path,
+        metadata_folder,
+        manifest_file,
+        source_type,
     ):
         """Test export with report validates and reports invalid data."""
-        from dal.tools.backup import Exporter
+        from dal.tools.backup import Importer, Exporter
 
-        exporter = Exporter(
-            tmp_path,
+        importer = Importer(
+            metadata_folder,
+            source=self.get_source(manifest_file, metadata_folder, source_type),
+            force=True,
+            dry=False,
             debug=False,
             recursive=False,
+            clean_old_data=True,
         )
 
-        objects = exporter.read_manifest(manifest_file_invalid_data)
+        data = {"Translation": ["delete_me"]}
 
-        report = exporter.run(objects)
+        import_report = importer.run(data)
+        assert import_report is not None
+        assert len(import_report["imported"]) > 0
 
-        assert report is not None
-        assert len(report["exported"]) > 1
+        exporter = Exporter(
+            None,
+            debug=False,
+            recursive=False,
+            write_files=False,
+        )
 
-        exported = report["exported"]
-        assert {"scope": "Translation", "name": "delete_me"} in exported
-        assert {"scope": "Alert", "name": "delete_me"} in exported
+        data = {"Translation": ["delete_me", "dont_exist"]}
 
-        assert len(report["failed"]) > 0
+        export_report = exporter.run(data)
 
-        failed = report["failed"][0]
+        assert export_report is not None
+        assert len(export_report["exported"]) > 1
+
+        exported = export_report["exported"]
+        assert set(exported.keys()) == {
+            "Translation/delete_me.fr.po",
+            "Translation/delete_me.pt.po",
+            "Translation/delete_me.json",
+        }
+
+        assert len(export_report["failed"]) > 0
+
+        failed = export_report["failed"][0]
         assert failed["scope"] == "Translation"
-        assert failed["name"] == "invalid_po"
-        assert "Can't find Translation:invalid_po" in failed["error"]
+        assert failed["name"] == "dont_exist"
+        assert "Can't find Translation:dont_exist" in failed["error"]
