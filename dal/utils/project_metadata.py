@@ -7,7 +7,7 @@ from typing import Iterator, List, Optional, Tuple
 from movai_core_shared.exceptions import ImportException
 
 PLACEHOLDER_RE = re.compile(r"(/)?place_holder(?(1)(/|$)|)")
-CONFIG_RE = re.compile(r"^\$\(\s*config\s+([${}a-zA-Z0-9_]+)\.?.*\)$")
+CONFIG_RE = re.compile(r"^\$\(\s*config\s+([${}a-zA-Z0-9_]+)[^)]*\)$")
 ENV_RE = re.compile(r"\$\{?(.+?)\}?$")
 
 

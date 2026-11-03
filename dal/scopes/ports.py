@@ -61,7 +61,7 @@ class Ports(Scope):
         scope_name = cls.__name__
 
         files = source.get_files(scope_name, names)
-        for name, file_path in files:
+        for _, file_path in files:
             json_data = source._read_json(file_path)
 
             for name in json_data[scope_name]:
