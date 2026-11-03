@@ -8,6 +8,12 @@
   - Factored main import/export logic
   - Updated tests
 
+## v3.32.5
+- [BP-1882](https://movai.atlassian.net/browse/BP-1882): Remove dead code from migration from InfluxDB to Mimir/Loki
+
+## v3.32.4
+- [BP-1870](https://movai.atlassian.net/browse/BP-1870): Metadata export endpoint -- allow for exporter to report failures and continue.
+
 ## v3.32.3
 - [BP-1705](https://movai.atlassian.net/browse/BP-1705): Metadata import endpoint -- allow for importer to report failures and continue.
 

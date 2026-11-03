@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "data-access-layer"
-version = "3.32.3.1"
+version = "3.32.5.1"
 authors = [
     {name = "Backend team", email = "backend@mov.ai"},
 ]
@@ -35,7 +35,7 @@ dependencies = [
     "py3rosmsgs==1.18.2",
     "cachetools==5.3.1",
     "astunparse==1.6.3; python_version < '3.9'",
-    "movai-core-shared>=3.12.3.1",
+    "movai-core-shared>=3.12.6.1",
 ]
 
 [project.urls]
