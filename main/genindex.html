@@ -233,8 +233,12 @@
       </ul></li>
       <li><a href="dal.classes.utils.html#dal.classes.utils.token.Token.allowed_algorithms">allowed_algorithms (dal.classes.utils.token.Token attribute)</a>
 </li>
-      <li><a href="dal.models.html#dal.models.acl.ResourceType.Annotation">Annotation (dal.models.acl.ResourceType attribute)</a>
+      <li><a href="dal.scopes.html#dal.scopes.annotation.Annotation">Annotation (class in dal.scopes.annotation)</a>
+
+      <ul>
+        <li><a href="dal.models.html#dal.models.acl.ResourceType.Annotation">(dal.models.acl.ResourceType attribute)</a>
 </li>
+      </ul></li>
       <li><a href="dal.scopes.html#dal.scopes.structures.List.append">append() (dal.scopes.structures.List method)</a>
 </li>
       <li><a href="dal.models.html#dal.models.Application">Application (class in dal.models)</a>
@@ -325,8 +329,6 @@
         <li><a href="dal.tools.html#dal.tools.backup.backup">(in module dal.tools.backup)</a>
 </li>
       </ul></li>
-      <li><a href="dal.tools.html#dal.tools.backup.BackupException">BackupException</a>
-</li>
       <li><a href="dal.backup.html#dal.backup.backup.BackupJob">BackupJob (class in dal.backup.backup)</a>
 </li>
       <li><a href="dal.backup.html#dal.backup.BackupManager">BackupManager (class in dal.backup)</a>
@@ -481,8 +483,6 @@
       </ul></li>
       <li><a href="dal.data.html#dal.data.mixins.ChildrenCmpMixin">ChildrenCmpMixin (class in dal.data.mixins)</a>
 </li>
-      <li><a href="dal.tools.html#dal.tools.backup.Factory.CLASSES_CACHE">CLASSES_CACHE (dal.tools.backup.Factory attribute)</a>
-</li>
       <li><a href="dal.backup.html#dal.backup.backup.BackupJob.clean">clean() (dal.backup.backup.BackupJob method)</a>
 
       <ul>
@@ -490,6 +490,8 @@
 </li>
       </ul></li>
       <li><a href="dal.models.html#dal.models.configuration.ConfigurationCache.clean_config_cache">clean_config_cache() (dal.models.configuration.ConfigurationCache method)</a>
+</li>
+      <li><a href="dal.scopes.html#dal.scopes.scope.Scope.clean_data">clean_data() (dal.scopes.scope.Scope class method)</a>
 </li>
       <li><a href="dal.backup.html#dal.backup.backup.BackupManager.clean_jobs">clean_jobs() (dal.backup.backup.BackupManager static method)</a>
 
@@ -516,8 +518,6 @@
       <li><a href="dal.utils.html#dal.utils.redis_mocks.FakeAsyncConnection.closed">closed (dal.utils.redis_mocks.FakeAsyncConnection property)</a>
 </li>
       <li><a href="dal.scopes.html#dal.scopes.robot.Robot.cls_update_status">cls_update_status() (dal.scopes.robot.Robot class method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Exporter.code2file">code2file() (dal.tools.backup.Exporter method)</a>
 </li>
       <li><a href="dal.tools.html#dal.tools.extract_i18n.SourceString.col_offset">col_offset (dal.tools.extract_i18n.SourceString attribute)</a>, <a href="dal.tools.html#id0">[1]</a>
 </li>
@@ -547,8 +547,6 @@
 </li>
       <li><a href="dal.tools.html#dal.tools.extract_i18n.confirm_overwrite">confirm_overwrite() (in module dal.tools.extract_i18n)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.models.html#dal.models.Container">Container (class in dal.models)</a>
 
       <ul>
@@ -559,6 +557,8 @@
         <li><a href="dal.models.html#dal.models.flow.Flow.Container">(dal.models.flow.Flow attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.models.html#dal.models.Container.ContainerFlow">ContainerFlow (dal.models.Container attribute)</a>
 
       <ul>
@@ -1317,6 +1317,13 @@
 </li>
       </ul></li>
       <li>
+    dal.scopes.annotation
+
+      <ul>
+        <li><a href="dal.scopes.html#module-dal.scopes.annotation">module</a>
+</li>
+      </ul></li>
+      <li>
     dal.scopes.application
 
       <ul>
@@ -1356,6 +1363,13 @@
 
       <ul>
         <li><a href="dal.scopes.html#module-dal.scopes.form">module</a>
+</li>
+      </ul></li>
+      <li>
+    dal.scopes.graphicscene
+
+      <ul>
+        <li><a href="dal.scopes.html#module-dal.scopes.graphicscene">module</a>
 </li>
       </ul></li>
       <li>
@@ -1408,6 +1422,20 @@
 </li>
       </ul></li>
       <li>
+    dal.scopes.shareddataentry
+
+      <ul>
+        <li><a href="dal.scopes.html#module-dal.scopes.shareddataentry">module</a>
+</li>
+      </ul></li>
+      <li>
+    dal.scopes.shareddatatemplate
+
+      <ul>
+        <li><a href="dal.scopes.html#module-dal.scopes.shareddatatemplate">module</a>
+</li>
+      </ul></li>
+      <li>
     dal.scopes.statemachine
 
       <ul>
@@ -1421,11 +1449,20 @@
         <li><a href="dal.scopes.html#module-dal.scopes.structures">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     dal.scopes.system
 
       <ul>
         <li><a href="dal.scopes.html#module-dal.scopes.system">module</a>
+</li>
+      </ul></li>
+      <li>
+    dal.scopes.tasktemplate
+
+      <ul>
+        <li><a href="dal.scopes.html#module-dal.scopes.tasktemplate">module</a>
 </li>
       </ul></li>
       <li>
@@ -1435,8 +1472,6 @@
         <li><a href="dal.scopes.html#module-dal.scopes.translation">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     dal.scopes.user
 
@@ -1529,6 +1564,13 @@
 </li>
       </ul></li>
       <li>
+    dal.utils.project_metadata
+
+      <ul>
+        <li><a href="dal.utils.html#module-dal.utils.project_metadata">module</a>
+</li>
+      </ul></li>
+      <li>
     dal.utils.redis_mocks
 
       <ul>
@@ -1596,6 +1638,8 @@
       <li><a href="dal.scopes.html#dal.scopes.alert.Alert.db">db (dal.scopes.alert.Alert attribute)</a>
 
       <ul>
+        <li><a href="dal.scopes.html#dal.scopes.annotation.Annotation.db">(dal.scopes.annotation.Annotation attribute)</a>
+</li>
         <li><a href="dal.scopes.html#dal.scopes.application.Application.db">(dal.scopes.application.Application attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.callback.Callback.db">(dal.scopes.callback.Callback attribute)</a>
@@ -1605,6 +1649,8 @@
         <li><a href="dal.scopes.html#dal.scopes.flow.Flow.db">(dal.scopes.flow.Flow attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.form.Form.db">(dal.scopes.form.Form attribute)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.graphicscene.GraphicScene.db">(dal.scopes.graphicscene.GraphicScene attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.message.Message.db">(dal.scopes.message.Message attribute)</a>
 </li>
@@ -1620,11 +1666,17 @@
 </li>
         <li><a href="dal.scopes.html#dal.scopes.scope.Scope.db">(dal.scopes.scope.Scope attribute)</a>
 </li>
+        <li><a href="dal.scopes.html#dal.scopes.shareddataentry.SharedDataEntry.db">(dal.scopes.shareddataentry.SharedDataEntry attribute)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.shareddatatemplate.SharedDataTemplate.db">(dal.scopes.shareddatatemplate.SharedDataTemplate attribute)</a>
+</li>
         <li><a href="dal.scopes.html#dal.scopes.statemachine.StateMachine.db">(dal.scopes.statemachine.StateMachine attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.structures.Struct.db">(dal.scopes.structures.Struct attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.system.System.db">(dal.scopes.system.System attribute)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.tasktemplate.TaskTemplate.db">(dal.scopes.tasktemplate.TaskTemplate attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.translation.Translation.db">(dal.scopes.translation.Translation attribute)</a>
 </li>
@@ -1841,20 +1893,6 @@
         <li><a href="dal.plugins.persistence.redis.html#dal.plugins.persistence.redis.RedisPlugin.delete_workspace">(dal.plugins.persistence.redis.RedisPlugin method)</a>
 </li>
       </ul></li>
-      <li><a href="dal.tools.html#dal.tools.backup.Exporter.dependencies_node">dependencies_node() (dal.tools.backup.Exporter method)</a>
-
-      <ul>
-        <li><a href="dal.tools.html#dal.tools.backup.Importer.dependencies_node">(dal.tools.backup.Importer method)</a>
-</li>
-      </ul></li>
-      <li><a href="dal.tools.html#dal.tools.backup.Importer.dependencies_ports">dependencies_ports() (dal.tools.backup.Importer method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Exporter.dependencies_tasktemplate">dependencies_tasktemplate() (dal.tools.backup.Exporter method)</a>
-
-      <ul>
-        <li><a href="dal.tools.html#dal.tools.backup.Importer.dependencies_tasktemplate">(dal.tools.backup.Importer method)</a>
-</li>
-      </ul></li>
       <li><a href="dal.models.html#dal.models.flow.LinkDict.Dependency">Dependency (dal.models.flow.LinkDict attribute)</a>
 </li>
       <li><a href="dal.models.html#dal.models.Role.DEPLOYER_RESOURCES">DEPLOYER_RESOURCES (dal.models.Role attribute)</a>
@@ -1891,8 +1929,6 @@
         <li><a href="dal.plugins.schema.version20.html#dal.plugins.schema.version20.version20.SchemaV2Deserializer.deserialize">(dal.plugins.schema.version20.version20.SchemaV2Deserializer method)</a>
 </li>
       </ul></li>
-      <li><a href="dal.tools.html#dal.tools.backup.Exporter.dict2file">dict2file() (dal.tools.backup.Exporter method)</a>
-</li>
       <li><a href="dal.movaidb.html#dal.movaidb.database.MovaiDB.dict_to_args">dict_to_args() (dal.movaidb.database.MovaiDB static method)</a>
 
       <ul>
@@ -1925,12 +1961,12 @@
         <li><a href="dal.models.html#dal.models.aclobject.AclObject.display_info">(dal.models.aclobject.AclObject method)</a>
 </li>
       </ul></li>
-      <li><a href="dal.tools.html#dal.tools.backup.FilesystemProjectSource.display_path">display_path() (dal.tools.backup.FilesystemProjectSource method)</a>
+      <li><a href="dal.utils.html#dal.utils.project_metadata.FilesystemProjectSource.display_path">display_path() (dal.utils.project_metadata.FilesystemProjectSource method)</a>
 
       <ul>
-        <li><a href="dal.tools.html#dal.tools.backup.InMemoryProjectSource.display_path">(dal.tools.backup.InMemoryProjectSource method)</a>
+        <li><a href="dal.utils.html#dal.utils.project_metadata.InMemoryProjectSource.display_path">(dal.utils.project_metadata.InMemoryProjectSource method)</a>
 </li>
-        <li><a href="dal.tools.html#dal.tools.backup.ProjectSource.display_path">(dal.tools.backup.ProjectSource method)</a>
+        <li><a href="dal.utils.html#dal.utils.project_metadata.ProjectSource.display_path">(dal.utils.project_metadata.ProjectSource method)</a>
 </li>
       </ul></li>
       <li><a href="dal.validation.html#dal.validation.project_validator.ProjectIssue.document_name">document_name (dal.validation.project_validator.ProjectIssue attribute)</a>
@@ -1965,8 +2001,6 @@
         <li><a href="dal.scopes.html#dal.scopes.package.Package.dump">(dal.scopes.package.Package class method)</a>
 </li>
       </ul></li>
-      <li><a href="dal.tools.html#dal.tools.backup.Exporter.dump2file">dump2file() (dal.tools.backup.Exporter method)</a>
-</li>
       <li><a href="dal.models.html#dal.models.Package.dump_file">dump_file() (dal.models.Package method)</a>
 
       <ul>
@@ -2061,6 +2095,8 @@
         <li><a href="dal.utils.html#dal.utils.redis_mocks.FakeAsyncConnection.execute">(dal.utils.redis_mocks.FakeAsyncConnection method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.movaidb.html#dal.movaidb.database.MovaiDB.execute_pipe">execute_pipe() (dal.movaidb.database.MovaiDB static method)</a>
 
       <ul>
@@ -2095,8 +2131,6 @@
         <li><a href="dal.plugins.resources.file.html#dal.plugins.resources.file.FilePlugin.exists">(dal.plugins.resources.file.FilePlugin method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.movaidb.html#dal.movaidb.database.MovaiDB.exists_by_args">exists_by_args() (dal.movaidb.database.MovaiDB method)</a>
 
       <ul>
@@ -2111,39 +2145,15 @@
         <li><a href="dal.validation.html#dal.validation.project_validator.MissingNodeInstanceExc.expected_instance">(dal.validation.project_validator.MissingNodeInstanceExc attribute)</a>
 </li>
       </ul></li>
-      <li><a href="dal.tools.html#dal.tools.backup.Exporter.export_callback">export_callback() (dal.tools.backup.Exporter method)</a>
+      <li><a href="dal.scopes.html#dal.scopes.ports.Ports.export_metadata">export_metadata() (dal.scopes.ports.Ports class method)</a>
+
+      <ul>
+        <li><a href="dal.scopes.html#dal.scopes.scope.Scope.export_metadata">(dal.scopes.scope.Scope class method)</a>
 </li>
-      <li><a href="dal.tools.html#dal.tools.backup.Exporter.export_configuration">export_configuration() (dal.tools.backup.Exporter method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Exporter.export_default">export_default() (dal.tools.backup.Exporter method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Exporter.export_flow">export_flow() (dal.tools.backup.Exporter method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Exporter.export_graphicscene">export_graphicscene() (dal.tools.backup.Exporter method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Exporter.export_message">export_message() (dal.tools.backup.Exporter method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Exporter.export_node">export_node() (dal.tools.backup.Exporter method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Exporter.export_package">export_package() (dal.tools.backup.Exporter method)</a>
-</li>
+      </ul></li>
       <li><a href="dal.scopes.html#dal.scopes.message.Message.export_portdata">export_portdata() (dal.scopes.message.Message class method)</a>
 </li>
-      <li><a href="dal.tools.html#dal.tools.backup.Exporter.export_ports">export_ports() (dal.tools.backup.Exporter method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Exporter.export_shareddataentry">export_shareddataentry() (dal.tools.backup.Exporter method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Exporter.export_statemachine">export_statemachine() (dal.tools.backup.Exporter method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Exporter.export_tasktemplate">export_tasktemplate() (dal.tools.backup.Exporter method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Exporter.export_translation">export_translation() (dal.tools.backup.Exporter method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Exporter.exported">exported() (dal.tools.backup.Exporter method)</a>
-</li>
       <li><a href="dal.tools.html#dal.tools.backup.Exporter">Exporter (class in dal.tools.backup)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.ExportException">ExportException</a>
 </li>
       <li><a href="dal.scopes.html#dal.scopes.flow.Flow.exposed_ports_diff">exposed_ports_diff() (dal.scopes.flow.Flow static method)</a>
 </li>
@@ -2165,8 +2175,6 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dal.tools.html#dal.tools.backup.Factory">Factory (class in dal.tools.backup)</a>
-</li>
       <li><a href="dal.tools.html#dal.tools.secret_key.BaseCommand.fail_argument">fail_argument() (dal.tools.secret_key.BaseCommand method)</a>
 </li>
       <li><a href="dal.utils.html#dal.utils.redis_mocks.fake_redis">fake_redis() (in module dal.utils.redis_mocks)</a>
@@ -2243,7 +2251,7 @@
         <li><a href="dal.plugins.persistence.filesystem.html#dal.plugins.persistence.filesystem.filesystem.FilesystemPlugin">(class in dal.plugins.persistence.filesystem.filesystem)</a>
 </li>
       </ul></li>
-      <li><a href="dal.tools.html#dal.tools.backup.FilesystemProjectSource">FilesystemProjectSource (class in dal.tools.backup)</a>
+      <li><a href="dal.utils.html#dal.utils.project_metadata.FilesystemProjectSource">FilesystemProjectSource (class in dal.utils.project_metadata)</a>
 </li>
       <li><a href="dal.models.html#dal.models.Flow.filter_by_port">filter_by_port() (dal.models.Flow method)</a>
 
@@ -2259,10 +2267,10 @@
       </ul></li>
       <li><a href="dal.helpers.html#dal.helpers.helpers.Helpers.find_by_key">find_by_key() (dal.helpers.helpers.Helpers static method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.helpers.html#dal.helpers.helpers.flatten">flatten() (in module dal.helpers.helpers)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.models.html#dal.models.acl.ApplicationsType.FleetBoard">FleetBoard (dal.models.acl.ApplicationsType attribute)</a>
 </li>
       <li><a href="dal.scopes.html#dal.scopes.fleetrobot.FleetRobot">FleetRobot (class in dal.scopes.fleetrobot)</a>
@@ -2335,6 +2343,8 @@
         <li><a href="dal.models.html#dal.models.ScopesTree.from_path">(dal.models.ScopesTree method)</a>
 </li>
         <li><a href="dal.models.html#dal.models.scopestree.ScopesTree.from_path">(dal.models.scopestree.ScopesTree method)</a>
+</li>
+        <li><a href="dal.utils.html#dal.utils.project_metadata.from_path">(in module dal.utils.project_metadata)</a>
 </li>
       </ul></li>
       <li><a href="dal.models.html#dal.models.Flow.full">full (dal.models.Flow property)</a>
@@ -2457,7 +2467,7 @@
         <li><a href="dal.scopes.html#dal.scopes.package.Package.get_checksum">(dal.scopes.package.Package method)</a>
 </li>
       </ul></li>
-      <li><a href="dal.tools.html#dal.tools.backup.Factory.get_class">get_class() (dal.tools.backup.Factory static method)</a>
+      <li><a href="dal.scopes.html#dal.scopes.scope.Scope.get_class">get_class() (dal.scopes.scope.Scope static method)</a>
 </li>
       <li><a href="dal.movaidb.html#dal.movaidb.database.AioRedisClient.get_client">get_client() (dal.movaidb.database.AioRedisClient class method)</a>
 </li>
@@ -2511,7 +2521,7 @@
         <li><a href="dal.scopes.html#dal.scopes.package.Package.get_file_checksum">(dal.scopes.package.Package method)</a>
 </li>
       </ul></li>
-      <li><a href="dal.tools.html#dal.tools.backup.Importer.get_files">get_files() (dal.tools.backup.Importer method)</a>
+      <li><a href="dal.utils.html#dal.utils.project_metadata.ProjectSource.get_files">get_files() (dal.utils.project_metadata.ProjectSource method)</a>
 </li>
       <li><a href="dal.data.html#dal.data.tree.TreeNode.get_first_parent">get_first_parent() (dal.data.tree.TreeNode method)</a>
 
@@ -2725,11 +2735,9 @@
         <li><a href="dal.models.html#dal.models.model.Model.get_object_by_name">(dal.models.model.Model class method)</a>
 </li>
       </ul></li>
-      <li><a href="dal.tools.html#dal.tools.backup.Exporter.get_objs">get_objs() (dal.tools.backup.Exporter method)</a>
+      <li><a href="dal.tools.html#dal.tools.backup.Backup.get_objs">get_objs() (dal.tools.backup.Backup method)</a>
 
       <ul>
-        <li><a href="dal.tools.html#dal.tools.backup.Importer.get_objs">(dal.tools.backup.Importer method)</a>
-</li>
         <li><a href="dal.tools.html#dal.tools.backup.Remover.get_objs">(dal.tools.backup.Remover method)</a>
 </li>
       </ul></li>
@@ -3057,8 +3065,12 @@
         <li><a href="dal.models.html#dal.models.flow.Flow.graph">(dal.models.flow.Flow property)</a>
 </li>
       </ul></li>
-      <li><a href="dal.models.html#dal.models.acl.ResourceType.GraphicScene">GraphicScene (dal.models.acl.ResourceType attribute)</a>
+      <li><a href="dal.scopes.html#dal.scopes.graphicscene.GraphicScene">GraphicScene (class in dal.scopes.graphicscene)</a>
+
+      <ul>
+        <li><a href="dal.models.html#dal.models.acl.ResourceType.GraphicScene">(dal.models.acl.ResourceType attribute)</a>
 </li>
+      </ul></li>
       <li><a href="dal.models.html#dal.models.LdapConfig.groups_dn">groups_dn (dal.models.LdapConfig property)</a>
 
       <ul>
@@ -3199,37 +3211,15 @@
         <li><a href="dal.models.html#dal.models.flowlinks.FlowLinks.ids">(dal.models.flowlinks.FlowLinks method)</a>
 </li>
       </ul></li>
-      <li><a href="dal.tools.html#dal.tools.backup.Importer.import_callback">import_callback() (dal.tools.backup.Importer method)</a>
+      <li><a href="dal.scopes.html#dal.scopes.package.Package.import_metadata">import_metadata() (dal.scopes.package.Package class method)</a>
+
+      <ul>
+        <li><a href="dal.scopes.html#dal.scopes.ports.Ports.import_metadata">(dal.scopes.ports.Ports class method)</a>
 </li>
-      <li><a href="dal.tools.html#dal.tools.backup.Importer.import_configuration">import_configuration() (dal.tools.backup.Importer method)</a>
+        <li><a href="dal.scopes.html#dal.scopes.scope.Scope.import_metadata">(dal.scopes.scope.Scope class method)</a>
 </li>
-      <li><a href="dal.tools.html#dal.tools.backup.Importer.import_default">import_default() (dal.tools.backup.Importer method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Importer.import_flow">import_flow() (dal.tools.backup.Importer method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Importer.import_graphicscene">import_graphicscene() (dal.tools.backup.Importer method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Importer.import_message">import_message() (dal.tools.backup.Importer method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Importer.import_node">import_node() (dal.tools.backup.Importer method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Importer.import_package">import_package() (dal.tools.backup.Importer method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Importer.import_ports">import_ports() (dal.tools.backup.Importer method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Importer.import_shareddataentry">import_shareddataentry() (dal.tools.backup.Importer method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Importer.import_statemachine">import_statemachine() (dal.tools.backup.Importer method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Importer.import_tasktemplate">import_tasktemplate() (dal.tools.backup.Importer method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Importer.import_translation">import_translation() (dal.tools.backup.Importer method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Importer.imported">imported() (dal.tools.backup.Importer method)</a>
-</li>
+      </ul></li>
       <li><a href="dal.tools.html#dal.tools.backup.Importer">Importer (class in dal.tools.backup)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.ImportException">ImportException</a>
 </li>
       <li><a href="dal.utils.html#dal.utils.redis_mocks.FakeAsyncConnection.in_pubsub">in_pubsub (dal.utils.redis_mocks.FakeAsyncConnection property)</a>
 </li>
@@ -3239,7 +3229,7 @@
         <li><a href="dal.classes.utils.html#dal.classes.utils.token.UserToken.init_payload">(dal.classes.utils.token.UserToken class method)</a>
 </li>
       </ul></li>
-      <li><a href="dal.tools.html#dal.tools.backup.InMemoryProjectSource">InMemoryProjectSource (class in dal.tools.backup)</a>
+      <li><a href="dal.utils.html#dal.utils.project_metadata.InMemoryProjectSource">InMemoryProjectSource (class in dal.utils.project_metadata)</a>
 </li>
       <li><a href="dal.models.html#dal.models.Lock.inspect">inspect() (dal.models.Lock method)</a>
 
@@ -3265,12 +3255,12 @@
         <li><a href="dal.scopes.html#dal.scopes.package.Package.is_checksum_valid">(dal.scopes.package.Package method)</a>
 </li>
       </ul></li>
-      <li><a href="dal.tools.html#dal.tools.backup.FilesystemProjectSource.is_dir">is_dir() (dal.tools.backup.FilesystemProjectSource method)</a>
+      <li><a href="dal.utils.html#dal.utils.project_metadata.FilesystemProjectSource.is_dir">is_dir() (dal.utils.project_metadata.FilesystemProjectSource method)</a>
 
       <ul>
-        <li><a href="dal.tools.html#dal.tools.backup.InMemoryProjectSource.is_dir">(dal.tools.backup.InMemoryProjectSource method)</a>
+        <li><a href="dal.utils.html#dal.utils.project_metadata.InMemoryProjectSource.is_dir">(dal.utils.project_metadata.InMemoryProjectSource method)</a>
 </li>
-        <li><a href="dal.tools.html#dal.tools.backup.ProjectSource.is_dir">(dal.tools.backup.ProjectSource method)</a>
+        <li><a href="dal.utils.html#dal.utils.project_metadata.ProjectSource.is_dir">(dal.utils.project_metadata.ProjectSource method)</a>
 </li>
       </ul></li>
       <li><a href="dal.models.html#dal.models.NodeInst.is_dummy">is_dummy (dal.models.NodeInst property)</a>
@@ -3301,12 +3291,12 @@
       </ul></li>
       <li><a href="dal.tools.html#dal.tools.extract_i18n.SourceString.is_f_string">is_f_string (dal.tools.extract_i18n.SourceString attribute)</a>
 </li>
-      <li><a href="dal.tools.html#dal.tools.backup.FilesystemProjectSource.is_file">is_file() (dal.tools.backup.FilesystemProjectSource method)</a>
+      <li><a href="dal.utils.html#dal.utils.project_metadata.FilesystemProjectSource.is_file">is_file() (dal.utils.project_metadata.FilesystemProjectSource method)</a>
 
       <ul>
-        <li><a href="dal.tools.html#dal.tools.backup.InMemoryProjectSource.is_file">(dal.tools.backup.InMemoryProjectSource method)</a>
+        <li><a href="dal.utils.html#dal.utils.project_metadata.InMemoryProjectSource.is_file">(dal.utils.project_metadata.InMemoryProjectSource method)</a>
 </li>
-        <li><a href="dal.tools.html#dal.tools.backup.ProjectSource.is_file">(dal.tools.backup.ProjectSource method)</a>
+        <li><a href="dal.utils.html#dal.utils.project_metadata.ProjectSource.is_file">(dal.utils.project_metadata.ProjectSource method)</a>
 </li>
       </ul></li>
       <li><a href="dal.scopes.html#dal.scopes.fleetrobot.FleetRobot.is_manager">is_manager() (dal.scopes.fleetrobot.FleetRobot method)</a>
@@ -3325,8 +3315,6 @@
         <li><a href="dal.models.html#dal.models.nodeinst.NodeInst.is_node_to_launch">(dal.models.nodeinst.NodeInst property)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.scopes.html#dal.scopes.flow.Flow.is_node_to_launch">is_node_to_launch() (dal.scopes.flow.Flow method)</a>
 </li>
       <li><a href="dal.models.html#dal.models.Node.is_nodelet">is_nodelet (dal.models.Node property)</a>
@@ -3339,6 +3327,8 @@
         <li><a href="dal.models.html#dal.models.nodeinst.NodeInst.is_nodelet">(dal.models.nodeinst.NodeInst property)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.models.html#dal.models.Ports.is_nodelet_client">is_nodelet_client() (dal.models.Ports method)</a>
 
       <ul>
@@ -3485,7 +3475,7 @@
         <li><a href="dal.backup.html#dal.backup.restore.RestoreJob.job_id">(dal.backup.restore.RestoreJob property)</a>
 </li>
       </ul></li>
-      <li><a href="dal.tools.html#dal.tools.backup.ProjectSource.join">join() (dal.tools.backup.ProjectSource static method)</a>
+      <li><a href="dal.utils.html#dal.utils.project_metadata.ProjectSource.join">join() (dal.utils.project_metadata.ProjectSource static method)</a>
 </li>
       <li><a href="dal.helpers.html#dal.helpers.helpers.Helpers.join_first">join_first() (dal.helpers.helpers.Helpers static method)</a>
 </li>
@@ -3627,12 +3617,12 @@
         <li><a href="dal.models.html#dal.models.ldapconfig.LdapConfig.list_config_names">(dal.models.ldapconfig.LdapConfig class method)</a>
 </li>
       </ul></li>
-      <li><a href="dal.tools.html#dal.tools.backup.FilesystemProjectSource.list_dir">list_dir() (dal.tools.backup.FilesystemProjectSource method)</a>
+      <li><a href="dal.utils.html#dal.utils.project_metadata.FilesystemProjectSource.list_dir">list_dir() (dal.utils.project_metadata.FilesystemProjectSource method)</a>
 
       <ul>
-        <li><a href="dal.tools.html#dal.tools.backup.InMemoryProjectSource.list_dir">(dal.tools.backup.InMemoryProjectSource method)</a>
+        <li><a href="dal.utils.html#dal.utils.project_metadata.InMemoryProjectSource.list_dir">(dal.utils.project_metadata.InMemoryProjectSource method)</a>
 </li>
-        <li><a href="dal.tools.html#dal.tools.backup.ProjectSource.list_dir">(dal.tools.backup.ProjectSource method)</a>
+        <li><a href="dal.utils.html#dal.utils.project_metadata.ProjectSource.list_dir">(dal.utils.project_metadata.ProjectSource method)</a>
 </li>
       </ul></li>
       <li><a href="dal.models.html#dal.models.aclobject.AclGroup.list_group_names">list_group_names() (dal.models.aclobject.AclGroup class method)</a>
@@ -4125,6 +4115,8 @@
 </li>
         <li><a href="dal.scopes.html#module-dal.scopes.alert">dal.scopes.alert</a>
 </li>
+        <li><a href="dal.scopes.html#module-dal.scopes.annotation">dal.scopes.annotation</a>
+</li>
         <li><a href="dal.scopes.html#module-dal.scopes.application">dal.scopes.application</a>
 </li>
         <li><a href="dal.scopes.html#module-dal.scopes.callback">dal.scopes.callback</a>
@@ -4136,6 +4128,8 @@
         <li><a href="dal.scopes.html#module-dal.scopes.flow">dal.scopes.flow</a>
 </li>
         <li><a href="dal.scopes.html#module-dal.scopes.form">dal.scopes.form</a>
+</li>
+        <li><a href="dal.scopes.html#module-dal.scopes.graphicscene">dal.scopes.graphicscene</a>
 </li>
         <li><a href="dal.scopes.html#module-dal.scopes.message">dal.scopes.message</a>
 </li>
@@ -4151,11 +4145,17 @@
 </li>
         <li><a href="dal.scopes.html#module-dal.scopes.scope">dal.scopes.scope</a>
 </li>
+        <li><a href="dal.scopes.html#module-dal.scopes.shareddataentry">dal.scopes.shareddataentry</a>
+</li>
+        <li><a href="dal.scopes.html#module-dal.scopes.shareddatatemplate">dal.scopes.shareddatatemplate</a>
+</li>
         <li><a href="dal.scopes.html#module-dal.scopes.statemachine">dal.scopes.statemachine</a>
 </li>
         <li><a href="dal.scopes.html#module-dal.scopes.structures">dal.scopes.structures</a>
 </li>
         <li><a href="dal.scopes.html#module-dal.scopes.system">dal.scopes.system</a>
+</li>
+        <li><a href="dal.scopes.html#module-dal.scopes.tasktemplate">dal.scopes.tasktemplate</a>
 </li>
         <li><a href="dal.scopes.html#module-dal.scopes.translation">dal.scopes.translation</a>
 </li>
@@ -4184,6 +4184,8 @@
         <li><a href="dal.utils.html#module-dal.utils.constants">dal.utils.constants</a>
 </li>
         <li><a href="dal.utils.html#module-dal.utils.middleware">dal.utils.middleware</a>
+</li>
+        <li><a href="dal.utils.html#module-dal.utils.project_metadata">dal.utils.project_metadata</a>
 </li>
         <li><a href="dal.utils.html#module-dal.utils.redis_mocks">dal.utils.redis_mocks</a>
 </li>
@@ -4215,6 +4217,8 @@
       <li><a href="dal.scopes.html#dal.scopes.alert.Alert.movaidb">movaidb (dal.scopes.alert.Alert attribute)</a>
 
       <ul>
+        <li><a href="dal.scopes.html#dal.scopes.annotation.Annotation.movaidb">(dal.scopes.annotation.Annotation attribute)</a>
+</li>
         <li><a href="dal.scopes.html#dal.scopes.application.Application.movaidb">(dal.scopes.application.Application attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.callback.Callback.movaidb">(dal.scopes.callback.Callback attribute)</a>
@@ -4224,6 +4228,8 @@
         <li><a href="dal.scopes.html#dal.scopes.flow.Flow.movaidb">(dal.scopes.flow.Flow attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.form.Form.movaidb">(dal.scopes.form.Form attribute)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.graphicscene.GraphicScene.movaidb">(dal.scopes.graphicscene.GraphicScene attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.message.Message.movaidb">(dal.scopes.message.Message attribute)</a>
 </li>
@@ -4239,11 +4245,17 @@
 </li>
         <li><a href="dal.scopes.html#dal.scopes.scope.Scope.movaidb">(dal.scopes.scope.Scope attribute)</a>
 </li>
+        <li><a href="dal.scopes.html#dal.scopes.shareddataentry.SharedDataEntry.movaidb">(dal.scopes.shareddataentry.SharedDataEntry attribute)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.shareddatatemplate.SharedDataTemplate.movaidb">(dal.scopes.shareddatatemplate.SharedDataTemplate attribute)</a>
+</li>
         <li><a href="dal.scopes.html#dal.scopes.statemachine.StateMachine.movaidb">(dal.scopes.statemachine.StateMachine attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.structures.Struct.movaidb">(dal.scopes.structures.Struct attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.system.System.movaidb">(dal.scopes.system.System attribute)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.tasktemplate.TaskTemplate.movaidb">(dal.scopes.tasktemplate.TaskTemplate attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.translation.Translation.movaidb">(dal.scopes.translation.Translation attribute)</a>
 </li>
@@ -4293,6 +4305,8 @@
       <li><a href="dal.scopes.html#dal.scopes.alert.Alert.Name">Name (dal.scopes.alert.Alert attribute)</a>
 
       <ul>
+        <li><a href="dal.scopes.html#dal.scopes.annotation.Annotation.Name">(dal.scopes.annotation.Annotation attribute)</a>
+</li>
         <li><a href="dal.scopes.html#dal.scopes.application.Application.Name">(dal.scopes.application.Application attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.callback.Callback.Name">(dal.scopes.callback.Callback attribute)</a>
@@ -4302,6 +4316,8 @@
         <li><a href="dal.scopes.html#dal.scopes.flow.Flow.Name">(dal.scopes.flow.Flow attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.form.Form.Name">(dal.scopes.form.Form attribute)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.graphicscene.GraphicScene.Name">(dal.scopes.graphicscene.GraphicScene attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.message.Message.Name">(dal.scopes.message.Message attribute)</a>
 </li>
@@ -4317,11 +4333,17 @@
 </li>
         <li><a href="dal.scopes.html#dal.scopes.scope.Scope.Name">(dal.scopes.scope.Scope attribute)</a>
 </li>
+        <li><a href="dal.scopes.html#dal.scopes.shareddataentry.SharedDataEntry.Name">(dal.scopes.shareddataentry.SharedDataEntry attribute)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.shareddatatemplate.SharedDataTemplate.Name">(dal.scopes.shareddatatemplate.SharedDataTemplate attribute)</a>
+</li>
         <li><a href="dal.scopes.html#dal.scopes.statemachine.StateMachine.Name">(dal.scopes.statemachine.StateMachine attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.structures.Struct.Name">(dal.scopes.structures.Struct attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.system.System.Name">(dal.scopes.system.System attribute)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.tasktemplate.TaskTemplate.Name">(dal.scopes.tasktemplate.TaskTemplate attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.translation.Translation.Name">(dal.scopes.translation.Translation attribute)</a>
 </li>
@@ -4346,14 +4368,14 @@
       </ul></li>
       <li><a href="dal.exceptions.html#dal.exceptions.exceptions.ArchiveErr.NO_ACTIVE_ARCHIVE_REGISTERED">NO_ACTIVE_ARCHIVE_REGISTERED (dal.exceptions.exceptions.ArchiveErr attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.exceptions.html#dal.exceptions.exceptions.GitErr.NO_CHANGES_TO_COMMIT_ERR">NO_CHANGES_TO_COMMIT_ERR (dal.exceptions.exceptions.GitErr attribute)</a>
 </li>
       <li><a href="dal.exceptions.html#dal.exceptions.NoActiveArchiveRegistered">NoActiveArchiveRegistered</a>, <a href="dal.exceptions.html#dal.exceptions.exceptions.NoActiveArchiveRegistered">[1]</a>
 </li>
       <li><a href="dal.exceptions.html#dal.exceptions.NoChangesToCommit">NoChangesToCommit</a>, <a href="dal.exceptions.html#dal.exceptions.exceptions.NoChangesToCommit">[1]</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.models.html#dal.models.Node">Node (class in dal.models)</a>
 
       <ul>
@@ -4424,7 +4446,7 @@
 </li>
       <li><a href="dal.validation.html#dal.validation.issues.Severity.NORMAL">NORMAL (dal.validation.issues.Severity attribute)</a>
 </li>
-      <li><a href="dal.tools.html#dal.tools.backup.ProjectSource.normalize_path">normalize_path() (dal.tools.backup.ProjectSource static method)</a>
+      <li><a href="dal.utils.html#dal.utils.project_metadata.ProjectSource.normalize_path">normalize_path() (dal.utils.project_metadata.ProjectSource static method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -4718,8 +4740,6 @@
         <li><a href="dal.scopes.html#dal.scopes.ports.Ports">(class in dal.scopes.ports)</a>
 </li>
       </ul></li>
-      <li><a href="dal.tools.html#dal.tools.backup.Exporter.ports2file">ports2file() (dal.tools.backup.Exporter method)</a>
-</li>
       <li><a href="dal.data.html#dal.data.workspace.WorkspaceNode.prev_version">prev_version() (dal.data.workspace.WorkspaceNode method)</a>
 </li>
       <li><a href="dal.models.html#dal.models.LdapConfig.primary_host">primary_host (dal.models.LdapConfig property)</a>
@@ -4748,7 +4768,7 @@
 </li>
       <li><a href="dal.validation.html#dal.validation.project_validator.ProjectIssue">ProjectIssue (class in dal.validation.project_validator)</a>
 </li>
-      <li><a href="dal.tools.html#dal.tools.backup.ProjectSource">ProjectSource (class in dal.tools.backup)</a>
+      <li><a href="dal.utils.html#dal.utils.project_metadata.ProjectSource">ProjectSource (class in dal.utils.project_metadata)</a>
 </li>
       <li><a href="dal.validation.html#dal.validation.project_validator.ProjectValidationResult">ProjectValidationResult (class in dal.validation.project_validator)</a>
 </li>
@@ -4832,12 +4852,12 @@
         <li><a href="dal.plugins.resources.redis.html#dal.plugins.resources.redis.RedisPlugin.read_binary">(dal.plugins.resources.redis.RedisPlugin method)</a>
 </li>
       </ul></li>
-      <li><a href="dal.tools.html#dal.tools.backup.FilesystemProjectSource.read_bytes">read_bytes() (dal.tools.backup.FilesystemProjectSource method)</a>
+      <li><a href="dal.utils.html#dal.utils.project_metadata.FilesystemProjectSource.read_bytes">read_bytes() (dal.utils.project_metadata.FilesystemProjectSource method)</a>
 
       <ul>
-        <li><a href="dal.tools.html#dal.tools.backup.InMemoryProjectSource.read_bytes">(dal.tools.backup.InMemoryProjectSource method)</a>
+        <li><a href="dal.utils.html#dal.utils.project_metadata.InMemoryProjectSource.read_bytes">(dal.utils.project_metadata.InMemoryProjectSource method)</a>
 </li>
-        <li><a href="dal.tools.html#dal.tools.backup.ProjectSource.read_bytes">(dal.tools.backup.ProjectSource method)</a>
+        <li><a href="dal.utils.html#dal.utils.project_metadata.ProjectSource.read_bytes">(dal.utils.project_metadata.ProjectSource method)</a>
 </li>
       </ul></li>
       <li><a href="dal.models.html#dal.models.ScopesTree.read_from_path">read_from_path() (dal.models.ScopesTree method)</a>
@@ -4869,11 +4889,7 @@
 </li>
       </ul></li>
       <li><a href="dal.tools.html#dal.tools.backup.Backup.read_manifest">read_manifest() (dal.tools.backup.Backup static method)</a>
-
-      <ul>
-        <li><a href="dal.tools.html#dal.tools.backup.Exporter.read_manifest">(dal.tools.backup.Exporter method)</a>
 </li>
-      </ul></li>
       <li><a href="dal.tools.html#dal.tools.backup.Backup.read_manifest_content">read_manifest_content() (dal.tools.backup.Backup static method)</a>
 </li>
       <li><a href="dal.models.html#dal.models.AclObject.read_only">read_only (dal.models.AclObject property)</a>
@@ -4903,11 +4919,11 @@
 </li>
         <li><a href="dal.plugins.resources.redis.html#dal.plugins.resources.redis.RedisPlugin.read_text">(dal.plugins.resources.redis.RedisPlugin method)</a>
 </li>
-        <li><a href="dal.tools.html#dal.tools.backup.FilesystemProjectSource.read_text">(dal.tools.backup.FilesystemProjectSource method)</a>
+        <li><a href="dal.utils.html#dal.utils.project_metadata.FilesystemProjectSource.read_text">(dal.utils.project_metadata.FilesystemProjectSource method)</a>
 </li>
-        <li><a href="dal.tools.html#dal.tools.backup.InMemoryProjectSource.read_text">(dal.tools.backup.InMemoryProjectSource method)</a>
+        <li><a href="dal.utils.html#dal.utils.project_metadata.InMemoryProjectSource.read_text">(dal.utils.project_metadata.InMemoryProjectSource method)</a>
 </li>
-        <li><a href="dal.tools.html#dal.tools.backup.ProjectSource.read_text">(dal.tools.backup.ProjectSource method)</a>
+        <li><a href="dal.utils.html#dal.utils.project_metadata.ProjectSource.read_text">(dal.utils.project_metadata.ProjectSource method)</a>
 </li>
       </ul></li>
       <li><a href="dal.plugins.classes.html#dal.plugins.classes.Resource.read_yaml">read_yaml() (dal.plugins.classes.Resource static method)</a>
@@ -5068,10 +5084,10 @@
         <li><a href="dal.models.html#dal.models.flow.Flow.remaps">(dal.models.flow.Flow property)</a>
 </li>
       </ul></li>
-      <li><a href="dal.classes.common.html#dal.classes.common.gitlink.GitLink.remote">remote (dal.classes.common.gitlink.GitLink property)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="dal.classes.common.html#dal.classes.common.gitlink.GitLink.remote">remote (dal.classes.common.gitlink.GitLink property)</a>
+</li>
       <li><a href="dal.data.html#dal.data.archive.RemoteArchive">RemoteArchive (class in dal.data.archive)</a>
 </li>
       <li><a href="dal.data.html#dal.data.archive.RemoteArchiveAsync">RemoteArchiveAsync (class in dal.data.archive)</a>
@@ -5138,6 +5154,8 @@
 </li>
       <li><a href="dal.scopes.html#dal.scopes.scope.Scope.remove_partial">remove_partial() (dal.scopes.scope.Scope method)</a>
 </li>
+      <li><a href="dal.tools.html#dal.tools.backup.Exporter.remove_place_holder">remove_place_holder() (dal.tools.backup.Exporter method)</a>
+</li>
       <li><a href="dal.models.html#dal.models.AclObject.remove_role">remove_role() (dal.models.AclObject method)</a>
 
       <ul>
@@ -5165,8 +5183,6 @@
       <li><a href="dal.tools.html#dal.tools.secret_key.RemoveCommand">RemoveCommand (class in dal.tools.secret_key)</a>
 </li>
       <li><a href="dal.tools.html#dal.tools.backup.Remover.removed">removed() (dal.tools.backup.Remover method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.RemoveException">RemoveException</a>
 </li>
       <li><a href="dal.tools.html#dal.tools.backup.Remover">Remover (class in dal.tools.backup)</a>
 </li>
@@ -5324,12 +5340,6 @@
         <li><a href="dal.utils.html#dal.utils.callback.UserFunctions.run">(dal.utils.callback.UserFunctions method)</a>
 </li>
       </ul></li>
-      <li><a href="dal.tools.html#dal.tools.backup.Exporter.run_with_report">run_with_report() (dal.tools.backup.Exporter method)</a>
-
-      <ul>
-        <li><a href="dal.tools.html#dal.tools.backup.Importer.run_with_report">(dal.tools.backup.Importer method)</a>
-</li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -5471,6 +5481,8 @@
 </li>
         <li><a href="dal.scopes.html#dal.scopes.alert.Alert.scope">(dal.scopes.alert.Alert attribute)</a>
 </li>
+        <li><a href="dal.scopes.html#dal.scopes.annotation.Annotation.scope">(dal.scopes.annotation.Annotation attribute)</a>
+</li>
         <li><a href="dal.scopes.html#dal.scopes.application.Application.scope">(dal.scopes.application.Application attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.callback.Callback.scope">(dal.scopes.callback.Callback attribute)</a>
@@ -5480,6 +5492,8 @@
         <li><a href="dal.scopes.html#dal.scopes.flow.Flow.scope">(dal.scopes.flow.Flow attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.form.Form.scope">(dal.scopes.form.Form attribute)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.graphicscene.GraphicScene.scope">(dal.scopes.graphicscene.GraphicScene attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.message.Message.scope">(dal.scopes.message.Message attribute)</a>
 </li>
@@ -5493,9 +5507,15 @@
 </li>
         <li><a href="dal.scopes.html#dal.scopes.role.Role.scope">(dal.scopes.role.Role attribute)</a>
 </li>
+        <li><a href="dal.scopes.html#dal.scopes.shareddataentry.SharedDataEntry.scope">(dal.scopes.shareddataentry.SharedDataEntry attribute)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.shareddatatemplate.SharedDataTemplate.scope">(dal.scopes.shareddatatemplate.SharedDataTemplate attribute)</a>
+</li>
         <li><a href="dal.scopes.html#dal.scopes.statemachine.StateMachine.scope">(dal.scopes.statemachine.StateMachine attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.system.System.scope">(dal.scopes.system.System attribute)</a>
+</li>
+        <li><a href="dal.scopes.html#dal.scopes.tasktemplate.TaskTemplate.scope">(dal.scopes.tasktemplate.TaskTemplate attribute)</a>
 </li>
         <li><a href="dal.scopes.html#dal.scopes.translation.Translation.scope">(dal.scopes.translation.Translation attribute)</a>
 </li>
@@ -5626,6 +5646,8 @@
         <li><a href="dal.models.html#dal.models.lock.Lock.send_unlock_cmd">(dal.models.lock.Lock method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.data.html#dal.data.serialization.SerializableObject">SerializableObject (class in dal.data.serialization)</a>
 </li>
       <li><a href="dal.data.html#dal.data.ObjectSerializer.serialize">serialize() (dal.data.ObjectSerializer method)</a>
@@ -5654,8 +5676,6 @@
         <li><a href="dal.models.html#dal.models.scopestree.ScopePropertyNode.serialize">(dal.models.scopestree.ScopePropertyNode method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.models.html#dal.models.Var.set">set() (dal.models.Var method)</a>
 
       <ul>
@@ -5704,11 +5724,7 @@
         <li><a href="dal.movaidb.html#dal.movaidb.MovaiDB.set_dict">(dal.movaidb.MovaiDB static method)</a>
 </li>
       </ul></li>
-      <li><a href="dal.tools.html#dal.tools.backup.Exporter.set_exported">set_exported() (dal.tools.backup.Exporter method)</a>
-</li>
       <li><a href="dal.scopes.html#dal.scopes.robot.Robot.set_fleet_param">set_fleet_param() (dal.scopes.robot.Robot method)</a>
-</li>
-      <li><a href="dal.tools.html#dal.tools.backup.Importer.set_imported">set_imported() (dal.tools.backup.Importer method)</a>
 </li>
       <li><a href="dal.scopes.html#dal.scopes.robot.Robot.set_ip">set_ip() (dal.scopes.robot.Robot method)</a>
 </li>
@@ -5756,10 +5772,18 @@
         <li><a href="dal.validation.html#dal.validation.project_validator.ProjectIssue.severity">(dal.validation.project_validator.ProjectIssue attribute)</a>
 </li>
       </ul></li>
-      <li><a href="dal.models.html#dal.models.acl.ResourceType.SharedDataEntry">SharedDataEntry (dal.models.acl.ResourceType attribute)</a>
+      <li><a href="dal.scopes.html#dal.scopes.shareddataentry.SharedDataEntry">SharedDataEntry (class in dal.scopes.shareddataentry)</a>
+
+      <ul>
+        <li><a href="dal.models.html#dal.models.acl.ResourceType.SharedDataEntry">(dal.models.acl.ResourceType attribute)</a>
 </li>
-      <li><a href="dal.models.html#dal.models.acl.ResourceType.SharedDataTemplate">SharedDataTemplate (dal.models.acl.ResourceType attribute)</a>
+      </ul></li>
+      <li><a href="dal.scopes.html#dal.scopes.shareddatatemplate.SharedDataTemplate">SharedDataTemplate (class in dal.scopes.shareddatatemplate)</a>
+
+      <ul>
+        <li><a href="dal.models.html#dal.models.acl.ResourceType.SharedDataTemplate">(dal.models.acl.ResourceType attribute)</a>
 </li>
+      </ul></li>
       <li><a href="dal.helpers.flow.html#dal.helpers.flow.GFlow.should_skip">should_skip() (dal.helpers.flow.GFlow method)</a>
 
       <ul>
@@ -5954,8 +5978,12 @@
 </li>
       <li><a href="dal.models.html#dal.models.acl.ApplicationsType.TaskManager">TaskManager (dal.models.acl.ApplicationsType attribute)</a>
 </li>
-      <li><a href="dal.models.html#dal.models.acl.ResourceType.TaskTemplate">TaskTemplate (dal.models.acl.ResourceType attribute)</a>
+      <li><a href="dal.scopes.html#dal.scopes.tasktemplate.TaskTemplate">TaskTemplate (class in dal.scopes.tasktemplate)</a>
+
+      <ul>
+        <li><a href="dal.models.html#dal.models.acl.ResourceType.TaskTemplate">(dal.models.acl.ResourceType attribute)</a>
 </li>
+      </ul></li>
       <li><a href="dal.validation.html#dal.validation.template.Template">Template (class in dal.validation.template)</a>
 </li>
       <li><a href="dal.models.html#dal.models.Callback.template_depends">template_depends() (dal.models.Callback method)</a>
@@ -6400,12 +6428,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="dal.utils.html#dal.utils.redis_mocks.FakeAsyncConnection.wait_closed">wait_closed() (dal.utils.redis_mocks.FakeAsyncConnection method)</a>
 </li>
-      <li><a href="dal.tools.html#dal.tools.backup.FilesystemProjectSource.walk">walk() (dal.tools.backup.FilesystemProjectSource method)</a>
+      <li><a href="dal.utils.html#dal.utils.project_metadata.FilesystemProjectSource.walk">walk() (dal.utils.project_metadata.FilesystemProjectSource method)</a>
 
       <ul>
-        <li><a href="dal.tools.html#dal.tools.backup.InMemoryProjectSource.walk">(dal.tools.backup.InMemoryProjectSource method)</a>
+        <li><a href="dal.utils.html#dal.utils.project_metadata.InMemoryProjectSource.walk">(dal.utils.project_metadata.InMemoryProjectSource method)</a>
 </li>
-        <li><a href="dal.tools.html#dal.tools.backup.ProjectSource.walk">(dal.tools.backup.ProjectSource method)</a>
+        <li><a href="dal.utils.html#dal.utils.project_metadata.ProjectSource.walk">(dal.utils.project_metadata.ProjectSource method)</a>
 </li>
       </ul></li>
       <li><a href="dal.validation.html#dal.validation.project_validator.Summary.warning_count">warning_count (dal.validation.project_validator.Summary attribute)</a>

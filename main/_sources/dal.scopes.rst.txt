@@ -12,6 +12,14 @@ dal.scopes.alert module
    :undoc-members:
    :show-inheritance:
 
+dal.scopes.annotation module
+----------------------------
+
+.. automodule:: dal.scopes.annotation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dal.scopes.application module
 -----------------------------
 
@@ -56,6 +64,14 @@ dal.scopes.form module
 ----------------------
 
 .. automodule:: dal.scopes.form
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.scopes.graphicscene module
+------------------------------
+
+.. automodule:: dal.scopes.graphicscene
    :members:
    :undoc-members:
    :show-inheritance:
@@ -116,6 +132,22 @@ dal.scopes.scope module
    :undoc-members:
    :show-inheritance:
 
+dal.scopes.shareddataentry module
+---------------------------------
+
+.. automodule:: dal.scopes.shareddataentry
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.scopes.shareddatatemplate module
+------------------------------------
+
+.. automodule:: dal.scopes.shareddatatemplate
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dal.scopes.statemachine module
 ------------------------------
 
@@ -136,6 +168,14 @@ dal.scopes.system module
 ------------------------
 
 .. automodule:: dal.scopes.system
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dal.scopes.tasktemplate module
+------------------------------
+
+.. automodule:: dal.scopes.tasktemplate
    :members:
    :undoc-members:
    :show-inheritance:

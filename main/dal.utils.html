@@ -213,7 +213,7 @@ Proprietary and confidential</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.utils.callback.UserCallback.scene">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scene</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GraphicScene</span></span></span><a class="headerlink" href="#dal.utils.callback.UserCallback.scene" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scene</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="dal.scopes.html#dal.scopes.graphicscene.GraphicScene" title="dal.scopes.graphicscene.GraphicScene"><span class="pre">GraphicScene</span></a></span></span><a class="headerlink" href="#dal.utils.callback.UserCallback.scene" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -325,6 +325,183 @@ Proprietary and confidential</p>
 <em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.utils.middleware.</span></span><span class="sig-name descname"><span class="pre">remove_flow_exposed_port_links</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handler</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.utils.middleware.remove_flow_exposed_port_links" title="Permalink to this definition"></a></dt>
 <dd><p>Search end remove ExposedPort links</p>
 </dd></dl>
+
+</section>
+<section id="module-dal.utils.project_metadata">
+<span id="dal-utils-project-metadata-module"></span><h2>dal.utils.project_metadata module<a class="headerlink" href="#module-dal.utils.project_metadata" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.FilesystemProjectSource">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.utils.project_metadata.</span></span><span class="sig-name descname"><span class="pre">FilesystemProjectSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.utils.project_metadata.FilesystemProjectSource" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.utils.project_metadata.ProjectSource" title="dal.utils.project_metadata.ProjectSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProjectSource</span></code></a></p>
+<p>Filesystem-backed project source.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.FilesystemProjectSource.display_path">
+<span class="sig-name descname"><span class="pre">display_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relative_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dal.utils.project_metadata.FilesystemProjectSource.display_path" title="Permalink to this definition"></a></dt>
+<dd><p>Return a human-readable path for logs and imported InstallPath.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.FilesystemProjectSource.is_dir">
+<span class="sig-name descname"><span class="pre">is_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relative_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.utils.project_metadata.FilesystemProjectSource.is_dir" title="Permalink to this definition"></a></dt>
+<dd><p>Return whether the source-relative path is a directory.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.FilesystemProjectSource.is_file">
+<span class="sig-name descname"><span class="pre">is_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relative_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.utils.project_metadata.FilesystemProjectSource.is_file" title="Permalink to this definition"></a></dt>
+<dd><p>Return whether the source-relative path is a regular file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.FilesystemProjectSource.list_dir">
+<span class="sig-name descname"><span class="pre">list_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relative_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.utils.project_metadata.FilesystemProjectSource.list_dir" title="Permalink to this definition"></a></dt>
+<dd><p>Return direct child names for a source-relative directory.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.FilesystemProjectSource.read_bytes">
+<span class="sig-name descname"><span class="pre">read_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relative_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bytes</span></span></span><a class="headerlink" href="#dal.utils.project_metadata.FilesystemProjectSource.read_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Read a source-relative file as bytes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.FilesystemProjectSource.read_text">
+<span class="sig-name descname"><span class="pre">read_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relative_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dal.utils.project_metadata.FilesystemProjectSource.read_text" title="Permalink to this definition"></a></dt>
+<dd><p>Read a source-relative file as UTF-8 text.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.FilesystemProjectSource.walk">
+<span class="sig-name descname"><span class="pre">walk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relative_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.utils.project_metadata.FilesystemProjectSource.walk" title="Permalink to this definition"></a></dt>
+<dd><p>Yield <code class="docutils literal notranslate"><span class="pre">(relative_root,</span> <span class="pre">dirs,</span> <span class="pre">files)</span></code> for a source-relative directory.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.InMemoryProjectSource">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.utils.project_metadata.</span></span><span class="sig-name descname"><span class="pre">InMemoryProjectSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.utils.project_metadata.InMemoryProjectSource" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dal.utils.project_metadata.ProjectSource" title="dal.utils.project_metadata.ProjectSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProjectSource</span></code></a></p>
+<p>In-memory project source for gRPC payloads.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.InMemoryProjectSource.display_path">
+<span class="sig-name descname"><span class="pre">display_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relative_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dal.utils.project_metadata.InMemoryProjectSource.display_path" title="Permalink to this definition"></a></dt>
+<dd><p>Return a human-readable path for logs and imported InstallPath.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.InMemoryProjectSource.is_dir">
+<span class="sig-name descname"><span class="pre">is_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relative_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.utils.project_metadata.InMemoryProjectSource.is_dir" title="Permalink to this definition"></a></dt>
+<dd><p>Return whether the source-relative path is a directory.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.InMemoryProjectSource.is_file">
+<span class="sig-name descname"><span class="pre">is_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relative_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.utils.project_metadata.InMemoryProjectSource.is_file" title="Permalink to this definition"></a></dt>
+<dd><p>Return whether the source-relative path is a regular file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.InMemoryProjectSource.list_dir">
+<span class="sig-name descname"><span class="pre">list_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relative_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.utils.project_metadata.InMemoryProjectSource.list_dir" title="Permalink to this definition"></a></dt>
+<dd><p>Return direct child names for a source-relative directory.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.InMemoryProjectSource.read_bytes">
+<span class="sig-name descname"><span class="pre">read_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relative_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bytes</span></span></span><a class="headerlink" href="#dal.utils.project_metadata.InMemoryProjectSource.read_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Read a source-relative file as bytes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.InMemoryProjectSource.read_text">
+<span class="sig-name descname"><span class="pre">read_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relative_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dal.utils.project_metadata.InMemoryProjectSource.read_text" title="Permalink to this definition"></a></dt>
+<dd><p>Read a source-relative file as UTF-8 text.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.InMemoryProjectSource.walk">
+<span class="sig-name descname"><span class="pre">walk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relative_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.utils.project_metadata.InMemoryProjectSource.walk" title="Permalink to this definition"></a></dt>
+<dd><p>Walk the in-memory file structure, yielding (relative_root, dirs, files).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.ProjectSource">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.utils.project_metadata.</span></span><span class="sig-name descname"><span class="pre">ProjectSource</span></span><a class="headerlink" href="#dal.utils.project_metadata.ProjectSource" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Project metadata source addressed by project-relative POSIX paths.</p>
+<p>Importer historically reads from a project folder on disk. This interface
+keeps the importer talking in relative paths like <code class="docutils literal notranslate"><span class="pre">Callback/foo.json</span></code> so
+another source, such as a gRPC payload, can provide the same files without
+recreating that folder on the filesystem.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.ProjectSource.display_path">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">display_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relative_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dal.utils.project_metadata.ProjectSource.display_path" title="Permalink to this definition"></a></dt>
+<dd><p>Return a human-readable path for logs and imported InstallPath.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.ProjectSource.get_files">
+<span class="sig-name descname"><span class="pre">get_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directories</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.utils.project_metadata.ProjectSource.get_files" title="Permalink to this definition"></a></dt>
+<dd><p>Resolves items in scope. Defaults to .json files; sets directories=True for folders.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.ProjectSource.is_dir">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relative_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.utils.project_metadata.ProjectSource.is_dir" title="Permalink to this definition"></a></dt>
+<dd><p>Return whether the source-relative path is a directory.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.ProjectSource.is_file">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relative_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.utils.project_metadata.ProjectSource.is_file" title="Permalink to this definition"></a></dt>
+<dd><p>Return whether the source-relative path is a regular file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.ProjectSource.join">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">join</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dal.utils.project_metadata.ProjectSource.join" title="Permalink to this definition"></a></dt>
+<dd><p>Join path parts into a normalized source-relative path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.ProjectSource.list_dir">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relative_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.utils.project_metadata.ProjectSource.list_dir" title="Permalink to this definition"></a></dt>
+<dd><p>Return direct child names for a source-relative directory.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.ProjectSource.normalize_path">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">normalize_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relative_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dal.utils.project_metadata.ProjectSource.normalize_path" title="Permalink to this definition"></a></dt>
+<dd><p>Normalize and validate a source-relative path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.ProjectSource.read_bytes">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relative_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bytes</span></span></span><a class="headerlink" href="#dal.utils.project_metadata.ProjectSource.read_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Read a source-relative file as bytes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.ProjectSource.read_text">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relative_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dal.utils.project_metadata.ProjectSource.read_text" title="Permalink to this definition"></a></dt>
+<dd><p>Read a source-relative file as UTF-8 text.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.ProjectSource.walk">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">walk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">relative_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.utils.project_metadata.ProjectSource.walk" title="Permalink to this definition"></a></dt>
+<dd><p>Yield <code class="docutils literal notranslate"><span class="pre">(relative_root,</span> <span class="pre">dirs,</span> <span class="pre">files)</span></code> for a source-relative directory.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dal.utils.project_metadata.from_path">
+<span class="sig-prename descclassname"><span class="pre">dal.utils.project_metadata.</span></span><span class="sig-name descname"><span class="pre">from_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.utils.project_metadata.from_path" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 </section>
 <section id="module-dal.utils.redis_mocks">

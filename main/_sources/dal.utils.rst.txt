@@ -28,6 +28,14 @@ dal.utils.middleware module
    :undoc-members:
    :show-inheritance:
 
+dal.utils.project\_metadata module
+----------------------------------
+
+.. automodule:: dal.utils.project_metadata
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dal.utils.redis\_mocks module
 -----------------------------
 
