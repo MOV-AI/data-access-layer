@@ -1,9 +1,6 @@
 """Tests for Translation scope."""
 
 
-import pytest
-
-
 class TestTranslation:
     def test_translation(self, global_db, metadata_folder):
         from dal.tools.backup import Importer
@@ -43,8 +40,10 @@ class TestTranslation:
 
         data = {"Translation": ["invalid_po"]}
 
-        with pytest.raises(
-            ImportException,
-            match="Failed to import Translation:invalid_po - Invalid PO file format for language pt",
-        ):
-            tool.run(data)
+        report = tool.run(data)
+        assert any(
+            "Failed to import Translation:invalid_po - Invalid PO file format for language pt"
+            in failure["error"]
+            and failure["error_type"] == ImportException.__name__
+            for failure in report["failed"]
+        )

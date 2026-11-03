@@ -15,6 +15,7 @@ class TestToolsBackup:
     - Flow (with recursive dependency imports)
     - Node (single and multiple imports)
     - Package (recursive file imports)
+    - Ports
     - StateMachine
     - Translation (with .po file import)
     - Alert
@@ -34,7 +35,7 @@ class TestToolsBackup:
     @staticmethod
     def get_source(manifest_file, metadata_folder, source_type):
         """Get the appropriate source based on the source_type."""
-        from dal.tools.backup import FilesystemProjectSource, InMemoryProjectSource
+        from dal.utils.project_metadata import FilesystemProjectSource, InMemoryProjectSource
 
         if source_type == "FilesystemProjectSource":
             return FilesystemProjectSource(metadata_folder)
@@ -522,6 +523,52 @@ class TestToolsBackup:
         ],
         ids=["FilesystemProjectSource", "InMemoryProjectSource"],
     )
+    def test_import_export_ports(
+        self, global_db, metadata_folder, manifest_file, tmp_path, source_type
+    ):
+        """Test ports import and export."""
+        from dal.tools.backup import Importer, Exporter
+
+        # Import
+        importer = Importer(
+            metadata_folder,
+            source=self.get_source(manifest_file, metadata_folder, source_type),
+            force=True,
+            dry=False,
+            debug=False,
+            recursive=False,
+            clean_old_data=True,
+        )
+
+        data = {"Ports": ["ROS1"]}
+        importer.run(data)
+
+        # Export
+        exporter = Exporter(
+            tmp_path,
+            debug=False,
+            recursive=False,
+        )
+        data = {"Ports": None}
+        exporter.run(data)
+
+        # Compare files
+        imported_file = metadata_folder / "Ports" / "ROS1.json"
+        exported_file = tmp_path / "Ports" / "ROS1.json"
+
+        with open(imported_file, "r") as imported, open(exported_file, "r") as exported:
+            imported_content = json.load(imported)
+            exported_content = json.load(exported)
+            assert imported_content == exported_content
+
+    @pytest.mark.parametrize(
+        "source_type",
+        [
+            "FilesystemProjectSource",
+            "InMemoryProjectSource",
+        ],
+        ids=["FilesystemProjectSource", "InMemoryProjectSource"],
+    )
     def test_import_export_translation(
         self, global_db, metadata_folder, manifest_file, tmp_path, source_type
     ):
@@ -603,11 +650,13 @@ class TestToolsBackup:
 
         objects = tool.read_manifest(manifest_file_invalid_data)
 
-        with pytest.raises(
-            ImportException,
-            match="Failed to import Translation:delete_me - Invalid data for scope Translation: Data schema violation:",
-        ):
-            tool.run(objects)
+        report = tool.run(objects)
+        assert any(
+            "Failed to import Translation:delete_me - Invalid data for scope Translation: Data schema violation:"
+            in failure["error"]
+            and failure["error_type"] == ImportException.__name__
+            for failure in report["failed"]
+        )
 
     @pytest.mark.parametrize(
         "source_type",
@@ -625,7 +674,7 @@ class TestToolsBackup:
         capsys,
         source_type,
     ):
-        """Test import run_with_report validates and reports invalid data."""
+        """Test import with report validates and reports invalid data."""
         from dal.tools.backup import Importer
 
         tool = Importer(
@@ -642,7 +691,7 @@ class TestToolsBackup:
 
         objects = tool.read_manifest(manifest_file_invalid_data)
 
-        report = tool.run_with_report(objects)
+        report = tool.run(objects)
 
         assert report is not None
         assert len(report["imported"]) == 0
@@ -668,7 +717,7 @@ class TestToolsBackup:
         manifest_file,
         source_type,
     ):
-        """Test import run_with_report with valid data."""
+        """Test import with report with valid data."""
         from dal.tools.backup import Importer
 
         tool = Importer(
@@ -683,7 +732,7 @@ class TestToolsBackup:
 
         objects = tool.read_manifest(manifest_file)
 
-        report = tool.run_with_report(objects)
+        report = tool.run(objects)
 
         assert report is not None
         assert len(report["imported"]) > 0
@@ -692,35 +741,64 @@ class TestToolsBackup:
             assert {"scope": scope, "name": "delete_me"} in report["imported"]
         assert len(report["failed"]) == 0
 
+    @pytest.mark.parametrize(
+        "source_type",
+        [
+            "FilesystemProjectSource",
+            "InMemoryProjectSource",
+        ],
+        ids=["FilesystemProjectSource", "InMemoryProjectSource"],
+    )
     def test_export_with_report(
         self,
         global_db,
-        manifest_file_invalid_data,
-        tmp_path,
+        metadata_folder,
+        manifest_file,
+        source_type,
     ):
-        """Test export run_with_report validates and reports invalid data."""
-        from dal.tools.backup import Exporter
+        """Test export with report validates and reports invalid data."""
+        from dal.tools.backup import Importer, Exporter
 
-        exporter = Exporter(
-            tmp_path,
+        importer = Importer(
+            metadata_folder,
+            source=self.get_source(manifest_file, metadata_folder, source_type),
+            force=True,
+            dry=False,
             debug=False,
             recursive=False,
+            clean_old_data=True,
         )
 
-        objects = exporter.read_manifest(manifest_file_invalid_data)
+        data = {"Translation": ["delete_me"]}
 
-        report = exporter.run_with_report(objects)
+        import_report = importer.run(data)
+        assert import_report is not None
+        assert len(import_report["imported"]) > 0
 
-        assert report is not None
-        assert len(report["exported"]) > 1
+        exporter = Exporter(
+            None,
+            debug=False,
+            recursive=False,
+            write_files=False,
+        )
 
-        exported = report["exported"]
-        assert {"scope": "Translation", "name": "delete_me"} in exported
-        assert {"scope": "Alert", "name": "delete_me"} in exported
+        data = {"Translation": ["delete_me", "dont_exist"]}
 
-        assert len(report["failed"]) > 0
+        export_report = exporter.run(data)
 
-        failed = report["failed"][0]
+        assert export_report is not None
+        assert len(export_report["exported"]) > 1
+
+        exported = export_report["exported"]
+        assert set(exported.keys()) == {
+            "Translation/delete_me.fr.po",
+            "Translation/delete_me.pt.po",
+            "Translation/delete_me.json",
+        }
+
+        assert len(export_report["failed"]) > 0
+
+        failed = export_report["failed"][0]
         assert failed["scope"] == "Translation"
-        assert failed["name"] == "invalid_po"
-        assert "Can't find Translation:invalid_po" in failed["error"]
+        assert failed["name"] == "dont_exist"
+        assert "Can't find Translation:dont_exist" in failed["error"]
