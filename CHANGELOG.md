@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.33.0
 - [BP-1829](https://movai.atlassian.net/browse/BP-1829): Refactor tools/backup.py
   - Moved scope specific code to corresponding scopes
   - Created missing scopes
