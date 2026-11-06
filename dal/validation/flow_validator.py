@@ -1,6 +1,7 @@
 from movai_core_shared import Log
+import time
 from movai_core_shared.exceptions import DoesNotExist
-from dal.scopes.flow import Flow
+from dal.scopes.scope import Scope
 from dal.validation.issues import Severity
 from dal.validation.project_validator import (
     ProjectIssue,
@@ -18,12 +19,6 @@ class FlowValidator:
     """
 
     def __init__(self, flow_ref: str):
-        try:
-            self.flow = Flow(flow_ref)
-        except Exception as e:
-            LOGGER.error(f"Error initializing FlowValidator for flow {flow_ref}: {e}")
-            raise DoesNotExist(f"Error initializing FlowValidator for flow {flow_ref}: {e}")
-
         self.project = ProjectValidator()
         self.flow_ref = flow_ref
         self.issues = []
@@ -34,25 +29,54 @@ class FlowValidator:
 
         Returns:
             ProjectValidationResult: The result of the flow validation, including issues found.
+
+        Raises:
+            DoesNotExist: If the flow does not exist.
         """
+        with Scope.batch_reads():
+            self.project.build_object_cache()
+
+            if not self.project.object_exists("Flow", self.flow_ref):
+                message = f"Error validating flow: Flow {self.flow_ref} does not exist"
+                LOGGER.error(message)
+                raise DoesNotExist(message)
+
+            return self._validate_flow()
+
+    def _validate_flow(self) -> ProjectValidationResult:
+        start_time = time.time()
+
         try:
             self.issues = []
 
             from dal.helpers.parsers import ParamParser
 
-            with ParamParser.dedupe_validation_disabled_warnings():
-                for flow_ref, flow_path in self.project._collect_flow_contexts(self.flow_ref):
+            # Repeatedly used subflows are checked once
+            checked_flows = set()
+
+            with ParamParser.dedupe_validation_disabled_warnings(), ParamParser.memoize_flow_resolution():
+                for flow_ref, flow_path in self.project.collect_flow_contexts(self.flow_ref):
                     self.issues.extend(
                         self.project.check_flow(
                             flow_ref,
                             context=self.flow_ref,
                             node_prefix=flow_path,
+                            checked_flows=checked_flows,
                         )
                     )
 
         except Exception as e:
             LOGGER.error(f"Error validating flow {self.flow_ref}: {e}")
+            end_time = time.time()
+            LOGGER.info(
+                f"Flow {self.flow_ref} validation failed after {end_time - start_time:.2f} seconds."
+            )
             raise
+
+        end_time = time.time()
+        LOGGER.info(
+            f"Flow {self.flow_ref} validation completed in {end_time - start_time:.2f} seconds."
+        )
 
         return ProjectValidationResult(
             summary=Summary(

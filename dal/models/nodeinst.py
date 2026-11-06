@@ -191,8 +191,11 @@ class NodeInst(ScopeObjectNode):
         # main flow context or own context
         _context = context or self.flow.ref
 
-        # get the template value
-        tpl_value = self.node_template.get_params().get(key, None)  # Parameter[key].Value
+        # get the template value, without serializing every template parameter
+        try:
+            tpl_value = self.node_template.Parameter[key].Value
+        except KeyError:
+            tpl_value = None
 
         # get the instance value
         try:
