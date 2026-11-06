@@ -11,6 +11,8 @@
    https://github.com/python/cpython/blob/master/Lib/pydoc.py
 """
 import inspect
+import os
+from pathlib import Path
 import pkgutil
 import importlib
 
@@ -18,6 +20,7 @@ from dal.movaidb import MovaiDB
 from dal.scopes.scope import Scope
 from dal.scopes.application import Application
 from dal.models.acl import ResourceType, ApplicationsType
+from dal.utils.project_metadata import ProjectSource
 from dal.utils.usage_search.usage_types import (
     UsageData,
     UsageSearchResult,
@@ -320,3 +323,16 @@ class Callback(Scope):
                         )
 
         return UsageSearchResult(scope="Callback", name=self.name, usage=usage_data)
+
+    @classmethod
+    def _update_metadata(cls, data: dict, file_path: str, source: ProjectSource) -> dict:
+        code_path = str(Path(file_path).with_suffix(".py"))
+
+        if source.is_file(code_path):
+            data["Code"] = source.read_text(code_path)
+        return data
+
+    @classmethod
+    def _export_extra_files(cls, scope, name: str):
+        code_path = os.path.join("Callback", f"{name}.py")
+        return {code_path: scope.Code}

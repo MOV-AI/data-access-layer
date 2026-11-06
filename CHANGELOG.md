@@ -7,6 +7,17 @@
   - Optimize Redis access by avoiding full SCAN operations.
   - Add active invalidation of ScopesTree cache (DocumentChangeTracker).
 
+## v3.33.0
+- [BP-1829](https://movai.atlassian.net/browse/BP-1829): Refactor tools/backup.py
+  - Moved scope specific code to corresponding scopes
+  - Created missing scopes
+  - Moved ProjectSource to it's own file
+  - Factored main import/export logic
+  - Updated tests
+
+## v3.32.5
+- [BP-1882](https://movai.atlassian.net/browse/BP-1882): Remove dead code from migration from InfluxDB to Mimir/Loki
+
 ## v3.32.4
 - [BP-1870](https://movai.atlassian.net/browse/BP-1870): Metadata export endpoint -- allow for exporter to report failures and continue.
 
