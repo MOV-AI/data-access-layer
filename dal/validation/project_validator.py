@@ -151,9 +151,6 @@ class ProjectValidator:
         Initialize the ProjectValidator.
         """
         self.issues: List[ProjIssue] = []
-        # Only parameter parsing needs to be re-checked per context
-        # So already checked flows skip reference and link validation
-        self.checked_flows = set()
         # Cache of all objects by scope: {"Flow": {"name1", "name2"}, "Node": {...}}
         self._objects_by_scope: Dict[str, Set[str]] = {}
         # Cache loaded Flow dictionaries to avoid repeated DAL fetches.
@@ -163,12 +160,6 @@ class ProjectValidator:
         # Cache JSON path line indexes by loaded document object.
         self._json_path_line_cache: Dict[int, Dict[Tuple[str, ...], int]] = {}
         self._link_validator: Optional["LinkValidator"] = None
-        # Keys of the documents read, indexed once per scope, shared by all reads of the validator
-        self.keys_index: dict = {}
-
-        # Build cache of all objects first
-        with Scope.batch_reads(self.keys_index):
-            self._build_object_cache()
 
     def _get_flow_dict(self, flow_ref: str) -> dict:
         """Get flow dict with in-memory cache."""
@@ -202,7 +193,8 @@ class ProjectValidator:
         Returns:
             ProjectValidationResult: The result of the project validation, including issues found.
         """
-        with Scope.batch_reads(self.keys_index):
+        with Scope.batch_reads():
+            self.build_object_cache()
             return self._validate()
 
     def _validate(self) -> ProjectValidationResult:
@@ -221,12 +213,13 @@ class ProjectValidator:
         runnable_flow_refs = [
             flow_ref for flow_ref in sorted(flow_refs) if self._flow_has_start_connection(flow_ref)
         ]
-        checked_flows = []
+
+        checked_flows = set()
         checked_contexts = set()
 
         with ParamParser.suppress_validation_disabled_warnings(), ParamParser.memoize_flow_resolution():
             for root_flow_ref in runnable_flow_refs:
-                for flow_ref, flow_path in self._collect_flow_contexts(root_flow_ref):
+                for flow_ref, flow_path in self.collect_flow_contexts(root_flow_ref):
                     context_key = (root_flow_ref, flow_ref, flow_path)
                     if context_key in checked_contexts:
                         continue
@@ -237,13 +230,15 @@ class ProjectValidator:
                             flow_ref,
                             context=root_flow_ref,
                             node_prefix=flow_path,
+                            checked_flows=checked_flows,
                         )
                     )
-                    checked_flows.append(flow_ref)
 
-            unreachable_flows = set(flow_refs) - set(checked_flows)
+            unreachable_flows = set(flow_refs) - checked_flows
             for flow_ref in unreachable_flows:
-                unreachable_flow_issues = self.check_flow(flow_ref, validate_parameters=False)
+                unreachable_flow_issues = self.check_flow(
+                    flow_ref, validate_parameters=False, checked_flows=checked_flows
+                )
 
                 self.issues.extend(unreachable_flow_issues)
 
@@ -254,8 +249,6 @@ class ProjectValidator:
         LOGGER.info(
             f"Validation complete: {error_count} errors, {warning_count} warnings, took {time.perf_counter() - start_time:.2f} seconds"
         )
-
-        self.checked_flows = set()
 
         return ProjectValidationResult(
             summary=Summary(
@@ -279,7 +272,7 @@ class ProjectValidator:
             ],
         )
 
-    def _build_object_cache(self):
+    def build_object_cache(self):
         """Build a cache of all objects in workspace by scope."""
         for scope_name in INDEXED_SCOPES:
             try:
@@ -486,7 +479,7 @@ class ProjectValidator:
 
         return f"{parent_path}__{container_name}" if parent_path else container_name
 
-    def _collect_flow_contexts(
+    def collect_flow_contexts(
         self, flow_ref: str, flow_path: str = "", ancestors: Optional[Set[str]] = None
     ) -> List[Tuple[str, str]]:
         """
@@ -512,11 +505,11 @@ class ProjectValidator:
             if not subflow_ref or subflow_ref in ancestors:
                 continue
 
-            if not self._object_exists("Flow", subflow_ref):
+            if not self.object_exists("Flow", subflow_ref):
                 continue
 
             flow_contexts.extend(
-                self._collect_flow_contexts(
+                self.collect_flow_contexts(
                     subflow_ref,
                     self._join_flow_path(flow_path, container_name),
                     set(ancestors),
@@ -838,6 +831,7 @@ class ProjectValidator:
         context: Optional[str] = None,
         node_prefix: str = "",
         validate_parameters: bool = True,
+        checked_flows: Optional[Set[str]] = None,
     ) -> List[ProjIssue]:
         """
         Check a specific flow for issues.
@@ -846,12 +840,18 @@ class ProjectValidator:
             flow_ref: Reference of the flow to check.
             context: Flow context used for runtime-style parameter resolution.
             node_prefix: Container path from the context flow to this flow.
+            validate_parameters: Whether to check the flow parameters in this context.
+            checked_flows: Flows already checked in another context, whose references and
+                links are not checked again. The flow is added to it.
         """
 
         flow_issues = []
 
-        if flow_ref not in self.checked_flows:
-            self.checked_flows.add(flow_ref)
+        if checked_flows is None:
+            checked_flows = set()
+
+        if flow_ref not in checked_flows:
+            checked_flows.add(flow_ref)
             flow_issues.extend(self._check_nodes_flows_ref_in_flow(flow_ref))
             flow_issues.extend(self._check_flow_links(flow_ref))
 
@@ -887,7 +887,7 @@ class ProjectValidator:
             if "Container" in flow_content:
                 for container_name, container_data in flow_content["Container"].items():
                     template_name = container_data.get("ContainerFlow")
-                    if template_name is not None and not self._object_exists("Flow", template_name):
+                    if template_name is not None and not self.object_exists("Flow", template_name):
                         line_num = self._find_json_path_line(
                             flow_data,
                             ["Flow", flow_ref, "Container", container_name, "ContainerFlow"],
@@ -905,7 +905,7 @@ class ProjectValidator:
             if "NodeInst" in flow_content:
                 for node_inst_name, node_inst_data in flow_content["NodeInst"].items():
                     template_name = node_inst_data.get("Template")
-                    if template_name is not None and not self._object_exists("Node", template_name):
+                    if template_name is not None and not self.object_exists("Node", template_name):
                         line_num = self._find_json_path_line(
                             flow_data,
                             ["Flow", flow_ref, "NodeInst", node_inst_name, "Template"],
@@ -966,7 +966,7 @@ class ProjectValidator:
             LOGGER.error(f"Error checking links in flow {flow_ref}: {e}")
         return flow_issues
 
-    def _object_exists(self, scope: str, ref: str) -> bool:
+    def object_exists(self, scope: str, ref: str) -> bool:
         """Check if an object exists in the workspace cache."""
         return ref in self._objects_by_scope.get(scope, set())
 

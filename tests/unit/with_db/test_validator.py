@@ -202,26 +202,22 @@ class TestProjectValidator:
         from dal.scopes.flow import Flow
         from dal.scopes.scope import Scope
 
-        index = {}
         with mock.patch.object(Scope, "_read_scope_keys", wraps=Scope._read_scope_keys) as scans:
-            with Scope.batch_reads(index):
+            with Scope.batch_reads():
                 names = Scope.names("Flow")
                 for name in names:
                     Flow(name).get_dict()
-            with Scope.batch_reads(index):
-                Flow(next(iter(names))).get_dict()
 
-            global_db.set({"Flow": {"created_after_index": {"Label": "created_after_index"}}})
-            try:
-                with Scope.batch_reads(index):
+                global_db.set({"Flow": {"created_after_index": {"Label": "created_after_index"}}})
+                try:
                     assert (
                         Flow("created_after_index").get_dict()["Flow"]["created_after_index"][
                             "Label"
                         ]
                         == "created_after_index"
                     )
-            finally:
-                global_db.unsafe_delete({"Flow": {"created_after_index": "**"}})
+                finally:
+                    global_db.unsafe_delete({"Flow": {"created_after_index": "**"}})
 
         assert scans.call_count == 1
 

@@ -20,11 +20,6 @@ class FlowValidator:
 
     def __init__(self, flow_ref: str):
         self.project = ProjectValidator()
-        if not self.project._object_exists("Flow", flow_ref):
-            message = f"Error initializing FlowValidator: Flow {flow_ref} does not exist"
-            LOGGER.error(message)
-            raise DoesNotExist(message)
-
         self.flow_ref = flow_ref
         self.issues = []
 
@@ -34,25 +29,41 @@ class FlowValidator:
 
         Returns:
             ProjectValidationResult: The result of the flow validation, including issues found.
+
+        Raises:
+            DoesNotExist: If the flow does not exist.
         """
+        with Scope.batch_reads():
+            self.project.build_object_cache()
+
+            if not self.project.object_exists("Flow", self.flow_ref):
+                message = f"Error validating flow: Flow {self.flow_ref} does not exist"
+                LOGGER.error(message)
+                raise DoesNotExist(message)
+
+            return self._validate_flow()
+
+    def _validate_flow(self) -> ProjectValidationResult:
         start_time = time.time()
 
         try:
             self.issues = []
-            self.project.checked_flows.clear()
 
             from dal.helpers.parsers import ParamParser
 
-            with Scope.batch_reads(self.project.keys_index):
-                with ParamParser.dedupe_validation_disabled_warnings(), ParamParser.memoize_flow_resolution():
-                    for flow_ref, flow_path in self.project._collect_flow_contexts(self.flow_ref):
-                        self.issues.extend(
-                            self.project.check_flow(
-                                flow_ref,
-                                context=self.flow_ref,
-                                node_prefix=flow_path,
-                            )
+            # Repeatedly used subflows are checked once
+            checked_flows = set()
+
+            with ParamParser.dedupe_validation_disabled_warnings(), ParamParser.memoize_flow_resolution():
+                for flow_ref, flow_path in self.project.collect_flow_contexts(self.flow_ref):
+                    self.issues.extend(
+                        self.project.check_flow(
+                            flow_ref,
+                            context=self.flow_ref,
+                            node_prefix=flow_path,
+                            checked_flows=checked_flows,
                         )
+                    )
 
         except Exception as e:
             LOGGER.error(f"Error validating flow {self.flow_ref}: {e}")

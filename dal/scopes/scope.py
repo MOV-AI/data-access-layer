@@ -93,7 +93,7 @@ class Scope(Struct):
 
     @staticmethod
     @contextmanager
-    def batch_reads(index: Optional[dict] = None):
+    def batch_reads():
         """
         Read documents with fewer requests to Redis while this is active.
 
@@ -103,12 +103,8 @@ class Scope(Struct):
 
         Documents written while this is active may be read without their newest keys, so
         it should only wrap a short sequence of reads, like a validation.
-
-        Args:
-            index (dict): where to keep the index, to share it between reads that are not
-                in the same block. A new one is used by default.
         """
-        token = _KEYS_INDEX.set({} if index is None else index)
+        token = _KEYS_INDEX.set({})
         try:
             yield
         finally:
