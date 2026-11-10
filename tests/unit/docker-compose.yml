@@ -29,6 +29,21 @@ services:
     ports:
       - "6381:6379"
 
+  # replica of redis-master, like the redis-slave of fleet members
+  redis-replica:
+    image: registry.hel.mov.ai/devops/redis2:v2.0.0
+    command: --slaveof redis-master 6379
+    healthcheck:
+      test: ["CMD", "echo", ">", "/dev/tcp/localhost/6379"]
+      start_period: 3s
+      interval: 10s
+      timeout: 2s
+      retries: 3
+    networks:
+      - private
+    ports:
+      - "6382:6379"
+
 volumes:
   redis-master-test-volume:
   redis-local-test-volume:

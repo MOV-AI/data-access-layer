@@ -1,5 +1,12 @@
 # Changelog
 
+## vTBD
+- [BP-1842](https://movai.atlassian.net/browse/BP-1842): Optimize flow validation.
+  - Memoize flow resolution for each context.
+  - Serialize only necessary parameters from a template.
+  - Optimize Redis access by avoiding full SCAN operations.
+  - Add active invalidation of ScopesTree cache (DocumentChangeTracker).
+
 ## v3.33.0
 - [BP-1829](https://movai.atlassian.net/browse/BP-1829): Refactor tools/backup.py
   - Moved scope specific code to corresponding scopes

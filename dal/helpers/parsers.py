@@ -11,7 +11,8 @@ import ast
 import re
 import os
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Any, Optional, Protocol, Union, cast, List, Tuple
+from contextvars import ContextVar
+from typing import TYPE_CHECKING, Any, Optional, Protocol, Union, cast, Tuple
 
 from movai_core_shared.logger import Log
 
@@ -46,6 +47,9 @@ class ParamParser:
     logger = Log.get_logger("ParamParser.mov.ai")
     _validation_disabled_warning_suppression_count = 0
     _validation_disabled_warning_logs = None
+    # Only set inside memoize_flow_resolution(); a ContextVar keeps it out of
+    # runtime parsing happening in other threads while a validation runs
+    _flow_resolution_memo = ContextVar("flow_resolution_memo", default=None)
 
     __REGEX__ = r"\$\((param|config|var|flow)[^$)]+\)"
 
@@ -72,6 +76,20 @@ class ParamParser:
             yield
         finally:
             cls._validation_disabled_warning_suppression_count -= 1
+
+    @classmethod
+    @contextmanager
+    def memoize_flow_resolution(cls):
+        """Resolve each $(flow ...) reference only once during one validation run.
+
+        Documents are assumed not to change during the run.
+        """
+
+        token = cls._flow_resolution_memo.set({})
+        try:
+            yield
+        finally:
+            cls._flow_resolution_memo.reset(token)
 
     @classmethod
     @contextmanager
@@ -387,18 +405,13 @@ class ParamParser:
 
         return isinstance(value, str) and re.search(r"\$\(flow\s+[\w\.-]+\)", value) is not None
 
-    def _get_parent_containers(self, node_name_arr: list) -> List[Tuple[str, "Container"]]:
-        """Returns parent containers from nearest to farthest for a node path."""
+    def _get_parent_container(self, node_name_arr: list) -> Tuple[str, "Container"]:
+        """Returns the nearest parent container for a node path."""
 
-        containers = []
-
-        for index in range(len(node_name_arr) - 1, 0, -1):
-            container_name = "__".join(node_name_arr[:index])
-            container = self.flow.get_container(container_name, self.context)
-            assert container is not None, f"Container {container_name} not found"
-            containers.append((container_name, container))
-
-        return containers
+        container_name = "__".join(node_name_arr[:-1])
+        container = self.flow.get_container(container_name, self.context)
+        assert container is not None, f"Container {container_name} not found"
+        return container_name, container
 
     def eval_flow(
         self,
@@ -420,6 +433,46 @@ class ParamParser:
             Returns:
                 output (any): the expression evaluated
         """
+
+        # Ensure that flow resolution memoization is initialized
+        memo = self._flow_resolution_memo.get()
+        if memo is None:
+            # If memoization is not initialized, fall back to direct evaluation.
+            return self._eval_flow(param_name, default, instance, node_name)
+
+        # The result only depends on the flow holding the instance and its parent container path,
+        # so every instance in the same subflow shares the resolution of a reference.
+        memo_key = (
+            self.context,
+            instance.flow.ref,
+            "__".join(node_name.split("__")[:-1]),
+            type(instance).__name__,
+            param_name,
+            default,
+        )
+        if memo_key in memo:
+            cached = memo[memo_key]
+            if isinstance(cached, UndefinedParameterError):
+                raise type(cached)(cached.message, cached.resolution_path)
+            return cached
+
+        try:
+            memo[memo_key] = self._eval_flow(param_name, default, instance, node_name)
+        except UndefinedParameterError as error:
+            # Snapshot the error, callers add their own resolution steps to it as it propagates
+            memo[memo_key] = type(error)(error.message, error.resolution_path)
+            raise
+
+        return memo[memo_key]
+
+    def _eval_flow(
+        self,
+        param_name: str,
+        default: str,
+        instance: Union["NodeInst", "Container"],
+        node_name: str,
+    ) -> any:
+        """Evaluates a flow expression, see eval_flow."""
 
         node_name_arr = node_name.split("__")
         # Check if this is the main flow or a subflow
@@ -455,20 +508,17 @@ class ParamParser:
                 msg = f'Instance type "{cls_name}" not supported'
                 raise ValueError(msg)
 
-            containers = self._get_parent_containers(node_name_arr)
+            container_name, container = self._get_parent_container(node_name_arr)
+            container_value = container.get_param(
+                param_name,
+                container_name,
+                self.context,
+                default_value=value,
+            )
 
-            if containers:
-                container_name, container = containers[0]
-                container_value = container.get_param(
-                    param_name,
-                    container_name,
-                    self.context,
-                    default_value=value,
-                )
-
-                # If the container has a value for the parameter, use it instead of the flow value
-                # As this value is more specific to the node instance than the flow value
-                value = value if container_value is None else container_value
+            # If the container has a value for the parameter, use it instead of the flow value
+            # As this value is more specific to the node instance than the flow value
+            value = value if container_value is None else container_value
 
         # If the value is None or still contains an unresolved flow reference,
         # it means the parameter is not defined in the flow or its parent container
