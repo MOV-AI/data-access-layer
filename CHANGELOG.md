@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.34.1
 - [BP-1829](https://movai.atlassian.net/browse/BP-1829): Refactor tools/backup.py
   - Raise exception when file to import is not found
 
