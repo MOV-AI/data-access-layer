@@ -369,6 +369,15 @@ with matching result</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.find_keys">
+<span class="sig-name descname"><span class="pre">find_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.find_keys" title="Permalink to this definition"></a></dt>
+<dd><p>Return the keys that match a pattern, in no particular order.</p>
+<p>Redis has to go through every key of the database to find them. SCAN does it in
+slices of SCAN_COUNT keys, so other clients are not blocked for the whole database
+like with KEYS, with fewer requests than slices of 1000 keys.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.generate_search_wild_key">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_search_wild_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">':'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scan_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.generate_search_wild_key" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
@@ -394,6 +403,17 @@ matching in the DB</p>
 <dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.get_by_args">
 <span class="sig-name descname"><span class="pre">get_by_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.get_by_args" title="Permalink to this definition"></a></dt>
 <dd><p>Get keys from redis giving arguments</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.get_from_keys">
+<span class="sig-name descname"><span class="pre">get_from_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.get_from_keys" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the values of keys that were already found, in the same format as get</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -559,6 +579,12 @@ e.g {‘Robot’:{‘lala’:{‘Parameters’: {‘Foo’:2, ‘Bar’:3}}}}</p
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">keys_to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.keys_to_dict" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.loop">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">loop</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AbstractEventLoop</span></em><a class="headerlink" href="#dal.movaidb.database.MovaiDB.loop" title="Permalink to this definition"></a></dt>
+<dd><p>The event loop of the asynchronous operations</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.lpush">
 <span class="sig-name descname"><span class="pre">lpush</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pickl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.lpush" title="Permalink to this definition"></a></dt>
@@ -588,10 +614,34 @@ e.g {‘Robot’:{‘lala’:{‘Parameters’: {‘Foo’:2, ‘Bar’:3}}}}</p
 <dd><p>Pop a value from the left of a Redis list</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.pubsub">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pubsub</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">PubSub</span></em><a class="headerlink" href="#dal.movaidb.database.MovaiDB.pubsub" title="Permalink to this definition"></a></dt>
+<dd><p>Created when first needed</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.push">
 <span class="sig-name descname"><span class="pre">push</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pickl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.push" title="Permalink to this definition"></a></dt>
 <dd><p>Push a value to the right of a Redis list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.movaidb.database.MovaiDB.read_keys">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Redis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.movaidb.database.MovaiDB.read_keys" title="Permalink to this definition"></a></dt>
+<dd><p>Read the values of keys of any type with a connection, with one pipeline per command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>for each key, the command that read it (“get”, “hgetall” or “lrange”)</dt><dd><p>and its result, or (None, None) if none of them could read it.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -788,6 +838,12 @@ sent back by Redis</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="dal.movaidb.database.is_exact_key">
+<span class="sig-prename descclassname"><span class="pre">dal.movaidb.database.</span></span><span class="sig-name descname"><span class="pre">is_exact_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#dal.movaidb.database.is_exact_key" title="Permalink to this definition"></a></dt>
+<dd><p>Return True if a key pattern only matches the key with the same name.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="dal.movaidb.database.longest_common_prefix">
 <span class="sig-prename descclassname"><span class="pre">dal.movaidb.database.</span></span><span class="sig-name descname"><span class="pre">longest_common_prefix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dal.movaidb.database.longest_common_prefix" title="Permalink to this definition"></a></dt>
 <dd><p>Finds the longest common prefix string amongst an array of strings.</p>
@@ -864,6 +920,68 @@ exists, returns an empty string.</p>
 <dt class="sig sig-object py" id="dal.movaidb.db_schema.DBSchema.version">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">version</span></span><a class="headerlink" href="#dal.movaidb.db_schema.DBSchema.version" title="Permalink to this definition"></a></dt>
 <dd><p>Current version</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dal.movaidb.document_changes">
+<span id="dal-movaidb-document-changes-module"></span><h2>dal.movaidb.document_changes module<a class="headerlink" href="#module-dal.movaidb.document_changes" title="Permalink to this heading"></a></h2>
+<p>Copyright (C) Mov.ai  - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited
+Proprietary and confidential</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dal.movaidb.document_changes.DocumentChangeTracker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.movaidb.document_changes.</span></span><span class="sig-name descname"><span class="pre">DocumentChangeTracker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scopes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_pool</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConnectionPool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">read_pool</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ConnectionPool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.document_changes.DocumentChangeTracker" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Tracks the documents of some scopes that change in Redis, using keyspace notifications.</p>
+<p>Each attribute of a document is stored in a key “&lt;scope&gt;:&lt;ref&gt;,…”, so every write to a
+document notifies keys with that prefix. A background thread subscribes to those
+notifications and records the documents that changed until take_changes() is called.</p>
+<p>Notifications sent while the thread is not subscribed are lost, and a replica that
+resynchronizes with its master loads data without notifying it, so the notifications
+are taken from the master, where documents are written. take_changes() only returns
+the changes when it can tell none were missed since its previous call, and None
+otherwise, in which case any document may have changed.</p>
+<p>Documents may be read from a replica of that master, like fleet members do, through
+read_pool. take_changes() then also waits for the replica to have the changes it
+returns, so the documents read afterwards are not older than them.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.movaidb.document_changes.DocumentChangeTracker.PING_INTERVAL">
+<span class="sig-name descname"><span class="pre">PING_INTERVAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30.0</span></em><a class="headerlink" href="#dal.movaidb.document_changes.DocumentChangeTracker.PING_INTERVAL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.movaidb.document_changes.DocumentChangeTracker.PING_TIMEOUT">
+<span class="sig-name descname"><span class="pre">PING_TIMEOUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10.0</span></em><a class="headerlink" href="#dal.movaidb.document_changes.DocumentChangeTracker.PING_TIMEOUT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.movaidb.document_changes.DocumentChangeTracker.REPLICA_TIMEOUT">
+<span class="sig-name descname"><span class="pre">REPLICA_TIMEOUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2.0</span></em><a class="headerlink" href="#dal.movaidb.document_changes.DocumentChangeTracker.REPLICA_TIMEOUT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.movaidb.document_changes.DocumentChangeTracker.RETRY_INTERVAL">
+<span class="sig-name descname"><span class="pre">RETRY_INTERVAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5.0</span></em><a class="headerlink" href="#dal.movaidb.document_changes.DocumentChangeTracker.RETRY_INTERVAL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dal.movaidb.document_changes.DocumentChangeTracker.SYNC_TIMEOUT">
+<span class="sig-name descname"><span class="pre">SYNC_TIMEOUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2.0</span></em><a class="headerlink" href="#dal.movaidb.document_changes.DocumentChangeTracker.SYNC_TIMEOUT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.movaidb.document_changes.DocumentChangeTracker.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.document_changes.DocumentChangeTracker.close" title="Permalink to this definition"></a></dt>
+<dd><p>Stop tracking changes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.movaidb.document_changes.DocumentChangeTracker.take_changes">
+<span class="sig-name descname"><span class="pre">take_changes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#dal.movaidb.document_changes.DocumentChangeTracker.take_changes" title="Permalink to this definition"></a></dt>
+<dd><p>Return the (scope, ref) of the documents that changed since the previous call,
+or None if changes may have been missed, and start recording again.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1074,6 +1192,15 @@ with matching result</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dal.movaidb.MovaiDB.find_keys">
+<span class="sig-name descname"><span class="pre">find_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.movaidb.MovaiDB.find_keys" title="Permalink to this definition"></a></dt>
+<dd><p>Return the keys that match a pattern, in no particular order.</p>
+<p>Redis has to go through every key of the database to find them. SCAN does it in
+slices of SCAN_COUNT keys, so other clients are not blocked for the whole database
+like with KEYS, with fewer requests than slices of 1000 keys.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dal.movaidb.MovaiDB.generate_search_wild_key">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">generate_search_wild_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">':'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scan_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dal.movaidb.MovaiDB.generate_search_wild_key" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
@@ -1099,6 +1226,17 @@ matching in the DB</p>
 <dt class="sig sig-object py" id="dal.movaidb.MovaiDB.get_by_args">
 <span class="sig-name descname"><span class="pre">get_by_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#dal.movaidb.MovaiDB.get_by_args" title="Permalink to this definition"></a></dt>
 <dd><p>Get keys from redis giving arguments</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.movaidb.MovaiDB.get_from_keys">
+<span class="sig-name descname"><span class="pre">get_from_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.movaidb.MovaiDB.get_from_keys" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the values of keys that were already found, in the same format as get</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1264,6 +1402,12 @@ e.g {‘Robot’:{‘lala’:{‘Parameters’: {‘Foo’:2, ‘Bar’:3}}}}</p
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">keys_to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.MovaiDB.keys_to_dict" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="dal.movaidb.MovaiDB.loop">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">loop</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AbstractEventLoop</span></em><a class="headerlink" href="#dal.movaidb.MovaiDB.loop" title="Permalink to this definition"></a></dt>
+<dd><p>The event loop of the asynchronous operations</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.movaidb.MovaiDB.lpush">
 <span class="sig-name descname"><span class="pre">lpush</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pickl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.MovaiDB.lpush" title="Permalink to this definition"></a></dt>
@@ -1293,15 +1437,34 @@ e.g {‘Robot’:{‘lala’:{‘Parameters’: {‘Foo’:2, ‘Bar’:3}}}}</p
 <dd><p>Pop a value from the left of a Redis list</p>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="py property">
 <dt class="sig sig-object py" id="dal.movaidb.MovaiDB.pubsub">
-<span class="sig-name descname"><span class="pre">pubsub</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">PubSub</span></em><a class="headerlink" href="#dal.movaidb.MovaiDB.pubsub" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pubsub</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">PubSub</span></em><a class="headerlink" href="#dal.movaidb.MovaiDB.pubsub" title="Permalink to this definition"></a></dt>
+<dd><p>Created when first needed</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.movaidb.MovaiDB.push">
 <span class="sig-name descname"><span class="pre">push</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pickl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.movaidb.MovaiDB.push" title="Permalink to this definition"></a></dt>
 <dd><p>Push a value to the right of a Redis list</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.movaidb.MovaiDB.read_keys">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Redis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.movaidb.MovaiDB.read_keys" title="Permalink to this definition"></a></dt>
+<dd><p>Read the values of keys of any type with a connection, with one pipeline per command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><dl class="simple">
+<dt>for each key, the command that read it (“get”, “hgetall” or “lrange”)</dt><dd><p>and its result, or (None, None) if none of them could read it.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">

@@ -1365,6 +1365,12 @@ Proprietary and confidential</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dal.models.configuration.</span></span><span class="sig-name descname"><span class="pre">ConfigurationCache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.configuration.ConfigurationCache" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
+<dt class="sig sig-object py" id="dal.models.configuration.ConfigurationCache.clean_config">
+<span class="sig-name descname"><span class="pre">clean_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.configuration.ConfigurationCache.clean_config" title="Permalink to this definition"></a></dt>
+<dd><p>Clear the cached value of one configuration</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dal.models.configuration.ConfigurationCache.clean_config_cache">
 <span class="sig-name descname"><span class="pre">clean_config_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.configuration.ConfigurationCache.clean_config_cache" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
@@ -3460,6 +3466,12 @@ pass <cite>scope</cite> parameter to filter by scope, default ‘*’ (all)</p>
 <dd><p>List all versions of a specific scope</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.models.scopestree.ScopeWorkspace.loaded_refs">
+<span class="sig-name descname"><span class="pre">loaded_refs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'__UNVERSIONED__'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.models.scopestree.ScopeWorkspace.loaded_refs" title="Permalink to this definition"></a></dt>
+<dd><p>Return the refs of the documents of a scope loaded in this workspace</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="dal.models.scopestree.ScopeWorkspace.path">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#dal.models.scopestree.ScopeWorkspace.path" title="Permalink to this definition"></a></dt>
@@ -3480,8 +3492,9 @@ pass <cite>scope</cite> parameter to filter by scope, default ‘*’ (all)</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dal.models.scopestree.ScopeWorkspace.unload_all">
-<span class="sig-name descname"><span class="pre">unload_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.scopestree.ScopeWorkspace.unload_all" title="Permalink to this definition"></a></dt>
-<dd><p>Unload all the cached data in this workspace</p>
+<span class="sig-name descname"><span class="pre">unload_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keep_scopes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.models.scopestree.ScopeWorkspace.unload_all" title="Permalink to this definition"></a></dt>
+<dd><p>Unload all the cached data in this workspace,
+except for the scopes in keep_scopes</p>
 </dd></dl>
 
 </dd></dl>

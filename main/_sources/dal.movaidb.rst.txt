@@ -20,6 +20,14 @@ dal.movaidb.db\_schema module
    :undoc-members:
    :show-inheritance:
 
+dal.movaidb.document\_changes module
+------------------------------------
+
+.. automodule:: dal.movaidb.document_changes
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

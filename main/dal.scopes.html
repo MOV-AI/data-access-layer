@@ -2024,6 +2024,17 @@ Proprietary and confidential</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.scope.Scope.batch_reads">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">batch_reads</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.scope.Scope.batch_reads" title="Permalink to this definition"></a></dt>
+<dd><p>Read documents with fewer requests to Redis while this is active.</p>
+<p>While this is active, the keys of each scope are indexed
+with one scan when first needed: Scope then checks a document exists in that index,
+and get_dict() reads it with one MGET of its keys.</p>
+<p>Documents written while this is active may be read without their newest keys, so
+it should only wrap a short sequence of reads, like a validation.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dal.scopes.scope.Scope.calc_scope_update">
 <span class="sig-name descname"><span class="pre">calc_scope_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">old_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dal.scopes.scope.Scope.calc_scope_update" title="Permalink to this definition"></a></dt>
 <dd><p>Calc the objects differences and returns list with dict keys to delete/set.</p>
@@ -2181,6 +2192,12 @@ and metadata file path.</p>
 <dt class="sig sig-object py" id="dal.scopes.scope.Scope.movaidb">
 <span class="sig-name descname"><span class="pre">movaidb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="dal.movaidb.html#dal.movaidb.database.MovaiDB" title="dal.movaidb.database.MovaiDB"><span class="pre">MovaiDB</span></a></em><a class="headerlink" href="#dal.scopes.scope.Scope.movaidb" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dal.scopes.scope.Scope.names">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'global'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dal.scopes.scope.Scope.names" title="Permalink to this definition"></a></dt>
+<dd><p>Return the names of all the documents of a scope.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dal.scopes.scope.Scope.permissions">
