@@ -72,7 +72,7 @@ def setup_test_data_from_path(path: Path):
             force=True,
             dry=False,
             debug=False,
-            recursive=True,
+            recursive=False,
             clean_old_data=False,  # Don't clean between packages
         )
 
