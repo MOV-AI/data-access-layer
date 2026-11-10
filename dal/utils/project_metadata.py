@@ -85,8 +85,7 @@ class ProjectSource(ABC):
             return []
 
         if not self.is_dir(scope):
-            ImportException(f"{scope} directory not found")
-            return []
+            raise ImportException(f"{scope} directory not found")
 
         results = []
         for raw_name in names:
@@ -97,8 +96,7 @@ class ProjectSource(ABC):
             is_valid = self.is_dir(full_path) if directories else self.is_file(full_path)
 
             if not is_valid:
-                ImportException(f"{scope}:{name} not found")
-                continue
+                raise ImportException(f"{scope}:{name} not found")
 
             results.append((name, full_path))
 

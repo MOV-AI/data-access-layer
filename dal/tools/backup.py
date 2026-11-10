@@ -258,12 +258,16 @@ class Importer(Backup):
                 object_names = None
 
             scope = Scope.get_class(manifest_scope)
-
-            imported_objects = scope.import_metadata(
-                object_names,
-                self.source,
-                self.recursive,
-            )
+            try:
+                imported_objects = scope.import_metadata(
+                    object_names,
+                    self.source,
+                    self.recursive,
+                )
+            except ImportException as exc:
+                LOGGER.warning(exc)
+                add_failure(manifest_scope, None, exc)
+                continue
 
             for name, metadata, file_path, tracked_names in imported_objects:
                 metadata_scope = next(iter(metadata))
@@ -757,7 +761,6 @@ def backup(args) -> int:
 
     try:
         report = tool.run(objects)
-        LOGGER.warning(f"report: {report}")
         if args.action in ("import", "export") and report["failed"]:
             for failure in report["failed"]:
                 print(
