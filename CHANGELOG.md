@@ -1,5 +1,9 @@
 # Changelog
 
+## vTBD
+- [BP-1829](https://movai.atlassian.net/browse/BP-1829): Refactor tools/backup.py
+  - Raise exception when file to import is not found
+
 ## v3.34.0
 - [BP-1842](https://movai.atlassian.net/browse/BP-1842): Optimize flow validation.
   - Memoize flow resolution for each context.
