@@ -1,6 +1,6 @@
 # Changelog
 
-## vTBD
+## v3.34.0
 - [BP-1842](https://movai.atlassian.net/browse/BP-1842): Optimize flow validation.
   - Memoize flow resolution for each context.
   - Serialize only necessary parameters from a template.
