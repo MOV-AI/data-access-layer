@@ -105,12 +105,17 @@ class StateMachine(Scope):
     @classmethod
     def _import_dependencies(cls, data: dict, source: ProjectSource):
         ret = []
+        errors = []
         for state in data["State"].values():
             callback = state.get("Callback")
 
             if callback and not PLACEHOLDER_RE.search(callback):
-                ret += cls.get_class("Callback").import_metadata([callback], source)
-        return ret
+                imported_callbacks, callback_errors = cls.get_class("Callback").import_metadata(
+                    [callback], source
+                )
+                ret.extend(imported_callbacks)
+                errors.extend(callback_errors)
+        return ret, errors
 
     @classmethod
     def _export_dependencies(cls, scope):

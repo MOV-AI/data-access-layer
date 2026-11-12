@@ -257,7 +257,7 @@ class Package(Scope):
         ret = []
         scope_name = cls.__name__
 
-        files = source.get_files(scope_name, names, directories=True)
+        files, errors = source.get_files(scope_name, names, directories=True)
         for name, dir_path in files:
             file_dict = {}
             tracked_files = []
@@ -293,7 +293,7 @@ class Package(Scope):
             }
 
             ret.append((name, data, file_path, tracked_files))
-        return ret
+        return ret, errors
 
     @classmethod
     def _export_extra_files(cls, scope, name: str):
