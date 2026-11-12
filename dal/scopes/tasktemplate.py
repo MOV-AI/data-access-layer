@@ -34,11 +34,11 @@ class TaskTemplate(Scope):
         shared_data = data["SharedData"]
 
         if shared_data:
-            imported_sharedDataTemplates, SharedDataTemplate_errors = cls.get_class(
+            imported_shareddatatemplates, shareddatatemplate_errors = cls.get_class(
                 "SharedDataTemplate"
             ).import_metadata(shared_data.keys(), source)
-            ret.extend(imported_sharedDataTemplates)
-            errors.extend(SharedDataTemplate_errors)
+            ret.extend(imported_shareddatatemplates)
+            errors.extend(shareddatatemplate_errors)
         return ret, errors
 
     @classmethod
