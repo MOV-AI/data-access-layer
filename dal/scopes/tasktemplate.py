@@ -14,6 +14,7 @@ class TaskTemplate(Scope):
     @classmethod
     def _import_dependencies(cls, data: dict, source: ProjectSource):
         ret = []
+        errors = []
         callbacks = [
             data["ScoringFunction"],
             data["GenericScoringFunction"],
@@ -24,13 +25,21 @@ class TaskTemplate(Scope):
         ]
 
         if callbacks:
-            ret += cls.get_class("Callback").import_metadata(callbacks, source)
+            imported_callbacks, callback_errors = cls.get_class("Callback").import_metadata(
+                callbacks, source
+            )
+            ret.extend(imported_callbacks)
+            errors.extend(callback_errors)
 
         shared_data = data["SharedData"]
 
         if shared_data:
-            ret += cls.get_class("SharedDataTemplate").import_metadata(shared_data.keys(), source)
-        return ret
+            imported_sharedDataTemplates, SharedDataTemplate_errors = cls.get_class(
+                "SharedDataTemplate"
+            ).import_metadata(shared_data.keys(), source)
+            ret.extend(imported_sharedDataTemplates)
+            errors.extend(SharedDataTemplate_errors)
+        return ret, errors
 
     @classmethod
     def _export_dependencies(cls, scope):

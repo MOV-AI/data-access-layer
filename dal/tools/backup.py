@@ -258,16 +258,15 @@ class Importer(Backup):
                 object_names = None
 
             scope = Scope.get_class(manifest_scope)
-            try:
-                imported_objects = scope.import_metadata(
-                    object_names,
-                    self.source,
-                    self.recursive,
-                )
-            except ImportException as exc:
+            imported_objects, errors = scope.import_metadata(
+                object_names,
+                self.source,
+                self.recursive,
+            )
+            for failed_name, exc in errors:
                 LOGGER.warning(exc)
-                add_failure(manifest_scope, None, exc)
-                continue
+                if RAISE_METADATA_VALIDATION_ERRORS:
+                    add_failure(manifest_scope, failed_name, exc)
 
             for name, metadata, file_path, tracked_names in imported_objects:
                 metadata_scope = next(iter(metadata))

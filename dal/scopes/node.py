@@ -763,20 +763,28 @@ class Node(Scope):
     @classmethod
     def _import_dependencies(cls, data: dict, source: ProjectSource):
         ret = []
+        errors = []
+
         for ports_inst in data.get("PortsInst", {}).values():
             for port in ports_inst.get("In", {}).values():
                 callback_name = port.get("Callback")
 
                 if callback_name and not PLACEHOLDER_RE.search(callback_name):
-                    ret += cls.get_class("Callback").import_metadata([callback_name], source)
+                    imported_callbacks, callback_errors = cls.get_class("Callback").import_metadata(
+                        [callback_name], source
+                    )
+                    ret.extend(imported_callbacks)
+                    errors.extend(callback_errors)
 
                 if ports_inst.get("Template") == "MovAI/StateMachine":
                     state_machine_name = port.get("Parameter", {}).get("StateMachine")
 
                     if state_machine_name:
-                        ret += cls.get_class("StateMachine").import_metadata(
-                            [state_machine_name], source
-                        )
+                        imported_statemachines, statemachine_errors = cls.get_class(
+                            "StateMachine"
+                        ).import_metadata([state_machine_name], source)
+                        ret.extend(imported_statemachines)
+                        errors.extend(statemachine_errors)
 
         for param in data.get("Parameter", {}).values():
             value = param.get("Value")
@@ -799,9 +807,12 @@ class Node(Scope):
                     print(f"Could not find value for {env_name}")
                     continue
 
-            files = source.get_files("Configuration", [conf_name])
-            ret += cls.get_class("Configuration").import_metadata(files, source)
-        return ret
+            imported_configurations, configuration_errors = cls.get_class(
+                "Configuration"
+            ).import_metadata([conf_name], source)
+            ret.extend(imported_configurations)
+            errors.extend(configuration_errors)
+        return ret, errors
 
     @classmethod
     def _export_dependencies(cls, scope):

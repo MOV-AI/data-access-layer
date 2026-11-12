@@ -20,7 +20,7 @@ import os
 from functools import cached_property
 from dal import scopes
 from dal.utils.project_metadata import ProjectSource, from_path
-from movai_core_shared.exceptions import DoesNotExist, AlreadyExist
+from movai_core_shared.exceptions import DoesNotExist, AlreadyExist, ImportException
 from .structures import Struct
 from dal.movaidb import MovaiDB
 from dal.movaidb.db_schema import DBSchema
@@ -288,8 +288,9 @@ class Scope(Struct):
 
         Returns:
             list: Imported dependency results.
+            list: Errors.
         """
-        return []
+        return [], []
 
     @classmethod
     def _update_metadata(cls, data: dict, file_path: str, source: ProjectSource) -> dict:
@@ -329,18 +330,24 @@ class Scope(Struct):
         ret = []
         scope_name = cls.__name__
 
-        files = source.get_files(scope_name, names)
+        files, errors = source.get_files(scope_name, names)
         for name, file_path in files:
-            json_data = source._read_json(file_path)
-            data = json_data[scope_name][name]
+            try:
+                json_data = source._read_json(file_path)
+                data = json_data[scope_name][name]
 
-            if recursive:
-                ret += cls._import_dependencies(data, source)
+                if recursive:
+                    dependencies, dep_errors = cls._import_dependencies(data, source)
+                    ret.extend(dependencies)
+                    errors.extend(dep_errors)
 
-            json_data[scope_name][name] = cls._update_metadata(data, file_path, source)
+                json_data[scope_name][name] = cls._update_metadata(data, file_path, source)
 
-            ret.append((name, json_data, file_path, None))
-        return ret
+                ret.append((name, json_data, file_path, None))
+            except ImportException as exc:
+                errors.append((name, exc))
+
+        return ret, errors
 
     @classmethod
     def _export_extra_files(cls, scope, name: str):
