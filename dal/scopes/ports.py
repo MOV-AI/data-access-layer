@@ -60,7 +60,7 @@ class Ports(Scope):
         ret = []
         scope_name = cls.__name__
 
-        files = source.get_files(scope_name, names)
+        files, errors = source.get_files(scope_name, names)
         for _, file_path in files:
             json_data = source._read_json(file_path)
 
@@ -68,7 +68,7 @@ class Ports(Scope):
                 data = {"Ports": {name: json_data["Ports"][name]}}
                 ret.append((name, data, file_path, None))
 
-        return ret
+        return ret, errors
 
     @classmethod
     def export_metadata(cls, names, recursive=False):

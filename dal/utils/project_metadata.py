@@ -78,16 +78,20 @@ class ProjectSource(ABC):
         return results
 
     def _get_by_names(
-        self, scope: str, names: List[str], directories: bool = False
-    ) -> List[Tuple[str, str]]:
+        self,
+        scope: str,
+        names: List[str],
+        directories: bool = False,
+    ) -> Tuple[List[Tuple[str, str]], List[Tuple[str, ImportException]]]:
         """Resolves specific directories or .json files by name."""
         if not names:
-            return []
+            return [], []
 
         if not self.is_dir(scope):
             raise ImportException(f"{scope} directory not found")
 
         results = []
+        errors = []
         for raw_name in names:
             name = from_path(raw_name)
             filename = name if directories else f"{name}.json"
@@ -96,21 +100,22 @@ class ProjectSource(ABC):
             is_valid = self.is_dir(full_path) if directories else self.is_file(full_path)
 
             if not is_valid:
-                raise ImportException(f"{scope}:{name} not found")
+                errors.append((name, ImportException(f"{scope}:{name} not found")))
+                continue
 
             results.append((name, full_path))
 
-        return results
+        return results, errors
 
     def get_files(
         self,
         scope: str,
         names: Optional[List[str]] = None,
         directories: bool = False,
-    ) -> List[Tuple[str, str]]:
+    ) -> Tuple[List[Tuple[str, str]], List[Tuple[str, ImportException]]]:
         """Resolves items in scope. Defaults to .json files; sets directories=True for folders."""
         if names is None:
-            return self._list_scope(scope, directories)
+            return self._list_scope(scope, directories), []
         return self._get_by_names(scope, names, directories)
 
     def _read_json(self, relative_path: str) -> dict:

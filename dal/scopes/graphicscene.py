@@ -14,11 +14,16 @@ class GraphicScene(Scope):
     @classmethod
     def _import_dependencies(cls, data: dict, source: ProjectSource):
         ret = []
+        errors = []
         for assets in data["AssetType"].values():
             for asset in assets.values():
                 annotation_names = list(asset.get("Annotation", {}).keys())
-                ret += cls.get_class("Annotation").import_metadata(annotation_names, source)
-        return ret
+                imported_annotations, annotation_errors = cls.get_class(
+                    "Annotation"
+                ).import_metadata(annotation_names, source)
+                ret.extend(imported_annotations)
+                errors.extend(annotation_errors)
+        return ret, errors
 
     @classmethod
     def _export_dependencies(cls, scope):

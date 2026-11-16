@@ -1360,18 +1360,25 @@ class Flow(Scope):
     @classmethod
     def _import_dependencies(cls, data: dict, source: ProjectSource):
         ret = []
+        errors = []
         for node in data.get("NodeInst", {}).values():
             template = node.get("Template")
 
             if template:
-                ret += cls.get_class("Node").import_metadata([template], source)
+                imported_nodes, node_errors = cls.get_class("Node").import_metadata(
+                    [template], source
+                )
+                ret.extend(imported_nodes)
+                errors.extend(node_errors)
 
         for container in data.get("Container", {}).values():
             contained_flow = container.get("ContainerFlow")
 
             if contained_flow:
-                ret += cls.import_metadata([contained_flow], source)
-        return ret
+                imported_flows, flow_errors = cls.import_metadata([contained_flow], source)
+                ret.extend(imported_flows)
+                errors.extend(flow_errors)
+        return ret, errors
 
     @classmethod
     def _export_dependencies(cls, scope):
