@@ -1,5 +1,9 @@
 # Changelog
 
+## vTBD
+- [BP-1954](https://movai.atlassian.net/browse/BP-1954): Add unit tests for Packages class
+  - Test the Redis keys and values Package writes for a 150 MB file, saved the way Robotics saves maps and point clouds
+
 ## v3.34.1
 - [BP-1829](https://movai.atlassian.net/browse/BP-1829): Refactor tools/backup.py
   - Raise exception when file to import is not found
