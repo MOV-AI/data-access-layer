@@ -1,5 +1,8 @@
 # Changelog
 
+## vTBD
+- [BP-1960](https://movai.atlassian.net/browse/BP-1960): Add timezone offset to alert timestamps.
+
 ## v3.34.2
 - [BP-1954](https://movai.atlassian.net/browse/BP-1954): Add unit tests for Packages class
   - Test the Redis keys and values Package writes for a 150 MB file, saved the way Robotics saves maps and point clouds
