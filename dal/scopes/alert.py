@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from threading import Lock
 from typing import List
 from functools import cached_property
@@ -81,7 +81,7 @@ class Alert(Scope):
         args = json.dumps(kwargs, default=str)
         self._robot.add_active_alert(
             self.alert_id,
-            AlertActivationData(args=args, activation_date=datetime.now().isoformat()),
+            AlertActivationData(args=args, activation_date=datetime.now(timezone.utc).isoformat()),
         )
 
     def deactivate(self, deactivation_type: str = DeactivationType.REQUESTED):
