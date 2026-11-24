@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import pytest
 
 from movai_core_shared.messages.alert_data import AlertActivationData
@@ -19,7 +19,7 @@ class TestRobotActiveAlerts:
         alert_id = "alert_001"
         robot.add_active_alert(
             alert_id,
-            AlertActivationData(args="{}", activation_date=datetime.now().isoformat()),
+            AlertActivationData(args="{}", activation_date=datetime.now(timezone.utc).isoformat()),
         )
 
         assert "ActiveAlerts" in robot.fleet.__dict__
@@ -31,7 +31,8 @@ class TestRobotActiveAlerts:
 
         # Try adding the same alert again
         robot.add_active_alert(
-            alert_id, AlertActivationData(args="{}", activation_date=datetime.now().isoformat())
+            alert_id,
+            AlertActivationData(args="{}", activation_date=datetime.now(timezone.utc).isoformat()),
         )
         # should not duplicate
         assert alert_id in robot._get_active_alerts()
@@ -44,10 +45,12 @@ class TestRobotActiveAlerts:
 
         # Add multiple alerts and clear all
         robot.add_active_alert(
-            "a1", AlertActivationData(args="{}", activation_date=datetime.now().isoformat())
+            "a1",
+            AlertActivationData(args="{}", activation_date=datetime.now(timezone.utc).isoformat()),
         )
         robot.add_active_alert(
-            "a2", AlertActivationData(args="{}", activation_date=datetime.now().isoformat())
+            "a2",
+            AlertActivationData(args="{}", activation_date=datetime.now(timezone.utc).isoformat()),
         )
         assert set(robot._get_active_alerts()) == {"a1", "a2"}
         assert len(robot.fleet.ActiveAlerts) == 2

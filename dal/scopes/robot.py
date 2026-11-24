@@ -27,7 +27,7 @@ from movai_core_shared.logger import Log
 from dal.scopes.scope import Scope
 from dal.movaidb import MovaiDB
 from dal.scopes.fleetrobot import FleetRobot, Role
-from datetime import datetime
+from datetime import datetime, timezone
 from .configuration import Configuration
 
 if TYPE_CHECKING:
@@ -174,7 +174,7 @@ class Robot(Scope):
 
                 activation = AlertActivationData(**alert)
                 deactivation = AlertDeactivationData(
-                    deactivation_date=datetime.now().isoformat(),
+                    deactivation_date=datetime.now(timezone.utc).isoformat(),
                     deactivation_type=deactivation_type,
                 )
                 return AlertData(
@@ -199,7 +199,7 @@ class Robot(Scope):
             for alert_id, alert in self.fleet.ActiveAlerts.items():
                 activation = AlertActivationData(**alert)
                 deactivation = AlertDeactivationData(
-                    deactivation_date=datetime.now().isoformat(),
+                    deactivation_date=datetime.now(timezone.utc).isoformat(),
                     deactivation_type=deactivation_type,
                 )
                 alert_metric = AlertData(
