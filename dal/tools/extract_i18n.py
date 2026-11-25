@@ -4,7 +4,7 @@ import logging
 import os
 from ast import Attribute, Call, Constant, JoinedStr, Name, NodeVisitor, PyCF_ONLY_AST
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from itertools import chain
 from typing import List
 from pathlib import Path
@@ -218,7 +218,7 @@ def make_json_file(output_path: Path, name: str) -> None:
                         name: {
                             "Label": name,
                             "LastUpdate": {
-                                "date": datetime.now().strftime("%d/%m/%Y at %H:%M:%S"),
+                                "date": datetime.now(timezone.utc).strftime("%d/%m/%Y at %H:%M:%S"),
                                 "user": "movai@internal",
                             },
                         }

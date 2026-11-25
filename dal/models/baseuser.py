@@ -9,7 +9,7 @@
 from __future__ import annotations
 
 from typing import Dict, List, Set, cast
-from datetime import datetime
+from datetime import datetime, timezone
 
 from movai_core_shared.common.utils import create_principal_name
 from movai_core_shared.exceptions import (
@@ -554,7 +554,7 @@ class BaseUser(Model):
         Returns:
             float: a float representing the time delta.
         """
-        return int(datetime.now().timestamp())
+        return int(datetime.now(timezone.utc).timestamp())
 
     def set_acl(self):
         """sets the AClManager as an internal attribute."""

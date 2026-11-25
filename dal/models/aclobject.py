@@ -1,5 +1,5 @@
 from typing import List
-from datetime import datetime
+from datetime import datetime, timezone
 from movai_core_shared.common.utils import create_principal_name
 from movai_core_shared.exceptions import (
     AclObjectAlreadyExist,
@@ -128,7 +128,7 @@ class AclObject(Model):
             raise AclObjectIDMismatch(error_msg)
 
     def _update_time(self) -> None:
-        self.LastUpdate = int(datetime.now().timestamp())
+        self.LastUpdate = int(datetime.now(timezone.utc).timestamp())
 
     @classmethod
     def get_account_name(cls, principal_name: str) -> str:
