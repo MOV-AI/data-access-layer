@@ -478,7 +478,7 @@ class Scope(Struct):
         return exported, failed
 
     @classmethod
-    def _export_json(cls, scope):
+    def _export_json(cls, scope: "Scope") -> Optional[str]:
         """Serialize an object's metadata for export.
 
         Subclasses can override this method to skip the metadata JSON file
