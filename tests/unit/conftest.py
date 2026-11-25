@@ -76,6 +76,11 @@ def metadata_folder_flow_parameters():
 
 
 @pytest.fixture(scope="session")
+def metadata_folder_package_binary():
+    return DATA_FOLDER / "valid" / "package_binary" / "metadata"
+
+
+@pytest.fixture(scope="session")
 def manifest_file():
     return DATA_FOLDER / "valid" / "manifest.txt"
 

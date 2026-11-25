@@ -523,6 +523,61 @@ class TestToolsBackup:
         ],
         ids=["FilesystemProjectSource", "InMemoryProjectSource"],
     )
+    def test_import_export_package_binary_files(
+        self, global_db, metadata_folder_package_binary, manifest_file, tmp_path, source_type
+    ):
+        """Test that a Package with binary files (a map PNG) is exported as its files.
+
+        Regression test for BP-1976: the export failed with
+        "Object of type bytes is not JSON serializable".
+        """
+        from dal.tools.backup import Importer, Exporter
+        from dal.scopes.package import Package
+
+        package_name = "maps"
+        package_folder = metadata_folder_package_binary / "Package" / package_name
+
+        # clean_old_data doesn't work for Package due to SKIP_SCOPE_DELETE
+        global_db.delete_by_args("Package", Name=package_name)
+
+        importer = Importer(
+            metadata_folder_package_binary,
+            source=self.get_source(manifest_file, metadata_folder_package_binary, source_type),
+            force=True,
+            dry=False,
+            debug=False,
+            recursive=False,
+            clean_old_data=True,
+        )
+        importer.run({"Package": [package_name]})
+
+        # the PNG is kept as bytes in the database, the YAML as text
+        package = Package(package_name)
+        assert isinstance(package.File["movai_lab.png"].Value, bytes)
+        assert isinstance(package.File["movai_lab.yaml"].Value, str)
+
+        exporter = Exporter(tmp_path, debug=False, recursive=False)
+        report = exporter.run({"Package": [package_name]})
+
+        assert not report["failed"]
+
+        # a Package is exported only as its files, without a metadata JSON
+        assert not (tmp_path / "Package" / f"{package_name}.json").exists()
+
+        exported_folder = tmp_path / "Package" / package_name
+        files = sorted(file.name for file in package_folder.iterdir())
+        assert sorted(file.name for file in exported_folder.iterdir()) == files
+        for file in files:
+            assert (exported_folder / file).read_bytes() == (package_folder / file).read_bytes()
+
+    @pytest.mark.parametrize(
+        "source_type",
+        [
+            "FilesystemProjectSource",
+            "InMemoryProjectSource",
+        ],
+        ids=["FilesystemProjectSource", "InMemoryProjectSource"],
+    )
     def test_import_export_ports(
         self, global_db, metadata_folder, manifest_file, tmp_path, source_type
     ):

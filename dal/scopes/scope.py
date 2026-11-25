@@ -471,7 +471,24 @@ class Scope(Struct):
             if recursive:
                 exported.update(cls._export_dependencies(obj))
 
-            data = cls.clean_data(obj.get_dict())
+            data = cls._export_json(obj)
 
-            exported[json_path] = data
+            if data is not None:
+                exported[json_path] = data
         return exported, failed
+
+    @classmethod
+    def _export_json(cls, scope: "Scope") -> Optional[str]:
+        """Serialize an object's metadata for export.
+
+        Subclasses can override this method to skip the metadata JSON file
+        (by returning None) when the object is fully represented by the
+        files returned from `_export_extra_files`.
+
+        Args:
+            scope: Object whose metadata is being exported.
+
+        Returns:
+            str | None: Serialized JSON metadata, or None to skip it.
+        """
+        return cls.clean_data(scope.get_dict())
