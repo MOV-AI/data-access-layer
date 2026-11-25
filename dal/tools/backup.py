@@ -516,8 +516,12 @@ class Exporter(Backup):
 
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
-            with open(file_path, "w", encoding="utf-8") as file:
-                file.write(data)
+            if isinstance(data, bytes):
+                with open(file_path, "wb") as file:
+                    file.write(data)
+            else:
+                with open(file_path, "w", encoding="utf-8") as file:
+                    file.write(data)
 
     def run(self, objects: dict = {}):
         """Exports the objects defined in the manifest.
