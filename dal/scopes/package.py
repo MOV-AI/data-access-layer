@@ -300,3 +300,10 @@ class Package(Scope):
         package_path = os.path.join("Package", name)
 
         return {os.path.join(package_path, key): file.Value for key, file in scope.File.items()}
+
+    @classmethod
+    def _export_json(cls, scope):
+        # A Package is exported only as its files (see _export_extra_files);
+        # its metadata holds raw file contents (possibly bytes) and is not
+        # serializable to JSON.
+        return None
