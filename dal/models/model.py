@@ -8,7 +8,7 @@
 """
 from abc import ABC
 from importlib import import_module
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List
 from movai_core_shared.exceptions import DoesNotExist
 from movai_core_shared.logger import Log
@@ -273,7 +273,7 @@ class Model(ScopeInstanceVersionNode, ABC):
 
     @staticmethod
     def _current_time() -> str:
-        return datetime.now().strftime("%d/%m/%Y at %H:%M:%S")
+        return datetime.now(timezone.utc).strftime("%d/%m/%Y at %H:%M:%S")
 
     def update_time(self) -> None:
         """update the LastUpdate field in the Model entry with current time."""

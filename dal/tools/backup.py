@@ -9,7 +9,7 @@
    Backup a.k.a. Import Export tool
 """
 import argparse
-import datetime
+from datetime import datetime, timezone
 import os
 import re
 import sys
@@ -393,7 +393,7 @@ class Importer(Backup):
                 package_name=package_name,
                 new_data={
                     "version": package_version,
-                    "import-date": datetime.datetime.now().isoformat(),
+                    "import-date": datetime.now(timezone.utc).isoformat(),
                     scope: tracked_objects,
                 },
             )

@@ -1,5 +1,8 @@
 # Changelog
 
+## vTBD
+- [BP-1960](https://movai.atlassian.net/browse/BP-1960): Add timezone offset to alert timestamps.
+
 ## v3.34.3
 - [BP-1976](https://movai.atlassian.net/browse/BP-1976): Failing to export all metadata in Studio pipeline
   - Export a Package only as its files, without a metadata JSON that fails on binary file contents
